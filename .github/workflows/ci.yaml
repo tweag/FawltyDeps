@@ -49,5 +49,4 @@ jobs:
       #----------------------------------------------
       - name: Run tests
         run: |
-          poetry shell
           pytest tests/
