@@ -89,7 +89,7 @@ requirements-deprecated-finder = ["pip-api", "pipreqs"]
 name = "mypy"
 version = "0.991"
 description = "Optional static typing for Python"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -198,14 +198,14 @@ python-versions = ">=3.7"
 name = "typing-extensions"
 version = "4.4.0"
 description = "Backported and Experimental Type Hints for Python 3.7+"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "42137e63efbcc762df2417fcfdf1906581998d637636016f3932c2f8ba304b4c"
+content-hash = "d55cf17ef0ae2205bf7bae90d64f81fe2aa7de002ff2d70e50535bde8a3e3530"
 
 [metadata.files]
 attrs = [

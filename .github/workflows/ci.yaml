@@ -3,7 +3,7 @@
 # https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 name: CI
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   ci:
@@ -12,7 +12,7 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ["3.10"]
-        os: [ubuntu-18.04, macos-latest, windows-latest]
+        os: [ubuntu-18.04, macos-latest]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -23,29 +23,19 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install Poetry
         uses: snok/install-poetry@v1
-       
       #----------------------------------------------
-      #       load cached venv if cache exists
-      #----------------------------------------------
-      - name: Load cached venv
-        id: cached-poetry-dependencies
-        uses: actions/cache@v3
-        with:
-          path: .venv
-          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
-      #----------------------------------------------
-      # install dependencies if cache does not exist
-      #----------------------------------------------
-      - name: Install dependencies
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction --no-root
-      #----------------------------------------------
-      # install your root project, if required
+      # install project and its dependencies
       #----------------------------------------------
       - name: Install project
         run: poetry install --no-interaction
       #----------------------------------------------
-      #              run test suite
+      #  run checks
       #----------------------------------------------
       - name: Run tests
         run: poetry run pytest tests/
+      - name: Run type checker
+        run: poetry run mypy fawltydeps tests
+      - name: Run <black> linter checker
+        run: poetry run black fawltydeps tests --check 
+      - name: Run import sort checker
+        run: poetry run isort fawltydeps tests --check-only
