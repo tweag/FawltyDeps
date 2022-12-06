@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "fawltydeps"
+version = "0.1.0"
+description = ""
+authors = ["mknorps <maria.knorps@tweag.io>", "Nour-Mws <nour.elmawass@tweag.io>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+isort = "^5.10"
+black = "^22.10"
+
+
+[tool.poetry.scripts]
+hello-deps = 'fawltydeps.scripts.hello:hello'
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^0.991"
+
+[tool.isort]
+profile = "black"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
