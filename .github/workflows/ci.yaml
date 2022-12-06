@@ -3,7 +3,13 @@
 # https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 name: CI
 
-on: [push, pull_request]
+on: 
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
 
 jobs:
   ci:
