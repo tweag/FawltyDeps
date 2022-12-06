@@ -48,6 +48,4 @@ jobs:
       #              run test suite
       #----------------------------------------------
       - name: Run tests
-        run: |
-          source $VENV
-          pytest tests/
+        run: poetry run pytest tests/
