@@ -9,6 +9,7 @@ readme = "README.md"
 python = "^3.10"
 isort = "^5.10"
 black = "^22.10"
+pytest = "^7.2.0"
 
 
 [tool.poetry.scripts]
