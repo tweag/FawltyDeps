@@ -39,7 +39,7 @@ jobs:
         run: poetry run pytest tests/
       - name: Run type checker
         run: poetry run mypy fawltydeps tests
-      - name: Run <black> linter checker
+      - name: Check formatting with Black
         run: poetry run black fawltydeps tests --check 
       - name: Run import sort checker
         run: poetry run isort fawltydeps tests --check-only
