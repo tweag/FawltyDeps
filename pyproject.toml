@@ -6,7 +6,7 @@ authors = ["mknorps <maria.knorps@tweag.io>", "Nour-Mws <nour.elmawass@tweag.io>
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.6"
 isort = "^5.10"
 black = "^22.10"
 pytest = "^7.2.0"
