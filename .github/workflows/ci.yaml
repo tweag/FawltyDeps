@@ -34,5 +34,7 @@ jobs:
         run: poetry run mypy fawltydeps tests
       - name: Check formatting with Black
         run: poetry run black fawltydeps tests --check 
+      - name: Run linter
+        run: poetry run pylint fawltydeps tests
       - name: Run import sort checker
         run: poetry run isort fawltydeps tests --check-only
