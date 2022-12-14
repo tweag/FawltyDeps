@@ -10,6 +10,11 @@ logger = logging.getLogger(__name__)
 
 
 def parse_code(code: str) -> Iterator[str]:
+    """Extract import statements from a string containing Python code.
+
+    Generate (i.e. yield) the module names that are imported in the order
+    they appear in the code.
+    """
     for node in ast.walk(ast.parse(code)):
         if isinstance(node, ast.Import):
             logger.debug(ast.dump(node))
@@ -21,10 +26,21 @@ def parse_code(code: str) -> Iterator[str]:
 
 
 def parse_file(path: Path) -> Iterator[str]:
+    """Extract import statements from a file containing Python code.
+
+    Generate (i.e. yield) the module names that are imported in the order
+    they appear in the file.
+    """
     yield from parse_code(path.read_text())
 
 
 def parse_dir(path: Path) -> Iterator[str]:
+    """Extract import statements Python files in the given directory.
+
+    Generate (i.e. yield) the module names that are imported in the order
+    they appear in the file. Modules that are imported by several files will
+    be yielded multiple times.
+    """
     for root, _dirs, files in os.walk(path):
         for filename in files:
             path = Path(root, filename)
