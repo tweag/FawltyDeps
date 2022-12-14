@@ -2,7 +2,7 @@
 
 from textwrap import dedent
 
-from fawltydeps.parser import parse_imports
+from fawltydeps.extract_imports import parse_code
 
 
 def test_stdlib_import():
@@ -12,7 +12,7 @@ def test_stdlib_import():
         print(sys.executable)
         """)
     expect = {"sys"}
-    assert set(parse_imports(code)) == expect
+    assert set(parse_code(code)) == expect
 
 
 def test_stdlib_two_imports():
@@ -22,7 +22,7 @@ def test_stdlib_two_imports():
         print(sys.executable, platform.python_version())
         """)
     expect = {"platform", "sys"}
-    assert set(parse_imports(code)) == expect
+    assert set(parse_code(code)) == expect
 
 
 def test_stdlib_import_from():
@@ -32,7 +32,7 @@ def test_stdlib_import_from():
         print(executable)
         """)
     expect = {"sys"}
-    assert set(parse_imports(code)) == expect
+    assert set(parse_code(code)) == expect
 
 
 def test_combinations_of_simple_imports():
@@ -46,4 +46,4 @@ def test_combinations_of_simple_imports():
         import numpy as np
         """)
     expect = {"pathlib", "sys", "unittest", "requests", "foo", "numpy"}
-    assert set(parse_imports(code)) == expect
+    assert set(parse_code(code)) == expect
