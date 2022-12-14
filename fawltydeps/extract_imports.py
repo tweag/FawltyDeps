@@ -2,6 +2,7 @@
 
 import ast
 import logging
+import os
 from pathlib import Path
 from typing import Iterator
 
@@ -21,3 +22,11 @@ def parse_code(code: str) -> Iterator[str]:
 
 def parse_file(path: Path) -> Iterator[str]:
     yield from parse_code(path.read_text())
+
+
+def parse_dir(path: Path) -> Iterator[str]:
+    for root, _dirs, files in os.walk(path):
+        for filename in files:
+            path = Path(root, filename)
+            if path.suffix == ".py":
+                yield from parse_file(path)
