@@ -97,3 +97,25 @@ def test_parse_dir_with_mix_of_python_and_nonpython(tmp_path):
 
     expect = {"pathlib", "sys", "numpy", "pandas", "test1"}
     assert set(parse_dir(tmp_path)) == expect
+
+
+def test_parse_dir_imports_are_returned_in_order_of_encounter(tmp_path):
+    first = dedent("""\
+        from pathlib import Path
+        import sys
+
+        import foo
+        """)
+    (tmp_path / "first.py").write_text(first)
+
+    second = dedent("""\
+        import sys
+
+        from foo import bar, baz
+        import xyzzy
+        """)
+    (tmp_path / "subdir").mkdir()
+    (tmp_path / "subdir/second.py").write_text(second)
+
+    expect = ["pathlib", "sys", "foo", "sys", "foo", "xyzzy"]
+    assert list(parse_dir(tmp_path)) == expect
