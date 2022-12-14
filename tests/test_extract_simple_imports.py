@@ -13,3 +13,13 @@ def test_stdlib_import():
         """)
     expect = {"sys"}
     assert set(parse_imports(code)) == expect
+
+
+def test_stdlib_two_imports():
+    code = dedent("""\
+        import platform, sys
+
+        print(sys.executable, platform.python_version())
+        """)
+    expect = {"platform", "sys"}
+    assert set(parse_imports(code)) == expect
