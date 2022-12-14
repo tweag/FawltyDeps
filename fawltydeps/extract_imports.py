@@ -1,4 +1,4 @@
-"Parse imports from the source code"
+"""Parse Python source code and extract import statements."""
 
 import ast
 import logging
@@ -7,7 +7,7 @@ from typing import Iterator
 logger = logging.getLogger(__name__)
 
 
-def parse_imports(code: str) -> Iterator[str]:
+def parse_code(code: str) -> Iterator[str]:
     for node in ast.walk(ast.parse(code)):
         if isinstance(node, ast.Import):
             logger.debug(ast.dump(node))
