@@ -2,7 +2,7 @@
 
 from textwrap import dedent
 
-from fawltydeps.extract_imports import parse_code, parse_file
+from fawltydeps.extract_imports import parse_code, parse_dir, parse_file
 
 
 def test_stdlib_import():
@@ -64,3 +64,36 @@ def test_parse_single_file(tmp_path):
 
     expect = {"pathlib", "sys", "unittest", "requests", "foo", "numpy"}
     assert set(parse_file(script)) == expect
+
+
+def test_parse_dir_with_mix_of_python_and_nonpython(tmp_path):
+    code1 = dedent("""\
+        from pathlib import Path
+        import sys
+
+        import numpy as np
+
+        def foo():
+            pass
+        """)
+    (tmp_path / "test1.py").write_text(code1)
+
+    code2 = dedent("""\
+        import sys
+
+        import pandas
+
+        import test1
+
+        foo()
+        """)
+    (tmp_path / "test2.py").write_text(code2)
+
+    not_code = dedent("""\
+        This is not code, even if it contains the
+        import word.
+        """)
+    (tmp_path / "not_python.txt").write_text(not_code)
+
+    expect = {"pathlib", "sys", "numpy", "pandas", "test1"}
+    assert set(parse_dir(tmp_path)) == expect
