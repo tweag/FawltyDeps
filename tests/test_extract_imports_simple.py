@@ -2,7 +2,7 @@
 
 from textwrap import dedent
 
-from fawltydeps.extract_imports import parse_code
+from fawltydeps.extract_imports import parse_code, parse_file
 
 
 def test_stdlib_import():
@@ -47,3 +47,20 @@ def test_combinations_of_simple_imports():
         """)
     expect = {"pathlib", "sys", "unittest", "requests", "foo", "numpy"}
     assert set(parse_code(code)) == expect
+
+
+def test_parse_single_file(tmp_path):
+    code = dedent("""\
+        from pathlib import Path
+        import sys
+        import unittest as obsolete
+
+        import requests
+        from foo import bar, baz
+        import numpy as np
+        """)
+    script = tmp_path / "test.py"
+    script.write_text(code)
+
+    expect = {"pathlib", "sys", "unittest", "requests", "foo", "numpy"}
+    assert set(parse_file(script)) == expect
