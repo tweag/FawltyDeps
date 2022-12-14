@@ -23,3 +23,27 @@ def test_stdlib_two_imports():
         """)
     expect = {"platform", "sys"}
     assert set(parse_imports(code)) == expect
+
+
+def test_stdlib_import_from():
+    code = dedent("""\
+        from sys import executable
+
+        print(executable)
+        """)
+    expect = {"sys"}
+    assert set(parse_imports(code)) == expect
+
+
+def test_combinations_of_simple_imports():
+    code = dedent("""\
+        from pathlib import Path
+        import sys
+        import unittest as obsolete
+
+        import requests
+        from foo import bar, baz
+        import numpy as np
+        """)
+    expect = {"pathlib", "sys", "unittest", "requests", "foo", "numpy"}
+    assert set(parse_imports(code)) == expect
