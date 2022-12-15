@@ -6,31 +6,19 @@ from fawltydeps.extract_imports import parse_code, parse_dir, parse_file
 
 
 def test_stdlib_import():
-    code = dedent("""\
-        import sys
-
-        print(sys.executable)
-        """)
+    code = "import sys"
     expect = {"sys"}
     assert set(parse_code(code)) == expect
 
 
 def test_stdlib_two_imports():
-    code = dedent("""\
-        import platform, sys
-
-        print(sys.executable, platform.python_version())
-        """)
+    code = "import platform, sys"
     expect = {"platform", "sys"}
     assert set(parse_code(code)) == expect
 
 
 def test_stdlib_import_from():
-    code = dedent("""\
-        from sys import executable
-
-        print(executable)
-        """)
+    code = "from sys import executable"
     expect = {"sys"}
     assert set(parse_code(code)) == expect
 
@@ -72,20 +60,13 @@ def test_parse_dir_with_mix_of_python_and_nonpython(tmp_path):
         import sys
 
         import numpy as np
-
-        def foo():
-            pass
         """)
     (tmp_path / "test1.py").write_text(code1)
 
     code2 = dedent("""\
         import sys
-
         import pandas
-
         import test1
-
-        foo()
         """)
     (tmp_path / "test2.py").write_text(code2)
 
