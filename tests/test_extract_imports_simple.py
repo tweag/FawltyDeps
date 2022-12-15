@@ -23,6 +23,17 @@ def test_stdlib_import_from():
     assert set(parse_code(code)) == expect
 
 
+def test_relative_imports_are_never_returned():
+    code = dedent("""\
+        from . import bar
+        from .foo import bar
+        from ..foo import bar
+        from .foo.bar import baz
+        """)
+    expect = set()
+    assert set(parse_code(code)) == expect
+
+
 def test_combinations_of_simple_imports():
     code = dedent("""\
         from pathlib import Path
