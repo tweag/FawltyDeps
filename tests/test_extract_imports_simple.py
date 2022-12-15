@@ -23,6 +23,15 @@ def test_stdlib_import_from():
     assert set(parse_code(code)) == expect
 
 
+def test_stdlib_import_submodule():
+    code = dedent("""\
+        import parent.child
+        from foo.bar import baz
+        """)
+    expect = {"parent", "foo"}
+    assert set(parse_code(code)) == expect
+
+
 def test_relative_imports_are_never_returned():
     code = dedent("""\
         from . import bar

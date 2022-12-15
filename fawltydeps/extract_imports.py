@@ -20,14 +20,14 @@ def parse_code(code: str, *, path_hint: Optional[Path] = None) -> Iterator[str]:
         if isinstance(node, ast.Import):
             logger.debug(ast.dump(node))
             for alias in node.names:
-                yield alias.name
+                yield alias.name.split(".", 1)[0]
         elif isinstance(node, ast.ImportFrom):
             logger.debug(ast.dump(node))
             # Relative imports are always relative to the current package, and
             # will therefore not resolve to a third-party package.
             # They are therefore uninteresting to us.
             if node.level == 0 and node.module is not None:
-                yield node.module
+                yield node.module.split(".", 1)[0]
 
 
 def parse_file(path: Path) -> Iterator[str]:
