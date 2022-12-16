@@ -15,6 +15,7 @@ def compare_imports_to_dependencies(
     non_stdlib_imports = {
         module for module in imports if isort.place_module(module) != "STDLIB"
     }
-    undeclared = set(non_stdlib_imports) - set(dependencies)
-    unused = set(dependencies) - set(non_stdlib_imports)
+    unique_dependencies = set(dependencies)
+    undeclared = set(non_stdlib_imports) - unique_dependencies
+    unused = unique_dependencies - set(non_stdlib_imports)
     return undeclared, unused
