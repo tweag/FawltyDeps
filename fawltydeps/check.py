@@ -1,11 +1,11 @@
 "Compare imports and dependencies"
 
-from typing import List, Tuple, Set
+from typing import Iterable, Tuple, Set
 import isort
 
 
 def compare_imports_to_dependencies(
-    imports: List[str], dependencies: List[str]
+    imports: Iterable[str], dependencies: Iterable[str]
 ) -> Tuple[Set[str], Set[str]]:
     """
     Compares imports to dependencies
