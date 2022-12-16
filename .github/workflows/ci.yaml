@@ -1,6 +1,3 @@
-# https://github.com/marketplace/actions/python-poetry-action
-# https://github.com/snok/install-poetry
-# https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 name: CI
 
 on: [push, pull_request]
@@ -38,3 +35,8 @@ jobs:
         run: poetry run pylint fawltydeps tests
       - name: Run import sort checker
         run: poetry run isort fawltydeps tests --check-only
+
+# Inspiration for the CI setup:
+# https://github.com/marketplace/actions/python-poetry-action
+# https://github.com/snok/install-poetry
+# https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
