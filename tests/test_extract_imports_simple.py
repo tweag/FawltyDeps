@@ -5,25 +5,25 @@ from textwrap import dedent
 from fawltydeps.extract_imports import parse_code, parse_dir, parse_file
 
 
-def test_stdlib_import():
+def test_parse_code__simple_import__extracts_module_name():
     code = "import sys"
     expect = {"sys"}
     assert set(parse_code(code)) == expect
 
 
-def test_stdlib_two_imports():
+def test_parse_code__two_imports__extracts_both_modules():
     code = "import platform, sys"
     expect = {"platform", "sys"}
     assert set(parse_code(code)) == expect
 
 
-def test_stdlib_import_from():
+def test_parse_code__simple_import_from__extracts_module():
     code = "from sys import executable"
     expect = {"sys"}
     assert set(parse_code(code)) == expect
 
 
-def test_stdlib_import_submodule():
+def test_parse_code__import_with_compound_names__extracts_first_component():
     code = dedent(
         """\
         import parent.child
@@ -34,7 +34,7 @@ def test_stdlib_import_submodule():
     assert set(parse_code(code)) == expect
 
 
-def test_relative_imports_are_never_returned():
+def test_parse_code__relative_imports__are_ignored():
     code = dedent(
         """\
         from . import bar
@@ -47,7 +47,7 @@ def test_relative_imports_are_never_returned():
     assert set(parse_code(code)) == expect
 
 
-def test_combinations_of_simple_imports():
+def test_parse_code__combo_of_simple_imports__extracts_all():
     code = dedent(
         """\
         from pathlib import Path
@@ -63,7 +63,7 @@ def test_combinations_of_simple_imports():
     assert set(parse_code(code)) == expect
 
 
-def test_parse_single_file(tmp_path):
+def test_parse_file__combo_of_simple_imports__extracts_all(tmp_path):
     code = dedent(
         """\
         from pathlib import Path
@@ -82,7 +82,7 @@ def test_parse_single_file(tmp_path):
     assert set(parse_file(script)) == expect
 
 
-def test_parse_dir_with_mix_of_python_and_nonpython(tmp_path):
+def test_parse_dir__with_py_and_non_py__extracts_only_from_py_files(tmp_path):
     code1 = dedent(
         """\
         from pathlib import Path
@@ -109,7 +109,7 @@ def test_parse_dir_with_mix_of_python_and_nonpython(tmp_path):
     assert set(parse_dir(tmp_path)) == expect
 
 
-def test_parse_dir_imports_are_returned_in_order_of_encounter(tmp_path):
+def test_parse_dir__imports__are_extracted_in_order_of_encounter(tmp_path):
     first = dedent(
         """\
         import sys
