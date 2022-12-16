@@ -2,4 +2,5 @@
 
 
 def parse_imports():
-    pass
+    """TBA"""
+    return 1

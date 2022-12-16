@@ -1,0 +1,42 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  ci:
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.8", "3.9", "3.10", "3.11"] 
+        os: [ubuntu-22.04]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: Gr1N/setup-poetry@v7
+      - uses: actions/cache@v2
+        with:
+          path: ~/.cache/pypoetry/virtualenvs
+          key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
+      - name: Install project
+        run: poetry install --no-interaction
+      - name: Run tests
+        run: poetry run pytest tests
+      - name: Run type checker
+        run: poetry run mypy fawltydeps tests
+      - name: Check formatting with Black
+        run: poetry run black fawltydeps tests --check 
+      - name: Run linter
+        run: poetry run pylint fawltydeps tests
+      - name: Run import sort checker
+        run: poetry run isort fawltydeps tests --check-only
+
+# Inspiration for the CI setup:
+# https://github.com/marketplace/actions/python-poetry-action
+# https://github.com/snok/install-poetry
+# https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python

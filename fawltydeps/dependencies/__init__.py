@@ -2,4 +2,5 @@
 
 
 def get_dependencies():
-    pass
+    """TBA"""
+    return 1
