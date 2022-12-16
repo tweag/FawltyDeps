@@ -47,7 +47,7 @@ jobs:
           path: ~/.cache/pypoetry/virtualenvs
           key: ${{ runner.os }}-poetry-linters-${{ hashFiles('poetry.lock') }}
       - name: Install project
-        run: poetry install --no-interaction --sync --with=test,dev
+        run: poetry install --no-interaction --sync --with=test,dev,nox
       - name: Run type checker
         run: poetry run mypy
       - name: Check formatting with Black

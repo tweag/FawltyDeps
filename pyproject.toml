@@ -32,6 +32,12 @@ fawltydeps = "fawltydeps.main:main"
 python = "^3.7.2"
 isort = "^5.10"
 
+[tool.poetry.group.nox]
+optional = true
+
+[tool.poetry.group.nox.dependencies]
+nox = "^2022.11.21"
+
 [tool.poetry.group.test]
 optional = true
 
