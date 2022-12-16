@@ -8,17 +8,13 @@ from fawltydeps.extract_imports import parse_code, parse_dir, parse_file
 
 
 def test_parse_code_failures_propagates_SyntaxError():
-    code = dedent("""\
-        This is not Python code
-        """)
+    code = "This is not Python code\n"
     with pytest.raises(SyntaxError):
         list(parse_code(code))
 
 
 def test_parse_file_failures_contain_filename(tmp_path):
-    code = dedent("""\
-        This is not Python code
-        """)
+    code = "This is not Python code\n"
     script = tmp_path / "test.py"
     script.write_text(code)
 
@@ -28,10 +24,12 @@ def test_parse_file_failures_contain_filename(tmp_path):
 
 
 def test_parse_dir_with_syntax_error_contains_filename(tmp_path):
-    code = dedent("""\
+    code = dedent(
+        """\
         This file is littered with Python syntax errors...
         import word.
-        """)
+        """
+    )
     script = tmp_path / "python_with_syntax_error.py"
     script.write_text(code)
 

@@ -24,27 +24,32 @@ def test_stdlib_import_from():
 
 
 def test_stdlib_import_submodule():
-    code = dedent("""\
+    code = dedent(
+        """\
         import parent.child
         from foo.bar import baz
-        """)
+        """
+    )
     expect = {"parent", "foo"}
     assert set(parse_code(code)) == expect
 
 
 def test_relative_imports_are_never_returned():
-    code = dedent("""\
+    code = dedent(
+        """\
         from . import bar
         from .foo import bar
         from ..foo import bar
         from .foo.bar import baz
-        """)
+        """
+    )
     expect = set()
     assert set(parse_code(code)) == expect
 
 
 def test_combinations_of_simple_imports():
-    code = dedent("""\
+    code = dedent(
+        """\
         from pathlib import Path
         import sys
         import unittest as obsolete
@@ -52,13 +57,15 @@ def test_combinations_of_simple_imports():
         import requests
         from foo import bar, baz
         import numpy as np
-        """)
+        """
+    )
     expect = {"pathlib", "sys", "unittest", "requests", "foo", "numpy"}
     assert set(parse_code(code)) == expect
 
 
 def test_parse_single_file(tmp_path):
-    code = dedent("""\
+    code = dedent(
+        """\
         from pathlib import Path
         import sys
         import unittest as obsolete
@@ -66,7 +73,8 @@ def test_parse_single_file(tmp_path):
         import requests
         from foo import bar, baz
         import numpy as np
-        """)
+        """
+    )
     script = tmp_path / "test.py"
     script.write_text(code)
 
@@ -75,20 +83,26 @@ def test_parse_single_file(tmp_path):
 
 
 def test_parse_dir_with_mix_of_python_and_nonpython(tmp_path):
-    code1 = dedent("""\
+    code1 = dedent(
+        """\
         from pathlib import Path
-        """)
+        """
+    )
     (tmp_path / "test1.py").write_text(code1)
 
-    code2 = dedent("""\
+    code2 = dedent(
+        """\
         import pandas
-        """)
+        """
+    )
     (tmp_path / "test2.py").write_text(code2)
 
-    not_code = dedent("""\
+    not_code = dedent(
+        """\
         This is not code, even if it contains the
         import word.
-        """)
+        """
+    )
     (tmp_path / "not_python.txt").write_text(not_code)
 
     expect = {"pathlib", "pandas"}
@@ -96,16 +110,20 @@ def test_parse_dir_with_mix_of_python_and_nonpython(tmp_path):
 
 
 def test_parse_dir_imports_are_returned_in_order_of_encounter(tmp_path):
-    first = dedent("""\
+    first = dedent(
+        """\
         import sys
         import foo
-        """)
+        """
+    )
     (tmp_path / "first.py").write_text(first)
 
-    second = dedent("""\
+    second = dedent(
+        """\
         import sys
         import xyzzy
-        """)
+        """
+    )
     (tmp_path / "subdir").mkdir()
     (tmp_path / "subdir/second.py").write_text(second)
 
