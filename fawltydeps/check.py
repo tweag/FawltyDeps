@@ -1,12 +1,16 @@
 "Compare imports and dependencies"
 
-from typing import Iterable, Tuple, Set
+from typing import Iterable, NamedTuple, Set
 import isort
+
+DependencyComparison = NamedTuple(
+    "DependencyComparison", [("undeclared", Set[str]), ("unused", Set[str])]
+)
 
 
 def compare_imports_to_dependencies(
     imports: Iterable[str], dependencies: Iterable[str]
-) -> Tuple[Set[str], Set[str]]:
+) -> DependencyComparison:
     """
     Compares imports to dependencies
 
@@ -18,4 +22,4 @@ def compare_imports_to_dependencies(
     unique_dependencies = set(dependencies)
     undeclared = set(non_stdlib_imports) - unique_dependencies
     unused = unique_dependencies - set(non_stdlib_imports)
-    return undeclared, unused
+    return DependencyComparison(undeclared, unused)
