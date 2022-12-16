@@ -12,9 +12,9 @@ def compare_imports_to_dependencies(
 
     Returns set of undeclared non stdlib imports and set of unused dependencies
     """
-    non_stdlib_imports: Set[str] = {
+    non_stdlib_imports = {
         module for module in imports if isort.place_module(module) != "STDLIB"
     }
-    undeclared: Set[str] = set(non_stdlib_imports) - set(dependencies)
-    unused: Set[str] = set(dependencies) - set(non_stdlib_imports)
+    undeclared = set(non_stdlib_imports) - set(dependencies)
+    unused = set(dependencies) - set(non_stdlib_imports)
     return undeclared, unused
