@@ -32,7 +32,10 @@ jobs:
       - name: Check formatting with Black
         run: poetry run black fawltydeps tests --check 
       - name: Run linter
-        run: poetry run pylint fawltydeps tests
+        run: |
+          poetry run pylint fawltydeps
+          poetry run pylint tests --disable=C0116,C0103
+
       - name: Run import sort checker
         run: poetry run isort fawltydeps tests --check-only
 
