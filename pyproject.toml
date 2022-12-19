@@ -5,6 +5,9 @@ description = ""
 authors = ["mknorps <maria.knorps@tweag.io>", "Nour-Mws <nour.elmawass@tweag.io>"]
 readme = "README.md"
 
+[tool.poetry.scripts]
+fawltydeps = "fawltydeps.main:main"
+
 [tool.poetry.dependencies]
 python = "^3.8"
 isort = "^5.10"
@@ -14,14 +17,14 @@ mypy = "^0.991"
 pylint = "^2.15.8"
 
 
-[tool.poetry.scripts]
-hello-deps = 'fawltydeps.scripts.hello:hello'
-
 [tool.poetry.group.dev.dependencies]
 mypy = "^0.991"
 
 [tool.isort]
 profile = "black"
+
+[tool.pylint]
+disable = "W0511"
 
 [tool.pylint.tests]
 disable = "C0116,C0103"
