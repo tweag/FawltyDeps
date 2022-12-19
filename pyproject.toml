@@ -33,6 +33,14 @@ disable = "W0511"
 [tool.pylint.tests]
 disable = "C0116,C0103"
 
+[[tool.mypy.overrides]]
+module = "fawltydeps.*"
+disallow_untyped_defs = true
+disallow_any_unimported = true
+implicit_optional = false
+check_untyped_defs = true
+
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
