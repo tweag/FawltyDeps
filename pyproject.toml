@@ -1,8 +1,12 @@
 [tool.poetry]
 name = "fawltydeps"
 version = "0.1.0"
-description = ""
-authors = ["mknorps <maria.knorps@tweag.io>", "Nour-Mws <nour.elmawass@tweag.io>"]
+description = "Find undeclared 3rd-party dependencies in your Python project."
+authors = [
+    "Maria Knorps <maria.knorps@tweag.io>",
+    "Nour El Mawass <nour.elmawass@tweag.io>",
+    "Johan Herland <johan.herland@tweag.io>"
+]
 readme = "README.md"
 
 [tool.poetry.scripts]
