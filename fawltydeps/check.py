@@ -4,7 +4,7 @@ from fawltydeps.dependencies import get_dependencies
 from fawltydeps.extract_imports import parse_code
 
 
-def compare_imports_dependencies():
+def compare_imports_dependencies() -> bool:
     """
     Compare import and dependencies according to chosen strategy
     """
