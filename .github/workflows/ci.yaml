@@ -28,7 +28,7 @@ jobs:
       - name: Run tests
         run: poetry run pytest tests
       - name: Run type checker
-        run: poetry run mypy fawltydeps tests
+        run: poetry run mypy
       - name: Check formatting with Black
         run: poetry run black fawltydeps tests --check 
       - name: Run linter
