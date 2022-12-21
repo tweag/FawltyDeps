@@ -24,6 +24,6 @@ def simple_project(tmp_path):
     (tmp_path / "subdir").mkdir()
     (tmp_path / "subdir/requirements.txt").write_text(second)
 
-    (tmp_path / "python_file.py").write_text("django")
+    (tmp_path / "python_file.py").write_text("import django")
 
     return tmp_path

@@ -9,7 +9,7 @@ from pkg_resources import parse_requirements
 logger = logging.getLogger(__name__)
 
 
-def extract_from_requirements_contents(
+def parse_requirements_contents(
     text: str, path_hint: Path
 ) -> Iterator[Tuple[str, Path]]:
     """
@@ -28,8 +28,8 @@ def extract_dependencies(path: Path) -> Iterator[Tuple[str, Path]]:
     Call handlers for each file type to extract dependencies.
     """
     parsers = {
-        "requirements.txt": extract_from_requirements_contents,
-        "requirements.in": extract_from_requirements_contents,
+        "requirements.txt": parse_requirements_contents,
+        "requirements.in": parse_requirements_contents,
     }
     # TODO extract dependencies from setup.py
     # TODO extract dependencies from pyproject.toml
