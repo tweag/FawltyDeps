@@ -1,6 +1,7 @@
 "Compare imports and dependencies"
 
 from pathlib import Path
+
 from fawltydeps.extract_dependencies import extract_dependencies
 from fawltydeps.extract_imports import parse_code
 

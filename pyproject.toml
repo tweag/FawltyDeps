@@ -19,6 +19,7 @@ black = "^22"
 pytest = "^7.1.0"
 mypy = "^0.991"
 pylint = "^2.15.8"
+types-setuptools = "^65.6.0.2"
 
 
 [tool.poetry.group.dev.dependencies]
