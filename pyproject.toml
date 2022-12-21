@@ -15,15 +15,21 @@ fawltydeps = "fawltydeps.main:main"
 [tool.poetry.dependencies]
 python = "^3.7.2"
 isort = "^5.10"
-black = "^22"
+
+[tool.poetry.group.test]
+optional = true
+
+[tool.poetry.group.test.dependencies]
 pytest = "^7.1.0"
+
+[tool.poetry.group.dev]
+optional = true
+
+[tool.poetry.group.dev.dependencies]
+black = "^22"
 mypy = "^0.991"
 pylint = "^2.15.8"
 types-setuptools = "^65.6.0.2"
-
-
-[tool.poetry.group.dev.dependencies]
-mypy = "^0.991"
 
 [tool.black]
 target-version = ["py37"]
