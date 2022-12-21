@@ -6,7 +6,7 @@ import pytest
 
 from fawltydeps.extract_dependencies import (
     extract_dependencies,
-    extract_from_requirements_contents,
+    parse_requirements_contents,
 )
 
 
@@ -38,9 +38,9 @@ from fawltydeps.extract_dependencies import (
         ),
     ],
 )
-def test_extract_from_requirements_contents(file_content, file_name, expected):
+def test_parse_requirements_contents(file_content, file_name, expected):
 
-    result = list(extract_from_requirements_contents(file_content, file_name))
+    result = list(parse_requirements_contents(file_content, file_name))
     assert result == expected
 
 
