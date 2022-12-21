@@ -25,6 +25,9 @@ types-setuptools = "^65.6.0.2"
 [tool.poetry.group.dev.dependencies]
 mypy = "^0.991"
 
+[tool.black]
+target-version = ["py37"]
+
 [tool.isort]
 profile = "black"
 
