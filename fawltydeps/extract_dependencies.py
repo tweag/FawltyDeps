@@ -27,7 +27,10 @@ def extract_dependencies(path: Path) -> Iterator[Tuple[str, Path]]:
     Traverse directory tree to find matching files.
     Call handlers for each file type to extract dependencies.
     """
-    parsers = {"requirements.txt": extract_from_requirements_contents}
+    parsers = {
+        "requirements.txt": extract_from_requirements_contents,
+        "requirements.in": extract_from_requirements_contents,
+    }
     # TODO extract dependencies from setup.py
     # TODO extract dependencies from pyproject.toml
 
