@@ -270,6 +270,14 @@ optional = false
 python-versions = ">=3.6"
 
 [[package]]
+name = "types-setuptools"
+version = "65.6.0.2"
+description = "Typing stubs for setuptools"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "typing-extensions"
 version = "4.4.0"
 description = "Backported and Experimental Type Hints for Python 3.7+"
@@ -288,7 +296,7 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "49ac4df4470acfb706ffb6db8169084533900920a36a6f2ca55bbb6b38c74e12"
+content-hash = "15f47ea11ed12565664eddd305ebf5fb269d9e8b5a12a8674fb8fbf70446d7aa"
 
 [metadata.files]
 astroid = [
@@ -442,6 +450,10 @@ tomli = [
 tomlkit = [
     {file = "tomlkit-0.11.6-py3-none-any.whl", hash = "sha256:07de26b0d8cfc18f871aec595fda24d95b08fef89d147caa861939f37230bf4b"},
     {file = "tomlkit-0.11.6.tar.gz", hash = "sha256:71b952e5721688937fb02cf9d354dbcf0785066149d2855e44531ebdd2b65d73"},
+]
+types-setuptools = [
+    {file = "types-setuptools-65.6.0.2.tar.gz", hash = "sha256:ad60ccf01d626de9762224448f36c13e0660e863afd6dc11d979b3739a6c7d24"},
+    {file = "types_setuptools-65.6.0.2-py3-none-any.whl", hash = "sha256:2c2b4f756f79778074ce2d21f745aa737b12160d9f8dfa274f47a7287c7a2fee"},
 ]
 typing-extensions = [
     {file = "typing_extensions-4.4.0-py3-none-any.whl", hash = "sha256:16fa4864408f655d35ec496218b85f79b3437c829e93320c7c9215ccfd92489e"},
