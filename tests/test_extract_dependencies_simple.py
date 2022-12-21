@@ -20,7 +20,7 @@ from fawltydeps.extract_dependencies import (
                 click
                 """
             ),
-            "requirements.txt",
+            Path("requirements.txt"),
             [("pandas", Path("requirements.txt")), ("click", Path("requirements.txt"))],
             id="__simple_requirements_success",
         ),
@@ -32,7 +32,7 @@ from fawltydeps.extract_dependencies import (
                 click >=1.2
                 """
             ),
-            "requirements.txt",
+            Path("requirements.txt"),
             [("pandas", Path("requirements.txt")), ("click", Path("requirements.txt"))],
             id="__requirements_with_versions__yields_names",
         ),
