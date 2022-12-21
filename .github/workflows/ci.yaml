@@ -24,7 +24,7 @@ jobs:
           path: ~/.cache/pypoetry/virtualenvs
           key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
       - name: Install project
-        run: poetry install --no-interaction
+        run: poetry install --no-interaction --sync --with=test,dev
       - name: Run tests
         run: poetry run pytest
       - name: Run type checker
