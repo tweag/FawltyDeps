@@ -13,7 +13,7 @@ readme = "README.md"
 fawltydeps = "fawltydeps.main:main"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.7.2"
 isort = "^5.10"
 black = "^22"
 pytest = "^7.1.0"
