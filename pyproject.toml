@@ -29,10 +29,12 @@ mypy = "^0.991"
 profile = "black"
 
 [tool.pylint]
-disable = "W0511,W1203,W1514"
+py-version = "3.7"
+output-format = "colorized"
+disable = "fixme,logging-fstring-interpolation,unspecified-encoding"
 
 [tool.pylint.tests]
-disable = "C0116,C0103"
+disable = "missing-function-docstring,invalid-name"
 
 [tool.mypy]
 files = "**/*.py"
