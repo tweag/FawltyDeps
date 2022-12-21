@@ -28,7 +28,7 @@ mypy = "^0.991"
 profile = "black"
 
 [tool.pylint]
-disable = "W0511"
+disable = "W0511,W1203,W1514"
 
 [tool.pylint.tests]
 disable = "C0116,C0103"
