@@ -6,8 +6,7 @@ import pytest
 
 from fawltydeps.extract_dependencies import (
     extract_dependencies,
-    extract_from_requirements,
-    extract_from_requirements_file,
+    extract_from_requirements_contents,
 )
 
 
@@ -39,16 +38,10 @@ from fawltydeps.extract_dependencies import (
         ),
     ],
 )
-def test_extract_from_requirements_file(file_content, file_name, expected):
+def test_extract_from_requirements_contents(file_content, file_name, expected):
 
-    result = list(extract_from_requirements_file(file_content, file_name))
+    result = list(extract_from_requirements_contents(file_content, file_name))
     assert result == expected
-
-
-def test_extract_from_requirements__simple_project__returns_list(simple_project):
-
-    expect = ["pandas", "click", "pandas", "tensorflow"]
-    assert [a for (a, _) in extract_from_requirements(simple_project)] == expect
 
 
 def test_extract_dependencies__simple_project__returns_list(simple_project):

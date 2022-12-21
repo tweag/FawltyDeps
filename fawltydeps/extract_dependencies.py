@@ -9,7 +9,7 @@ from pkg_resources import parse_requirements
 logger = logging.getLogger(__name__)
 
 
-def extract_from_requirements_file(
+def extract_from_requirements_contents(
     text: str, path_hint: Path
 ) -> Iterator[Tuple[str, Path]]:
     """
@@ -21,28 +21,20 @@ def extract_from_requirements_file(
         yield (requirement.key, path_hint)
 
 
-def extract_from_requirements(path: Path) -> Iterator[Tuple[str, Path]]:
-    """
-    Search for "requirements.txt" files in the project.
-
-    Generates list of files matching the above criteria.
-    """
-    expected_filename = "requirements.txt"
-    for root, _dirs, files in os.walk(path):
-        for filename in files:
-            current_path = Path(root, filename)
-            if filename == expected_filename:
-                logger.debug(f"Extracting dependency from {current_path}.")
-                yield from extract_from_requirements_file(
-                    text=current_path.read_text(), path_hint=current_path
-                )
-
-
 def extract_dependencies(path: Path) -> Iterator[Tuple[str, Path]]:
-    """Extract dependencies from supported file types"""
-
-    logger.debug("Extracting dependencies from requirements")
-    yield from extract_from_requirements(path)
-
+    """
+    Extract dependencies from supported file types.
+    Traverse directory tree to find matching files.
+    Call handlers for each file type to extract dependencies.
+    """
+    parsers = {"requirements.txt": extract_from_requirements_contents}
     # TODO extract dependencies from setup.py
     # TODO extract dependencies from pyproject.toml
+
+    for root, _dirs, files in os.walk(path):
+        for filename in files:
+            if filename in parsers:
+                parser = parsers[filename]
+                current_path = Path(root, filename)
+                logger.debug(f"Extracting dependency from {current_path}.")
+                yield from parser(current_path.read_text(), path_hint=current_path)
