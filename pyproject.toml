@@ -1,9 +1,16 @@
 [tool.poetry]
 name = "fawltydeps"
 version = "0.1.0"
-description = ""
-authors = ["mknorps <maria.knorps@tweag.io>", "Nour-Mws <nour.elmawass@tweag.io>"]
+description = "Find undeclared 3rd-party dependencies in your Python project."
+authors = [
+    "Maria Knorps <maria.knorps@tweag.io>",
+    "Nour El Mawass <nour.elmawass@tweag.io>",
+    "Johan Herland <johan.herland@tweag.io>"
+]
 readme = "README.md"
+
+[tool.poetry.scripts]
+fawltydeps = "fawltydeps.main:main"
 
 [tool.poetry.dependencies]
 python = "^3.8"
@@ -12,16 +19,41 @@ black = "^22"
 pytest = "^7.1.0"
 mypy = "^0.991"
 pylint = "^2.15.8"
+types-setuptools = "^65.6.0.2"
 
-
-[tool.poetry.scripts]
-hello-deps = 'fawltydeps.scripts.hello:hello'
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^0.991"
 
 [tool.isort]
 profile = "black"
+
+[tool.pylint]
+disable = "W0511,W1203,W1514"
+
+[tool.pylint.tests]
+disable = "C0116,C0103"
+
+[tool.mypy]
+files = "**/*.py"
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_return_any = true
+warn_unreachable = true
+
+[[tool.mypy.overrides]]
+module = "fawltydeps.*"
+disallow_untyped_defs = true
+disallow_untyped_calls = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_any_unimported = true
+disallow_any_explicit = true
+disallow_any_generics = true
+disallow_subclassing_any = true
+implicit_optional = false
+strict_optional = true
+
 
 [build-system]
 requires = ["poetry-core"]
