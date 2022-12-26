@@ -54,5 +54,6 @@ from fawltydeps.check import compare_imports_to_dependencies, DependencyComparis
     ],
 )
 def test_compare_imports_to_dependencies(imports, dependencies, expected):
+    """Ensures the comparison method returns the expected unused and undeclared dependencies"""
     obtained = compare_imports_to_dependencies(imports, dependencies)
     assert obtained == expected
