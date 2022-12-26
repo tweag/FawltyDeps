@@ -1,6 +1,7 @@
 "Compare imports and dependencies"
 
 from typing import Iterable, NamedTuple, Set
+
 import isort
 
 DependencyComparison = NamedTuple(

@@ -1,6 +1,7 @@
 """Test the imports to dependencies comparison function."""
 import pytest
-from fawltydeps.check import compare_imports_to_dependencies, DependencyComparison
+
+from fawltydeps.check import DependencyComparison, compare_imports_to_dependencies
 
 
 @pytest.mark.parametrize(
