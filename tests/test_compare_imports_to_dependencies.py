@@ -2,8 +2,6 @@
 import pytest
 from fawltydeps.check import compare_imports_to_dependencies, DependencyComparison
 
-testdata = []
-
 
 @pytest.mark.parametrize(
     "imports,dependencies,expected",
