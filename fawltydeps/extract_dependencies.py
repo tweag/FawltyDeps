@@ -1,8 +1,10 @@
 "Collect declared dependencies of the project"
+
+import ast
 import logging
 import os
 from pathlib import Path
-from typing import Iterator, Tuple
+from typing import Iterator, Optional, Tuple
 
 from pkg_resources import parse_requirements
 
@@ -21,6 +23,40 @@ def parse_requirements_contents(
         yield (requirement.key, path_hint)
 
 
+def parse_setup_contents(text: str, path_hint: Path) -> Iterator[Tuple[str, Path]]:
+    """
+    Extract dependencies (package names) from setup.py.
+    Function `setup` where dependencies are listed is at the
+    """
+    setup_contents = ast.parse(text, filename=str(path_hint))
+
+    def _extract_dependencies(node: ast.Call) -> Iterator[Tuple[str, Path]]:
+        for keyword in node.keywords:
+            if keyword.arg == "install_requires":
+                if isinstance(keyword.value, ast.List):
+                    for maybe_requirement in keyword.value.elts:
+                        if isinstance(maybe_requirement, ast.Constant):
+                            yield from parse_requirements_contents(
+                                maybe_requirement.value, path_hint=path_hint
+                            )
+
+    def _get_setup_function_call(
+        node: ast.AST, function_name: str = "setup"
+    ) -> Optional[ast.Call]:
+        if isinstance(node, ast.Expr):
+            if isinstance(node.value, ast.Call):
+                if isinstance(node.value.func, ast.Name):
+                    if node.value.func.id == function_name:
+                        return node.value
+        return None
+
+    for node in ast.walk(setup_contents):
+        function_node = _get_setup_function_call(node)
+        if function_node:
+            yield from _extract_dependencies(function_node)
+            break
+
+
 def extract_dependencies(path: Path) -> Iterator[Tuple[str, Path]]:
     """
     Extract dependencies from supported file types.
@@ -30,8 +66,8 @@ def extract_dependencies(path: Path) -> Iterator[Tuple[str, Path]]:
     parsers = {
         "requirements.txt": parse_requirements_contents,
         "requirements.in": parse_requirements_contents,
+        "setup.py": parse_setup_contents,
     }
-    # TODO extract dependencies from setup.py
     # TODO extract dependencies from pyproject.toml
 
     for root, _dirs, files in os.walk(path):
