@@ -30,19 +30,29 @@ def parse_setup_contents(text: str, path_hint: Path) -> Iterator[Tuple[str, Path
     """
     setup_contents = ast.parse(text, filename=str(path_hint))
 
+    def _handle_dependencies(deps: ast.List) -> Iterator[Tuple[str, Path]]:
+        for element in deps.elts:
+            if isinstance(element, ast.Constant):
+                yield from parse_requirements_contents(
+                    element.value, path_hint=path_hint
+                )
+
     def _extract_dependencies(node: ast.Call) -> Iterator[Tuple[str, Path]]:
         for keyword in node.keywords:
             if keyword.arg == "install_requires":
                 if isinstance(keyword.value, ast.List):
-                    for maybe_requirement in keyword.value.elts:
-                        if isinstance(maybe_requirement, ast.Constant):
-                            yield from parse_requirements_contents(
-                                maybe_requirement.value, path_hint=path_hint
-                            )
+                    yield from _handle_dependencies(keyword.value)
 
-    def _get_setup_function_call(
-        node: ast.AST, function_name: str = "setup"
-    ) -> Optional[ast.Call]:
+            if keyword.arg == "extras_require":
+                if isinstance(keyword.value, ast.Dict):
+                    logger.debug(ast.dump(keyword.value))
+                    for elements in keyword.value.values:
+                        logger.debug(ast.dump(elements))
+                        if isinstance(elements, ast.List):
+                            yield from _handle_dependencies(elements)
+
+    def _get_setup_function_call(node: ast.AST) -> Optional[ast.Call]:
+        function_name = "setup"
         if isinstance(node, ast.Expr):
             if isinstance(node.value, ast.Call):
                 if isinstance(node.value.func, ast.Name):

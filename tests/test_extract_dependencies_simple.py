@@ -132,6 +132,48 @@ def test_parse_requirements_contents(file_content, file_name, expected):
             [("pandas", Path("setup.py")), ("click", Path("setup.py"))],
             id="__two_setup_calls__uses_only_first",
         ),
+        pytest.param(
+            dedent(
+                """\
+                from setuptools import setup
+
+                setup(
+                    name="MyLib",
+                    extras_require={
+                        'annoy': ['annoy==1.15.2'],
+                        'chinese': ['jieba']
+                        }
+                )
+                """
+            ),
+            Path("setup.py"),
+            [("annoy", Path("setup.py")), ("jieba", Path("setup.py"))],
+            id="__extras_present__yields_names",
+        ),
+        pytest.param(
+            dedent(
+                """\
+                from setuptools import setup
+
+                setup(
+                    name="MyLib",
+                    install_requires=["pandas", "click>=1.2"],
+                    extras_require={
+                        'annoy': ['annoy==1.15.2'],
+                        'chinese': ['jieba']
+                        }
+                )
+                """
+            ),
+            Path("setup.py"),
+            [
+                ("pandas", Path("setup.py")),
+                ("click", Path("setup.py")),
+                ("annoy", Path("setup.py")),
+                ("jieba", Path("setup.py")),
+            ],
+            id="__extras_and_regular_dependencies__yields_all_names",
+        ),
     ],
 )
 def test_parse_setup_contents(file_content, file_name, expected):
