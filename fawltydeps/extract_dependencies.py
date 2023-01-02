@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 from typing import Iterator, Tuple
 
+import tomli
 from pkg_resources import parse_requirements
 
 logger = logging.getLogger(__name__)
@@ -94,6 +95,17 @@ def parse_setup_contents(text: str, path_hint: Path) -> Iterator[Tuple[str, Path
             break
 
 
+def parse_pyproject_contents(text: str, path_hint: Path) -> Iterator[Tuple[str, Path]]:
+    parsed_contents = tomli.loads(text)
+
+    poetry_requirements = (
+        parsed_contents.get("tool", {}).get("poetry", {}).get("dependencies", {}).keys()
+    )
+    for requirement in poetry_requirements:
+        if requirement != "python":
+            yield (requirement, path_hint)
+
+
 def extract_dependencies(path: Path) -> Iterator[Tuple[str, Path]]:
     """
     Extract dependencies from supported file types.
@@ -106,8 +118,8 @@ def extract_dependencies(path: Path) -> Iterator[Tuple[str, Path]]:
         "requirements.txt": parse_requirements_contents,
         "requirements.in": parse_requirements_contents,
         "setup.py": parse_setup_contents,
+        "pyproject.toml": parse_pyproject_contents,
     }
-    # TODO extract dependencies from pyproject.toml
 
     logger.debug(path)
 

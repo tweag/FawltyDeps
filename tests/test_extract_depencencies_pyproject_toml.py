@@ -33,13 +33,18 @@ def test_parse_pyproject_content__poetry_project__yields_dependencies():
         """
     )
     result = list(parse_pyproject_contents(pyproject_toml, filename))
-    expected = [
-        "isort",
-        "black",
-        "pytest",
-        "mypy",
-        "pylint",
-        "types-setuptools",
-        "tomli",
-    ]
+    expected = list(
+        zip(
+            [
+                "isort",
+                "black",
+                "pytest",
+                "mypy",
+                "pylint",
+                "types-setuptools",
+                "tomli",
+            ],
+            ["pyproject.toml"] * 7,
+        )
+    )
     assert result == expected
