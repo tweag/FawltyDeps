@@ -117,21 +117,25 @@ def test_parse_requirements_contents(file_content, file_name, expected):
                 """\
                 from setuptools import setup
 
+                def myfunc():
+                    def setup(**kwargs):
+                        pass
+                    setup(
+                        name="IncorrectCall",
+                        install_requires=["foo"]
+                    )
+
                 setup(
                     name="MyLib",
                     version=random_version(),
                     install_requires=["pandas", "click>=1.2"]
                 )
 
-                setup(
-                    name="IncorrectCall",
-                    install_requires=["foo"]
-                )
                 """
             ),
             Path("setup.py"),
             [("pandas", Path("setup.py")), ("click", Path("setup.py"))],
-            id="__two_setup_calls__uses_only_first",
+            id="__two_setup_calls__uses_only_top_level",
         ),
         pytest.param(
             dedent(
