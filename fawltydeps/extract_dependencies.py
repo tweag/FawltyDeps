@@ -43,6 +43,11 @@ def parse_setup_contents(text: str, path_hint: Path) -> Iterator[Tuple[str, Path
             if keyword.arg == "install_requires":
                 if isinstance(keyword.value, ast.List):
                     yield from _handle_dependencies(keyword.value)
+                else:
+                    logger.warning(
+                        "Could not parse contents of `install_requires`: %s",
+                        ast.unparse(keyword.value),
+                    )
 
             if keyword.arg == "extras_require":
                 if isinstance(keyword.value, ast.Dict):

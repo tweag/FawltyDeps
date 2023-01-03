@@ -1,4 +1,5 @@
 """Test that we can extract dependencies from requirement.txt and other files"""
+import logging
 from pathlib import Path
 from textwrap import dedent
 
@@ -180,6 +181,25 @@ def test_parse_setup_contents(file_content, file_name, expected):
 
     result = sorted(list(parse_setup_contents(file_content, file_name)))
     assert result == sorted(expected)
+
+
+def test_parse_setup_contents__cannot_parse_install_requres__logs_warning(caplog):
+    setup_contents = dedent(
+        """\
+        from setuptools import setup
+
+        generate_requirement = lambda n: [f"mock-requirement-{k}" for k in range(n)]
+        setup(
+            name="MyLib",
+            install_requires=generate_requirements(4)
+        )
+        """
+    )
+    expected = []
+    caplog.set_level(logging.WARNING)
+    result = list(parse_setup_contents(setup_contents, ""))
+    assert "Could not parse contents of `install_requires`" in caplog.text
+    assert expected == result
 
 
 def test_extract_dependencies__simple_project__returns_list(simple_project):
