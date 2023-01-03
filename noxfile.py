@@ -28,6 +28,14 @@ def install_groups(
     Auto-skip the `poetry export` step if the poetry.lock file is unchanged
     since the last time this session was run.
     """
+    if isinstance(session.virtualenv, nox.virtualenv.PassthroughEnv):
+        session.warn(
+            "Running outside a Nox virtualenv! We will skip installation here, "
+            "and simply assume that the necessary dependency groups have "
+            "already been installed by other means!"
+        )
+        return
+
     lockdata = Path("poetry.lock").read_bytes()
     digest = hashlib.blake2b(lockdata).hexdigest()
     requirements_txt = Path(session.cache_dir, session.name, "reqs_from_poetry.txt")
