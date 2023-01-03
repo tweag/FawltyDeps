@@ -4,7 +4,7 @@ import ast
 import logging
 import os
 from pathlib import Path
-from typing import Iterator, Optional, Tuple
+from typing import Iterator, Tuple
 
 from pkg_resources import parse_requirements
 
@@ -67,19 +67,17 @@ def parse_setup_contents(text: str, path_hint: Path) -> Iterator[Tuple[str, Path
                         ast.unparse(keyword.value),
                     )
 
-    def _get_setup_function_call(node: ast.AST) -> Optional[ast.Call]:
-        function_name = "setup"
-        if isinstance(node, ast.Expr):
-            if isinstance(node.value, ast.Call):
-                if isinstance(node.value.func, ast.Name):
-                    if node.value.func.id == function_name:
-                        return node.value
-        return None
+    def _is_setup_function_call(node: ast.AST) -> bool:
+        return (
+            isinstance(node, ast.Expr)
+            and isinstance(node.value, ast.Call)
+            and isinstance(node.value.func, ast.Name)
+            and node.value.func.id == "setup"
+        )
 
     for node in ast.walk(setup_contents):
-        function_node = _get_setup_function_call(node)
-        if function_node:
-            yield from _extract_deps_from_setup_call(function_node)
+        if _is_setup_function_call(node):
+            yield from _extract_deps_from_setup_call(node.value)
             break
 
 

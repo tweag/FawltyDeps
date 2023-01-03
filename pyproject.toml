@@ -32,7 +32,7 @@ profile = "black"
 disable = "W0511,W1203,W1514"
 
 [tool.pylint.tests]
-disable = "C0116,C0103"
+disable = "C0116,C0103,W0621"
 
 [tool.mypy]
 files = "**/*.py"

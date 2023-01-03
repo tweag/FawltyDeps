@@ -247,14 +247,14 @@ def test_parse_setup_contents__cannot_parse_extras_require_value__logs_warning(c
     assert expected == result
 
 
-def test_extract_dependencies__simple_project__returns_list(simple_project):
+def test_extract_dependencies__simple_project__returns_list(project_with_requirements):
 
     expect = ["pandas", "click", "pandas", "tensorflow"]
-    assert [a for (a, _) in extract_dependencies(simple_project)] == expect
+    assert [a for (a, _) in extract_dependencies(project_with_requirements)] == expect
 
 
 def test_extract_dependencies__project_with_requirements_and_setup__returns_list(
-    project_with_setup_requirements,
+    project_with_setup_and_requirements,
 ):
     "In setup.py requirements are read from dict."
 
@@ -269,5 +269,5 @@ def test_extract_dependencies__project_with_requirements_and_setup__returns_list
         "tensorflow",
     ]
     assert sorted(
-        [a for (a, _) in extract_dependencies(project_with_setup_requirements)]
+        [a for (a, _) in extract_dependencies(project_with_setup_and_requirements)]
     ) == sorted(expect)
