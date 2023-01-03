@@ -56,6 +56,16 @@ def parse_setup_contents(text: str, path_hint: Path) -> Iterator[Tuple[str, Path
                         logger.debug(ast.dump(elements))
                         if isinstance(elements, ast.List):
                             yield from _handle_dependencies(elements)
+                        else:
+                            logger.warning(
+                                "Could not parse contents of `extras_require` for elements: %s",
+                                ast.unparse(elements),
+                            )
+                else:
+                    logger.warning(
+                        "Could not parse contents of `extras_require`: %s",
+                        ast.unparse(keyword.value),
+                    )
 
     def _get_setup_function_call(node: ast.AST) -> Optional[ast.Call]:
         function_name = "setup"

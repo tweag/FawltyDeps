@@ -183,7 +183,7 @@ def test_parse_setup_contents(file_content, file_name, expected):
     assert result == sorted(expected)
 
 
-def test_parse_setup_contents__cannot_parse_install_requres__logs_warning(caplog):
+def test_parse_setup_contents__cannot_parse_install_requires__logs_warning(caplog):
     setup_contents = dedent(
         """\
         from setuptools import setup
@@ -199,6 +199,47 @@ def test_parse_setup_contents__cannot_parse_install_requres__logs_warning(caplog
     caplog.set_level(logging.WARNING)
     result = list(parse_setup_contents(setup_contents, ""))
     assert "Could not parse contents of `install_requires`" in caplog.text
+    assert expected == result
+
+
+def test_parse_setup_contents__cannot_parse_extras_require__logs_warning(caplog):
+    setup_contents = dedent(
+        """\
+        from setuptools import setup
+
+        generate_requirement = lambda n: {f"extra{k}": f"mock-requirement-{k}" for k in range(n)}
+        setup(
+            name="MyLib",
+            extras_require=generate_requirements(4)
+        )
+        """
+    )
+    expected = []
+    caplog.set_level(logging.WARNING)
+    result = list(parse_setup_contents(setup_contents, ""))
+    assert "Could not parse contents of `extras_require`" in caplog.text
+    assert expected == result
+
+
+def test_parse_setup_contents__cannot_parse_extras_require_value__logs_warning(caplog):
+    setup_contents = dedent(
+        """\
+        from setuptools import setup
+
+        generate_requirement = lambda n: [f"mock-requirement-{k}" for k in range(n)]
+        setup(
+            name="MyLib",
+            extras_require={
+                "simple_parsing":["abc"],
+                "complex_parsing": generate_requirements(3)
+                }
+        )
+        """
+    )
+    expected = [("abc", "")]
+    caplog.set_level(logging.WARNING)
+    result = list(parse_setup_contents(setup_contents, ""))
+    assert "Could not parse contents of `extras_require` for elements" in caplog.text
     assert expected == result
 
 
