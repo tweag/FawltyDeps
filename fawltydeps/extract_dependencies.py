@@ -77,7 +77,9 @@ def parse_setup_contents(text: str, path_hint: Path) -> Iterator[Tuple[str, Path
     setup_contents = ast.parse(text, filename=str(path_hint))
     for node in ast.walk(setup_contents):
         if _is_setup_function_call(node):
-            yield from _extract_deps_from_setup_call(node.value)
+            # Below line is not checked by mypy, but `_is_setup_function_call`
+            # makes sure that `node` is of a proper type.
+            yield from _extract_deps_from_setup_call(node.value)  # type: ignore
             break
 
 
