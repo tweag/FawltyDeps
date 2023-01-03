@@ -29,7 +29,6 @@ def parse_setup_contents(text: str, path_hint: Path) -> Iterator[Tuple[str, Path
     Function call `setup` where dependencies are listed
     is at the outermost level of setup.py file.
     """
-    setup_contents = ast.parse(text, filename=str(path_hint))
 
     def _handle_dependencies(deps: ast.List) -> Iterator[Tuple[str, Path]]:
         for element in deps.elts:
@@ -75,6 +74,7 @@ def parse_setup_contents(text: str, path_hint: Path) -> Iterator[Tuple[str, Path
             and node.value.func.id == "setup"
         )
 
+    setup_contents = ast.parse(text, filename=str(path_hint))
     for node in ast.walk(setup_contents):
         if _is_setup_function_call(node):
             yield from _extract_deps_from_setup_call(node.value)
