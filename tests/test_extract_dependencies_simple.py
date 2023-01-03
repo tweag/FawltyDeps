@@ -61,7 +61,7 @@ def test_parse_requirements_contents(file_content, file_name, expected):
             ),
             Path("setup.py"),
             [("pandas", Path("setup.py")), ("click", Path("setup.py"))],
-            id="__simple_requirements_in_setup_success",
+            id="__simple_requirements_in_setup_py__succeeds",
         ),
         pytest.param(
             dedent(
