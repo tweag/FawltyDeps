@@ -26,7 +26,8 @@ def parse_requirements_contents(
 def parse_setup_contents(text: str, path_hint: Path) -> Iterator[Tuple[str, Path]]:
     """
     Extract dependencies (package names) from setup.py.
-    Function `setup` where dependencies are listed is at the
+    Function call `setup` where dependencies are listed
+    is at the outermost level of setup.py file.
     """
     setup_contents = ast.parse(text, filename=str(path_hint))
 
@@ -37,7 +38,7 @@ def parse_setup_contents(text: str, path_hint: Path) -> Iterator[Tuple[str, Path
                     element.value, path_hint=path_hint
                 )
 
-    def _extract_dependencies(node: ast.Call) -> Iterator[Tuple[str, Path]]:
+    def _extract_deps_from_setup_call(node: ast.Call) -> Iterator[Tuple[str, Path]]:
         for keyword in node.keywords:
             if keyword.arg == "install_requires":
                 if isinstance(keyword.value, ast.List):
@@ -63,7 +64,7 @@ def parse_setup_contents(text: str, path_hint: Path) -> Iterator[Tuple[str, Path
     for node in ast.walk(setup_contents):
         function_node = _get_setup_function_call(node)
         if function_node:
-            yield from _extract_dependencies(function_node)
+            yield from _extract_deps_from_setup_call(function_node)
             break
 
 
