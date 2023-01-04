@@ -95,3 +95,46 @@ def test_main__pass_empty_dir_verbosely__logs_but_extracts_nothing(tmp_path):
     output, errors = run_fawltydeps(f"--code={tmp_path}", "--verbose")
     assert output == ""
     assert f"Parsing Python files under {tmp_path}" in errors
+
+
+def test_main__list_deps_dir__prints_deps_from_requirements_txt(tmp_path):
+    (tmp_path / "file1.py").write_text(
+        dedent(
+            """\
+            from pathlib import Path
+            import requests, pandas
+            """
+        )
+    )
+    (tmp_path / "requirements.txt").write_text(
+        dedent(
+            """\
+            requests
+            pandas
+            """
+        )
+    )
+
+    expect = [
+        f"pandas: {tmp_path}/requirements.txt",
+        f"requests: {tmp_path}/requirements.txt",
+    ]
+    output, errors = run_fawltydeps("--list-deps", f"--deps={tmp_path}")
+    assert output.splitlines() == expect
+    assert errors == ""
+
+
+# TODO: The following tests need changes inside extract_dependencies
+
+
+def TODO_test_main__list_deps_missing_dir__fails_with_exit_code_2(tmp_path):
+    with pytest.raises(subprocess.CalledProcessError) as exc_info:
+        run_fawltydeps("--list-deps", f"--deps={tmp_path}/MISSING_DIR")
+    assert exc_info.value.returncode == 2
+
+
+def TODO_test_main__list_deps_empty_dir__verbosely_logs_but_extracts_nothing(tmp_path):
+    # Enable log level INFO with -v
+    output, errors = run_fawltydeps("--list-deps", f"--deps={tmp_path}", "-v")
+    assert output == ""
+    assert f"Extracting dependencies from {tmp_path}" in errors
