@@ -5,7 +5,7 @@ import logging
 import sys
 from pathlib import Path
 
-from fawltydeps.extract_imports import parse_code, parse_dir, parse_file
+from fawltydeps import extract_imports
 
 logger = logging.getLogger(__name__)
 
@@ -45,13 +45,15 @@ def main() -> int:
 
     if args.code == Path("-"):
         logger.info("Parsing Python code from standard input")
-        imports = parse_code(sys.stdin.read(), path_hint=Path("<stdin>"))
+        imports = extract_imports.parse_code(
+            sys.stdin.read(), path_hint=Path("<stdin>")
+        )
     elif args.code.is_file():
         logger.info("Parsing Python file %s", args.code)
-        imports = parse_file(args.code)
+        imports = extract_imports.parse_file(args.code)
     elif args.code.is_dir():
         logger.info("Parsing Python files under %s", args.code)
-        imports = parse_dir(args.code)
+        imports = extract_imports.parse_dir(args.code)
     else:
         parser.error(f"Cannot parse code from {args.code}: Not a dir or file!")
 
