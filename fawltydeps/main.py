@@ -2,7 +2,6 @@
 
 import argparse
 import logging
-import sys
 from pathlib import Path
 
 from fawltydeps import extract_imports
@@ -43,21 +42,11 @@ def main() -> int:
         level=logging.WARNING + 10 * (args.quiet - args.verbose),
     )
 
-    if args.code == Path("-"):
-        logger.info("Parsing Python code from standard input")
-        imports = extract_imports.parse_code(
-            sys.stdin.read(), path_hint=Path("<stdin>")
-        )
-    elif args.code.is_file():
-        logger.info("Parsing Python file %s", args.code)
-        imports = extract_imports.parse_file(args.code)
-    elif args.code.is_dir():
-        logger.info("Parsing Python files under %s", args.code)
-        imports = extract_imports.parse_dir(args.code)
-    else:
-        parser.error(f"Cannot parse code from {args.code}: Not a dir or file!")
+    try:
+        extracted_imports = set(extract_imports.parse_any_arg(args.code))
+    except extract_imports.ParseError as e:
+        parser.error(e.msg)
 
-    extracted_imports = set(imports)
     # TODO: Extract declared dependencies
     # TODO: Pass imports and dependencies to comparator.
     # Until then:
