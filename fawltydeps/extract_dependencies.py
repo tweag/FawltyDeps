@@ -38,30 +38,27 @@ def parse_setup_contents(text: str, path_hint: Path) -> Iterator[Tuple[str, Path
     is at the outermost level of setup.py file.
     """
 
-    def _handle_dependencies(deps: ast.List) -> Iterator[Tuple[str, Path]]:
-        for element in deps.elts:
-            if isinstance(element, ast.Constant):
-                yield from parse_requirements_contents(
-                    element.value, path_hint=path_hint
-                )
+    def _handle_dependencies(deps: ast.AST) -> Iterator[Tuple[str, Path]]:
+        if isinstance(deps, ast.List):
+            for element in deps.elts:
+                if isinstance(element, ast.Constant):
+                    yield from parse_requirements_contents(
+                        element.value, path_hint=path_hint
+                    )
+        else:
+            raise DependencyParsingError(deps)
 
     def _extract_deps_from_setup_call(node: ast.Call) -> Iterator[Tuple[str, Path]]:
         for keyword in node.keywords:
             try:
                 if keyword.arg == "install_requires":
-                    if isinstance(keyword.value, ast.List):
-                        yield from _handle_dependencies(keyword.value)
-                    else:
-                        raise DependencyParsingError(keyword.value)
+                    yield from _handle_dependencies(keyword.value)
                 if keyword.arg == "extras_require":
                     if isinstance(keyword.value, ast.Dict):
                         logger.debug(ast.dump(keyword.value))
                         for elements in keyword.value.values:
                             logger.debug(ast.dump(elements))
-                            if isinstance(elements, ast.List):
-                                yield from _handle_dependencies(elements)
-                            else:
-                                raise DependencyParsingError(elements)
+                            yield from _handle_dependencies(elements)
                     else:
                         raise DependencyParsingError(keyword.value)
             except DependencyParsingError as e:
