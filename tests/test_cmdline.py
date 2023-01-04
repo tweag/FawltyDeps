@@ -21,7 +21,7 @@ def run_fawltydeps(
     return proc.stdout.strip(), proc.stderr.strip()
 
 
-def test_main__pass_dash__prints_imports_extracted_from_stdin():
+def test_main__list_imports_from_dash__prints_imports_from_stdin():
     code = dedent(
         """\
         from pathlib import Path
@@ -34,12 +34,12 @@ def test_main__pass_dash__prints_imports_extracted_from_stdin():
     )
 
     expect = ["foo", "numpy", "pathlib", "platform", "requests", "sys"]
-    output, errors = run_fawltydeps("--code=-", to_stdin=code)
+    output, errors = run_fawltydeps("--list-imports", "--code=-", to_stdin=code)
     assert output.splitlines() == expect
     assert errors == ""
 
 
-def test_main__pass_file__prints_imports_extracted_from_file(tmp_path):
+def test_main__list_imports_from_file__prints_imports_from_file(tmp_path):
     code = dedent(
         """\
         from pathlib import Path
@@ -54,12 +54,12 @@ def test_main__pass_file__prints_imports_extracted_from_file(tmp_path):
     script.write_text(code)
 
     expect = ["foo", "numpy", "pathlib", "platform", "requests", "sys"]
-    output, errors = run_fawltydeps(f"--code={script}")
+    output, errors = run_fawltydeps("--list-imports", f"--code={script}")
     assert output.splitlines() == expect
     assert errors == ""
 
 
-def test_main__pass_dir__prints_imports_extracted_from_py_file_only(tmp_path):
+def test_main__list_imports_from_dir__prints_imports_from_py_file_only(tmp_path):
     (tmp_path / "file1.py").write_text(
         dedent(
             """\
@@ -79,20 +79,20 @@ def test_main__pass_dir__prints_imports_extracted_from_py_file_only(tmp_path):
     )
 
     expect = ["pathlib", "platform", "sys"]
-    output, errors = run_fawltydeps(f"--code={tmp_path}")
+    output, errors = run_fawltydeps("--list-imports", f"--code={tmp_path}")
     assert output.splitlines() == expect
     assert errors == ""
 
 
-def test_main__pass_missing_file__fails_with_exit_code_2(tmp_path):
+def test_main__list_imports_from_missing_file__fails_with_exit_code_2(tmp_path):
     with pytest.raises(subprocess.CalledProcessError) as exc_info:
-        run_fawltydeps(f"--code={tmp_path}/MISSING.py")
+        run_fawltydeps("--list-imports", f"--code={tmp_path}/MISSING.py")
     assert exc_info.value.returncode == 2
 
 
-def test_main__pass_empty_dir_verbosely__logs_but_extracts_nothing(tmp_path):
-    # Enable log level INFO with --verbose
-    output, errors = run_fawltydeps(f"--code={tmp_path}", "--verbose")
+def test_main__list_imports_from_empty_dir__logs_but_extracts_nothing(tmp_path):
+    # Enable log level INFO with -v
+    output, errors = run_fawltydeps("--list-imports", f"--code={tmp_path}", "-v")
     assert output == ""
     assert f"Parsing Python files under {tmp_path}" in errors
 
