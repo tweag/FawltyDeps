@@ -243,7 +243,7 @@ def test_parse_setup_contents__cannot_parse_extras_require_value__logs_warning(c
     expected = [("abc", "")]
     caplog.set_level(logging.WARNING)
     result = list(parse_setup_contents(setup_contents, ""))
-    assert "Could not parse contents of `extras_require` for elements" in caplog.text
+    assert "Could not parse contents of `extras_require`" in caplog.text
     assert expected == result
 
 
