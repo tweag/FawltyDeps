@@ -11,7 +11,7 @@ def write_tmp_files(tmp_path: Path):
     def _inner(file_contents: Dict[str, str]) -> Path:
         for filename, contents in file_contents.items():
             path = tmp_path / filename
-            assert path.is_relative_to(tmp_path)
+            assert path.relative_to(tmp_path)
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(dedent(contents))
         return tmp_path
