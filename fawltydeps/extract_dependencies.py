@@ -38,7 +38,9 @@ def parse_setup_contents(text: str, path_hint: Path) -> Iterator[Tuple[str, Path
     is at the outermost level of setup.py file.
     """
 
-    def _handle_dependencies(deps: ast.AST) -> Iterator[Tuple[str, Path]]:
+    def _extract_deps_from_bottom_level_list(
+        deps: ast.AST,
+    ) -> Iterator[Tuple[str, Path]]:
         if isinstance(deps, ast.List):
             for element in deps.elts:
                 if isinstance(element, ast.Constant):
@@ -52,13 +54,13 @@ def parse_setup_contents(text: str, path_hint: Path) -> Iterator[Tuple[str, Path
         for keyword in node.keywords:
             try:
                 if keyword.arg == "install_requires":
-                    yield from _handle_dependencies(keyword.value)
+                    yield from _extract_deps_from_bottom_level_list(keyword.value)
                 if keyword.arg == "extras_require":
                     if isinstance(keyword.value, ast.Dict):
                         logger.debug(ast.dump(keyword.value))
                         for elements in keyword.value.values:
                             logger.debug(ast.dump(elements))
-                            yield from _handle_dependencies(elements)
+                            yield from _extract_deps_from_bottom_level_list(elements)
                     else:
                         raise DependencyParsingError(keyword.value)
             except DependencyParsingError as e:
