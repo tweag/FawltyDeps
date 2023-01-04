@@ -3,6 +3,7 @@
 import ast
 import logging
 import os
+import sys
 from pathlib import Path
 from typing import Iterator, Tuple
 
@@ -65,9 +66,9 @@ def parse_setup_contents(text: str, path_hint: Path) -> Iterator[Tuple[str, Path
                         raise DependencyParsingError(keyword.value)
             except DependencyParsingError as e:
                 logger.debug(e)
-                try:
-                    unparsed_content = ast.unparse(e.value)
-                except AttributeError:
+                if sys.version_info >= (3, 9):
+                    unparsed_content = ast.unparse(e.value)  # pylint: disable=E1101
+                else:
                     unparsed_content = ast.dump(e.value)
                 logger.warning(
                     "Could not parse contents of `%s`: %s",
