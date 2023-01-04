@@ -3,6 +3,7 @@
 import ast
 import logging
 import os
+import sys
 from pathlib import Path
 from typing import Iterator, Optional
 
@@ -51,3 +52,32 @@ def parse_dir(path: Path) -> Iterator[str]:
             path = Path(root, filename)
             if path.suffix == ".py":
                 yield from parse_file(path)
+
+
+class ParseError(Exception):
+    """Indicate errors while parsing command-line arguments"""
+
+    def __init__(self, msg: str):
+        self.msg = msg
+
+
+def parse_any_arg(arg: Path) -> Iterator[str]:
+    """Interpret the given command-line argument and invoke a suitable parser.
+
+    These cases are handled:
+      - arg == "-": Read code from stdin and pass to parse_code()
+      - arg refers to a file: Call parse_file()
+      - arg refers to a dir: Call parse_dir()
+
+    Otherwise raise ParseError with a suitable error message.
+    """
+    if arg == Path("-"):
+        logger.info("Parsing Python code from standard input")
+        return parse_code(sys.stdin.read(), path_hint=Path("<stdin>"))
+    if arg.is_file():
+        logger.info("Parsing Python file %s", arg)
+        return parse_file(arg)
+    if arg.is_dir():
+        logger.info("Parsing Python files under %s", arg)
+        return parse_dir(arg)
+    raise ParseError(f"Cannot parse code from {arg}: Not a dir or file!")
