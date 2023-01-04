@@ -98,7 +98,7 @@ def extract_dependencies(path: Path) -> Iterator[Tuple[str, Path]]:
     Traverse directory tree to find matching files.
 
     Generate (i.e. yield) dependency names that are declared in the supported files.
-    The order of dependency names' appearance is not preserved.
+    There is no guaranteed ordering on the dependency names.
     """
     parsers = {
         "requirements.txt": parse_requirements_contents,
@@ -107,10 +107,21 @@ def extract_dependencies(path: Path) -> Iterator[Tuple[str, Path]]:
     }
     # TODO extract dependencies from pyproject.toml
 
-    for root, _dirs, files in os.walk(path):
-        for filename in files:
-            if filename in parsers:
-                parser = parsers[filename]
-                current_path = Path(root, filename)
-                logger.debug(f"Extracting dependency from {current_path}.")
-                yield from parser(current_path.read_text(), path_hint=current_path)
+    logger.debug(path)
+
+    if path.is_file():
+        logger.debug(path)
+        parser = parsers.get(path.name)
+        if parser:
+            yield from parser(path.read_text(), path_hint=path)
+        else:
+            logger.error("Parsing file %s is not supported", path.name)
+
+    else:
+        for root, _dirs, files in os.walk(path):
+            for filename in files:
+                if filename in parsers:
+                    parser = parsers[filename]
+                    current_path = Path(root, filename)
+                    logger.debug(f"Extracting dependency from {current_path}.")
+                    yield from parser(current_path.read_text(), path_hint=current_path)

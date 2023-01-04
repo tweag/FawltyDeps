@@ -273,3 +273,31 @@ def test_extract_dependencies__project_with_requirements_and_setup__returns_list
     assert sorted(
         [a for (a, _) in extract_dependencies(project_with_setup_and_requirements)]
     ) == sorted(expect)
+
+
+def test_extract_dependencies__parse_only_requirements_from_subdir__returns_list(
+    project_with_setup_and_requirements,
+):
+    "In setup.py requirements are read from dict."
+
+    expect = [
+        "pandas",
+        "tensorflow",
+    ]
+    path = project_with_setup_and_requirements / "subdir/requirements.txt"
+    actual = [dep for (dep, _) in extract_dependencies(path)]
+    assert sorted(actual) == sorted(expect)
+
+
+def test_extract_dependencies__unsupported_file__raises_error(
+    project_with_setup_and_requirements, caplog
+):
+    "In setup.py requirements are read from dict."
+
+    caplog.set_level(logging.WARNING)
+    list(
+        extract_dependencies(
+            project_with_setup_and_requirements.joinpath("python_file.py")
+        )
+    )
+    assert "Parsing file python_file.py is not supported" in caplog.text
