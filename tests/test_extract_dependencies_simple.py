@@ -43,7 +43,7 @@ from fawltydeps.extract_dependencies import (
 def test_parse_requirements_contents(file_content, file_name, expected):
 
     result = list(parse_requirements_contents(file_content, file_name))
-    assert result == expected
+    assert sorted(result) == sorted(expected)
 
 
 @pytest.mark.parametrize(
@@ -183,8 +183,8 @@ def test_parse_requirements_contents(file_content, file_name, expected):
 )
 def test_parse_setup_contents(file_content, file_name, expected):
 
-    result = sorted(list(parse_setup_contents(file_content, file_name)))
-    assert result == sorted(expected)
+    result = list(parse_setup_contents(file_content, file_name))
+    assert sorted(result) == sorted(expected)
 
 
 def test_parse_setup_contents__cannot_parse_install_requires__logs_warning(caplog):
@@ -250,7 +250,9 @@ def test_parse_setup_contents__cannot_parse_extras_require_value__logs_warning(c
 def test_extract_dependencies__simple_project__returns_list(project_with_requirements):
 
     expect = ["pandas", "click", "pandas", "tensorflow"]
-    assert [a for (a, _) in extract_dependencies(project_with_requirements)] == expect
+    assert sorted(
+        [a for (a, _) in extract_dependencies(project_with_requirements)]
+    ) == sorted(expect)
 
 
 def test_extract_dependencies__project_with_requirements_and_setup__returns_list(

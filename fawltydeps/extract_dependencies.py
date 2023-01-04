@@ -96,7 +96,9 @@ def extract_dependencies(path: Path) -> Iterator[Tuple[str, Path]]:
     """
     Extract dependencies from supported file types.
     Traverse directory tree to find matching files.
-    Call handlers for each file type to extract dependencies.
+
+    Generate (i.e. yield) dependency names that are declared in the supported files.
+    The order of dependency names' appearance is not preserved.
     """
     parsers = {
         "requirements.txt": parse_requirements_contents,
