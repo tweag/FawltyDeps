@@ -138,3 +138,116 @@ def TODO_test_main__list_deps_empty_dir__verbosely_logs_but_extracts_nothing(tmp
     output, errors = run_fawltydeps("--list-deps", f"--deps={tmp_path}", "-v")
     assert output == ""
     assert f"Extracting dependencies from {tmp_path}" in errors
+
+
+def test_main__check_dir__in_clean_project_prints_nothing(tmp_path):
+    (tmp_path / "file1.py").write_text(
+        dedent(
+            """\
+            from pathlib import Path
+            import requests, pandas
+            """
+        )
+    )
+    (tmp_path / "requirements.txt").write_text(
+        dedent(
+            """\
+            requests
+            pandas
+            """
+        )
+    )
+
+    expect = []
+    output, errors = run_fawltydeps(
+        "--check", f"--code={tmp_path}", f"--deps={tmp_path}"
+    )
+    assert output.splitlines() == expect
+    assert errors == ""
+
+
+def test_main__check_dir__when_missing_deps_reports_undeclared(tmp_path):
+    (tmp_path / "file1.py").write_text(
+        dedent(
+            """\
+            from pathlib import Path
+            import requests, pandas
+            """
+        )
+    )
+    (tmp_path / "requirements.txt").write_text(
+        dedent(
+            """\
+            pandas
+            """
+        )
+    )
+
+    expect = [
+        "These imports are not declared as dependencies:",
+        "- requests",
+    ]
+    output, errors = run_fawltydeps(
+        "--check", f"--code={tmp_path}", f"--deps={tmp_path}"
+    )
+    assert output.splitlines() == expect
+    assert errors == ""
+
+
+def test_main__check_dir__when_extra_deps_reports_unused(tmp_path):
+    (tmp_path / "file1.py").write_text(
+        dedent(
+            """\
+            from pathlib import Path
+            import requests
+            """
+        )
+    )
+    (tmp_path / "requirements.txt").write_text(
+        dedent(
+            """\
+            requests
+            pandas
+            """
+        )
+    )
+
+    expect = [
+        "These dependencies are not imported in your code:",
+        "- pandas",
+    ]
+    output, errors = run_fawltydeps(
+        "--check", f"--code={tmp_path}", f"--deps={tmp_path}"
+    )
+    assert output.splitlines() == expect
+    assert errors == ""
+
+
+def test_main__check_dir__can_report_both_undeclared_and_unused(tmp_path):
+    (tmp_path / "file1.py").write_text(
+        dedent(
+            """\
+            from pathlib import Path
+            import requests
+            """
+        )
+    )
+    (tmp_path / "requirements.txt").write_text(
+        dedent(
+            """\
+            pandas
+            """
+        )
+    )
+
+    expect = [
+        "These imports are not declared as dependencies:",
+        "- requests",
+        "These dependencies are not imported in your code:",
+        "- pandas",
+    ]
+    output, errors = run_fawltydeps(
+        "--check", f"--code={tmp_path}", f"--deps={tmp_path}"
+    )
+    assert output.splitlines() == expect
+    assert errors == ""
