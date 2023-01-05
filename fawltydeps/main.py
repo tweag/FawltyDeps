@@ -124,7 +124,7 @@ def main() -> int:
     )
 
     if args.actions is None:  # Provide default action
-        args.actions = {Action.LIST_IMPORTS}
+        args.actions = {Action.REPORT_UNDECLARED, Action.REPORT_UNUSED}
 
     try:
         return perform_actions(args.actions, args.code, args.deps)

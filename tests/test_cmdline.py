@@ -1,6 +1,7 @@
 """Verify graceful failure when we cannot extract imports from Python code."""
 
 import subprocess
+from pathlib import Path
 from textwrap import dedent
 from typing import Optional, Tuple
 
@@ -8,7 +9,10 @@ import pytest
 
 
 def run_fawltydeps(
-    *args: str, to_stdin: Optional[str] = None, check: bool = True
+    *args: str,
+    to_stdin: Optional[str] = None,
+    check: bool = True,
+    cwd: Optional[Path] = None,
 ) -> Tuple[str, str]:
     proc = subprocess.run(
         ["fawltydeps"] + list(args),
@@ -17,6 +21,7 @@ def run_fawltydeps(
         stderr=subprocess.PIPE,
         universal_newlines=True,
         check=check,
+        cwd=cwd,
     )
     return proc.stdout.strip(), proc.stderr.strip()
 
@@ -249,5 +254,61 @@ def test_main__check_dir__can_report_both_undeclared_and_unused(tmp_path):
     output, errors = run_fawltydeps(
         "--check", f"--code={tmp_path}", f"--deps={tmp_path}"
     )
+    assert output.splitlines() == expect
+    assert errors == ""
+
+
+def test_main__no_action_specified__defaults_to_check_action(tmp_path):
+    (tmp_path / "file1.py").write_text(
+        dedent(
+            """\
+            from pathlib import Path
+            import requests
+            """
+        )
+    )
+    (tmp_path / "requirements.txt").write_text(
+        dedent(
+            """\
+            pandas
+            """
+        )
+    )
+
+    expect = [
+        "These imports are not declared as dependencies:",
+        "- requests",
+        "These dependencies are not imported in your code:",
+        "- pandas",
+    ]
+    output, errors = run_fawltydeps(f"--code={tmp_path}", f"--deps={tmp_path}")
+    assert output.splitlines() == expect
+    assert errors == ""
+
+
+def test_main__no_options__defaults_to_check_action_in_current_dir(tmp_path):
+    (tmp_path / "file1.py").write_text(
+        dedent(
+            """\
+            from pathlib import Path
+            import requests
+            """
+        )
+    )
+    (tmp_path / "requirements.txt").write_text(
+        dedent(
+            """\
+            pandas
+            """
+        )
+    )
+
+    expect = [
+        "These imports are not declared as dependencies:",
+        "- requests",
+        "These dependencies are not imported in your code:",
+        "- pandas",
+    ]
+    output, errors = run_fawltydeps(cwd=tmp_path)
     assert output.splitlines() == expect
     assert errors == ""
