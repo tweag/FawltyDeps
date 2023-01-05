@@ -3,12 +3,11 @@ name: CI
 on: [push, pull_request]
 
 jobs:
-  ci:
-
+  tests:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11"] 
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
         os: [ubuntu-22.04]
     runs-on: ${{ matrix.os }}
 
@@ -22,15 +21,37 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: ~/.cache/pypoetry/virtualenvs
-          key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
+          key: ${{ runner.os }}-poetry-tests-${{ hashFiles('poetry.lock') }}
       - name: Install project
-        run: poetry install --no-interaction
+        run: poetry install --no-interaction --sync --with=test
       - name: Run tests
-        run: poetry run pytest tests
+        run: poetry run pytest
+
+  linters:
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10"]
+        os: [ubuntu-22.04]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: Gr1N/setup-poetry@v7
+      - uses: actions/cache@v2
+        with:
+          path: ~/.cache/pypoetry/virtualenvs
+          key: ${{ runner.os }}-poetry-linters-${{ hashFiles('poetry.lock') }}
+      - name: Install project
+        run: poetry install --no-interaction --sync --with=test,dev
       - name: Run type checker
         run: poetry run mypy
       - name: Check formatting with Black
-        run: poetry run black fawltydeps tests --check 
+        run: poetry run black . --check
       - name: Run linter
         run: poetry run pylint fawltydeps tests
       - name: Run import sort checker

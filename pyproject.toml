@@ -13,26 +13,37 @@ readme = "README.md"
 fawltydeps = "fawltydeps.main:main"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.7.2"
 isort = "^5.10"
-black = "^22"
+
+[tool.poetry.group.test]
+optional = true
+
+[tool.poetry.group.test.dependencies]
 pytest = "^7.1.0"
+
+[tool.poetry.group.dev]
+optional = true
+
+[tool.poetry.group.dev.dependencies]
+black = "^22"
 mypy = "^0.991"
 pylint = "^2.15.8"
 types-setuptools = "^65.6.0.2"
 
-
-[tool.poetry.group.dev.dependencies]
-mypy = "^0.991"
+[tool.black]
+target-version = ["py37"]
 
 [tool.isort]
 profile = "black"
 
 [tool.pylint]
-disable = "W0511,W1203,W1514"
+py-version = "3.7"
+output-format = "colorized"
+disable = "fixme,logging-fstring-interpolation,unspecified-encoding"
 
 [tool.pylint.tests]
-disable = "C0116,C0103,W0621"
+disable = "missing-function-docstring,invalid-name,redefined-name"
 
 [tool.mypy]
 files = "**/*.py"

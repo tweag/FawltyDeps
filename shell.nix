@@ -14,7 +14,7 @@ pkgs.mkShell {
   ];
   shellHook = ''
     poetry env use "$(which python)"
-    poetry install
+    poetry install --sync --with=test,dev
     source "$(poetry env info --path)/bin/activate"
   '';
 }
