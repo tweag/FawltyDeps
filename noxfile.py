@@ -60,7 +60,7 @@ def tests(session):
 
 @nox.session(reuse_venv=True)
 def lint(session):
-    install_groups(session, include=["dev", "test"], include_self=False)
+    install_groups(session, include=["dev"], include_self=False)
     session.run("mypy", "fawltydeps", "tests")
     session.run("pylint", "fawltydeps", "tests")
     session.run("isort", "fawltydeps", "tests", "--check-only")
