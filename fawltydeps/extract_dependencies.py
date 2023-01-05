@@ -56,7 +56,7 @@ def parse_setup_contents(text: str, path_hint: Path) -> Iterator[Tuple[str, Path
             try:
                 if keyword.arg == "install_requires":
                     yield from _extract_deps_from_bottom_level_list(keyword.value)
-                if keyword.arg == "extras_require":
+                elif keyword.arg == "extras_require":
                     if isinstance(keyword.value, ast.Dict):
                         logger.debug(ast.dump(keyword.value))
                         for elements in keyword.value.values:

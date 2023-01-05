@@ -41,7 +41,6 @@ from fawltydeps.extract_dependencies import (
     ],
 )
 def test_parse_requirements_contents(file_content, file_name, expected):
-
     result = list(parse_requirements_contents(file_content, file_name))
     assert sorted(result) == sorted(expected)
 
@@ -182,7 +181,6 @@ def test_parse_requirements_contents(file_content, file_name, expected):
     ],
 )
 def test_parse_setup_contents(file_content, file_name, expected):
-
     result = list(parse_setup_contents(file_content, file_name))
     assert sorted(result) == sorted(expected)
 
@@ -192,7 +190,7 @@ def test_parse_setup_contents__cannot_parse_install_requires__logs_warning(caplo
         """\
         from setuptools import setup
 
-        generate_requirement = lambda n: [f"mock-requirement-{k}" for k in range(n)]
+        generate_requirements = lambda n: [f"mock-requirement-{k}" for k in range(n)]
         setup(
             name="MyLib",
             install_requires=generate_requirements(4)
@@ -211,7 +209,7 @@ def test_parse_setup_contents__cannot_parse_extras_require__logs_warning(caplog)
         """\
         from setuptools import setup
 
-        generate_requirement = lambda n: {f"extra{k}": f"mock-requirement-{k}" for k in range(n)}
+        generate_requirements = lambda n: {f"extra{k}": f"mock-requirement-{k}" for k in range(n)}
         setup(
             name="MyLib",
             extras_require=generate_requirements(4)
@@ -230,7 +228,7 @@ def test_parse_setup_contents__cannot_parse_extras_require_value__logs_warning(c
         """\
         from setuptools import setup
 
-        generate_requirement = lambda n: [f"mock-requirement-{k}" for k in range(n)]
+        generate_requirements = lambda n: [f"mock-requirement-{k}" for k in range(n)]
         setup(
             name="MyLib",
             extras_require={
@@ -247,8 +245,37 @@ def test_parse_setup_contents__cannot_parse_extras_require_value__logs_warning(c
     assert expected == result
 
 
-def test_extract_dependencies__simple_project__returns_list(project_with_requirements):
+def test_parse_setup_contents__multiple_entries_in_extras_require__returns_list():
+    setup_contents = dedent(
+        """\
+        from setuptools import setup
 
+        setup(
+            name="MyLib",
+            extras_require={
+                "simple_parsing":["abc"],
+                "bert": [
+                    "bert-serving-server>=1.8.6",
+                    "bert-serving-client>=1.8.6",
+                    "pytorch-transformer",
+                    "flair"
+                    ],
+                }
+        )
+        """
+    )
+    expected = [
+        ("abc", ""),
+        ("bert-serving-server", ""),
+        ("bert-serving-client", ""),
+        ("pytorch-transformer", ""),
+        ("flair", ""),
+    ]
+    result = list(parse_setup_contents(setup_contents, ""))
+    assert sorted(expected) == sorted(result)
+
+
+def test_extract_dependencies__simple_project__returns_list(project_with_requirements):
     expect = ["pandas", "click", "pandas", "tensorflow"]
     assert sorted(
         [a for (a, _) in extract_dependencies(project_with_requirements)]
@@ -258,8 +285,6 @@ def test_extract_dependencies__simple_project__returns_list(project_with_require
 def test_extract_dependencies__project_with_requirements_and_setup__returns_list(
     project_with_setup_and_requirements,
 ):
-    "In setup.py requirements are read from dict."
-
     expect = [
         "pandas",
         "click",
@@ -279,7 +304,6 @@ def test_extract_dependencies__parse_only_requirements_from_subdir__returns_list
     project_with_setup_and_requirements,
 ):
     "In setup.py requirements are read from dict."
-
     expect = [
         "pandas",
         "tensorflow",
@@ -293,7 +317,6 @@ def test_extract_dependencies__unsupported_file__raises_error(
     project_with_setup_and_requirements, caplog
 ):
     "In setup.py requirements are read from dict."
-
     caplog.set_level(logging.WARNING)
     list(
         extract_dependencies(
