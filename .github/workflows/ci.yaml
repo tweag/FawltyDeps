@@ -27,7 +27,33 @@ jobs:
       - name: Run tests
         run: poetry run pytest
 
-  linters:
+  lint:
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
+        os: [ubuntu-22.04]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: Gr1N/setup-poetry@v7
+      - uses: actions/cache@v2
+        with:
+          path: ~/.cache/pypoetry/virtualenvs
+          key: ${{ runner.os }}-poetry-lint-${{ hashFiles('poetry.lock') }}
+      - name: Install project
+        run: poetry install --no-interaction --sync --with=lint
+      - name: Run type-checking
+        run: poetry run mypy fawltydeps tests
+      - name: Run linter
+        run: poetry run pylint fawltydeps tests
+
+  format:
     strategy:
       fail-fast: false
       matrix:
@@ -45,15 +71,11 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: ~/.cache/pypoetry/virtualenvs
-          key: ${{ runner.os }}-poetry-linters-${{ hashFiles('poetry.lock') }}
+          key: ${{ runner.os }}-poetry-format-${{ hashFiles('poetry.lock') }}
       - name: Install project
-        run: poetry install --no-interaction --sync --with=dev
-      - name: Run type checker
-        run: poetry run mypy
+        run: poetry install --no-interaction --sync --with=format
       - name: Check formatting with Black
         run: poetry run black . --check
-      - name: Run linter
-        run: poetry run pylint fawltydeps tests
       - name: Run import sort checker
         run: poetry run isort fawltydeps tests --check-only
 

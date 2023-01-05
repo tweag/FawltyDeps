@@ -4,6 +4,8 @@ from typing import Iterable
 
 import nox
 
+python_versions = ["3.7", "3.8", "3.9", "3.10", "3.11"]
+
 
 def install_groups(
     session: nox.Session,
@@ -52,23 +54,28 @@ def install_groups(
         session.install(".")
 
 
-@nox.session(python=["3.7", "3.8", "3.9", "3.10", "3.11"], reuse_venv=True)
+@nox.session(python=python_versions, reuse_venv=True)
 def tests(session):
     install_groups(session, include=["test"])
     session.run("pytest", "-x", "--log-level=debug", *session.posargs)
 
 
-@nox.session(reuse_venv=True)
+@nox.session(python=python_versions, reuse_venv=True)
 def lint(session):
-    install_groups(session, include=["dev"], include_self=False)
+    install_groups(session, include=["lint"], include_self=False)
     session.run("mypy", "fawltydeps", "tests")
     session.run("pylint", "fawltydeps", "tests")
+
+
+@nox.session(reuse_venv=True)
+def format(session):
+    install_groups(session, include=["format"], include_self=False)
     session.run("isort", "fawltydeps", "tests", "--check-only")
     session.run("black", "--check", ".")
 
 
 @nox.session(reuse_venv=True)
 def reformat(session):
-    install_groups(session, include=["dev"], include_self=False)
+    install_groups(session, include=["format"], include_self=False)
     session.run("isort", "fawltydeps", "tests")
     session.run("black", ".")
