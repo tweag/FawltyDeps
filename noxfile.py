@@ -54,27 +54,27 @@ def install_groups(
         session.install(".")
 
 
-@nox.session(python=python_versions, reuse_venv=True)
+@nox.session(python=python_versions)
 def tests(session):
     install_groups(session, include=["test"])
     session.run("pytest", "-x", "--log-level=debug", *session.posargs)
 
 
-@nox.session(python=python_versions, reuse_venv=True)
+@nox.session(python=python_versions)
 def lint(session):
     install_groups(session, include=["lint"], include_self=False)
     session.run("mypy", "fawltydeps", "tests")
     session.run("pylint", "fawltydeps", "tests")
 
 
-@nox.session(reuse_venv=True)
+@nox.session
 def format(session):
     install_groups(session, include=["format"], include_self=False)
     session.run("isort", "fawltydeps", "tests", "--check-only")
     session.run("black", "--check", ".")
 
 
-@nox.session(reuse_venv=True)
+@nox.session
 def reformat(session):
     install_groups(session, include=["format"], include_self=False)
     session.run("isort", "fawltydeps", "tests")
