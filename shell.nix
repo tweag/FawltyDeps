@@ -18,7 +18,7 @@ pkgs.mkShell {
   ];
   shellHook = ''
     poetry env use "${pkgs.python310}/bin/python"
-    poetry install --sync --with=nox,test,dev
+    poetry install --sync --with=dev
     source "$(poetry env info --path)/bin/activate"
   '';
 }
