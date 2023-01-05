@@ -43,7 +43,7 @@ output-format = "colorized"
 disable = "fixme,logging-fstring-interpolation,unspecified-encoding"
 
 [tool.pylint.tests]
-disable = "missing-function-docstring,invalid-name,redefined-name"
+disable = "missing-function-docstring,invalid-name,redefined-outer-name"
 
 [tool.mypy]
 files = "**/*.py"
