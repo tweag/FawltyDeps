@@ -26,7 +26,7 @@ def run_fawltydeps(
     return proc.stdout.strip(), proc.stderr.strip()
 
 
-def test_main__list_imports_from_dash__prints_imports_from_stdin():
+def test_list_imports__from_dash__prints_imports_from_stdin():
     code = dedent(
         """\
         from pathlib import Path
@@ -44,7 +44,7 @@ def test_main__list_imports_from_dash__prints_imports_from_stdin():
     assert errors == ""
 
 
-def test_main__list_imports_from_file__prints_imports_from_file(tmp_path):
+def test_list_imports__from_file__prints_imports_from_file(tmp_path):
     code = dedent(
         """\
         from pathlib import Path
@@ -64,7 +64,7 @@ def test_main__list_imports_from_file__prints_imports_from_file(tmp_path):
     assert errors == ""
 
 
-def test_main__list_imports_from_dir__prints_imports_from_py_file_only(tmp_path):
+def test_list_imports__from_dir__prints_imports_from_py_file_only(tmp_path):
     (tmp_path / "file1.py").write_text(
         dedent(
             """\
@@ -89,20 +89,20 @@ def test_main__list_imports_from_dir__prints_imports_from_py_file_only(tmp_path)
     assert errors == ""
 
 
-def test_main__list_imports_from_missing_file__fails_with_exit_code_2(tmp_path):
+def test_list_imports__from_missing_file__fails_with_exit_code_2(tmp_path):
     with pytest.raises(subprocess.CalledProcessError) as exc_info:
         run_fawltydeps("--list-imports", f"--code={tmp_path}/MISSING.py")
     assert exc_info.value.returncode == 2
 
 
-def test_main__list_imports_from_empty_dir__logs_but_extracts_nothing(tmp_path):
+def test_list_imports__from_empty_dir__logs_but_extracts_nothing(tmp_path):
     # Enable log level INFO with -v
     output, errors = run_fawltydeps("--list-imports", f"--code={tmp_path}", "-v")
     assert output == ""
     assert f"Parsing Python files under {tmp_path}" in errors
 
 
-def test_main__list_deps_dir__prints_deps_from_requirements_txt(tmp_path):
+def test_list_deps__dir__prints_deps_from_requirements_txt(tmp_path):
     (tmp_path / "file1.py").write_text(
         dedent(
             """\
@@ -132,20 +132,20 @@ def test_main__list_deps_dir__prints_deps_from_requirements_txt(tmp_path):
 # TODO: The following tests need changes inside extract_dependencies
 
 
-def TODO_test_main__list_deps_missing_dir__fails_with_exit_code_2(tmp_path):
+def TODO_test_list_deps__missing_dir__fails_with_exit_code_2(tmp_path):
     with pytest.raises(subprocess.CalledProcessError) as exc_info:
         run_fawltydeps("--list-deps", f"--deps={tmp_path}/MISSING_DIR")
     assert exc_info.value.returncode == 2
 
 
-def TODO_test_main__list_deps_empty_dir__verbosely_logs_but_extracts_nothing(tmp_path):
+def TODO_test_list_deps__empty_dir__verbosely_logs_but_extracts_nothing(tmp_path):
     # Enable log level INFO with -v
     output, errors = run_fawltydeps("--list-deps", f"--deps={tmp_path}", "-v")
     assert output == ""
     assert f"Extracting dependencies from {tmp_path}" in errors
 
 
-def test_main__check_dir__in_clean_project_prints_nothing(tmp_path):
+def test_check__simple_project__in_clean_project_prints_nothing(tmp_path):
     (tmp_path / "file1.py").write_text(
         dedent(
             """\
@@ -171,7 +171,7 @@ def test_main__check_dir__in_clean_project_prints_nothing(tmp_path):
     assert errors == ""
 
 
-def test_main__check_dir__when_missing_deps_reports_undeclared(tmp_path):
+def test_check__simple_project__when_missing_deps_reports_undeclared(tmp_path):
     (tmp_path / "file1.py").write_text(
         dedent(
             """\
@@ -199,7 +199,7 @@ def test_main__check_dir__when_missing_deps_reports_undeclared(tmp_path):
     assert errors == ""
 
 
-def test_main__check_dir__when_extra_deps_reports_unused(tmp_path):
+def test_check__simple_project__when_extra_deps_reports_unused(tmp_path):
     (tmp_path / "file1.py").write_text(
         dedent(
             """\
@@ -228,7 +228,7 @@ def test_main__check_dir__when_extra_deps_reports_unused(tmp_path):
     assert errors == ""
 
 
-def test_main__check_dir__can_report_both_undeclared_and_unused(tmp_path):
+def test_check__simple_project__can_report_both_undeclared_and_unused(tmp_path):
     (tmp_path / "file1.py").write_text(
         dedent(
             """\
@@ -258,7 +258,7 @@ def test_main__check_dir__can_report_both_undeclared_and_unused(tmp_path):
     assert errors == ""
 
 
-def test_main__no_action_specified__defaults_to_check_action(tmp_path):
+def test__no_action__defaults_to_check_action(tmp_path):
     (tmp_path / "file1.py").write_text(
         dedent(
             """\
@@ -286,7 +286,7 @@ def test_main__no_action_specified__defaults_to_check_action(tmp_path):
     assert errors == ""
 
 
-def test_main__no_options__defaults_to_check_action_in_current_dir(tmp_path):
+def test__no_options__defaults_to_check_action_in_current_dir(tmp_path):
     (tmp_path / "file1.py").write_text(
         dedent(
             """\
