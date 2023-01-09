@@ -33,7 +33,7 @@ options:
 
 # Documentation
 
-TODO: Add design doc
+[Design document](./docs/DesignDoc.md)
 
 [Code design](./docs/CodeDesign.md)
 
