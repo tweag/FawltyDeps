@@ -110,11 +110,17 @@ To avoid confusion and term overloading, let us start by defining some key terms
 
 - **A package** is a collection of Python modules, having an `__init.py__` file.
 
+- **A library** exposes one or more packages (as defined in the packages field in setup.py or pyproject.toml, e.g. `google_api_python_client` exposes `"apiclient", "googleapiclient", "googleapiclient/discovery_cache"`. A library is commonly installed from PyPI.
+
 - **Import name** is the name used to import the package in the Python source code (e.g. `import googleapiclient).`
 
-- **Dependency name** is the name of the package installed in the environment (e.g. `google_api_python_client`).
+- **Dependency name** is the name of the distributed library (e.g. `google_api_python_client`).
 
-- **A library** exposes one or more packages (as defined in the packages field in setup.py or pyproject.toml, e.g. `google_api_python_client` exposes `"apiclient", "googleapiclient", "googleapiclient/discovery_cache"`. A library is commonly installed from PyPI.
+- **Declared dependency** is any library that is declared to be used by your code as per the methods outlined in section 3.3.
+
+- **Direct dependency** is any external library that exposes a package that is needed as a direct result of an `import` in your code. A direct dependency that is not declared (as outlined in section 3.3) is considered an error by FawltyDeps (i.e. this is the primary thing FawltyDeps is looking for.)
+
+- **Transitive (indirect) dependency** is a dependency of your dependency. This is any external library that must be available for your code to function correctly. A dependency can be both direct and transitive (e.g. your code can `import numpy` and also `import pandas`, which itself depends on `numpy`). In these cases the concerns of a direct dependency are more important (e.g. you should always declare a direct dependency even if it also happens to be an indirect dependency).
 
 ### 3.1 Parsing imports
 
@@ -267,7 +273,9 @@ _Online mapping_
 
 The closest one could get to finding a package (i.e. import) name in PyPI is via its free text search. As stated above, this search is not done over the structured library information but over the information available on the PyPI web page of the library. As this search would understandably return many unrelated results, post-processing on these results is needed. This would consist of downloading and unpacking each library to extract the packages' names. While this might seem like an improvement over the whole PyPI mapping described above, keep in mind that some search terms (e.g. google) may return tens of thousands of records.
 
-Another limitation is that the import name is not guaranteed to be on the library’s web page so the search might not return the wanted library.
+A limitation is that the import name is not guaranteed to be on the library’s web page so the search might not return the wanted library.
+
+Another potential downside is that it's not uncommon to run CI in a heavily restricted network environment (e.g. using a URL allowlist). Getting such allow lists updated can, in some organizations, be pretty arduous. As such, the ability to run FawltyDeps entirely offline will likely lower the barrier to entry significantly.
 
 _Conclusion_
 
