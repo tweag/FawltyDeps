@@ -44,9 +44,10 @@ def parse_setup_contents(text: str, path_hint: Path) -> Iterator[Tuple[str, Path
     ) -> Iterator[Tuple[str, Path]]:
         if isinstance(deps, ast.List):
             for element in deps.elts:
-                if isinstance(element, ast.Constant):
+                # Python v3.8 changed from ast.Str to ast.Constant
+                if isinstance(element, (ast.Constant, ast.Str)):
                     yield from parse_requirements_contents(
-                        element.value, path_hint=path_hint
+                        ast.literal_eval(element), path_hint=path_hint
                     )
         else:
             raise DependencyParsingError(deps)
