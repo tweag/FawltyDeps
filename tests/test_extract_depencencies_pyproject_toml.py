@@ -117,3 +117,73 @@ def test_parse_pyproject_content__poetry_main_group_and_extra_dependencies__yiel
         )
     )
     assert result == expected
+
+
+def test_parse_pyproject_content__dependencies_field__yields_dependencies():
+    filename = Path("pyproject.toml")
+    pyproject_toml = dedent(
+        """\
+            [project]
+            name = "fawltydeps"
+
+            dependencies = ["isort", "django>2.1; os_name != 'nt'"]
+        """
+    )
+    result = list(parse_pyproject_contents(pyproject_toml, filename))
+    expected_dependencies = ["isort", "django"]
+    expected = list(
+        zip(
+            expected_dependencies,
+            [filename] * len(expected_dependencies),
+        )
+    )
+    assert result == expected
+
+
+def test_parse_pyproject_content__optional_dependencies_field__yields_dependencies():
+    filename = Path("pyproject.toml")
+    pyproject_toml = dedent(
+        """\
+            [project]
+
+            [project.optional-dependencies]
+            test = ["pytest < 5.0.0", "pytest-cov[all]"]
+            dev = ["pylint >= 2.15.8"]
+
+        """
+    )
+    result = list(parse_pyproject_contents(pyproject_toml, filename))
+    expected_dependencies = ["pytest", "pytest-cov", "pylint"]
+    expected = list(
+        zip(
+            expected_dependencies,
+            [filename] * len(expected_dependencies),
+        )
+    )
+    assert result == expected
+
+
+def test_parse_pyproject_content__main_and_optional_dependencies__yields_dependencies():
+    filename = Path("pyproject.toml")
+    pyproject_toml = dedent(
+        """\
+            [project]
+            name = "fawltydeps"
+
+            dependencies = ["isort", "django>2.1; os_name != 'nt'"]
+
+            [project.optional-dependencies]
+            test = ["pytest < 5.0.0", "pytest-cov[all]"]
+            dev = ["pylint >= 2.15.8"]
+
+        """
+    )
+    result = list(parse_pyproject_contents(pyproject_toml, filename))
+    expected_dependencies = ["isort", "django", "pytest", "pytest-cov", "pylint"]
+    expected = list(
+        zip(
+            expected_dependencies,
+            [filename] * len(expected_dependencies),
+        )
+    )
+    assert result == expected

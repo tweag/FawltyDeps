@@ -149,11 +149,54 @@ def parse_poetry_pyproject_dependencies(
     yield from parse_poetry_extra_dependencies(parsed_contents, path_hint)
 
 
+def parse_pep621_pyproject_main_dependencies(
+    parsed_contents: dict, path_hint: Path
+) -> Iterator[Tuple[str, Path]]:
+    """
+    Parse dependencies in pyproject.toml's project.dependencies
+    """
+    main_dependencies = parsed_contents.get("project", {}).get("dependencies", {})
+
+    for requirement_text in main_dependencies:
+        yield from parse_requirements_contents(requirement_text, path_hint)
+
+
+def parse_pep621_pyproject_optional_dependencies(
+    parsed_contents: dict[str, Any], path_hint: Path
+) -> Iterator[Tuple[str, Path]]:
+    """
+    Parse dependencies in pyproject.toml's project.optional-dependencies
+    """
+    optional_dependencies = (
+        parsed_contents.get("project", {}).get("optional-dependencies", {}).values()
+    )
+    for dependency_group in optional_dependencies:
+        for requirement_text in dependency_group:
+            yield from parse_requirements_contents(requirement_text, path_hint)
+
+
+def parse_pep621_pyproject_contents(
+    parsed_contents: dict, path_hint: Path
+) -> Iterator[Tuple[str, Path]]:
+    """
+    Extract dependencies (package names) in PEP 621 styled pyproject.toml
+    """
+    yield from parse_pep621_pyproject_main_dependencies(parsed_contents, path_hint)
+    yield from parse_pep621_pyproject_optional_dependencies(parsed_contents, path_hint)
+
+
 def parse_pyproject_contents(text: str, path_hint: Path) -> Iterator[Tuple[str, Path]]:
     parsed_contents = tomli.loads(text)
 
     if "poetry" in parsed_contents.get("tool", {}):
         yield from parse_poetry_pyproject_dependencies(parsed_contents, path_hint)
+    elif "project" in parsed_contents:
+        yield from parse_pep621_pyproject_contents(parsed_contents, path_hint)
+    else:
+        logger.error(
+            "pyproject.toml does not have the expected format. "
+            "Expected [project] or [tool.poetry]."
+        )
 
 
 def extract_dependencies(path: Path) -> Iterator[Tuple[str, Path]]:
