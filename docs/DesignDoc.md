@@ -147,7 +147,7 @@ Imports fall into one of four nodes in the AST (respective to a type of import):
 - Absolute imports: `ast.Import`
 - Standard imports: `ast.ImportFrom`
 - Aliases for imports: `ast.alias`
-- Function call: `ast.Expr` with a call to either `__import__` or <code>import_module</code> function from <code>importlib</code>
+- Function call: `ast.Expr` with a call to either `__import__` or `import_module` function from `importlib`
 
 Interpreting function calls as imports is not straightforward. They may use module names from other variables, functions, and external data.
 
@@ -174,7 +174,7 @@ Since PyPI does not readily provide this information, some libraries have attemp
 
 Historically, [distutils](https://docs.python.org/3/library/distutils.html#module-distutils) was used to ship a Python package[^4]. Now [setuptools is the most](https://setuptools.pypa.io/en/latest/) common way to build a distribution package. There are other tools, like [PyInstaller](https://pyinstaller.org/en/stable/operating-mode.html#) that builds a project into a single folder or file with all locally installed dependencies shipped with it. This is not a use case for FawltyDeps. Packing a project with explicitly given dependencies, like with setuptools, gives the flexibility to manage and update dependencies separately. Due to security updates of packages and the sheer size of a more complex project, this is the usual approach.
 
-Dependencies of a Python project may be declared in [requirements](https://pip.pypa.io/en/stable/reference/requirements-file-format/#requirements-file-format) (usually `requirements.txt`, but a name choice is not restricted), `setup.py`, `setup.cfg`, and then <code>[pyproject.toml](https://peps.python.org/pep-0518/)</code> (since PEP 518). Setup files - setup.py and setup.cfg declare dependencies under the <code>\*\_requires</code> keywords and pyproject.toml lists dependencies under <code>dependencies</code>.
+Dependencies of a Python project may be declared in [requirements](https://pip.pypa.io/en/stable/reference/requirements-file-format/#requirements-file-format) (usually `requirements.txt`, but a name choice is not restricted), `setup.py`, `setup.cfg`, and then [pyproject.toml](https://peps.python.org/pep-0518/) (since PEP 518). Setup files - setup.py and setup.cfg declare dependencies under the `_requires` keywords and pyproject.toml lists dependencies under `dependencies`.
 
 #### 3.3.2 Extracting dependencies
 
@@ -373,8 +373,8 @@ Poetry commands and our proposed tool’s functionality complement each other, a
 
 ### Notes
 
-[^1]: Notebooks may be converted to Python script with <code>[nbconvert](https://nbconvert.readthedocs.io/en/latest/)</code> - command line tool and library.
+[^1]: Notebooks may be converted to Python script with [nbconvert](https://nbconvert.readthedocs.io/en/latest/) - command line tool and library.
 [^2]: See the import paths search [Python documentation](https://docs.python.org/3/reference/import.html#searching).
 [^3]: See an [example](https://docs.python.org/3/library/modulefinder.html#modulefinder-example) of usage of Python’s ModuleFinder.
 [^4]: distutils is deprecated and will be removed in Python 3.12.
-[^5]: Suggested by [Thomas Bagrel](thomas.bagrel@tweag.io).
+[^5]: Suggested by [Thomas Bagrel](mailto:thomas.bagrel@tweag.io).
