@@ -186,7 +186,7 @@ Requirements files may have non-standard names so to extract dependencies Fawlty
 
 Some Python packages require other packages to be installed first (like numpy for pandas). We call them transitive dependencies. When a transitive dependency A is imported explicitly in the code, it becomes a direct dependency. That is why, even though the code would work without explicitly declaring A, it is a better practice to do so.
 
-To determine the list of transitive dependencies of a library `myLibrary,` the pip command:
+To determine the list of transitive dependencies of a library `myLibrary`, the pip command:
 
     pip show myLibrary
 
