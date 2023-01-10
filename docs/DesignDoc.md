@@ -4,7 +4,7 @@
 
 ## Design document
 
-Authors: [Nour el Mawass](nour.elmawass@tweag.io), [Maria Knorps](maria.knorps@tweag.io)
+Authors: [Nour el Mawass](mailto:nour.elmawass@tweag.io), [Maria Knorps](mailto:maria.knorps@tweag.io)
 
 Created: 12 Nov. 2022
 
