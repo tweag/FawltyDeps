@@ -207,7 +207,7 @@ At a first glance, the solution might look trivial once a set of imports (from t
 While this might initially seem like a sufficient approach, directly comparing these two sets is not enough for the following reason:
 
 1. An import name is not guaranteed to be exactly equivalent to the corresponding dependency name (e.g. `library google-api-python-client` exposes package `apiclient`).
-2. The same library may expose different packages, which then correspond to different import names (e.g. `library google-api-python-client` apart from `apiclient `exposes `googleapiclient` and` googleapiclient/discovery_cache`).
+2. The same library may expose different packages, which then correspond to different import names (e.g. `library google-api-python-client` apart from `apiclient `exposes `googleapiclient` and `googleapiclient/discovery_cache`).
 
 In other words, given two one-element sets of imports and dependencies, {`apiclient`} and {`google-api-python-client`} respectively, originating from the same Python project, there’s no static way to compare these sets.
 
