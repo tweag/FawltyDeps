@@ -228,7 +228,7 @@ The solution would then consist of 4 main modules (see the diagram below):
 
 ![alt_text](./PDC_solution_overview.png "Solution diagram")
 
-[1] Solution diagram; [link](https://lucid.app/lucidchart/77d4a86d-e78c-460c-9d25-4e1875ca18f6/edit?viewport_loc=119%2C391%2C952%2C562%2C0_0&invitationId=inv_901446c1-61e2-4362-be64-3a6e94975859).
+[1] Solution diagram; [link to Lucid Charts; you have to log in to read and edit](https://lucid.app/lucidchart/77d4a86d-e78c-460c-9d25-4e1875ca18f6/edit?viewport_loc=119%2C391%2C952%2C562%2C0_0&invitationId=inv_901446c1-61e2-4362-be64-3a6e94975859).
 
 ### 4.2. Possible domain mappings
 
