@@ -24,31 +24,34 @@ class Action(Enum):
 
 
 def perform_actions(actions: Set[Action], code: Path, deps: Path) -> int:
-    if actions & {Action.LIST_IMPORTS, Action.REPORT_UNDECLARED, Action.REPORT_UNUSED}:
+    def is_enabled(*args: Action) -> bool:
+        return len(actions.intersection(args)) > 0
+
+    if is_enabled(Action.LIST_IMPORTS, Action.REPORT_UNDECLARED, Action.REPORT_UNUSED):
         extracted_imports = set(extract_imports.parse_any_arg(code))
-        if actions & {Action.LIST_IMPORTS}:
+        if is_enabled(Action.LIST_IMPORTS):
             for name in sorted(extracted_imports):
                 # TODO: Add location information to extracted imports
                 print(name)
 
-    if actions & {Action.LIST_DEPS, Action.REPORT_UNDECLARED, Action.REPORT_UNUSED}:
+    if is_enabled(Action.LIST_DEPS, Action.REPORT_UNDECLARED, Action.REPORT_UNUSED):
         extracted_deps = set(extract_dependencies(deps))
-        if actions & {Action.LIST_DEPS}:
+        if is_enabled(Action.LIST_DEPS):
             # Sort dependencies by location, then by name
             for name, location in sorted(extracted_deps, key=itemgetter(1, 0)):
                 print(f"{name}: {location}")
 
-    if actions & {Action.REPORT_UNDECLARED, Action.REPORT_UNUSED}:
+    if is_enabled(Action.REPORT_UNDECLARED, Action.REPORT_UNUSED):
         # TODO: Better handling of location information
         report = compare_imports_to_dependencies(
             extracted_imports,
             {name for name, _ in extracted_deps},
         )
-        if actions & {Action.REPORT_UNDECLARED} and report.undeclared:
+        if is_enabled(Action.REPORT_UNDECLARED) and report.undeclared:
             print("These imports are not declared as dependencies:")
             for name in sorted(report.undeclared):
                 print(f"- {name}")
-        if actions & {Action.REPORT_UNUSED} and report.unused:
+        if is_enabled(Action.REPORT_UNUSED) and report.unused:
             print("These dependencies are not imported in your code:")
             for name in sorted(report.unused):
                 print(f"- {name}")
