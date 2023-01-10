@@ -162,7 +162,7 @@ For a project that correctly runs on a local environment, it’s possible to tra
 In an arbitrary project, however, translating imports gathered from the source code to dependencies is a hard problem for several reasons:
 
 1. Not all libraries have the same name as the packages they expose (`pandas` exposes `pandas`, but `google_api_python_client` exposes `["apiclient", "googleapiclient", "googleapiclient/discovery_cache"]`).
-2. Different libraries may provide import names (modules or packages) that overlap. For example, the 'google' import name may be obtained from different libraries, including `['google-api-core',            'googleapis-common-protos', 'protobuf', 'google-auth']`. This can complicate finding the appropriate library for a given import name.`.`
+2. Different libraries may provide import names (modules or packages) that overlap. For example, the 'google' import name may be obtained from different libraries, including `['google-api-core', 'googleapis-common-protos', 'protobuf', 'google-auth']`. This can complicate finding the appropriate library for a given import name.`.`
 3. PyPI does not provide an API with a list of top-level packages given by the library.
 4. Top-level packages of a library may not be declared explicitly, but could instead be using [package discovery](https://setuptools.pypa.io/en/latest/userguide/package_discovery.html#custom-discovery) (for projects using `setuptools`).
 
