@@ -16,7 +16,7 @@ It is a common problem that import statements refer to packages that were instal
 
 Whether it’s a personal library, an application to be deployed, or a library that will be distributed for others to use, making sure that a project’s imported packages are all declared as dependencies is vital for the correct packaging of that project. This will ensure both, reproducibility in other build environments and usability by other prospective users.
 
-This document will walk the reader through the different intricacies of Python packaging, and propose a simple modular solution to the non-declared dependencies problems. Many of the terms thrown around (such as “library”, “package”, and “dependency”) are overloaded, so we make sure we define and contrast each of those.
+This document will walk the reader through the different intricacies of Python packaging, and propose a simple modular solution to the non-declared dependencies problems. Many of the terms thrown around (such as “library”, “package”, and “dependency”) are overloaded, so we make sure to define and contrast each of those.
 
 To the best of our knowledge, there does not currently exist a solution that would effectively check if a project’s declared dependencies match its imported libraries. Different aspects of the problem (e.g. extracting imported packages from Python files, generating a list of requirements, parsing transitive dependencies, validating dependencies’ versions compatibility) have been explored by other contributors. We describe existing libraries and approaches, and where relevant, we indicate those that we adopted or used.
 
