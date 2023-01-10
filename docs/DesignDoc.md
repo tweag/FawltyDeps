@@ -112,7 +112,7 @@ To avoid confusion and term overloading, let us start by defining some key terms
 
 - **A library** exposes one or more packages (as defined in the packages field in setup.py or pyproject.toml, e.g. `google_api_python_client` exposes `"apiclient", "googleapiclient", "googleapiclient/discovery_cache"`. A library is commonly installed from PyPI.
 
-- **Import name** is the name used to import the package in the Python source code (e.g. `import googleapiclient).`
+- **Import name** is the name used to import the package in the Python source code (e.g. `import googleapiclient`).
 
 - **Dependency name** is the name of the distributed library (e.g. `google_api_python_client`).
 
