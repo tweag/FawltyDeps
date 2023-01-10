@@ -124,8 +124,8 @@ To avoid confusion and term overloading, let us start by defining some key terms
 
 ### 3.1 Parsing imports
 
-In the Python source code, modules may be imported in different places of the code. While it’s good practice to follow [PEP-8 ](https://peps.python.org/pep-0008/#imports)suggestions, the Python code we are to check may not be following those rules. Imports may be placed inside functions and classes. \
-Python source code files usually have the _.py extension. Other commonly used file types are jupyter notebooks, and _.ipynb[^1].
+In the Python source code, modules may be imported in different places of the code. While it’s good practice to follow [PEP-8](https://peps.python.org/pep-0008/#imports) suggestions, the Python code we are to check may not be following those rules. Imports may be placed inside functions and classes.
+Python source code files usually have the `.py` extension. Other commonly used file types are jupyter notebooks, using `.ipynb`[^1].
 
 #### Types of imports
 
