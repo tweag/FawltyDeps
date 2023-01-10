@@ -173,19 +173,19 @@ Since PyPI does not readily provide this information, some libraries have attemp
 
 #### 3.3.1 Declaring dependencies
 
-Historically, [distutils](https://docs.python.org/3/library/distutils.html#module-distutils) was used to ship a Python package[^4]. Now [setuptools is the most](https://setuptools.pypa.io/en/latest/) common way to build a distribution package. There are other tools, like [PyInstaller](https://pyinstaller.org/en/stable/operating-mode.html#) that builds a project into a single folder or file with all locally installed dependencies shipped with it. This is not a use case for FawltyDeps. Packing a project with explicitly given dependencies, like with setuptools, gives the flexibility to manage and update dependencies separately. Due to security updates of packages and the sheer size of a more complex project, this is the usual approach.
+Historically, [distutils](https://docs.python.org/3/library/distutils.html#module-distutils) was used to ship a Python package[^4]. Now [setuptools](https://setuptools.pypa.io/en/latest/) is the most common way to build a distribution package. There are other tools, like [PyInstaller](https://pyinstaller.org/en/stable/operating-mode.html#) that builds a project into a single folder or file with all locally installed dependencies shipped with it. This is not a use case for FawltyDeps. Packing a project with explicitly given dependencies, like with setuptools, gives the flexibility to manage and update dependencies separately. Due to security updates of packages and the sheer size of a more complex project, this is the usual approach.
 
-Dependencies of a Python project may be declared in [requirements](https://pip.pypa.io/en/stable/reference/requirements-file-format/#requirements-file-format) (usually `requirements.txt`, but a name choice is not restricted), `setup.py`, `setup.cfg`, and then [pyproject.toml](https://peps.python.org/pep-0518/) (since PEP 518). Setup files - setup.py and setup.cfg declare dependencies under the `_requires` keywords and pyproject.toml lists dependencies under `dependencies`.
+Dependencies of a Python project may be declared in [requirements](https://pip.pypa.io/en/stable/reference/requirements-file-format/#requirements-file-format) (usually `requirements.txt`, but a name choice is not restricted), `setup.py`, `setup.cfg`, and then `pyproject.toml` (since [PEP 518](https://peps.python.org/pep-0518/)). Setup files - setup.py and setup.cfg declare dependencies under the `_requires` keywords and pyproject.toml lists dependencies under `dependencies`.
 
 #### 3.3.2 Extracting dependencies
 
-While a requirements file only lists the dependencies of a project (with eventual constraints), setup files and pyproject.toml declare other packaging configuration as well. It is possible to e.g. translate pyproject.toml dependencies to requirements using [poetry](https://github.com/python-poetry/poetry-plugin-export). A dependency format converter may be useful for both setup and pyproject.toml files.
+While a requirements file only lists the dependencies of a project (with eventual constraints), setup files and pyproject.toml declare other packaging configuration as well. While this is not the approach we use to parse dependnecnies, it is possible to e.g. translate pyproject.toml dependencies to requirements using [poetry](https://github.com/python-poetry/poetry-plugin-export).
 
 Requirements files may have non-standard names so to extract dependencies FawltyDeps must have the option to give a list of requirements files.
 
 ### 3.4 Extracting transitive dependencies
 
-Some Python packages require other packages to be installed first (like numpy for pandas). We call them transitive dependencies. When a transitive dependency A is imported explicitly in the code, it becomes a direct dependency. That is why, even though the code would work without explicitly declaring A, it is a better practice to do so.
+Some Python packages require other packages to be installed first (like `numpy` for `pandas`). We call them transitive dependencies. When a transitive dependency `A` is imported explicitly in the code, it becomes a direct dependency. Even though the code would work without explicitly declaring `A`, it is a better practice to do so.
 
 To determine the list of transitive dependencies of a library `myLibrary`, the pip command:
 
@@ -193,7 +193,7 @@ To determine the list of transitive dependencies of a library `myLibrary`, the p
 
 may be used or the `poetry show` command.
 
-Since a transitive dependency does not need to be explicitly declared, checking for transitive dependencies should be optional.
+Since a transitive dependency does not need to be explicitly declared, declaring transitive dependencies that are not also direct dependencies in requirements is not a common practice. Checking for these dependecies is therefore not supported by FawltyDeps.
 
 ### 3.5 Translating dependencies to imports
 
