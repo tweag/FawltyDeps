@@ -106,7 +106,7 @@ Expanding from this initial motivation, we present below different user personas
 
 This section provides the technical background needed to understand the Python imports and dependencies system. Reading it is recommended but is not required to understand the proposed solution. You can therefore skip to Section 4 and come back to this section if needed.
 
-To avoid confusion and term overloading, let us start by defining some key terms. We will use the example of the `google_api_python_client `library on PyPI. This library exposes multiple packages (“`apiclient", "googleapiclient","googleapiclient/discovery_cache"`), which can be imported in the Python code.
+To avoid confusion and term overloading, let us start by defining some key terms. We will use the example of the `google_api_python_client `library on PyPI. This library exposes multiple packages (`“apiclient", "googleapiclient","googleapiclient/discovery_cache"`), which can be imported in the Python code.
 
 - **A package** is a collection of Python modules, having an `__init.py__` file.
 
