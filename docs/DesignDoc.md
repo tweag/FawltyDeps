@@ -134,7 +134,7 @@ There are four ways to import a Python module as per the import system [document
 - Absolute imports: <code><strong>from</strong> packageX <strong>import</strong> Y</code>
 - Standard imports: <code><strong>import </strong>packageX</code>
 - Aliases for imports: <code><strong>import</strong> packageX <strong>as</strong> PX, <strong>from</strong> packageX <strong>import</strong> Y <strong>as</strong> X</code>
-- Function calls: <code>[importlib.import_module()](https://docs.python.org/3/library/importlib.html#importlib.import_module)</code> and built-in <code>[\_\_import\_\_()](https://docs.python.org/3/library/functions.html#import__)</code>.
+- Function calls: [`importlib.import_module()`](https://docs.python.org/3/library/importlib.html#importlib.import_module) and built-in [`__import__()`](https://docs.python.org/3/library/functions.html#import__).
 
 Imported packages may be either absolute or [relative](https://docs.python.org/3/reference/import.html#package-relative-imports). The latter refers to the current package and starts with a leading dot, like <code><strong>from</strong> .packageX <strong>import</strong> Y.</code>
 
