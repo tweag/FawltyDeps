@@ -33,7 +33,7 @@ options:
 
 # Documentation
 
-[Design document](./docs/DesignDoc.md)
+At the start of this project, an exploration and overall project design was performed. The resulting [design document is available in this repo](./docs/DesignDoc.md). It lays out the main objective for this project as well as comparing various strategies that have been considered since the start.
 
 [Code design](./docs/CodeDesign.md)
 
