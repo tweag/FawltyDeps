@@ -95,7 +95,7 @@ Expanding from this initial motivation, we present below different user personas
 
 ## 2.2 User stories
 
-- Deborah wants to rerun another developer’s package. She would like to know if all dependencies are in place before she sends it to time-consumingCI.
+- Deborah wants to rerun another developer’s package. She would like to know if all dependencies are in place before she sends it to a time-consuming CI.
 - Patrick installed [Hail](https://hail.is/), which installs `requests` as a dependency. When he wrote a REST API, he forgot to add `requests` to his `requirements.txt`. The code ran correctly, but an explicit declaration of the dependency was lacking until Andrew pointed it out. Patrick would like to find those problems automatically.
 - Andrew recently added [testbook](https://github.com/nteract/testbook/) to `nixpkgs` and the `requirements.txt` file only listed two dependencies. When he tried to build it, there were four additional dependencies needed to run the tests. He would like all his dependencies explicitly declared.
 - Francis observed that developers were using `pandas` installation from the Python packages located systemwide in Ubuntu. When the other team started working on the code, they had tests failing due to the lack of `pandas` library. Francis would like to automate checks of missing dependencies to ensure a smooth transfer of projects between teams.
