@@ -121,7 +121,7 @@ To avoid confusion and term overloading, let us start by defining some key terms
 
 - **Direct dependency** is any external library that exposes a package that is needed as a direct result of an `import` in your code. A direct dependency that is not declared (as outlined in section 3.3) is considered an error by FawltyDeps (i.e. this is the primary thing FawltyDeps is looking for.)
 
-- **Transitive (indirect) dependency** is a dependency of your dependency. This is any external library that must be available for your code to function correctly. A dependency can be both direct and transitive (e.g. your code can `import numpy` and also `import pandas`, which itself depends on `numpy`). In these cases the concerns of a direct dependency are more important (e.g. you should always declare a direct dependency even if it also happens to be an indirect dependency).
+- **Transitive (indirect) dependency** is a dependency of your dependency. A dependency can be both direct and transitive (e.g. your code can `import numpy` and also `import pandas`, which itself depends on `numpy`). In these cases the concerns of a direct dependency are more important (e.g. you should always declare a direct dependency even if it also happens to be an indirect dependency).
 
 ### 3.1 Parsing imports
 
