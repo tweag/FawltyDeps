@@ -171,13 +171,13 @@ Since PyPI does not readily provide this information, some libraries have attemp
 
 ### 3.3 Extracting a package’s declared dependencies
 
-#### 3.3.1 Declaring dependencies
+#### Declaring dependencies
 
-Historically, [distutils](https://docs.python.org/3/library/distutils.html#module-distutils) was used to ship a Python package[^4]. Now [setuptools](https://setuptools.pypa.io/en/latest/) is the most common way to build a distribution package. There are other tools, like [PyInstaller](https://pyinstaller.org/en/stable/operating-mode.html#) that builds a project into a single folder or file with all locally installed dependencies shipped with it. This is not a use case for FawltyDeps. Packing a project with explicitly given dependencies, like with setuptools, gives the flexibility to manage and update dependencies separately. Due to security updates of packages and the sheer size of a more complex project, this is the usual approach.
+Historically, [distutils](https://docs.python.org/3/library/distutils.html#module-distutils) was used to ship a Python package[^4]. Now [setuptools](https://setuptools.pypa.io/en/latest/) is the most common way to build a distribution package. There are other tools, like [PyInstaller](https://pyinstaller.org/en/stable/operating-mode.html#) that builds a project into a single folder or file with all locally installed dependencies shipped with it. This is not a use case for FawltyDeps. Packaging a project with explicitly given dependencies, like with setuptools, gives the flexibility to manage and update dependencies separately. This approach makes it easier to manage and update dependencies, especially in more complex projects.
 
-Dependencies of a Python project may be declared in [requirements](https://pip.pypa.io/en/stable/reference/requirements-file-format/#requirements-file-format) (usually `requirements.txt`, but a name choice is not restricted), `setup.py`, `setup.cfg`, and then `pyproject.toml` (since [PEP 518](https://peps.python.org/pep-0518/)). Setup files - setup.py and setup.cfg declare dependencies under the `_requires` keywords and pyproject.toml lists dependencies under `dependencies`.
+Dependencies of a Python project may be declared in [requirements](https://pip.pypa.io/en/stable/reference/requirements-file-format/#requirements-file-format) (usually `requirements.txt`, but a name choice is not restricted), `setup.py`, `setup.cfg`, and then `pyproject.toml` (since [PEP 518](https://peps.python.org/pep-0518/)). Setup files - setup.py and setup.cfg declare dependencies under the `install_requires` and `extras_require` keywords and `pyproject.toml` generally lists dependencies under `dependencies`.
 
-#### 3.3.2 Extracting dependencies
+#### Extracting dependencies
 
 While a requirements file only lists the dependencies of a project (with eventual constraints), setup files and pyproject.toml declare other packaging configuration as well. While this is not the approach we use to parse dependnecnies, it is possible to e.g. translate pyproject.toml dependencies to requirements using [poetry](https://github.com/python-poetry/poetry-plugin-export).
 

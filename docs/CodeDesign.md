@@ -1,4 +1,4 @@
-# Code design
+# Code style
 
 We value composability and functional style.
 We want the code to be readable, testable and maintainable. That is why we use:
