@@ -310,7 +310,7 @@ Several libraries generate requirements based on imports in Python source code. 
 [2] History of GitHub stars of pigar and pipreqs libraries
 
 \
-Both libraries use AST to inspect Python source code, but `pigar`’s implementation is more robust. `pipreqs` parses the simplest imports only (the ones that can be found in AST under `Import` or `ImportFrom` class) while `pigar` parses `exec`, `importlib` expressions, and more.
+Both libraries use AST to inspect Python source code, but `pigar`’s implementation covers more use cases. `pipreqs` parses the simplest imports only (the ones that can be found in AST under `Import` or `ImportFrom` class) while `pigar` parses `exec`, `importlib` expressions, and more.
 
 Both libraries rely on a mapping of PyPI libraries to exposed packages. In `pipreqs`, this is done with a CSV file, which is seldom updated lately. In `pigar`, the mapping is more elaborate - it consists of an SQLite database and an additional PyPI package check, performed when the `pigar` script is run to generate the requirements.txt file (in case there was a breaking change between versions or a package was deleted). To check a package, `pigar` downloads it from PyPI in a packed form and peeks at the top_level.txt file to see the list of exposed packages. To assign a package version, `pipreqs` checks if a library is installed locally, and if so, it uses the version from the metadata of installation. If not, then it infers the library name from a static file mapping and posts a request to PyPI with that library name to get a package version.
 
