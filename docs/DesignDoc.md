@@ -101,7 +101,7 @@ Expanding from this initial motivation, we present below different user personas
 - Francis observed that developers were using `pandas` installation from the Python packages located systemwide in Ubuntu. When the other team started working on the code, they had tests failing due to the lack of `pandas` library. Francis would like to automate checks of missing dependencies to ensure a smooth transfer of projects between teams.
 - Francis observed that multiple times in the last week developers were using `numpy` in the code, but did not explicitly state this in requirements, as `pandas` installs `numpy` anyway. This led to multiple problems with the `numpy` version, which did not support some newly used features. Francis would like to have a reproducible and explicit environment declaration.
 - Annie reran her package in a different environment and had to fill in missing packages signaled by import errors. Annie would like to catch problems with missing dependencies earlier and get a list of all missing packages in one run.
-- Jason Publishes his package on PyPI. He wants people who use his package not to get discouraged from using it by missing dependencies. Json wants to make sure that there is no dependencies missing.
+- Jason Publishes his package on PyPI. He wants people who use his package not to get discouraged from using it by missing dependencies. Jason wants to make sure that there is no dependencies missing.
 
 ## 3. Background
 
