@@ -97,9 +97,6 @@ main.py-version = "3.7"
 reports.output-format = "colorized"
 "messages control".disable = "fixme,logging-fstring-interpolation,unspecified-encoding"
 
-[tool.pylint.tests]
-disable = "missing-function-docstring,invalid-name,redefined-outer-name"
-
 [tool.mypy]
 files = "**/*.py"
 warn_redundant_casts = true
