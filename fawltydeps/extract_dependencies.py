@@ -186,6 +186,12 @@ def parse_pep621_pyproject_contents(
 
 
 def parse_pyproject_contents(text: str, path_hint: Path) -> Iterator[Tuple[str, Path]]:
+    """
+    Parse dependencies from specific metadata fields in a pyproject.toml file.
+    This can currenly parse dependencies from dependency fields in:
+    - PEP 621 core metadata fields
+    - Poetry-specific metadata
+    """
     parsed_contents = tomli.loads(text)
 
     if "poetry" in parsed_contents.get("tool", {}):
