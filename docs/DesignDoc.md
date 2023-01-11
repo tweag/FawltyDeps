@@ -215,7 +215,7 @@ In other words, given two one-element sets of imports and dependencies, {`apicli
 This is further complicated by the following observations:
 
 1. The same import name can map to various library names representing different packages (e.g. on PyPI, both `retina-face` and `retinaface` have the same import name `retinaface`). The import-to-dependency relation is one-to-many.
-2. Some imports might not have their corresponding dependencies explicitly declared because they are transitive dependencies (e.g. numpy is a prerequisite of pandas).
+2. Some imports might not have their corresponding dependencies explicitly declared because they are transitive dependencies (e.g. `numpy` is a prerequisite of `pandas`).
 
 The analysis above shows that these sets should be mapped to the same domain before a comparison is possible. One possible mapping would be to map one set to the domain of the other, i.e. map import names to dependency names or vice versa.
 
@@ -244,11 +244,11 @@ As the name implies, this assumes import names are equivalent to library names. 
 
 Despite lacking empirical evidence on how many libraries (e.g. on PyPI) use the library name as an import name, we expect this mapping to be useful as a lightweight check that covers the majority of libraries.
 
-The major limitation of the identity mapping strategy is that it cannot compare an import x to a dependency y if those are not identically named. Therefore, the moment the imports set and the dependencies set differ, we would need to map one set to the domain of the other.
+The major limitation of the identity mapping strategy is that it cannot compare an import `x` to a dependency `y` if those are not identically named. Therefore, the moment the imports set and the dependencies set differ, we would need to map one set to the domain of the other.
 
-Furthermore, even when the sets are identical, there is no guarantee that dependencies are correctly declared. As we have discussed earlier, an import x does not necessarily map to a dependency x. It is possible to go one step further and check that the declared dependencies exist (on e.g. PyPI).
+Furthermore, even when the sets are identical, there is no guarantee that dependencies are correctly declared. As we have discussed earlier, an import x does not necessarily map to a dependency x.
 
-While this would probably guard against declaring non-existent libraries, it would still not solve the following situation (as no mapping between the import and dependency domains is performed). Suppose you use `import madeup` in your code, and you assume the dependency name to be `madeup` as well so that’s what you provide in `requirements.txt`. As it turns out, `madeup`, the dependency, exists, but does not expose a package `madeup`. What you needed to declare was `pymadeup`, which effectively exposes import name `madeup`. The checker would not flag the dependency as missing, since no mapping has been done and it was assumed the dependency is indeed the one declared.
+It is possible to go one step further and check that the declared dependencies exist (on e.g. PyPI). But while this would probably guard against declaring non-existent libraries, it would still not solve the following situation (as no mapping between the import and dependency domains is performed). Suppose you use `import madeup` in your code, and you assume the dependency name to be `madeup` as well so that’s what you provide in `requirements.txt`. As it turns out, `madeup`, the dependency, exists, but does not expose a package `madeup`. What you needed to declare was `pymadeup`, which effectively exposes import name `madeup`. The checker would not flag the dependency as missing, since no mapping has been done and it was assumed the dependency is indeed the one declared.
 
 An extension to this is relaxed equality[^5], where punctuation and conversions between snake_case and kebab-case are allowed. This is a cheap extension (no package downloading and unpacking is required) that can extend the usability of identity mapping.
 
@@ -288,7 +288,7 @@ Another possible way to limit the scope of the mapping is when all dependencies 
 
 The previous section focused on mapping imports to dependencies. That can be a useful exercise if the goal is to automatically generate a Python project’s dependencies (e.g. the requirements.txt file). The goal of this project however is to check if the declared dependencies match the used imports.
 
-Mapping dependencies to imports is conceptually more aligned with that goal. And while that can still be easily reconstructed from any full PyPI import to dependency mapping, having a full mapping is unnecessary. Given a set of dependencies, by downloading and unpacking each library, as described in the previous section, it’s possible to obtain the import names (from e.g the top-level or the dist-info directories) in an on-demand fashion. Only dependencies declared in the project are downloaded and unpacked. The test would then become to verify that the mapped dependencies form a superset of extracted imports.
+Mapping dependencies to imports is conceptually more aligned with that goal. And while that can still be easily reconstructed from any full PyPI import to dependency mapping, having a full mapping is unnecessary. Given a set of declared dependencies, by downloading and unpacking each library, as described in the previous section, it’s possible to obtain the import names (from e.g the top-level or the dist-info directories) in an on-demand fashion. Only dependencies declared in the project are downloaded and unpacked. The test would then become to verify that the mapped dependencies form a superset of extracted imports.
 
 This solution has the advantage of not being limited to PyPI libraries. Like the online mapping discussed above, however, it also requires access to the repositories of the project’s dependencies (e.g. PyPI, Github, ..)
 
@@ -298,7 +298,7 @@ As in the previous solution, it is equally possible to limit this solution to se
 
 ## 5.1 Linters
 
-A perfect place to have a dependency checker add-on would be linter. The most popular: `flake8` and `pylint` do not provide this functionality.
+A perfect place to have a dependency checker add-on would be a linter. The most popular: `flake8` and `pylint` do not provide this functionality.
 
 ## 5.2 Translating imports to requirement.txt
 
@@ -312,7 +312,7 @@ Several libraries generate requirements based on imports in Python source code. 
 \
 Both libraries use AST to inspect Python source code, but `pigar`’s implementation is more robust. `pipreqs` parses the simplest imports only (the ones that can be found in AST under `Import` or `ImportFrom` class) while `pigar` parses `exec`, `importlib` expressions, and more.
 
-Both libraries rely on a mapping of PyPI libraries to exposed packages. In `pipreqs`, this is done with a CSV file, which is seldom updated lately. In `pigar`, the mapping is more elaborate - it consists of an SQLite database and an additional PyPI package check, performed when the `pigar` script is run to generate the requirements.txt file (in case there was a breaking change between versions or a package was deleted). To check a package, pigar downloads it from PyPI in a packed form and peeks at the top_level.txt file to see the list of exposed packages. To assign a package version, pipreqs checks if a library is installed locally, and if so, it uses the version from the metadata of installation. If not, then it infers the library name from a static file mapping and posts a request to PyPI with that library name to get a package version.
+Both libraries rely on a mapping of PyPI libraries to exposed packages. In `pipreqs`, this is done with a CSV file, which is seldom updated lately. In `pigar`, the mapping is more elaborate - it consists of an SQLite database and an additional PyPI package check, performed when the `pigar` script is run to generate the requirements.txt file (in case there was a breaking change between versions or a package was deleted). To check a package, `pigar` downloads it from PyPI in a packed form and peeks at the top_level.txt file to see the list of exposed packages. To assign a package version, `pipreqs` checks if a library is installed locally, and if so, it uses the version from the metadata of installation. If not, then it infers the library name from a static file mapping and posts a request to PyPI with that library name to get a package version.
 
 Import parsing is done well in `pigar`, and our library can take inspiration from that. The import to dependencies translation (generating requirements.txt) depends on the chosen solution. Pigar downloads all possible candidates for a dependency package and it is a time-consuming process. Neither of the discussed libraries has a caching mechanism.
 
@@ -351,6 +351,7 @@ Poetry commands and our proposed tool’s functionality complement each other, a
 4. Distutils: [https://docs.python.org/3/library/distutils.html#module-distutils](https://docs.python.org/3/library/distutils.html#module-distutils).
 5. PIP: [https://pip.pypa.io/en/stable/reference/requirements-file-format/#requirements-file-format](https://pip.pypa.io/en/stable/reference/requirements-file-format/#requirements-file-format).
 6. PEP 518 - Specifying Minimum Build System Requirements for Python Projects: [https://peps.python.org/pep-0518](https://peps.python.org/pep-0518).
+7. PEP 621 – Storing project metadata in pyproject.toml: [https://peps.python.org/pep-0621](https://peps.python.org/pep-0621).
 
 ### Libraries
 
