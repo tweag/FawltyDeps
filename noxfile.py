@@ -78,7 +78,12 @@ def integration_tests(session):
 def lint(session):
     install_groups(session, include=["lint"], include_self=False)
     session.run("mypy")
-    session.run("pylint", "fawltydeps", "tests")
+    session.run("pylint", "fawltydeps")
+    session.run(
+        "pylint",
+        "--disable=missing-function-docstring,invalid-name,redefined-outer-name",
+        "tests",
+    )
 
 
 @nox.session
