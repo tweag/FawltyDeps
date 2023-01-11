@@ -314,6 +314,8 @@ Both libraries use AST to inspect Python source code, but `pigar`’s implementa
 
 Both libraries rely on a mapping of PyPI libraries to exposed packages. In `pipreqs`, this is done with a CSV file, which is seldom updated lately. In `pigar`, the mapping is more elaborate - it consists of an SQLite database and an additional PyPI package check, performed when the `pigar` script is run to generate the requirements.txt file (in case there was a breaking change between versions or a package was deleted). To check a package, `pigar` downloads it from PyPI in a packed form and peeks at the top_level.txt file to see the list of exposed packages. To assign a package version, `pipreqs` checks if a library is installed locally, and if so, it uses the version from the metadata of installation. If not, then it infers the library name from a static file mapping and posts a request to PyPI with that library name to get a package version.
 
+Libraries like `pigar` and `pipreqs` that automatically populate requirements files by translating imports to dependencies suffer from a major problem. Given a set of imports, the generated set of dependencies may be large and include many irrelevant libraries. These libraries are included just because they expose a package with the same name as an imported package.
+
 The import to dependencies translation (generating requirements.txt) depends on the chosen solution. Pigar downloads all possible candidates for a dependency package and it is a time-consuming process. Neither of the discussed libraries has a caching mechanism.
 
 ### 5.3 Dependency management libraries
