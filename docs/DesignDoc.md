@@ -96,8 +96,8 @@ Expanding from this initial motivation, we present below different user personas
 ## 2.2 User stories
 
 - Deborah wants to rerun another developer’s package. She would like to know if all dependencies are in place before she sends it to a time-consuming CI.
-- Patrick installed [Hail](https://hail.is/), which installs `requests` as a dependency. When he wrote a REST API, he forgot to add `requests` to his `requirements.txt`. The code ran correctly, but an explicit declaration of the dependency was lacking until Andrew pointed it out. Patrick would like to find those problems automatically.
-- Andrew recently added [testbook](https://github.com/nteract/testbook/) to `nixpkgs` and the `requirements.txt` file only listed two dependencies. When he tried to build it, there were four additional dependencies needed to run the tests. He would like all his dependencies explicitly declared.
+- Patrick installed Hail[^6], which installs `requests` as a dependency. When he wrote a REST API, he forgot to add `requests` to his `requirements.txt`. The code ran correctly, but an explicit declaration of the dependency was lacking until Andrew pointed it out. Patrick would like to find those problems automatically.
+- Andrew recently added testbook[^7] to `nixpkgs` and the `requirements.txt` file only listed two dependencies. When he tried to build it, there were four additional dependencies needed to run the tests. He would like all his dependencies explicitly declared.
 - Francis observed that developers were using `pandas` installation from the Python packages located systemwide in Ubuntu. When the other team started working on the code, they had tests failing due to the lack of `pandas` library. Francis would like to automate checks of missing dependencies to ensure a smooth transfer of projects between teams.
 - Francis observed that multiple times in the last week developers were using `numpy` in the code, but did not explicitly state this in requirements, as `pandas` installs `numpy` anyway. This led to multiple problems with the `numpy` version, which did not support some newly used features. Francis would like to have a reproducible and explicit environment declaration.
 - Annie reran her package in a different environment and had to fill in missing packages signaled by import errors. Annie would like to catch problems with missing dependencies earlier and get a list of all missing packages in one run.
@@ -246,7 +246,7 @@ Despite lacking empirical evidence on how many libraries (e.g. on PyPI) use the 
 
 The major limitation of the identity mapping strategy is that it cannot compare an import `x` to a dependency `y` if those are not identically named. Therefore, the moment the imports set and the dependencies set differ, we would need to map one set to the domain of the other.
 
-Furthermore, even when the sets are identical, there is no guarantee that dependencies are correctly declared. As we have discussed earlier, an import x does not necessarily map to a dependency x.
+Furthermore, even when the sets are identical, there is no guarantee that dependencies are correctly declared. As we have discussed earlier, an import `x` does not necessarily map to a dependency `x`.
 
 It is possible to go one step further and check that the declared dependencies exist (on e.g. PyPI). But while this would probably guard against declaring non-existent libraries, it would still not solve the following situation (as no mapping between the import and dependency domains is performed). Suppose you use `import madeup` in your code, and you assume the dependency name to be `madeup` as well so that’s what you provide in `requirements.txt`. As it turns out, `madeup`, the dependency, exists, but does not expose a package `madeup`. What you needed to declare was `pymadeup`, which effectively exposes import name `madeup`. The checker would not flag the dependency as missing, since no mapping has been done and it was assumed the dependency is indeed the one declared.
 
@@ -314,7 +314,7 @@ Both libraries use AST to inspect Python source code, but `pigar`’s implementa
 
 Both libraries rely on a mapping of PyPI libraries to exposed packages. In `pipreqs`, this is done with a CSV file, which is seldom updated lately. In `pigar`, the mapping is more elaborate - it consists of an SQLite database and an additional PyPI package check, performed when the `pigar` script is run to generate the requirements.txt file (in case there was a breaking change between versions or a package was deleted). To check a package, `pigar` downloads it from PyPI in a packed form and peeks at the top_level.txt file to see the list of exposed packages. To assign a package version, `pipreqs` checks if a library is installed locally, and if so, it uses the version from the metadata of installation. If not, then it infers the library name from a static file mapping and posts a request to PyPI with that library name to get a package version.
 
-Import parsing is done well in `pigar`, and our library can take inspiration from that. The import to dependencies translation (generating requirements.txt) depends on the chosen solution. Pigar downloads all possible candidates for a dependency package and it is a time-consuming process. Neither of the discussed libraries has a caching mechanism.
+The import to dependencies translation (generating requirements.txt) depends on the chosen solution. Pigar downloads all possible candidates for a dependency package and it is a time-consuming process. Neither of the discussed libraries has a caching mechanism.
 
 ### 5.3 Dependency management libraries
 
@@ -355,16 +355,13 @@ Poetry commands and our proposed tool’s functionality complement each other, a
 
 ### Libraries
 
-1. Testbook is a unit testing framework extension for testing code in Jupyter Notebooks: [https://github.com/nteract/testbook/](https://github.com/nteract/testbook/).
-2. Hail, cloud-native genomic data frames, and batch computing: [https://hail.is/](https://hail.is/).
-3. Nbconverter converts notebooks to other formats: [https://nbconvert.readthedocs.io/en/latest/](https://nbconvert.readthedocs.io/en/latest/).
-4. SetupTools, packaging Python projects: [https://setuptools.pypa.io/en/latest/](https://setuptools.pypa.io/en/latest/).
-5. Pireqs, generate requirements.txt based on imports: [https://github.com/bndr/pipreqs](https://github.com/bndr/pipreqs).
-6. Pigar, generate requirements.txt based on imports: [https://github.com/damnever/pigar](https://github.com/damnever/pigar).
-7. PyInstaller, angle folder static Python packaging: [https://pyinstaller.org/en/stable/operating-mode.html#](https://pyinstaller.org/en/stable/operating-mode.html#).
-8. Poetry, Python packaging, and dependency management:[ https://python-poetry.org/](https://python-poetry.org/).
-9. Poetry, a plugin to export locked packages: [https://github.com/python-poetry/poetry-plugin-export](https://github.com/python-poetry/poetry-plugin-export).
-10. Pip-tools, a set of command-line tools to maintain pip-based packages: [https://github.com/jazzband/pip-tools](https://github.com/jazzband/pip-tools).
+1. SetupTools, packaging Python projects: [https://setuptools.pypa.io/en/latest/](https://setuptools.pypa.io/en/latest/).
+2. Pireqs, generate requirements.txt based on imports: [https://github.com/bndr/pipreqs](https://github.com/bndr/pipreqs).
+3. Pigar, generate requirements.txt based on imports: [https://github.com/damnever/pigar](https://github.com/damnever/pigar).
+4. PyInstaller, angle folder static Python packaging: [https://pyinstaller.org/en/stable/operating-mode.html#](https://pyinstaller.org/en/stable/operating-mode.html#).
+5. Poetry, Python packaging, and dependency management:[ https://python-poetry.org/](https://python-poetry.org/).
+6. Poetry, a plugin to export locked packages: [https://github.com/python-poetry/poetry-plugin-export](https://github.com/python-poetry/poetry-plugin-export).
+7. Pip-tools, a set of command-line tools to maintain pip-based packages: [https://github.com/jazzband/pip-tools](https://github.com/jazzband/pip-tools).
 
 ### Other sources
 
@@ -380,3 +377,5 @@ Poetry commands and our proposed tool’s functionality complement each other, a
 [^3]: See an [example](https://docs.python.org/3/library/modulefinder.html#modulefinder-example) of usage of Python’s ModuleFinder.
 [^4]: distutils is deprecated and will be removed in Python 3.12.
 [^5]: Suggested by [Thomas Bagrel](mailto:thomas.bagrel@tweag.io).
+[^6]: Hail, cloud-native genomic data frames, and batch computing: [https://hail.is/](https://hail.is/).
+[^7]: Testbook is a unit testing framework extension for testing code in Jupyter Notebooks: [https://github.com/nteract/testbook/](https://github.com/nteract/testbook/).
