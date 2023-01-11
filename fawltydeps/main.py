@@ -24,6 +24,14 @@ class Action(Enum):
 
 
 def perform_actions(actions: Set[Action], code: Path, deps: Path) -> int:
+    """Perform the requested actions of FawltyDeps core logic.
+
+    This is a high-level interface to the services offered by FawltyDeps.
+    Although the main caller is the command-line interface defined below, this
+    can also be called from other Python contexts without having to go via the
+    command-line.
+    """
+
     def is_enabled(*args: Action) -> bool:
         return len(actions.intersection(args)) > 0
 
