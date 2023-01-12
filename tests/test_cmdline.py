@@ -64,43 +64,39 @@ def test_list_imports__from_dash__prints_imports_from_stdin():
     assert errors == ""
 
 
-def test_list_imports__from_file__prints_imports_from_file(tmp_path):
-    code = dedent(
-        """\
-        from pathlib import Path
-        import platform, sys
+def test_list_imports__from_file__prints_imports_from_file(write_tmp_files):
+    tmp_path = write_tmp_files(
+        {
+            "myfile.py": """\
+                from pathlib import Path
+                import platform, sys
 
-        import requests
-        from foo import bar, baz
-        import numpy as np
-        """
+                import requests
+                from foo import bar, baz
+                import numpy as np
+                """,
+        }
     )
-    script = tmp_path / "myfile.py"
-    script.write_text(code)
 
     expect = ["foo", "numpy", "pathlib", "platform", "requests", "sys"]
-    output, errors = run_fawltydeps("--list-imports", f"--code={script}")
+    output, errors = run_fawltydeps("--list-imports", f"--code={tmp_path}/myfile.py")
     assert output.splitlines() == expect
     assert errors == ""
 
 
-def test_list_imports__from_dir__prints_imports_from_py_file_only(tmp_path):
-    (tmp_path / "file1.py").write_text(
-        dedent(
-            """\
-            from pathlib import Path
-            import platform, sys
-            """
-        )
-    )
-    (tmp_path / "file2.NOT_PYTHON").write_text(
-        dedent(
-            """\
-            import requests
-            from foo import bar, baz
-            import numpy as np
-            """
-        )
+def test_list_imports__from_dir__prints_imports_from_py_file_only(write_tmp_files):
+    tmp_path = write_tmp_files(
+        {
+            "file1.py": """\
+                from pathlib import Path
+                import platform, sys
+                """,
+            "file2.NOT_PYTHON": """\
+                import requests
+                from foo import bar, baz
+                import numpy as np
+                """,
+        }
     )
 
     expect = ["pathlib", "platform", "sys"]
