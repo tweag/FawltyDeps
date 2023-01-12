@@ -258,6 +258,62 @@ def test_check__simple_project__can_report_both_undeclared_and_unused(tmp_path):
     assert errors == ""
 
 
+def test_check_undeclared__simple_project__reports_only_undeclared(tmp_path):
+    (tmp_path / "file1.py").write_text(
+        dedent(
+            """\
+            from pathlib import Path
+            import requests
+            """
+        )
+    )
+    (tmp_path / "requirements.txt").write_text(
+        dedent(
+            """\
+            pandas
+            """
+        )
+    )
+
+    expect = [
+        "These imports are not declared as dependencies:",
+        "- requests",
+    ]
+    output, errors = run_fawltydeps(
+        "--check-undeclared", f"--code={tmp_path}", f"--deps={tmp_path}"
+    )
+    assert output.splitlines() == expect
+    assert errors == ""
+
+
+def test_check_unused__simple_project__reports_only_unused(tmp_path):
+    (tmp_path / "file1.py").write_text(
+        dedent(
+            """\
+            from pathlib import Path
+            import requests
+            """
+        )
+    )
+    (tmp_path / "requirements.txt").write_text(
+        dedent(
+            """\
+            pandas
+            """
+        )
+    )
+
+    expect = [
+        "These dependencies are not imported in your code:",
+        "- pandas",
+    ]
+    output, errors = run_fawltydeps(
+        "--check-unused", f"--code={tmp_path}", f"--deps={tmp_path}"
+    )
+    assert output.splitlines() == expect
+    assert errors == ""
+
+
 def test__no_action__defaults_to_check_action(tmp_path):
     (tmp_path / "file1.py").write_text(
         dedent(
