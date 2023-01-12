@@ -95,52 +95,37 @@ def parse_setup_contents(text: str, path_hint: Path) -> Iterator[Tuple[str, Path
             break
 
 
-def parse_poetry_main_dependencies(
-    parsed_contents: dict, path_hint: Path
-) -> Iterator[Tuple[str, Path]]:
-    """
-    Extract dependencies from tool.poetry.dependencies in pyproject.toml
-    """
-    main_requirements = parsed_contents.get("dependencies", {}).keys()
-    for requirement in main_requirements:
-        if requirement != "python":
-            yield (requirement, path_hint)
-
-
-def parse_poetry_group_dependencies(
-    parsed_contents: dict, path_hint: Path
-) -> Iterator[Tuple[str, Path]]:
-    """
-    Parse dependencies in pyproject.toml's tool.poetry.group.<name>.dependencies
-    """
-    group_requirements = parsed_contents.get("group", {})
-    for _group_name, group_dependencies in group_requirements.items():
-        for requirement in group_dependencies.get("dependencies").keys():
-            if requirement != "python":
-                yield (requirement, path_hint)
-
-
-def parse_poetry_extra_dependencies(
-    parsed_contents: dict, path_hint: Path
-) -> Iterator[Tuple[str, Path]]:
-    """
-    Parse dependencies in pyproject.toml's tool.poetry.extras
-    """
-    extra_requirements = parsed_contents.get("extras", {}).values()
-    for dependency_group in extra_requirements:
-        for requirement_text in dependency_group:
-            yield from parse_requirements_contents(requirement_text, path_hint)
-
-
 def parse_poetry_pyproject_dependencies(
-    parsed_contents: dict, path_hint: Path
+    poetry_config: dict, path_hint: Path
 ) -> Iterator[Tuple[str, Path]]:
     """
     Extract dependencies (package names) from Poetry fields in pyproject.toml
     """
-    yield from parse_poetry_main_dependencies(parsed_contents, path_hint)
-    yield from parse_poetry_group_dependencies(parsed_contents, path_hint)
-    yield from parse_poetry_extra_dependencies(parsed_contents, path_hint)
+
+    # Main dependencies
+    if "dependencies" in poetry_config:
+        for requirement in poetry_config["dependencies"]:
+            if requirement != "python":
+                yield (requirement, path_hint)
+    else:
+        logger.debug("Failed to find Poetry dependencies in %s", path_hint)
+
+    # Grouped dependencies
+    if "group" in poetry_config:
+        for group in poetry_config["group"].values():
+            for requirement in group["dependencies"]:
+                if requirement != "python":
+                    yield (requirement, path_hint)
+    else:
+        logger.debug("No Poetry grouped dependencies found in %s", path_hint)
+
+    # Extra dependencies
+    if "extras" in poetry_config:
+        for group in poetry_config["extras"].values():
+            for requirement in group:
+                yield from parse_requirements_contents(requirement, path_hint)
+    else:
+        logger.debug("No Poetry extra dependencies found in %s", path_hint)
 
 
 def parse_pep621_pyproject_main_dependencies(
