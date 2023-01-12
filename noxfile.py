@@ -84,9 +84,9 @@ def lint(session):
 @nox.session
 def format(session):
     install_groups(session, include=["format"], include_self=False)
-    session.run("codespell")
-    session.run("isort", "fawltydeps", "tests", "--check-only")
-    session.run("black", "--check", ".")
+    session.run("codespell", "--enable-colors")
+    session.run("isort", "fawltydeps", "tests", "--check", "--diff", "--color")
+    session.run("black", ".", "--check", "--diff", "--color")
 
 
 @nox.session
