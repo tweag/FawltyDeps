@@ -1,4 +1,5 @@
 """Test extracting dependencies from pyproject.toml"""
+import logging
 from pathlib import Path
 from textwrap import dedent
 
@@ -199,3 +200,44 @@ def test_parse_pyproject_content__poetry_and_pep621_all_metadata_fields_yields_d
         ]
     ]
     assert result == expected
+
+
+def test_parse_pyproject_contents__cannot_find_dependencies__logs_debug_message(
+    caplog, tmp_path
+):
+    pyproject_contents = dedent(
+        """\
+            [project]
+            name = "fawltydeps"
+
+        """
+    )
+    expected = []
+    caplog.set_level(logging.DEBUG)
+    path_hint = tmp_path / "pyproject.toml"
+    result = list(parse_pyproject_contents(pyproject_contents, path_hint))
+    assert f"Failed to find PEP621 dependencies in {path_hint}" in caplog.text
+    assert f"No PEP621 optional dependencies found in {path_hint}" in caplog.text
+    assert expected == result
+
+
+def test_parse_pyproject_contents__cannot_find_poetry_dependencies__logs_debug_message(
+    caplog, tmp_path
+):
+    pyproject_contents = dedent(
+        """\
+            [tool.poetry]
+            name = "fawltydeps"
+
+        """
+    )
+    expected = []
+    caplog.set_level(logging.DEBUG)
+    path_hint = tmp_path / "pyproject.toml"
+    result = list(parse_pyproject_contents(pyproject_contents, path_hint))
+    assert f"Failed to find PEP621 dependencies in {path_hint}" in caplog.text
+    assert f"No PEP621 optional dependencies found in {path_hint}" in caplog.text
+    assert f"Failed to find Poetry dependencies in {path_hint}" in caplog.text
+    assert f"No Poetry grouped dependencies found in {path_hint}" in caplog.text
+    assert f"No Poetry extra dependencies found in {path_hint}" in caplog.text
+    assert expected == result
