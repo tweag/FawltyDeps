@@ -372,7 +372,7 @@ python-versions = "*"
 
 [[package]]
 name = "types-setuptools"
-version = "65.6.0.3"
+version = "65.7.0.0"
 description = "Typing stubs for setuptools"
 category = "dev"
 optional = false
@@ -430,7 +430,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7.2"
-content-hash = "a501e56b40d17e3fbb3a20b007459d512cd559d5d2c890bd04569176622e2917"
+content-hash = "46cc32c6203df6034783d0fe66950db00db8540bef0d205bf4d9d4f9c6cb7211"
 
 [metadata.files]
 argcomplete = [
@@ -644,8 +644,8 @@ types-docutils = [
     {file = "types_docutils-0.19.1.1-py3-none-any.whl", hash = "sha256:a024cada35f0c13cc45eb0b68a102719018a634013690b7fef723bcbfadbd1f1"},
 ]
 types-setuptools = [
-    {file = "types-setuptools-65.6.0.3.tar.gz", hash = "sha256:7ddd7415282fa97ab18e490206067c0cdb126b103743e72ee86783d7af6481c5"},
-    {file = "types_setuptools-65.6.0.3-py3-none-any.whl", hash = "sha256:ad729fc3a9a3946f73915eaab16ce56b30ed5ae998479253d809d76b3889ee09"},
+    {file = "types-setuptools-65.7.0.0.tar.gz", hash = "sha256:0bb78efb7d91baaa7da3fe15dfac0461380ae23ce596708b87bdf368c50fbff7"},
+    {file = "types_setuptools-65.7.0.0-py3-none-any.whl", hash = "sha256:8d20beda264fe2962599aa087373c9b897e7c99d9fe591772d817e872e0fe4eb"},
 ]
 typing-extensions = [
     {file = "typing_extensions-4.4.0-py3-none-any.whl", hash = "sha256:16fa4864408f655d35ec496218b85f79b3437c829e93320c7c9215ccfd92489e"},
