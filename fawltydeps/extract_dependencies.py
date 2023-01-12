@@ -5,7 +5,7 @@ import logging
 import os
 import sys
 from pathlib import Path
-from typing import Any, Iterator, Tuple
+from typing import Any, Dict, Iterator, Tuple
 
 from pkg_resources import parse_requirements
 
@@ -13,6 +13,8 @@ if sys.version_info >= (3, 11):
     import tomllib  # pylint: disable=E1101
 else:
     import tomli as tomllib
+
+TomlData = Dict[str, Any]  # type: ignore
 
 logger = logging.getLogger(__name__)
 
@@ -100,7 +102,7 @@ def parse_setup_contents(text: str, path_hint: Path) -> Iterator[Tuple[str, Path
 
 
 def parse_poetry_pyproject_dependencies(
-    poetry_config: dict, path_hint: Path
+    poetry_config: TomlData, path_hint: Path
 ) -> Iterator[Tuple[str, Path]]:
     """
     Extract dependencies (package names) from Poetry fields in pyproject.toml
@@ -133,7 +135,7 @@ def parse_poetry_pyproject_dependencies(
 
 
 def parse_pep621_pyproject_contents(
-    parsed_contents: dict, path_hint: Path
+    parsed_contents: TomlData, path_hint: Path
 ) -> Iterator[Tuple[str, Path]]:
     """
     Extract dependencies (package names) in PEP 621 styled pyproject.toml
