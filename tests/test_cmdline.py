@@ -14,16 +14,21 @@ def run_fawltydeps(
     check: bool = True,
     cwd: Optional[Path] = None,
 ) -> Tuple[str, str]:
-    proc = subprocess.run(
-        ["fawltydeps"] + list(args),
-        input=to_stdin,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        universal_newlines=True,
-        check=check,
-        cwd=cwd,
-    )
-    return proc.stdout.strip(), proc.stderr.strip()
+    try:
+        proc = subprocess.run(
+            ["fawltydeps"] + list(args),
+            input=to_stdin,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            universal_newlines=True,
+            check=check,
+            cwd=cwd,
+        )
+        return proc.stdout.strip(), proc.stderr.strip()
+    except subprocess.CalledProcessError as e:
+        print(f"Captured stdout: {e.stdout}")
+        print(f"Captured stderr: {e.stderr}")
+        raise
 
 
 def test_list_imports__from_dash__prints_imports_from_stdin():
