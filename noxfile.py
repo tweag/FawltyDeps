@@ -71,7 +71,7 @@ def tests(session):
 @nox.session(python=python_versions)
 def lint(session):
     install_groups(session, include=["lint"], include_self=False)
-    session.run("mypy", "fawltydeps", "tests")
+    session.run("mypy")
     session.run("pylint", "fawltydeps", "tests")
 
 
