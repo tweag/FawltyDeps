@@ -57,7 +57,7 @@ profile = "black"
 [tool.pylint]
 py-version = "3.7"
 output-format = "colorized"
-disable = "fixme,logging-fstring-interpolation,unspecified-encoding"
+disable = "fixme,logging-fstring-interpolation,unspecified-encoding,too-many-branches"
 
 [tool.pylint.tests]
 disable = "missing-function-docstring,invalid-name,redefined-outer-name"
