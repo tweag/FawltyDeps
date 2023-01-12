@@ -77,7 +77,21 @@ def main() -> int:
         dest="actions",
         action="store_const",
         const={Action.REPORT_UNDECLARED, Action.REPORT_UNUSED},
-        help="Report both unudeclared and unused dependencies",
+        help="Report both undeclared and unused dependencies",
+    )
+    select_action.add_argument(
+        "--check-undeclared",
+        dest="actions",
+        action="store_const",
+        const={Action.REPORT_UNDECLARED},
+        help="Report only unudeclared dependencies",
+    )
+    select_action.add_argument(
+        "--check-unused",
+        dest="actions",
+        action="store_const",
+        const={Action.REPORT_UNUSED},
+        help="Report only unused dependencies",
     )
     select_action.add_argument(
         "--list-imports",
