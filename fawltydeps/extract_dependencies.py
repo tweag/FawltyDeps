@@ -7,8 +7,12 @@ import sys
 from pathlib import Path
 from typing import Any, Iterator, Tuple
 
-import tomli
 from pkg_resources import parse_requirements
+
+if sys.version_info >= (3, 11):
+    import tomllib  # pylint: disable=E1101
+else:
+    import tomli as tomllib
 
 logger = logging.getLogger(__name__)
 
@@ -160,7 +164,7 @@ def parse_pyproject_contents(text: str, path_hint: Path) -> Iterator[Tuple[str, 
     - PEP 621 core metadata fields
     - Poetry-specific metadata
     """
-    parsed_contents = tomli.loads(text)
+    parsed_contents = tomllib.loads(text)
 
     yield from parse_pep621_pyproject_contents(parsed_contents, path_hint)
 
