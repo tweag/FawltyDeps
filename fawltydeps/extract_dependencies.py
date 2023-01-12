@@ -101,9 +101,7 @@ def parse_poetry_main_dependencies(
     """
     Extract dependencies from tool.poetry.dependencies in pyproject.toml
     """
-    main_requirements = (
-        parsed_contents.get("tool", {}).get("poetry", {}).get("dependencies", {}).keys()
-    )
+    main_requirements = parsed_contents.get("dependencies", {}).keys()
     for requirement in main_requirements:
         if requirement != "python":
             yield (requirement, path_hint)
@@ -115,9 +113,7 @@ def parse_poetry_group_dependencies(
     """
     Parse dependencies in pyproject.toml's tool.poetry.group.<name>.dependencies
     """
-    group_requirements = (
-        parsed_contents.get("tool", {}).get("poetry", {}).get("group", {})
-    )
+    group_requirements = parsed_contents.get("group", {})
     for _group_name, group_dependencies in group_requirements.items():
         for requirement in group_dependencies.get("dependencies").keys():
             if requirement != "python":
@@ -130,9 +126,7 @@ def parse_poetry_extra_dependencies(
     """
     Parse dependencies in pyproject.toml's tool.poetry.extras
     """
-    extra_requirements = (
-        parsed_contents.get("tool", {}).get("poetry", {}).get("extras", {}).values()
-    )
+    extra_requirements = parsed_contents.get("extras", {}).values()
     for dependency_group in extra_requirements:
         for requirement_text in dependency_group:
             yield from parse_requirements_contents(requirement_text, path_hint)
@@ -195,7 +189,9 @@ def parse_pyproject_contents(text: str, path_hint: Path) -> Iterator[Tuple[str, 
     parsed_contents = tomli.loads(text)
 
     if "poetry" in parsed_contents.get("tool", {}):
-        yield from parse_poetry_pyproject_dependencies(parsed_contents, path_hint)
+        yield from parse_poetry_pyproject_dependencies(
+            parsed_contents["tool"]["poetry"], path_hint
+        )
     elif "project" in parsed_contents:
         yield from parse_pep621_pyproject_contents(parsed_contents, path_hint)
     else:
