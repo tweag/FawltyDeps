@@ -151,7 +151,7 @@ def TODO_test_list_deps__empty_dir__verbosely_logs_but_extracts_nothing(tmp_path
     assert f"Extracting dependencies from {tmp_path}" in errors
 
 
-def test_check__simple_project__in_clean_project_prints_nothing(
+def test_check__simple_project_imports_match_dependencies__prints_nothing(
     project_with_code_and_requirements_txt,
 ):
     tmp_path = project_with_code_and_requirements_txt(
@@ -167,7 +167,7 @@ def test_check__simple_project__in_clean_project_prints_nothing(
     assert errors == ""
 
 
-def test_check__simple_project__when_missing_deps_reports_undeclared(
+def test_check__simple_project_with_missing_deps__reports_undeclared(
     project_with_code_and_requirements_txt,
 ):
     tmp_path = project_with_code_and_requirements_txt(
@@ -186,7 +186,7 @@ def test_check__simple_project__when_missing_deps_reports_undeclared(
     assert errors == ""
 
 
-def test_check__simple_project__when_extra_deps_reports_unused(
+def test_check__simple_project_with_extra_deps__reports_unused(
     project_with_code_and_requirements_txt,
 ):
     tmp_path = project_with_code_and_requirements_txt(
