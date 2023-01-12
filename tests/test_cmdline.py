@@ -3,9 +3,24 @@
 import subprocess
 from pathlib import Path
 from textwrap import dedent
-from typing import Optional, Tuple
+from typing import Iterable, Optional, Tuple
 
 import pytest
+
+
+@pytest.fixture()
+def project_with_code_and_requirements_txt(write_tmp_files):
+    def _inner(*, imports: Iterable[str], declares: Iterable[str]):
+        code = "".join(f"import {s}\n" for s in imports)
+        requirements = "".join(f"{s}\n" for s in declares)
+        return write_tmp_files(
+            {
+                "code.py": code,
+                "requirements.txt": requirements,
+            }
+        )
+
+    return _inner
 
 
 def run_fawltydeps(
@@ -107,22 +122,12 @@ def test_list_imports__from_empty_dir__logs_but_extracts_nothing(tmp_path):
     assert f"Parsing Python files under {tmp_path}" in errors
 
 
-def test_list_deps__dir__prints_deps_from_requirements_txt(tmp_path):
-    (tmp_path / "file1.py").write_text(
-        dedent(
-            """\
-            from pathlib import Path
-            import requests, pandas
-            """
-        )
-    )
-    (tmp_path / "requirements.txt").write_text(
-        dedent(
-            """\
-            requests
-            pandas
-            """
-        )
+def test_list_deps__dir__prints_deps_from_requirements_txt(
+    project_with_code_and_requirements_txt,
+):
+    tmp_path = project_with_code_and_requirements_txt(
+        imports=["requests", "pandas"],
+        declares=["requests", "pandas"],
     )
 
     expect = [
@@ -150,22 +155,12 @@ def TODO_test_list_deps__empty_dir__verbosely_logs_but_extracts_nothing(tmp_path
     assert f"Extracting dependencies from {tmp_path}" in errors
 
 
-def test_check__simple_project__in_clean_project_prints_nothing(tmp_path):
-    (tmp_path / "file1.py").write_text(
-        dedent(
-            """\
-            from pathlib import Path
-            import requests, pandas
-            """
-        )
-    )
-    (tmp_path / "requirements.txt").write_text(
-        dedent(
-            """\
-            requests
-            pandas
-            """
-        )
+def test_check__simple_project__in_clean_project_prints_nothing(
+    project_with_code_and_requirements_txt,
+):
+    tmp_path = project_with_code_and_requirements_txt(
+        imports=["requests", "pandas"],
+        declares=["requests", "pandas"],
     )
 
     expect = []
@@ -176,21 +171,12 @@ def test_check__simple_project__in_clean_project_prints_nothing(tmp_path):
     assert errors == ""
 
 
-def test_check__simple_project__when_missing_deps_reports_undeclared(tmp_path):
-    (tmp_path / "file1.py").write_text(
-        dedent(
-            """\
-            from pathlib import Path
-            import requests, pandas
-            """
-        )
-    )
-    (tmp_path / "requirements.txt").write_text(
-        dedent(
-            """\
-            pandas
-            """
-        )
+def test_check__simple_project__when_missing_deps_reports_undeclared(
+    project_with_code_and_requirements_txt,
+):
+    tmp_path = project_with_code_and_requirements_txt(
+        imports=["requests", "pandas"],
+        declares=["pandas"],
     )
 
     expect = [
@@ -204,22 +190,12 @@ def test_check__simple_project__when_missing_deps_reports_undeclared(tmp_path):
     assert errors == ""
 
 
-def test_check__simple_project__when_extra_deps_reports_unused(tmp_path):
-    (tmp_path / "file1.py").write_text(
-        dedent(
-            """\
-            from pathlib import Path
-            import requests
-            """
-        )
-    )
-    (tmp_path / "requirements.txt").write_text(
-        dedent(
-            """\
-            requests
-            pandas
-            """
-        )
+def test_check__simple_project__when_extra_deps_reports_unused(
+    project_with_code_and_requirements_txt,
+):
+    tmp_path = project_with_code_and_requirements_txt(
+        imports=["requests"],
+        declares=["requests", "pandas"],
     )
 
     expect = [
@@ -233,21 +209,12 @@ def test_check__simple_project__when_extra_deps_reports_unused(tmp_path):
     assert errors == ""
 
 
-def test_check__simple_project__can_report_both_undeclared_and_unused(tmp_path):
-    (tmp_path / "file1.py").write_text(
-        dedent(
-            """\
-            from pathlib import Path
-            import requests
-            """
-        )
-    )
-    (tmp_path / "requirements.txt").write_text(
-        dedent(
-            """\
-            pandas
-            """
-        )
+def test_check__simple_project__can_report_both_undeclared_and_unused(
+    project_with_code_and_requirements_txt,
+):
+    tmp_path = project_with_code_and_requirements_txt(
+        imports=["requests"],
+        declares=["pandas"],
     )
 
     expect = [
@@ -263,21 +230,12 @@ def test_check__simple_project__can_report_both_undeclared_and_unused(tmp_path):
     assert errors == ""
 
 
-def test_check_undeclared__simple_project__reports_only_undeclared(tmp_path):
-    (tmp_path / "file1.py").write_text(
-        dedent(
-            """\
-            from pathlib import Path
-            import requests
-            """
-        )
-    )
-    (tmp_path / "requirements.txt").write_text(
-        dedent(
-            """\
-            pandas
-            """
-        )
+def test_check_undeclared__simple_project__reports_only_undeclared(
+    project_with_code_and_requirements_txt,
+):
+    tmp_path = project_with_code_and_requirements_txt(
+        imports=["requests"],
+        declares=["pandas"],
     )
 
     expect = [
@@ -291,21 +249,12 @@ def test_check_undeclared__simple_project__reports_only_undeclared(tmp_path):
     assert errors == ""
 
 
-def test_check_unused__simple_project__reports_only_unused(tmp_path):
-    (tmp_path / "file1.py").write_text(
-        dedent(
-            """\
-            from pathlib import Path
-            import requests
-            """
-        )
-    )
-    (tmp_path / "requirements.txt").write_text(
-        dedent(
-            """\
-            pandas
-            """
-        )
+def test_check_unused__simple_project__reports_only_unused(
+    project_with_code_and_requirements_txt,
+):
+    tmp_path = project_with_code_and_requirements_txt(
+        imports=["requests"],
+        declares=["pandas"],
     )
 
     expect = [
@@ -319,21 +268,12 @@ def test_check_unused__simple_project__reports_only_unused(tmp_path):
     assert errors == ""
 
 
-def test__no_action__defaults_to_check_action(tmp_path):
-    (tmp_path / "file1.py").write_text(
-        dedent(
-            """\
-            from pathlib import Path
-            import requests
-            """
-        )
-    )
-    (tmp_path / "requirements.txt").write_text(
-        dedent(
-            """\
-            pandas
-            """
-        )
+def test__no_action__defaults_to_check_action(
+    project_with_code_and_requirements_txt,
+):
+    tmp_path = project_with_code_and_requirements_txt(
+        imports=["requests"],
+        declares=["pandas"],
     )
 
     expect = [
@@ -347,21 +287,12 @@ def test__no_action__defaults_to_check_action(tmp_path):
     assert errors == ""
 
 
-def test__no_options__defaults_to_check_action_in_current_dir(tmp_path):
-    (tmp_path / "file1.py").write_text(
-        dedent(
-            """\
-            from pathlib import Path
-            import requests
-            """
-        )
-    )
-    (tmp_path / "requirements.txt").write_text(
-        dedent(
-            """\
-            pandas
-            """
-        )
+def test__no_options__defaults_to_check_action_in_current_dir(
+    project_with_code_and_requirements_txt,
+):
+    tmp_path = project_with_code_and_requirements_txt(
+        imports=["requests"],
+        declares=["pandas"],
     )
 
     expect = [
