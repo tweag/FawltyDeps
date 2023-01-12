@@ -29,8 +29,10 @@ classifiers = [
 fawltydeps = "fawltydeps.main:main"
 
 [tool.poetry.dependencies]
-isort = "^5.10"
+# These are the main dependencies for fawltydeps at runtime.
+# Do not add anything here that is only needed by CI/tests/linters/developers
 python = "^3.7.2"
+isort = "^5.10"
 tomli = "^2.0.1"
 
 [tool.poetry.group.test]
