@@ -128,40 +128,29 @@ def parse_poetry_pyproject_dependencies(
         logger.debug("No Poetry extra dependencies found in %s", path_hint)
 
 
-def parse_pep621_pyproject_main_dependencies(
-    parsed_contents: dict, path_hint: Path
-) -> Iterator[Tuple[str, Path]]:
-    """
-    Parse dependencies in pyproject.toml's project.dependencies
-    """
-    main_dependencies = parsed_contents.get("project", {}).get("dependencies", {})
-
-    for requirement_text in main_dependencies:
-        yield from parse_requirements_contents(requirement_text, path_hint)
-
-
-def parse_pep621_pyproject_optional_dependencies(
-    parsed_contents: dict[str, Any], path_hint: Path
-) -> Iterator[Tuple[str, Path]]:
-    """
-    Parse dependencies in pyproject.toml's project.optional-dependencies
-    """
-    optional_dependencies = (
-        parsed_contents.get("project", {}).get("optional-dependencies", {}).values()
-    )
-    for dependency_group in optional_dependencies:
-        for requirement_text in dependency_group:
-            yield from parse_requirements_contents(requirement_text, path_hint)
-
-
 def parse_pep621_pyproject_contents(
     parsed_contents: dict, path_hint: Path
 ) -> Iterator[Tuple[str, Path]]:
     """
     Extract dependencies (package names) in PEP 621 styled pyproject.toml
     """
-    yield from parse_pep621_pyproject_main_dependencies(parsed_contents, path_hint)
-    yield from parse_pep621_pyproject_optional_dependencies(parsed_contents, path_hint)
+    # Main dependencies
+    if "project" in parsed_contents and "dependencies" in parsed_contents["project"]:
+        for requirement in parsed_contents["project"]["dependencies"]:
+            yield from parse_requirements_contents(requirement, path_hint)
+    else:
+        logger.debug("Failed to find PEP621 dependencies in %s", path_hint)
+
+    # Optional dependencies
+    if (
+        "project" in parsed_contents
+        and "optional-dependencies" in parsed_contents["project"]
+    ):
+        for group in parsed_contents["project"]["optional-dependencies"].values():
+            for requirement in group:
+                yield from parse_requirements_contents(requirement, path_hint)
+    else:
+        logger.debug("No PEP621 optional dependencies found in %s", path_hint)
 
 
 def parse_pyproject_contents(text: str, path_hint: Path) -> Iterator[Tuple[str, Path]]:
