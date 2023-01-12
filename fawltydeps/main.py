@@ -148,10 +148,9 @@ def main() -> int:
         level=logging.WARNING + 10 * (args.quiet - args.verbose),
     )
 
-    if args.actions is None:  # Provide default action
-        args.actions = {Action.REPORT_UNDECLARED, Action.REPORT_UNUSED}
+    actions = args.actions or {Action.REPORT_UNDECLARED, Action.REPORT_UNUSED}
 
     try:
-        return perform_actions(args.actions, args.code, args.deps)
+        return perform_actions(actions, args.code, args.deps)
     except extract_imports.ParseError as e:
         return parser.error(e.msg)
