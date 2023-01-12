@@ -1,4 +1,4 @@
-"""Test that we can extract dependencies from requirement.txt and other files"""
+"""Test that dependencies are parsed from requirements files"""
 import logging
 from pathlib import Path
 from textwrap import dedent
@@ -324,3 +324,42 @@ def test_extract_dependencies__unsupported_file__raises_error(
         )
     )
     assert "Parsing file python_file.py is not supported" in caplog.text
+
+
+def test_extract_dependencies__project_with_pyproject_setup_and_requirements__returns_list(
+    project_with_setup_pyproject_and_requirements,
+):
+    expect = [
+        "pandas",
+        "click",
+        "pandas",
+        "click",
+        "annoy",
+        "jieba",
+        "pandas",
+        "tensorflow",
+        "pandas",
+        "pydantic",
+        "pylint",
+    ]
+    assert sorted(
+        [
+            a
+            for (a, _) in extract_dependencies(
+                project_with_setup_pyproject_and_requirements
+            )
+        ]
+    ) == sorted(expect)
+
+
+def test_extract_dependencies__project_with_pyproject__returns_list(
+    project_with_pyproject,
+):
+    expect = [
+        "pandas",
+        "pydantic",
+        "pylint",
+    ]
+    assert sorted(
+        [a for (a, _) in extract_dependencies(project_with_pyproject)]
+    ) == sorted(expect)
