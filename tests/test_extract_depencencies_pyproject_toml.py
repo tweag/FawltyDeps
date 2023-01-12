@@ -149,3 +149,53 @@ def test_parse_pyproject_content__main_and_optional_dependencies__yields_depende
         (dep, filename) for dep in ["isort", "django", "pytest", "pytest-cov", "pylint"]
     ]
     assert result == expected
+
+
+def test_parse_pyproject_content__poetry_and_pep621_all_metadata_fields_yields_dependencies():
+    filename = Path("pyproject.toml")
+    pyproject_toml = dedent(
+        """\
+            [project]
+            name = "fawltydeps"
+
+            dependencies = ["pandas", "pydantic>1.10.4"]
+
+            [project.optional-dependencies]
+            dev = ["pylint >= 2.15.8"]
+
+            [tool.poetry]
+            [tool.poetry.dependencies]
+            python = "^3.8"
+            isort = "^5.10"
+            tomli = "^2.0.1"
+
+            [tool.poetry.group.dev.dependencies]
+            black = "^22"
+            mypy = "^0.991"
+
+            [tool.poetry.group.experimental.dependencies]
+            django = "^2.1"
+
+            [tool.poetry.extras]
+            alpha = ["pytorch < 1.12.1", "numpy >= 1.17.2"]
+            dev = ["flake >= 5.0.1"]
+        """
+    )
+    result = list(parse_pyproject_contents(pyproject_toml, filename))
+    expected = [
+        (dep, filename)
+        for dep in [
+            "pandas",
+            "pydantic",
+            "pylint",
+            "isort",
+            "tomli",
+            "black",
+            "mypy",
+            "django",
+            "pytorch",
+            "numpy",
+            "flake",
+        ]
+    ]
+    assert result == expected
