@@ -63,6 +63,7 @@ optional = true
 
 [tool.poetry.group.format.dependencies]
 black = "^22"
+colorama = "^0.4.6"
 isort = "^5.10"
 codespell = "^2.2.2"
 
@@ -76,6 +77,7 @@ optional = true
 # in a developers environment
 black = "^22"
 codespell = "^2.2.2"
+colorama = "^0.4.6"
 isort = "^5.10"
 mypy = "^0.991"
 nox = "^2022.11.21"
