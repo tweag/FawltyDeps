@@ -18,13 +18,7 @@ def test_parse_pyproject_content__poetry_main_dependencies__yields_dependencies(
         """
     )
     result = list(parse_pyproject_contents(pyproject_toml, filename))
-    expected_dependencies = ["isort", "tomli"]
-    expected = list(
-        zip(
-            expected_dependencies,
-            [filename] * len(expected_dependencies),
-        )
-    )
+    expected = [(dep, filename) for dep in ["isort", "tomli"]]
     assert result == expected
 
 
@@ -43,13 +37,7 @@ def test_parse_pyproject_content__poetry_groups__yields_dependencies():
         """
     )
     result = list(parse_pyproject_contents(pyproject_toml, filename))
-    expected_dependencies = ["black", "mypy", "pytest"]
-    expected = list(
-        zip(
-            expected_dependencies,
-            [filename] * len(expected_dependencies),
-        )
-    )
+    expected = [(dep, filename) for dep in ["black", "mypy", "pytest"]]
     assert result == expected
 
 
@@ -65,13 +53,7 @@ def test_parse_pyproject_content__poetry_extras__yields_dependencies():
         """
     )
     result = list(parse_pyproject_contents(pyproject_toml, filename))
-    expected_dependencies = ["pytest", "pytest-cov", "pylint"]
-    expected = list(
-        zip(
-            expected_dependencies,
-            [filename] * len(expected_dependencies),
-        )
-    )
+    expected = [(dep, filename) for dep in ["pytest", "pytest-cov", "pylint"]]
     assert result == expected
 
 
@@ -99,23 +81,19 @@ def test_parse_pyproject_content__poetry_main_group_and_extra_dependencies__yiel
         """
     )
     result = list(parse_pyproject_contents(pyproject_toml, filename))
-    expected_dependencies = [
-        "isort",
-        "tomli",
-        "black",
-        "mypy",
-        "django",
-        "pytest",
-        "pytest-cov",
-        "pylint",
+    expected = [
+        (dep, filename)
+        for dep in [
+            "isort",
+            "tomli",
+            "black",
+            "mypy",
+            "django",
+            "pytest",
+            "pytest-cov",
+            "pylint",
+        ]
     ]
-
-    expected = list(
-        zip(
-            expected_dependencies,
-            [filename] * len(expected_dependencies),
-        )
-    )
     assert result == expected
 
 
@@ -130,13 +108,7 @@ def test_parse_pyproject_content__dependencies_field__yields_dependencies():
         """
     )
     result = list(parse_pyproject_contents(pyproject_toml, filename))
-    expected_dependencies = ["isort", "django"]
-    expected = list(
-        zip(
-            expected_dependencies,
-            [filename] * len(expected_dependencies),
-        )
-    )
+    expected = [(dep, filename) for dep in ["isort", "django"]]
     assert result == expected
 
 
@@ -153,13 +125,7 @@ def test_parse_pyproject_content__optional_dependencies_field__yields_dependenci
         """
     )
     result = list(parse_pyproject_contents(pyproject_toml, filename))
-    expected_dependencies = ["pytest", "pytest-cov", "pylint"]
-    expected = list(
-        zip(
-            expected_dependencies,
-            [filename] * len(expected_dependencies),
-        )
-    )
+    expected = [(dep, filename) for dep in ["pytest", "pytest-cov", "pylint"]]
     assert result == expected
 
 
@@ -179,11 +145,7 @@ def test_parse_pyproject_content__main_and_optional_dependencies__yields_depende
         """
     )
     result = list(parse_pyproject_contents(pyproject_toml, filename))
-    expected_dependencies = ["isort", "django", "pytest", "pytest-cov", "pylint"]
-    expected = list(
-        zip(
-            expected_dependencies,
-            [filename] * len(expected_dependencies),
-        )
-    )
+    expected = [
+        (dep, filename) for dep in ["isort", "django", "pytest", "pytest-cov", "pylint"]
+    ]
     assert result == expected
