@@ -16,20 +16,66 @@ To check the project in the current directory run:
 fawltydeps
 ```
 
-Options available:
+This will find imports in all the Python code under the current directory, as
+well as extract dependencies declared by your project, and then report
+_undeclared_ dependencies as well as _unused_ dependencies.
 
-```
-> fawltydeps --help
-usage: fawltydeps [-h] [--code CODE] [-v] [-q]
+_Undeclared_ dependencies are dependencies that are `import`ed by the code, but
+not declared by your project. For example, if you `import numpy` somewhere in
+your code, but then you forget to include `numpy` in  your `requirements.txt`.
 
-Find undeclared 3rd-party dependencies in your Python project.
+_Unused_ dependencies are dependencies that your project claims to be using,
+but that does not seem to be `import`ed anywhere. For example if you have
+`numpy` listed in your `requirements.txt`, but you actually never `import numpy`
+anywhere in your Python code.
 
-options:
-  -h, --help     show this help message and exit
-  --code CODE    Code to parse for import statements (file or directory, use '-' to read code from stdin; defaults to the current directory)
-  -v, --verbose  Increase log level (WARNING by default, -v: INFO, -vv: DEBUG)
-  -q, --quiet    Decrease log level (WARNING by default, -q: ERROR, -qq: FATAL)
-```
+### Available Actions
+
+FawltyDeps provides these options for controlling what actions to perform. Only
+one of these can be used at a time:
+
+- `--check`: Report both undeclared and unused dependencies
+- `--check-undeclared`: Report only unudeclared dependencies
+- `--check-unused`: Report only unused dependencies
+- `--list-imports`: List imports extracted from code and exit
+- `--list-deps`: List declared dependencies and exit
+
+When none of these are specified, the default action is `--check`.
+
+### Where to find Python code
+
+The `--code` option tells FawltyDeps where to find the Python code to parse for
+`import` statements. You can pass either of these:
+ - a directory: FawltyDeps will find all Python scripts (`*.py`) and Jupyter
+   notebooks (`*.ipynb`) under this directory.
+ - a single file: Either a Python script (`*.py`) or a Jupyter Notebook
+   (`*.ipynb`)
+ - `-`: Passing a single dash (`--code=-`) tells FawltyDeps to read Python code
+   from stdin.
+
+If no `--code` option is passed, FawltyDeps will find all Python code under the
+current directory, i.e. same as `--code=.`
+
+### Where to find declared dependencies
+
+The `--deps` option tells FawltyDeps where to look for your project's declared
+dependencies. A number of file formats are supported:
+ - `requirements.txt`
+ - `pyproject.toml` (following PEP 621 or Poetry conventions)
+ - `setup.py` (only limited support for simple files with a single `setup()`
+   call and literals passed directly to the `install_requires` and
+   `extras_require` arguments)
+
+The `--deps` option accepts either a directory, in which case FawltyDeps will go
+looking for the above files under that directory. or a file, in case you want to
+be explicit about where to find the declared dependencies.
+
+If no `--deps` option is passed, FawltyDeps will look for the above files under
+the current directory, i.e. same as `--deps=.`
+
+### More help
+
+Run `fawltydeps --help` to get the full list of available options.
 
 ## Documentation
 
