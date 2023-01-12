@@ -162,17 +162,14 @@ def parse_pyproject_contents(text: str, path_hint: Path) -> Iterator[Tuple[str, 
     """
     parsed_contents = tomli.loads(text)
 
+    yield from parse_pep621_pyproject_contents(parsed_contents, path_hint)
+
     if "poetry" in parsed_contents.get("tool", {}):
         yield from parse_poetry_pyproject_dependencies(
             parsed_contents["tool"]["poetry"], path_hint
         )
-    elif "project" in parsed_contents:
-        yield from parse_pep621_pyproject_contents(parsed_contents, path_hint)
     else:
-        logger.error(
-            "pyproject.toml does not have the expected format. "
-            "Expected [project] or [tool.poetry]."
-        )
+        logger.debug("%s does not contain [tool.poetry].")
 
 
 def extract_dependencies(path: Path) -> Iterator[Tuple[str, Path]]:
