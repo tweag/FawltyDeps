@@ -109,29 +109,44 @@ def parse_poetry_pyproject_dependencies(
     """
 
     # Main dependencies
-    if "dependencies" in poetry_config:
-        for requirement in poetry_config["dependencies"]:
+    try:
+        for requirement in poetry_config["dependencies"].keys():
             if requirement != "python":
                 yield (requirement, path_hint)
-    else:
-        logger.debug("Failed to find Poetry dependencies in %s", path_hint)
+    except KeyError:  # missing fields:
+        logger.debug(
+            "Failed to find Poetry main dependencies in %s.",
+            path_hint,
+        )
+    except AttributeError:  # invalid config
+        logger.error(
+            "Failed to parse Poetry main dependencies in %s.",
+            path_hint,
+        )
 
     # Grouped dependencies
-    if "group" in poetry_config:
+    try:
         for group in poetry_config["group"].values():
-            for requirement in group["dependencies"]:
+            for requirement in group["dependencies"].keys():
                 if requirement != "python":
                     yield (requirement, path_hint)
-    else:
-        logger.debug("No Poetry grouped dependencies found in %s", path_hint)
+    except KeyError:
+        logger.debug("Failed to find Poetry group dependencies in %s.", path_hint)
+    except AttributeError:
+        logger.error("Failed to parse Poetry group dependencies in %s.", path_hint)
 
     # Extra dependencies
-    if "extras" in poetry_config:
+    try:
         for group in poetry_config["extras"].values():
-            for requirement in group:
-                yield from parse_requirements_contents(requirement, path_hint)
-    else:
-        logger.debug("No Poetry extra dependencies found in %s", path_hint)
+            if isinstance(group, list):
+                for requirement in group:
+                    yield from parse_requirements_contents(requirement, path_hint)
+            else:
+                raise TypeError(f"{group} is of type {type(group)}. Expected a list.")
+    except KeyError:
+        logger.debug("Failed to find Poetry extra dependencies in %s.", path_hint)
+    except (AttributeError, TypeError):
+        logger.error("Failed to parse Poetry extra dependencies in %s.", path_hint)
 
 
 def parse_pep621_pyproject_contents(
@@ -141,22 +156,28 @@ def parse_pep621_pyproject_contents(
     Extract dependencies (package names) in PEP 621 styled pyproject.toml
     """
     # Main dependencies
-    if "project" in parsed_contents and "dependencies" in parsed_contents["project"]:
-        for requirement in parsed_contents["project"]["dependencies"]:
-            yield from parse_requirements_contents(requirement, path_hint)
-    else:
-        logger.debug("Failed to find PEP621 dependencies in %s", path_hint)
+    try:
+        if isinstance(dependencies := parsed_contents["project"]["dependencies"], list):
+            for requirement in dependencies:
+                yield from parse_requirements_contents(requirement, path_hint)
+        else:
+            raise TypeError(
+                f"{dependencies} of type {type(dependencies)}. Expected list."
+            )
+    except KeyError:
+        logger.debug("Failed to find PEP621 main dependencies in %s.", path_hint)
+    except (AttributeError, TypeError):
+        logger.error("Failed to parse PEP621 main dependencies in %s.", path_hint)
 
     # Optional dependencies
-    if (
-        "project" in parsed_contents
-        and "optional-dependencies" in parsed_contents["project"]
-    ):
+    try:
         for group in parsed_contents["project"]["optional-dependencies"].values():
             for requirement in group:
                 yield from parse_requirements_contents(requirement, path_hint)
-    else:
-        logger.debug("No PEP621 optional dependencies found in %s", path_hint)
+    except KeyError:
+        logger.debug("Failed to find PEP621 optional dependencies in %s.", path_hint)
+    except AttributeError:
+        logger.error("Failed to parse PEP621 optional dependencies in %s.", path_hint)
 
 
 def parse_pyproject_contents(text: str, path_hint: Path) -> Iterator[Tuple[str, Path]]:
