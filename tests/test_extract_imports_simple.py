@@ -36,8 +36,8 @@ def test_parse_code__import_with_compound_names__extracts_first_component():
         from foo.bar import baz
         """
     )
-    expect = set(with_location(["parent", "foo"], None))
-    assert set(parse_code(code)) == expect
+    expect = with_location(["parent", "foo"], None)
+    assert set(parse_code(code)) == set(expect)
 
 
 def test_parse_code__relative_imports__are_ignored():
@@ -65,10 +65,10 @@ def test_parse_code__combo_of_simple_imports__extracts_all():
         import numpy as np
         """
     )
-    expect = set(
-        with_location(["pathlib", "sys", "unittest", "requests", "foo", "numpy"], None)
+    expect = with_location(
+        ["pathlib", "sys", "unittest", "requests", "foo", "numpy"], None
     )
-    assert set(parse_code(code)) == expect
+    assert set(parse_code(code)) == set(expect)
 
 
 def test_parse_file__combo_of_simple_imports__extracts_all(tmp_path):
@@ -86,13 +86,11 @@ def test_parse_file__combo_of_simple_imports__extracts_all(tmp_path):
     script = tmp_path / "test.py"
     script.write_text(code)
 
-    expect = set(
-        with_location(
-            ["pathlib", "sys", "unittest", "requests", "foo", "numpy"],
-            tmp_path / "test.py",
-        )
+    expect = with_location(
+        ["pathlib", "sys", "unittest", "requests", "foo", "numpy"],
+        tmp_path / "test.py",
     )
-    assert set(parse_file(script)) == expect
+    assert set(parse_file(script)) == set(expect)
 
 
 def test_parse_dir__with_py_and_non_py__extracts_only_from_py_files(tmp_path):
