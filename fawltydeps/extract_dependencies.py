@@ -172,7 +172,8 @@ def parse_pep621_pyproject_contents(
     def parse_main_dependencies(
         parsed_contents: TomlData, path_hint: Path
     ) -> Iterator[Tuple[str, Path]]:
-        if isinstance(dependencies := parsed_contents["project"]["dependencies"], list):
+        dependencies = parsed_contents["project"]["dependencies"]
+        if isinstance(dependencies, list):
             for requirement in dependencies:
                 yield from parse_requirements_contents(requirement, path_hint)
         else:
