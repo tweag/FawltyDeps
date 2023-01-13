@@ -38,9 +38,9 @@ def perform_actions(actions: Set[Action], code: Path, deps: Path) -> int:
     if is_enabled(Action.LIST_IMPORTS, Action.REPORT_UNDECLARED, Action.REPORT_UNUSED):
         extracted_imports = set(extract_imports.parse_any_arg(code))
         if is_enabled(Action.LIST_IMPORTS):
-            for name in sorted(extracted_imports):
-                # TODO: Add location information to extracted imports
-                print(name)
+            # Sort imports by location, then by name
+            for _import in sorted(extracted_imports, key=itemgetter(1, 0)):
+                print(f"{_import.name}: {_import.location}")
 
     if is_enabled(Action.LIST_DEPS, Action.REPORT_UNDECLARED, Action.REPORT_UNUSED):
         extracted_deps = set(extract_dependencies(deps))
@@ -52,7 +52,7 @@ def perform_actions(actions: Set[Action], code: Path, deps: Path) -> int:
     if is_enabled(Action.REPORT_UNDECLARED, Action.REPORT_UNUSED):
         # TODO: Better handling of location information
         report = compare_imports_to_dependencies(
-            extracted_imports,
+            {i.name for i in extracted_imports},
             {name for name, _ in extracted_deps},
         )
         if is_enabled(Action.REPORT_UNDECLARED) and report.undeclared:
