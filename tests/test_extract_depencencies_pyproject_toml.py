@@ -188,89 +188,105 @@ def test_parse_pyproject_content__pep621_or_poetry_dependencies__yields_dependen
     "pyproject_toml,expected,metadata_standard,field_types",
     [
         pytest.param(
-            """\
-            [tool.poetry]
-            dependencies = ["pylint"]
-            """,
+            dedent(
+                """\
+                [tool.poetry]
+                dependencies = ["pylint"]
+                """
+            ),
             [],
             "Poetry",
             ["main"],
             id="dependencies_as_list",
         ),
         pytest.param(
-            """\
-            [tool.poetry]
-            dependencies = "pylint"
-            """,
+            dedent(
+                """\
+                [tool.poetry]
+                dependencies = "pylint"
+                """
+            ),
             [],
             "Poetry",
             ["main"],
             id="dependencies_as_str",
         ),
         pytest.param(
-            """\
-            [tool.poetry]
-            [tool.poetry.group.dev]
-            dependencies = ["black > 22", "mypy"]
-            """,
+            dedent(
+                """\
+                [tool.poetry]
+                [tool.poetry.group.dev]
+                dependencies = ["black > 22", "mypy"]
+                """
+            ),
             [],
             "Poetry",
             ["group"],
             id="dependencies_as_list",
         ),
         pytest.param(
-            """\
-            [tool.poetry]
-            [tool.poetry.extras]
-            test = "pytest"
-            """,
+            dedent(
+                """\
+                [tool.poetry]
+                [tool.poetry.extras]
+                test = "pytest"
+                """
+            ),
             [],
             "Poetry",
             ["extra"],
             id="requirements_as_str_instead_of_list",
         ),
         pytest.param(
-            """\
-            [tool.poetry]
-            extras = ["pytest"]
-            """,
+            dedent(
+                """\
+                [tool.poetry]
+                extras = ["pytest"]
+                """
+            ),
             [],
             "Poetry",
             ["extra"],
             id="extra_dependencies_as_list_instead_of_dict",
         ),
         pytest.param(
-            """\
-            [tool.poetry]
+            dedent(
+                """\
+                [tool.poetry]
 
-            dependencies = ["pylint"]
+                dependencies = ["pylint"]
 
-            [tool.poetry.group.dev]
-            dependencies = ["black > 22", "mypy"]
+                [tool.poetry.group.dev]
+                dependencies = ["black > 22", "mypy"]
 
-            [tool.poetry.extras]
-            black = "^22"
-            """,
+                [tool.poetry.extras]
+                black = "^22"
+                """
+            ),
             [],
             "Poetry",
             ["main", "group", "extra"],
             id="all_dependencies_malformatted",
         ),
         pytest.param(
-            """\
-            [project.dependencies]
-            pylint = ""
-            """,
+            dedent(
+                """\
+                [project.dependencies]
+                pylint = ""
+                """
+            ),
             [],
             "PEP621",
             ["main"],
             id="dependencies_as_dict_instead_of_list",
         ),
         pytest.param(
-            """\
-            [project]
-            optional-dependencies = ["pylint"]
-            """,
+            dedent(
+                """\
+                [project]
+                optional-dependencies = ["pylint"]
+                """
+            ),
             [],
             "PEP621",
             ["optional"],
@@ -295,19 +311,23 @@ def test_parse_pyproject_content__malformatted_poetry_dependencies__yields_no_de
     "pyproject_toml,expected,expected_logs",
     [
         pytest.param(
-            """\
-            [project]
-            name = "fawltydeps"
-            """,
+            dedent(
+                """\
+                [project]
+                name = "fawltydeps"
+                """
+            ),
             [],
             [("PEP621", "main"), ("PEP621", "optional")],
             id="missing_pep621_fields",
         ),
         pytest.param(
-            """\
-            [tool.poetry]
-            name = "fawltydeps"
-            """,
+            dedent(
+                """\
+                [tool.poetry]
+                name = "fawltydeps"
+                """
+            ),
             [],
             [
                 ("PEP621", "main"),
