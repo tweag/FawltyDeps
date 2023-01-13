@@ -1,8 +1,9 @@
 """Test extracting dependencies from pyproject.toml"""
 import logging
-import pytest
 from pathlib import Path
 from textwrap import dedent
+
+import pytest
 
 from fawltydeps.extract_dependencies import parse_pyproject_contents
 
