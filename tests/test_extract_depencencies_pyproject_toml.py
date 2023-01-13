@@ -1,243 +1,336 @@
 """Test extracting dependencies from pyproject.toml"""
 import logging
+import pytest
 from pathlib import Path
 from textwrap import dedent
 
 from fawltydeps.extract_dependencies import parse_pyproject_contents
 
 
-def test_parse_pyproject_content__poetry_main_dependencies__yields_dependencies():
-    filename = Path("pyproject.toml")
-    pyproject_toml = dedent(
-        """\
-            [tool.poetry]
+@pytest.mark.parametrize(
+    "pyproject_toml,expected_deps",
+    [
+        pytest.param(
+            dedent(
+                """\
+                [tool.poetry]
 
-            [tool.poetry.dependencies]
-            python = "^3.8"
-            isort = "^5.10"
-            tomli = "^2.0.1"
-        """
-    )
-    result = list(parse_pyproject_contents(pyproject_toml, filename))
-    expected = [(dep, filename) for dep in ["isort", "tomli"]]
-    assert result == expected
+                [tool.poetry.dependencies]
+                python = "^3.8"
+                isort = "^5.10"
+                tomli = "^2.0.1"
+                """
+            ),
+            ["isort", "tomli"],
+            id="poetry_main_dependencies",
+        ),
+        pytest.param(
+            dedent(
+                """\
+                [tool.poetry]
 
+                [tool.poetry.group.dev.dependencies]
+                black = "^22"
+                mypy = "^0.991"
 
-def test_parse_pyproject_content__poetry_groups__yields_dependencies():
-    filename = Path("pyproject.toml")
-    pyproject_toml = dedent(
-        """\
-            [tool.poetry]
+                [tool.poetry.group.test.dependencies]
+                pytest = "^5.0.0"
+                """
+            ),
+            ["black", "mypy", "pytest"],
+            id="poetry_group_dependencies",
+        ),
+        pytest.param(
+            dedent(
+                """\
+                [tool.poetry]
 
-            [tool.poetry.group.dev.dependencies]
-            black = "^22"
-            mypy = "^0.991"
+                [tool.poetry.extras]
+                test = ["pytest < 5.0.0", "pytest-cov[all]"]
+                dev = ["pylint >= 2.15.8"]
+                """
+            ),
+            ["pytest", "pytest-cov", "pylint"],
+            id="poetry_extra_dependencies",
+        ),
+        pytest.param(
+            dedent(
+                """\
+                [tool.poetry]
 
-            [tool.poetry.group.test.dependencies]
-            pytest = "^5.0.0"
-        """
-    )
-    result = list(parse_pyproject_contents(pyproject_toml, filename))
-    expected = [(dep, filename) for dep in ["black", "mypy", "pytest"]]
-    assert result == expected
+                [tool.poetry.dependencies]
+                python = "^3.8"
+                isort = "^5.10"
+                tomli = "^2.0.1"
 
+                [tool.poetry.group.dev.dependencies]
+                black = "^22"
+                mypy = "^0.991"
 
-def test_parse_pyproject_content__poetry_extras__yields_dependencies():
-    filename = Path("pyproject.toml")
-    pyproject_toml = dedent(
-        """\
-            [tool.poetry]
+                [tool.poetry.group.experimental.dependencies]
+                django = "^2.1"
 
-            [tool.poetry.extras]
-            test = ["pytest < 5.0.0", "pytest-cov[all]"]
-            dev = ["pylint >= 2.15.8"]
-        """
-    )
-    result = list(parse_pyproject_contents(pyproject_toml, filename))
-    expected = [(dep, filename) for dep in ["pytest", "pytest-cov", "pylint"]]
-    assert result == expected
+                [tool.poetry.extras]
+                test = ["pytest < 5.0.0", "pytest-cov[all]"]
+                dev = ["pylint >= 2.15.8"]
+                """
+            ),
+            [
+                "isort",
+                "tomli",
+                "black",
+                "mypy",
+                "django",
+                "pytest",
+                "pytest-cov",
+                "pylint",
+            ],
+            id="poetry_main_group_and_extra_dependencies",
+        ),
+        pytest.param(
+            dedent(
+                """\
+                [project]
+                name = "fawltydeps"
 
+                dependencies = ["isort", "django>2.1; os_name != 'nt'"]
+                """
+            ),
+            ["isort", "django"],
+            id="pep621_main_dependencies",
+        ),
+        pytest.param(
+            dedent(
+                """\
+                [project]
 
-def test_parse_pyproject_content__poetry_main_group_and_extra_dependencies__yields_dependencies():
-    filename = Path("pyproject.toml")
-    pyproject_toml = dedent(
-        """\
-            [tool.poetry]
+                [project.optional-dependencies]
+                test = ["pytest < 5.0.0", "pytest-cov[all]"]
+                dev = ["pylint >= 2.15.8"]
+                """
+            ),
+            ["pytest", "pytest-cov", "pylint"],
+            id="pep621_optional_dependencies",
+        ),
+        pytest.param(
+            dedent(
+                """\
+                [project]
+                name = "fawltydeps"
 
-            [tool.poetry.dependencies]
-            python = "^3.8"
-            isort = "^5.10"
-            tomli = "^2.0.1"
+                dependencies = ["isort", "django>2.1; os_name != 'nt'"]
 
-            [tool.poetry.group.dev.dependencies]
-            black = "^22"
-            mypy = "^0.991"
+                [project.optional-dependencies]
+                test = ["pytest < 5.0.0", "pytest-cov[all]"]
+                dev = ["pylint >= 2.15.8"]
+                """
+            ),
+            ["isort", "django", "pytest", "pytest-cov", "pylint"],
+            id="pep_621_main_and_optional_dependencies",
+        ),
+        pytest.param(
+            dedent(
+                """\
+                [project]
+                name = "fawltydeps"
 
-            [tool.poetry.group.experimental.dependencies]
-            django = "^2.1"
+                dependencies = ["pandas", "pydantic>1.10.4"]
 
-            [tool.poetry.extras]
-            test = ["pytest < 5.0.0", "pytest-cov[all]"]
-            dev = ["pylint >= 2.15.8"]
-        """
-    )
-    result = list(parse_pyproject_contents(pyproject_toml, filename))
-    expected = [
-        (dep, filename)
-        for dep in [
-            "isort",
-            "tomli",
-            "black",
-            "mypy",
-            "django",
-            "pytest",
-            "pytest-cov",
-            "pylint",
-        ]
-    ]
-    assert result == expected
+                [project.optional-dependencies]
+                dev = ["pylint >= 2.15.8"]
 
+                [tool.poetry]
+                [tool.poetry.dependencies]
+                python = "^3.8"
+                isort = "^5.10"
+                tomli = "^2.0.1"
 
-def test_parse_pyproject_content__dependencies_field__yields_dependencies():
-    filename = Path("pyproject.toml")
-    pyproject_toml = dedent(
-        """\
-            [project]
-            name = "fawltydeps"
+                [tool.poetry.group.dev.dependencies]
+                black = "^22"
+                mypy = "^0.991"
 
-            dependencies = ["isort", "django>2.1; os_name != 'nt'"]
-        """
-    )
-    result = list(parse_pyproject_contents(pyproject_toml, filename))
-    expected = [(dep, filename) for dep in ["isort", "django"]]
-    assert result == expected
+                [tool.poetry.group.experimental.dependencies]
+                django = "^2.1"
 
-
-def test_parse_pyproject_content__optional_dependencies_field__yields_dependencies():
-    filename = Path("pyproject.toml")
-    pyproject_toml = dedent(
-        """\
-            [project]
-
-            [project.optional-dependencies]
-            test = ["pytest < 5.0.0", "pytest-cov[all]"]
-            dev = ["pylint >= 2.15.8"]
-
-        """
-    )
-    result = list(parse_pyproject_contents(pyproject_toml, filename))
-    expected = [(dep, filename) for dep in ["pytest", "pytest-cov", "pylint"]]
-    assert result == expected
-
-
-def test_parse_pyproject_content__main_and_optional_dependencies__yields_dependencies():
-    filename = Path("pyproject.toml")
-    pyproject_toml = dedent(
-        """\
-            [project]
-            name = "fawltydeps"
-
-            dependencies = ["isort", "django>2.1; os_name != 'nt'"]
-
-            [project.optional-dependencies]
-            test = ["pytest < 5.0.0", "pytest-cov[all]"]
-            dev = ["pylint >= 2.15.8"]
-
-        """
-    )
-    result = list(parse_pyproject_contents(pyproject_toml, filename))
-    expected = [
-        (dep, filename) for dep in ["isort", "django", "pytest", "pytest-cov", "pylint"]
-    ]
-    assert result == expected
-
-
-def test_parse_pyproject_content__poetry_and_pep621_all_metadata_fields_yields_dependencies():
-    filename = Path("pyproject.toml")
-    pyproject_toml = dedent(
-        """\
-            [project]
-            name = "fawltydeps"
-
-            dependencies = ["pandas", "pydantic>1.10.4"]
-
-            [project.optional-dependencies]
-            dev = ["pylint >= 2.15.8"]
-
-            [tool.poetry]
-            [tool.poetry.dependencies]
-            python = "^3.8"
-            isort = "^5.10"
-            tomli = "^2.0.1"
-
-            [tool.poetry.group.dev.dependencies]
-            black = "^22"
-            mypy = "^0.991"
-
-            [tool.poetry.group.experimental.dependencies]
-            django = "^2.1"
-
-            [tool.poetry.extras]
-            alpha = ["pytorch < 1.12.1", "numpy >= 1.17.2"]
-            dev = ["flake >= 5.0.1"]
-        """
-    )
-    result = list(parse_pyproject_contents(pyproject_toml, filename))
-    expected = [
-        (dep, filename)
-        for dep in [
-            "pandas",
-            "pydantic",
-            "pylint",
-            "isort",
-            "tomli",
-            "black",
-            "mypy",
-            "django",
-            "pytorch",
-            "numpy",
-            "flake",
-        ]
-    ]
-    assert result == expected
-
-
-def test_parse_pyproject_contents__cannot_find_dependencies__logs_debug_message(
-    caplog, tmp_path
+                [tool.poetry.extras]
+                alpha = ["pytorch < 1.12.1", "numpy >= 1.17.2"]
+                dev = ["flake >= 5.0.1"]
+                """
+            ),
+            [
+                "pandas",
+                "pydantic",
+                "pylint",
+                "isort",
+                "tomli",
+                "black",
+                "mypy",
+                "django",
+                "pytorch",
+                "numpy",
+                "flake",
+            ],
+            id="pep_621_and_poetry_all_dependencies",
+        ),
+    ],
+)
+def test_parse_pyproject_content__pep621_or_poetry_dependencies__yields_dependencies(
+    pyproject_toml, expected_deps
 ):
-    pyproject_contents = dedent(
-        """\
+    filename = Path("pyproject.toml")
+    result = list(parse_pyproject_contents(pyproject_toml, filename))
+    expected = [(dep, filename) for dep in expected_deps]
+    assert result == expected
+
+
+@pytest.mark.parametrize(
+    "pyproject_toml,expected,metadata_standard,field_types",
+    [
+        pytest.param(
+            """\
+            [tool.poetry]
+            dependencies = ["pylint"]
+            """,
+            [],
+            "Poetry",
+            ["main"],
+            id="dependencies_as_list",
+        ),
+        pytest.param(
+            """\
+            [tool.poetry]
+            dependencies = "pylint"
+            """,
+            [],
+            "Poetry",
+            ["main"],
+            id="dependencies_as_str",
+        ),
+        pytest.param(
+            """\
+            [tool.poetry]
+            [tool.poetry.group.dev]
+            dependencies = ["black > 22", "mypy"]
+            """,
+            [],
+            "Poetry",
+            ["group"],
+            id="dependencies_as_list",
+        ),
+        pytest.param(
+            """\
+            [tool.poetry]
+            [tool.poetry.extras]
+            test = "pytest"
+            """,
+            [],
+            "Poetry",
+            ["extra"],
+            id="requirements_as_str_instead_of_list",
+        ),
+        pytest.param(
+            """\
+            [tool.poetry]
+            extras = ["pytest"]
+            """,
+            [],
+            "Poetry",
+            ["extra"],
+            id="extra_dependencies_as_list_instead_of_dict",
+        ),
+        pytest.param(
+            """\
+            [tool.poetry]
+
+            dependencies = ["pylint"]
+
+            [tool.poetry.group.dev]
+            dependencies = ["black > 22", "mypy"]
+
+            [tool.poetry.extras]
+            black = "^22"
+            """,
+            [],
+            "Poetry",
+            ["main", "group", "extra"],
+            id="all_dependencies_malformatted",
+        ),
+        pytest.param(
+            """\
+            [project.dependencies]
+            pylint = ""
+            """,
+            [],
+            "PEP621",
+            ["main"],
+            id="dependencies_as_dict_instead_of_list",
+        ),
+        pytest.param(
+            """\
+            [project]
+            optional-dependencies = ["pylint"]
+            """,
+            [],
+            "PEP621",
+            ["optional"],
+            id="pep621_optional_dependencies_as_list_instead_of_dict",
+        ),
+    ],
+)
+def test_parse_pyproject_content__malformatted_poetry_dependencies__yields_no_dependencies(
+    caplog, pyproject_toml, expected, metadata_standard, field_types
+):
+    path_hint = Path("pyproject.toml")
+    result = list(parse_pyproject_contents(pyproject_toml, path_hint))
+    assert result == expected
+    for field_type in field_types:
+        assert (
+            f"Failed to parse {metadata_standard} {field_type} dependencies in {path_hint}."
+            in caplog.text
+        )
+
+
+@pytest.mark.parametrize(
+    "pyproject_toml,expected,expected_logs",
+    [
+        pytest.param(
+            """\
             [project]
             name = "fawltydeps"
-
-        """
-    )
-    expected = []
+            """,
+            [],
+            [("PEP621", "main"), ("PEP621", "optional")],
+            id="missing_pep621_fields",
+        ),
+        pytest.param(
+            """\
+            [tool.poetry]
+            name = "fawltydeps"
+            """,
+            [],
+            [
+                ("PEP621", "main"),
+                ("PEP621", "optional"),
+                ("Poetry", "main"),
+                ("Poetry", "group"),
+                ("Poetry", "extra"),
+            ],
+            id="missing_pep621_fields",
+        ),
+    ],
+)
+def test_parse_pyproject_contents__missing_dependencies__logs_debug_message(
+    caplog, tmp_path, pyproject_toml, expected, expected_logs
+):
     caplog.set_level(logging.DEBUG)
     path_hint = tmp_path / "pyproject.toml"
-    result = list(parse_pyproject_contents(pyproject_contents, path_hint))
-    assert f"Failed to find PEP621 dependencies in {path_hint}" in caplog.text
-    assert f"No PEP621 optional dependencies found in {path_hint}" in caplog.text
+
+    result = list(parse_pyproject_contents(pyproject_toml, path_hint))
+
     assert expected == result
 
-
-def test_parse_pyproject_contents__cannot_find_poetry_dependencies__logs_debug_message(
-    caplog, tmp_path
-):
-    pyproject_contents = dedent(
-        """\
-            [tool.poetry]
-            name = "fawltydeps"
-
-        """
-    )
-    expected = []
-    caplog.set_level(logging.DEBUG)
-    path_hint = tmp_path / "pyproject.toml"
-    result = list(parse_pyproject_contents(pyproject_contents, path_hint))
-    assert f"Failed to find PEP621 dependencies in {path_hint}" in caplog.text
-    assert f"No PEP621 optional dependencies found in {path_hint}" in caplog.text
-    assert f"Failed to find Poetry dependencies in {path_hint}" in caplog.text
-    assert f"No Poetry grouped dependencies found in {path_hint}" in caplog.text
-    assert f"No Poetry extra dependencies found in {path_hint}" in caplog.text
-    assert expected == result
+    for metadata_standard, field_type in expected_logs:
+        assert (
+            f"Failed to find {metadata_standard} {field_type} dependencies in {path_hint}"
+            in caplog.text
+        )
