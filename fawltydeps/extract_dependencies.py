@@ -108,30 +108,51 @@ def parse_poetry_pyproject_dependencies(
     Extract dependencies (package names) from Poetry fields in pyproject.toml
     """
 
-    # Main dependencies
-    if "dependencies" in poetry_config:
+    def _handle_dependency_type(
+        keyword: str, handler: Iterator[Tuple[str, Path]], fail_message: str
+    ):
+        """Wrapper for handling Poetry dependencies of different types"""
+        if keyword in poetry_config:
+            yield from handler()
+        else:
+            logger.debug(fail_message, path_hint)
+
+    def _main_dependencies_handler():
         for requirement in poetry_config["dependencies"]:
             if requirement != "python":
                 yield (requirement, path_hint)
-    else:
-        logger.debug("Failed to find Poetry dependencies in %s", path_hint)
 
-    # Grouped dependencies
-    if "group" in poetry_config:
+    def _group_dependencies_handler():
         for group in poetry_config["group"].values():
             for requirement in group["dependencies"]:
                 if requirement != "python":
                     yield (requirement, path_hint)
-    else:
-        logger.debug("No Poetry grouped dependencies found in %s", path_hint)
 
-    # Extra dependencies
-    if "extras" in poetry_config:
+    def _extras_dependencies_handler():
         for group in poetry_config["extras"].values():
             for requirement in group:
                 yield from parse_requirements_contents(requirement, path_hint)
-    else:
-        logger.debug("No Poetry extra dependencies found in %s", path_hint)
+
+    # Main dependencies
+    yield from _handle_dependency_type(
+        "dependencies",
+        _main_dependencies_handler,
+        "Failed to find Poetry dependencies in %s",
+    )
+
+    # Grouped dependencies
+    yield from _handle_dependency_type(
+        "group",
+        _group_dependencies_handler,
+        "No Poetry grouped dependencies found in %s",
+    )
+
+    # Extra dependencies
+    yield from _handle_dependency_type(
+        "extras",
+        _extras_dependencies_handler,
+        "No Poetry extra dependencies found in %s",
+    )
 
 
 def parse_pep621_pyproject_contents(
