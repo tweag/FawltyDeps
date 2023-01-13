@@ -330,14 +330,18 @@ def test_extract_dependencies__project_with_pyproject_setup_and_requirements__re
     project_with_setup_pyproject_and_requirements,
 ):
     expect = [
+        # from requirements.txt:
         "pandas",
         "click",
+        # from setup.py:
         "pandas",
         "click",
         "annoy",
         "jieba",
+        # from subdir/requirements.txt:
         "pandas",
         "tensorflow",
+        # from pyproject.toml:
         "pandas",
         "pydantic",
         "pylint",
