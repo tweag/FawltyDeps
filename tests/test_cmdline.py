@@ -8,7 +8,7 @@ from typing import Iterable, Optional, Tuple
 import pytest
 
 
-@pytest.fixture()
+@pytest.fixture
 def project_with_code_and_requirements_txt(write_tmp_files):
     def _inner(*, imports: Iterable[str], declares: Iterable[str]):
         code = "".join(f"import {s}\n" for s in imports)

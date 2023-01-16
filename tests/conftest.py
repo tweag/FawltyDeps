@@ -6,7 +6,7 @@ from typing import Dict
 import pytest
 
 
-@pytest.fixture()
+@pytest.fixture
 def write_tmp_files(tmp_path: Path):
     def _inner(file_contents: Dict[str, str]) -> Path:
         for filename, contents in file_contents.items():
@@ -19,7 +19,7 @@ def write_tmp_files(tmp_path: Path):
     return _inner
 
 
-@pytest.fixture()
+@pytest.fixture
 def project_with_requirements(write_tmp_files):
     return write_tmp_files(
         {
@@ -36,7 +36,7 @@ def project_with_requirements(write_tmp_files):
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def project_with_setup_and_requirements(write_tmp_files):
     return write_tmp_files(
         {
