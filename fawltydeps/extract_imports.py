@@ -14,6 +14,7 @@ class ParsedImport(NamedTuple):
     "Import parsed from the source code."
     name: str
     location: Optional[Path]
+    lineno: Optional[int]
 
 
 def parse_code(
@@ -29,7 +30,11 @@ def parse_code(
         if isinstance(node, ast.Import):
             logger.debug(ast.dump(node))
             for alias in node.names:
-                yield ParsedImport(name=alias.name.split(".", 1)[0], location=path_hint)
+                yield ParsedImport(
+                    name=alias.name.split(".", 1)[0],
+                    location=path_hint,
+                    lineno=node.lineno,
+                )
         elif isinstance(node, ast.ImportFrom):
             logger.debug(ast.dump(node))
             # Relative imports are always relative to the current package, and
@@ -37,7 +42,9 @@ def parse_code(
             # They are therefore uninteresting to us.
             if node.level == 0 and node.module is not None:
                 yield ParsedImport(
-                    name=node.module.split(".", 1)[0], location=path_hint
+                    name=node.module.split(".", 1)[0],
+                    location=path_hint,
+                    lineno=node.lineno,
                 )
 
 
