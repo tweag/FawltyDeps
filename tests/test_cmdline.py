@@ -1,4 +1,9 @@
-"""Verify graceful failure when we cannot extract imports from Python code."""
+"""Verify behavior of command-line interface.
+
+This is more of an integration test than a unit test, in that we test the
+overall behavior of the command line interface, rather than testing our
+core exhaustively (which is what the other unit tests are for.
+"""
 
 import subprocess
 from pathlib import Path
