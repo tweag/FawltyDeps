@@ -69,6 +69,12 @@ def tests(session):
 
 
 @nox.session(python=python_versions)
+def integration_tests(session):
+    install_groups(session, include=["test"])
+    session.run("pytest", "-x", "-m", "integration", *session.posargs)
+
+
+@nox.session(python=python_versions)
 def lint(session):
     install_groups(session, include=["lint"], include_self=False)
     session.run("mypy")

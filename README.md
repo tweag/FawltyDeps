@@ -115,8 +115,9 @@ We use [Nox](https://nox.thea.codes/en/stable/) for test/workflow automation:
 nox --list        # List sessions
 nox               # Run all available sessions
 nox -R            # Run all available sessions, while reusing virtualenvs (i.e. faster)
-nox -s tests      # Run test suite on supported Python versions (that are available)
-nox -s tests-3.7  # Run test suite on Python v3.7 (assuming it is available locally)
+nox -s tests      # Run unit tests on supported Python versions (that are available)
+nox -s tests-3.7  # Run unit tests on Python v3.7 (assuming it is available locally)
+nox -s integration_tests-3.11  # Run integration tests on Python 3.11
 nox -s lint       # Run linters (mypy + pylint) on all supported Python versions
 nox -s format     # Check formatting (isort + black)
 nox -s reformat   # Fix formatting (isort + black)
@@ -126,7 +127,8 @@ If you want to run commands individually, the sessions are defined inside
 `noxfile.py` and should be easy to read. For example, these commands will work:
 
 ```sh
-pytest                   # Run test suite
+pytest                   # Run unit tests
+pytest -m integration    # Run integration tests
 mypy                     # Run static type checking
 pylint fawltydeps tests  # Run Pylint
 isort fawltydeps tests   # Fix sorting of import statements
