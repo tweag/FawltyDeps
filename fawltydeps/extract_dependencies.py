@@ -133,7 +133,7 @@ def parse_poetry_pyproject_dependencies(
                 for requirement in group:
                     yield from parse_requirements_contents(requirement, path_hint)
             else:
-                raise TypeError(f"{group} is of type {type(group)}. Expected a list.")
+                raise TypeError(f"{group!r} is of type {type(group)}. Expected a list.")
 
     fields_parsers = {
         "main": parse_main_dependencies,
@@ -178,7 +178,7 @@ def parse_pep621_pyproject_contents(
                 yield from parse_requirements_contents(requirement, path_hint)
         else:
             raise TypeError(
-                f"{dependencies} of type {type(dependencies)}. Expected list."
+                f"{dependencies!r} of type {type(dependencies)}. Expected list."
             )
 
     def parse_optional_dependencies(
