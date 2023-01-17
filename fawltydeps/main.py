@@ -36,14 +36,14 @@ def perform_actions(actions: Set[Action], code: Path, deps: Path) -> int:
         return len(actions.intersection(args)) > 0
 
     if is_enabled(Action.LIST_IMPORTS, Action.REPORT_UNDECLARED, Action.REPORT_UNUSED):
-        extracted_imports = set(extract_imports.parse_any_arg(code))
+        extracted_imports = list(extract_imports.parse_any_arg(code))
         if is_enabled(Action.LIST_IMPORTS):
             # Sort imports by location, then by name
             for _import in sorted(extracted_imports, key=itemgetter(1, 0)):
                 print(f"{_import.name}: {_import.location}")
 
     if is_enabled(Action.LIST_DEPS, Action.REPORT_UNDECLARED, Action.REPORT_UNUSED):
-        extracted_deps = set(extract_dependencies(deps))
+        extracted_deps = list(extract_dependencies(deps))
         if is_enabled(Action.LIST_DEPS):
             # Sort dependencies by location, then by name
             for name, location in sorted(extracted_deps, key=itemgetter(1, 0)):
@@ -52,8 +52,7 @@ def perform_actions(actions: Set[Action], code: Path, deps: Path) -> int:
     if is_enabled(Action.REPORT_UNDECLARED, Action.REPORT_UNUSED):
         # TODO: Better handling of location information
         report = compare_imports_to_dependencies(
-            {i.name for i in extracted_imports},
-            {name for name, _ in extracted_deps},
+            imports=extracted_imports, dependencies=extracted_deps
         )
         if is_enabled(Action.REPORT_UNDECLARED) and report.undeclared:
             print("These imports are not declared as dependencies:")
