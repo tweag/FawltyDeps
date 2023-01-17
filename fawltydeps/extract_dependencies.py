@@ -5,7 +5,7 @@ import logging
 import os
 import sys
 from pathlib import Path
-from typing import Any, Dict, Iterator, Tuple
+from typing import Any, Dict, Iterator, NamedTuple
 
 from pkg_resources import parse_requirements
 
@@ -21,6 +21,12 @@ logger = logging.getLogger(__name__)
 error_message_template = "Failed to %s %s %s dependencies in %s."
 
 
+class DeclaredDependency(NamedTuple):
+    "Declared dependencies parsed from configuration-containing files"
+    name: str
+    location: Path
+
+
 class DependencyParsingError(Exception):
     "Error raised when parsing of dependency fails"
 
@@ -31,17 +37,17 @@ class DependencyParsingError(Exception):
 
 def parse_requirements_contents(
     text: str, path_hint: Path
-) -> Iterator[Tuple[str, Path]]:
+) -> Iterator[DeclaredDependency]:
     """
     Extract dependencies (packages names) from the requirement.txt file
     and other following Requirements File Format. For more information, see
     https://pip.pypa.io/en/stable/reference/requirements-file-format/.
     """
     for requirement in parse_requirements(text):
-        yield (requirement.key, path_hint)
+        yield DeclaredDependency(name=requirement.key, location=path_hint)
 
 
-def parse_setup_contents(text: str, path_hint: Path) -> Iterator[Tuple[str, Path]]:
+def parse_setup_contents(text: str, path_hint: Path) -> Iterator[DeclaredDependency]:
     """
     Extract dependencies (package names) from setup.py.
     Function call `setup` where dependencies are listed
@@ -50,7 +56,7 @@ def parse_setup_contents(text: str, path_hint: Path) -> Iterator[Tuple[str, Path
 
     def _extract_deps_from_bottom_level_list(
         deps: ast.AST,
-    ) -> Iterator[Tuple[str, Path]]:
+    ) -> Iterator[DeclaredDependency]:
         if isinstance(deps, ast.List):
             for element in deps.elts:
                 # Python v3.8 changed from ast.Str to ast.Constant
@@ -61,7 +67,7 @@ def parse_setup_contents(text: str, path_hint: Path) -> Iterator[Tuple[str, Path
         else:
             raise DependencyParsingError(deps)
 
-    def _extract_deps_from_setup_call(node: ast.Call) -> Iterator[Tuple[str, Path]]:
+    def _extract_deps_from_setup_call(node: ast.Call) -> Iterator[DeclaredDependency]:
         for keyword in node.keywords:
             try:
                 if keyword.arg == "install_requires":
@@ -105,29 +111,29 @@ def parse_setup_contents(text: str, path_hint: Path) -> Iterator[Tuple[str, Path
 
 def parse_poetry_pyproject_dependencies(
     poetry_config: TomlData, path_hint: Path
-) -> Iterator[Tuple[str, Path]]:
+) -> Iterator[DeclaredDependency]:
     """
     Extract dependencies (package names) from Poetry fields in pyproject.toml
     """
 
     def parse_main_dependencies(
         poetry_config: TomlData, path_hint: Path
-    ) -> Iterator[Tuple[str, Path]]:
+    ) -> Iterator[DeclaredDependency]:
         for requirement in poetry_config["dependencies"].keys():
             if requirement != "python":
-                yield (requirement, path_hint)
+                yield DeclaredDependency(name=requirement, location=path_hint)
 
     def parse_group_dependencies(
         poetry_config: TomlData, path_hint: Path
-    ) -> Iterator[Tuple[str, Path]]:
+    ) -> Iterator[DeclaredDependency]:
         for group in poetry_config["group"].values():
             for requirement in group["dependencies"].keys():
                 if requirement != "python":
-                    yield (requirement, path_hint)
+                    yield DeclaredDependency(name=requirement, location=path_hint)
 
     def parse_extra_dependencies(
         poetry_config: TomlData, path_hint: Path
-    ) -> Iterator[Tuple[str, Path]]:
+    ) -> Iterator[DeclaredDependency]:
         for group in poetry_config["extras"].values():
             if isinstance(group, list):
                 for requirement in group:
@@ -164,14 +170,14 @@ def parse_poetry_pyproject_dependencies(
 
 def parse_pep621_pyproject_contents(
     parsed_contents: TomlData, path_hint: Path
-) -> Iterator[Tuple[str, Path]]:
+) -> Iterator[DeclaredDependency]:
     """
     Extract dependencies (package names) in PEP 621 styled pyproject.toml
     """
 
     def parse_main_dependencies(
         parsed_contents: TomlData, path_hint: Path
-    ) -> Iterator[Tuple[str, Path]]:
+    ) -> Iterator[DeclaredDependency]:
         dependencies = parsed_contents["project"]["dependencies"]
         if isinstance(dependencies, list):
             for requirement in dependencies:
@@ -183,7 +189,7 @@ def parse_pep621_pyproject_contents(
 
     def parse_optional_dependencies(
         parsed_contents: TomlData, path_hint: Path
-    ) -> Iterator[Tuple[str, Path]]:
+    ) -> Iterator[DeclaredDependency]:
         for group in parsed_contents["project"]["optional-dependencies"].values():
             for requirement in group:
                 yield from parse_requirements_contents(requirement, path_hint)
@@ -205,7 +211,9 @@ def parse_pep621_pyproject_contents(
             )
 
 
-def parse_pyproject_contents(text: str, path_hint: Path) -> Iterator[Tuple[str, Path]]:
+def parse_pyproject_contents(
+    text: str, path_hint: Path
+) -> Iterator[DeclaredDependency]:
     """
     Parse dependencies from specific metadata fields in a pyproject.toml file.
     This can currenly parse dependencies from dependency fields in:
@@ -224,7 +232,7 @@ def parse_pyproject_contents(text: str, path_hint: Path) -> Iterator[Tuple[str, 
         logger.debug("%s does not contain [tool.poetry].")
 
 
-def extract_dependencies(path: Path) -> Iterator[Tuple[str, Path]]:
+def extract_dependencies(path: Path) -> Iterator[DeclaredDependency]:
     """
     Extract dependencies from supported file types.
     Traverse directory tree to find matching files.

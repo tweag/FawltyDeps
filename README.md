@@ -4,11 +4,11 @@ A dependency checker for Python.
 
 Find undeclared 3rd-party dependencies in your Python project.
 
-# Installation
+## Installation
 
 TODO: Fill when released in PyPI
 
-# Usage
+## Usage
 
 To check the project in the current directory run:
 
@@ -16,50 +16,137 @@ To check the project in the current directory run:
 fawltydeps
 ```
 
-Options available:
+This will find imports in all the Python code under the current directory, as
+well as extract dependencies declared by your project, and then report
+_undeclared_ dependencies as well as _unused_ dependencies.
 
+_Undeclared_ dependencies are dependencies that are `import`ed by the code, but
+not declared by your project. For example, if you `import numpy` somewhere in
+your code, but then you forget to include `numpy` in  your `requirements.txt`.
+
+_Unused_ dependencies are dependencies that your project claims to be using,
+but that does not seem to be `import`ed anywhere. For example if you have
+`numpy` listed in your `requirements.txt`, but you actually never `import numpy`
+anywhere in your Python code.
+
+### Available Actions
+
+FawltyDeps provides these options for controlling what actions to perform. Only
+one of these can be used at a time:
+
+- `--check`: Report both undeclared and unused dependencies
+- `--check-undeclared`: Report only unudeclared dependencies
+- `--check-unused`: Report only unused dependencies
+- `--list-imports`: List imports extracted from code and exit
+- `--list-deps`: List declared dependencies and exit
+
+When none of these are specified, the default action is `--check`.
+
+### Where to find Python code
+
+The `--code` option tells FawltyDeps where to find the Python code to parse for
+`import` statements. You can pass either of these:
+ - a directory: FawltyDeps will find all Python scripts (`*.py`) and Jupyter
+   notebooks (`*.ipynb`) under this directory.
+ - a single file: Either a Python script (`*.py`) or a Jupyter Notebook
+   (`*.ipynb`)
+ - `-`: Passing a single dash (`--code=-`) tells FawltyDeps to read Python code
+   from stdin.
+
+If no `--code` option is passed, FawltyDeps will find all Python code under the
+current directory, i.e. same as `--code=.`
+
+### Where to find declared dependencies
+
+The `--deps` option tells FawltyDeps where to look for your project's declared
+dependencies. A number of file formats are supported:
+ - `requirements.txt`
+ - `pyproject.toml` (following PEP 621 or Poetry conventions)
+ - `setup.py` (only limited support for simple files with a single `setup()`
+   call and literals passed directly to the `install_requires` and
+   `extras_require` arguments)
+
+The `--deps` option accepts either a directory, in which case FawltyDeps will go
+looking for the above files under that directory. or a file, in case you want to
+be explicit about where to find the declared dependencies.
+
+If no `--deps` option is passed, FawltyDeps will look for the above files under
+the current directory, i.e. same as `--deps=.`
+
+### More help
+
+Run `fawltydeps --help` to get the full list of available options.
+
+## Documentation
+
+At the start of this project, an exploration and overall project design was performed. The resulting [design document is available in this repo](./docs/DesignDoc.md). It lays out the main objective for this project as well as comparing various strategies that have been considered since the start.
+
+In the [code design](./docs/CodeDesign.md) section of documenation we lay out rules we adopt for code architecture and quality assurance.
+
+## Development
+
+### Poetry
+
+The project uses [Poetry](https://python-poetry.org/). Install Poetry, and then
+run:
+
+```sh
+poetry install --with=dev
 ```
-> fawltydeps --help
-usage: fawltydeps [-h] [--code CODE] [-v] [-q]
 
-Find undeclared 3rd-party dependencies in your Python project.
+to create a virtualenv with all (development) dependencies installed.
 
-options:
-  -h, --help     show this help message and exit
-  --code CODE    Code to parse for import statements (file or directory, use '-' to read code from stdin; defaults to the current directory)
-  -v, --verbose  Increase log level (WARNING by default, -v: INFO, -vv: DEBUG)
-  -q, --quiet    Decrease log level (WARNING by default, -q: ERROR, -qq: FATAL)
-```
+From there you can run:
 
-# Documentation
-
-TODO: Add design doc
-
-[Code design](./docs/CodeDesign.md)
-
-# Development
-
-The project uses [Poetry](https://python-poetry.org/). Install Poetry, and run:
-
-```
+```sh
 poetry shell
 ```
 
-To install the project run:
+to jump into a development shell with this virtualenv activated. Here you will
+have all the dependencies declared in our `pyproject.toml` installed. (Without
+this shell activated you will have to prefix the more specific commands below
+with `poetry run ...`).
 
-```
-poetry install
+### Nox
+
+We use [Nox](https://nox.thea.codes/en/stable/) for test/workflow automation:
+
+```sh
+nox --list        # List sessions
+nox               # Run all available sessions
+nox -R            # Run all available sessions, while reusing virtualenvs (i.e. faster)
+nox -s tests      # Run test suite on supported Python versions (that are available)
+nox -s tests-3.7  # Run test suite on Python v3.7 (assuming it is available locally)
+nox -s lint       # Run linters (mypy + pylint) on all supported Python versions
+nox -s format     # Check formatting (isort + black)
+nox -s reformat   # Fix formatting (isort + black)
 ```
 
-Inside the shell you have a Python virtual environment with all dependencies declared in pyproject.toml installed.
-To test, typecheck and ensure code formatting you just run:
+If you want to run commands individually, the sessions are defined inside
+`noxfile.py` and should be easy to read. For example, these commands will work:
 
-```
-pytest          # tests
-mypy            # type annotations checks
-black --check   # formater checks
-pylint          # linter
-isort           # import sort
+```sh
+pytest                   # Run test suite
+mypy                     # Run static type checking
+pylint fawltydeps tests  # Run Pylint
+isort fawltydeps tests   # Fix sorting of import statements
+black .                  # Fix code formatting
 ```
 
-TODO: explain how to run CI locally when [#15](https://github.com/tweag/FawltyDeps/issues/15) is completed
+### Shortcut: Nix
+
+We have a `shell.nix` that provides Poetry in addition to all of our supported
+Python versions. If you have [Nix](https://nixos.org) available on your machine,
+then running:
+
+```sh
+nix-shell
+```
+
+will put you inside a shell where the Poetry virtualenv (with all development
+dependencies) is activated, and all supported Python versions are available.
+This also gives you isolation from whatever Python version and packages are
+installed on your system.
+
+From there, a simple `nox` will run all tests + linters against all supported
+Python versions, as well as checking/formatting the code.

@@ -1,27 +1,52 @@
 """Verify graceful failure when we cannot extract imports from Python code."""
 
 import subprocess
+from pathlib import Path
 from textwrap import dedent
-from typing import Optional, Tuple
+from typing import Iterable, Optional, Tuple
 
 import pytest
 
 
+@pytest.fixture()
+def project_with_code_and_requirements_txt(write_tmp_files):
+    def _inner(*, imports: Iterable[str], declares: Iterable[str]):
+        code = "".join(f"import {s}\n" for s in imports)
+        requirements = "".join(f"{s}\n" for s in declares)
+        return write_tmp_files(
+            {
+                "code.py": code,
+                "requirements.txt": requirements,
+            }
+        )
+
+    return _inner
+
+
 def run_fawltydeps(
-    *args: str, to_stdin: Optional[str] = None, check: bool = True
+    *args: str,
+    to_stdin: Optional[str] = None,
+    check: bool = True,
+    cwd: Optional[Path] = None,
 ) -> Tuple[str, str]:
-    proc = subprocess.run(
-        ["fawltydeps"] + list(args),
-        input=to_stdin,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        universal_newlines=True,
-        check=check,
-    )
-    return proc.stdout.strip(), proc.stderr.strip()
+    try:
+        proc = subprocess.run(
+            ["fawltydeps"] + list(args),
+            input=to_stdin,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            universal_newlines=True,
+            check=check,
+            cwd=cwd,
+        )
+        return proc.stdout.strip(), proc.stderr.strip()
+    except subprocess.CalledProcessError as e:
+        print(f"Captured stdout: {e.stdout}")
+        print(f"Captured stderr: {e.stderr}")
+        raise
 
 
-def test_main__pass_dash__prints_imports_extracted_from_stdin():
+def test_list_imports__from_dash__prints_imports_from_stdin():
     code = dedent(
         """\
         from pathlib import Path
@@ -33,65 +58,250 @@ def test_main__pass_dash__prints_imports_extracted_from_stdin():
         """
     )
 
-    expect = ["foo", "numpy", "pathlib", "platform", "requests", "sys"]
-    output, errors = run_fawltydeps("--code=-", to_stdin=code)
+    expect = [
+        f"{i}: <stdin>"
+        for i in ["foo", "numpy", "pathlib", "platform", "requests", "sys"]
+    ]
+    output, errors = run_fawltydeps("--list-imports", "--code=-", to_stdin=code)
     assert output.splitlines() == expect
     assert errors == ""
 
 
-def test_main__pass_file__prints_imports_extracted_from_file(tmp_path):
-    code = dedent(
-        """\
-        from pathlib import Path
-        import platform, sys
+def test_list_imports__from_file__prints_imports_from_file(write_tmp_files):
+    tmp_path = write_tmp_files(
+        {
+            "myfile.py": """\
+                from pathlib import Path
+                import platform, sys
 
-        import requests
-        from foo import bar, baz
-        import numpy as np
-        """
+                import requests
+                from foo import bar, baz
+                import numpy as np
+                """,
+        }
     )
-    script = tmp_path / "myfile.py"
-    script.write_text(code)
 
     expect = ["foo", "numpy", "pathlib", "platform", "requests", "sys"]
-    output, errors = run_fawltydeps(f"--code={script}")
-    assert output.splitlines() == expect
+    output, errors = run_fawltydeps("--list-imports", f"--code={tmp_path}/myfile.py")
+    found_imports = [line.split(":", 1)[0] for line in output.splitlines()]
+    assert found_imports == expect
     assert errors == ""
 
 
-def test_main__pass_dir__prints_imports_extracted_from_py_file_only(tmp_path):
-    (tmp_path / "file1.py").write_text(
-        dedent(
-            """\
-            from pathlib import Path
-            import platform, sys
-            """
-        )
-    )
-    (tmp_path / "file2.NOT_PYTHON").write_text(
-        dedent(
-            """\
-            import requests
-            from foo import bar, baz
-            import numpy as np
-            """
-        )
+def test_list_imports__from_dir__prints_imports_from_py_file_only(write_tmp_files):
+    tmp_path = write_tmp_files(
+        {
+            "file1.py": """\
+                from pathlib import Path
+                import platform, sys
+                """,
+            "file2.NOT_PYTHON": """\
+                import requests
+                from foo import bar, baz
+                import numpy as np
+                """,
+        }
     )
 
     expect = ["pathlib", "platform", "sys"]
-    output, errors = run_fawltydeps(f"--code={tmp_path}")
+    output, errors = run_fawltydeps("--list-imports", f"--code={tmp_path}")
+    found_imports = [line.split(":", 1)[0] for line in output.splitlines()]
+    assert found_imports == expect
+    assert errors == ""
+
+
+def test_list_imports__from_missing_file__fails_with_exit_code_2(tmp_path):
+    with pytest.raises(subprocess.CalledProcessError) as exc_info:
+        run_fawltydeps("--list-imports", f"--code={tmp_path}/MISSING.py")
+    assert exc_info.value.returncode == 2
+
+
+def test_list_imports__from_empty_dir__logs_but_extracts_nothing(tmp_path):
+    # Enable log level INFO with -v
+    output, errors = run_fawltydeps("--list-imports", f"--code={tmp_path}", "-v")
+    assert output == ""
+    assert f"Parsing Python files under {tmp_path}" in errors
+
+
+def test_list_deps__dir__prints_deps_from_requirements_txt(
+    project_with_code_and_requirements_txt,
+):
+    tmp_path = project_with_code_and_requirements_txt(
+        imports=["requests", "pandas"],
+        declares=["requests", "pandas"],
+    )
+
+    expect = [
+        f"pandas: {tmp_path}/requirements.txt",
+        f"requests: {tmp_path}/requirements.txt",
+    ]
+    output, errors = run_fawltydeps("--list-deps", f"--deps={tmp_path}")
     assert output.splitlines() == expect
     assert errors == ""
 
 
-def test_main__pass_missing_file__fails_with_exit_code_2(tmp_path):
+# TODO: The following tests need changes inside extract_dependencies
+
+
+def TODO_test_list_deps__missing_dir__fails_with_exit_code_2(tmp_path):
     with pytest.raises(subprocess.CalledProcessError) as exc_info:
-        run_fawltydeps(f"--code={tmp_path}/MISSING.py")
+        run_fawltydeps("--list-deps", f"--deps={tmp_path}/MISSING_DIR")
     assert exc_info.value.returncode == 2
 
 
-def test_main__pass_empty_dir_verbosely__logs_but_extracts_nothing(tmp_path):
-    # Enable log level INFO with --verbose
-    output, errors = run_fawltydeps(f"--code={tmp_path}", "--verbose")
+def TODO_test_list_deps__empty_dir__verbosely_logs_but_extracts_nothing(tmp_path):
+    # Enable log level INFO with -v
+    output, errors = run_fawltydeps("--list-deps", f"--deps={tmp_path}", "-v")
     assert output == ""
-    assert f"Parsing Python files under {tmp_path}" in errors
+    assert f"Extracting dependencies from {tmp_path}" in errors
+
+
+def test_check__simple_project_imports_match_dependencies__prints_nothing(
+    project_with_code_and_requirements_txt,
+):
+    tmp_path = project_with_code_and_requirements_txt(
+        imports=["requests", "pandas"],
+        declares=["requests", "pandas"],
+    )
+
+    expect = []
+    output, errors = run_fawltydeps(
+        "--check", f"--code={tmp_path}", f"--deps={tmp_path}"
+    )
+    assert output.splitlines() == expect
+    assert errors == ""
+
+
+def test_check__simple_project_with_missing_deps__reports_undeclared(
+    project_with_code_and_requirements_txt,
+):
+    tmp_path = project_with_code_and_requirements_txt(
+        imports=["requests", "pandas"],
+        declares=["pandas"],
+    )
+
+    expect = [
+        "These imports are not declared as dependencies:",
+        "- requests",
+    ]
+    output, errors = run_fawltydeps(
+        "--check", f"--code={tmp_path}", f"--deps={tmp_path}"
+    )
+    assert output.splitlines() == expect
+    assert errors == ""
+
+
+def test_check__simple_project_with_extra_deps__reports_unused(
+    project_with_code_and_requirements_txt,
+):
+    tmp_path = project_with_code_and_requirements_txt(
+        imports=["requests"],
+        declares=["requests", "pandas"],
+    )
+
+    expect = [
+        "These dependencies are not imported in your code:",
+        "- pandas",
+    ]
+    output, errors = run_fawltydeps(
+        "--check", f"--code={tmp_path}", f"--deps={tmp_path}"
+    )
+    assert output.splitlines() == expect
+    assert errors == ""
+
+
+def test_check__simple_project__can_report_both_undeclared_and_unused(
+    project_with_code_and_requirements_txt,
+):
+    tmp_path = project_with_code_and_requirements_txt(
+        imports=["requests"],
+        declares=["pandas"],
+    )
+
+    expect = [
+        "These imports are not declared as dependencies:",
+        "- requests",
+        "These dependencies are not imported in your code:",
+        "- pandas",
+    ]
+    output, errors = run_fawltydeps(
+        "--check", f"--code={tmp_path}", f"--deps={tmp_path}"
+    )
+    assert output.splitlines() == expect
+    assert errors == ""
+
+
+def test_check_undeclared__simple_project__reports_only_undeclared(
+    project_with_code_and_requirements_txt,
+):
+    tmp_path = project_with_code_and_requirements_txt(
+        imports=["requests"],
+        declares=["pandas"],
+    )
+
+    expect = [
+        "These imports are not declared as dependencies:",
+        "- requests",
+    ]
+    output, errors = run_fawltydeps(
+        "--check-undeclared", f"--code={tmp_path}", f"--deps={tmp_path}"
+    )
+    assert output.splitlines() == expect
+    assert errors == ""
+
+
+def test_check_unused__simple_project__reports_only_unused(
+    project_with_code_and_requirements_txt,
+):
+    tmp_path = project_with_code_and_requirements_txt(
+        imports=["requests"],
+        declares=["pandas"],
+    )
+
+    expect = [
+        "These dependencies are not imported in your code:",
+        "- pandas",
+    ]
+    output, errors = run_fawltydeps(
+        "--check-unused", f"--code={tmp_path}", f"--deps={tmp_path}"
+    )
+    assert output.splitlines() == expect
+    assert errors == ""
+
+
+def test__no_action__defaults_to_check_action(
+    project_with_code_and_requirements_txt,
+):
+    tmp_path = project_with_code_and_requirements_txt(
+        imports=["requests"],
+        declares=["pandas"],
+    )
+
+    expect = [
+        "These imports are not declared as dependencies:",
+        "- requests",
+        "These dependencies are not imported in your code:",
+        "- pandas",
+    ]
+    output, errors = run_fawltydeps(f"--code={tmp_path}", f"--deps={tmp_path}")
+    assert output.splitlines() == expect
+    assert errors == ""
+
+
+def test__no_options__defaults_to_check_action_in_current_dir(
+    project_with_code_and_requirements_txt,
+):
+    tmp_path = project_with_code_and_requirements_txt(
+        imports=["requests"],
+        declares=["pandas"],
+    )
+
+    expect = [
+        "These imports are not declared as dependencies:",
+        "- requests",
+        "These dependencies are not imported in your code:",
+        "- pandas",
+    ]
+    output, errors = run_fawltydeps(cwd=tmp_path)
+    assert output.splitlines() == expect
+    assert errors == ""

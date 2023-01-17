@@ -2,14 +2,20 @@
 import logging
 from pathlib import Path
 from textwrap import dedent
+from typing import List, Tuple
 
 import pytest
 
 from fawltydeps.extract_dependencies import (
+    DeclaredDependency,
     extract_dependencies,
     parse_requirements_contents,
     parse_setup_contents,
 )
+
+
+def dependency_factory(data: List[Tuple[str, Path]]) -> List[DeclaredDependency]:
+    return [DeclaredDependency(*d) for d in data]
 
 
 @pytest.mark.parametrize(
@@ -23,7 +29,12 @@ from fawltydeps.extract_dependencies import (
                 """
             ),
             Path("requirements.txt"),
-            [("pandas", Path("requirements.txt")), ("click", Path("requirements.txt"))],
+            dependency_factory(
+                [
+                    ("pandas", Path("requirements.txt")),
+                    ("click", Path("requirements.txt")),
+                ]
+            ),
             id="__simple_requirements_success",
         ),
         pytest.param(
@@ -35,7 +46,12 @@ from fawltydeps.extract_dependencies import (
                 """
             ),
             Path("requirements.txt"),
-            [("pandas", Path("requirements.txt")), ("click", Path("requirements.txt"))],
+            dependency_factory(
+                [
+                    ("pandas", Path("requirements.txt")),
+                    ("click", Path("requirements.txt")),
+                ]
+            ),
             id="__requirements_with_versions__yields_names",
         ),
     ],
@@ -60,7 +76,9 @@ def test_parse_requirements_contents(file_content, file_name, expected):
                 """
             ),
             Path("setup.py"),
-            [("pandas", Path("setup.py")), ("click", Path("setup.py"))],
+            dependency_factory(
+                [("pandas", Path("setup.py")), ("click", Path("setup.py"))]
+            ),
             id="__simple_requirements_in_setup_py__succeeds",
         ),
         pytest.param(
@@ -75,7 +93,9 @@ def test_parse_requirements_contents(file_content, file_name, expected):
                 """
             ),
             Path("setup.py"),
-            [("pandas", Path("setup.py")), ("click", Path("setup.py"))],
+            dependency_factory(
+                [("pandas", Path("setup.py")), ("click", Path("setup.py"))]
+            ),
             id="__requirements_with_versions__yields_names",
         ),
         pytest.param(
@@ -108,7 +128,9 @@ def test_parse_requirements_contents(file_content, file_name, expected):
                 """
             ),
             Path("setup.py"),
-            [("pandas", Path("setup.py")), ("click", Path("setup.py"))],
+            dependency_factory(
+                [("pandas", Path("setup.py")), ("click", Path("setup.py"))]
+            ),
             id="__handles_nested_functions__yields_names",
         ),
         pytest.param(
@@ -133,7 +155,9 @@ def test_parse_requirements_contents(file_content, file_name, expected):
                 """
             ),
             Path("setup.py"),
-            [("pandas", Path("setup.py")), ("click", Path("setup.py"))],
+            dependency_factory(
+                [("pandas", Path("setup.py")), ("click", Path("setup.py"))]
+            ),
             id="__two_setup_calls__uses_only_top_level",
         ),
         pytest.param(
@@ -151,7 +175,9 @@ def test_parse_requirements_contents(file_content, file_name, expected):
                 """
             ),
             Path("setup.py"),
-            [("annoy", Path("setup.py")), ("jieba", Path("setup.py"))],
+            dependency_factory(
+                [("annoy", Path("setup.py")), ("jieba", Path("setup.py"))]
+            ),
             id="__extras_present__yields_names",
         ),
         pytest.param(
@@ -170,12 +196,14 @@ def test_parse_requirements_contents(file_content, file_name, expected):
                 """
             ),
             Path("setup.py"),
-            [
-                ("pandas", Path("setup.py")),
-                ("click", Path("setup.py")),
-                ("annoy", Path("setup.py")),
-                ("jieba", Path("setup.py")),
-            ],
+            dependency_factory(
+                [
+                    ("pandas", Path("setup.py")),
+                    ("click", Path("setup.py")),
+                    ("annoy", Path("setup.py")),
+                    ("jieba", Path("setup.py")),
+                ]
+            ),
             id="__extras_and_regular_dependencies__yields_all_names",
         ),
     ],
@@ -199,7 +227,7 @@ def test_parse_setup_contents__cannot_parse_install_requires__logs_warning(caplo
     )
     expected = []
     caplog.set_level(logging.WARNING)
-    result = list(parse_setup_contents(setup_contents, ""))
+    result = list(parse_setup_contents(setup_contents, Path("")))
     assert "Could not parse contents of `install_requires`" in caplog.text
     assert expected == result
 
@@ -218,7 +246,7 @@ def test_parse_setup_contents__cannot_parse_extras_require__logs_warning(caplog)
     )
     expected = []
     caplog.set_level(logging.WARNING)
-    result = list(parse_setup_contents(setup_contents, ""))
+    result = list(parse_setup_contents(setup_contents, Path("")))
     assert "Could not parse contents of `extras_require`" in caplog.text
     assert expected == result
 
@@ -238,9 +266,9 @@ def test_parse_setup_contents__cannot_parse_extras_require_value__logs_warning(c
         )
         """
     )
-    expected = [("abc", "")]
+    expected = [("abc", Path(""))]
     caplog.set_level(logging.WARNING)
-    result = list(parse_setup_contents(setup_contents, ""))
+    result = list(parse_setup_contents(setup_contents, Path("")))
     assert "Could not parse contents of `extras_require`" in caplog.text
     assert expected == result
 
@@ -264,14 +292,16 @@ def test_parse_setup_contents__multiple_entries_in_extras_require__returns_list(
         )
         """
     )
-    expected = [
-        ("abc", ""),
-        ("bert-serving-server", ""),
-        ("bert-serving-client", ""),
-        ("pytorch-transformer", ""),
-        ("flair", ""),
-    ]
-    result = list(parse_setup_contents(setup_contents, ""))
+    expected = dependency_factory(
+        [
+            ("abc", Path("")),
+            ("bert-serving-server", Path("")),
+            ("bert-serving-client", Path("")),
+            ("pytorch-transformer", Path("")),
+            ("flair", Path("")),
+        ]
+    )
+    result = list(parse_setup_contents(setup_contents, Path("")))
     assert sorted(expected) == sorted(result)
 
 

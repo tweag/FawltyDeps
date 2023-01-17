@@ -1,25 +1,31 @@
 """Test that we can extract simple imports from Python code."""
 
+from pathlib import Path
 from textwrap import dedent
+from typing import List, Optional
 
-from fawltydeps.extract_imports import parse_code, parse_dir, parse_file
+from fawltydeps.extract_imports import ParsedImport, parse_code, parse_dir, parse_file
+
+
+def with_location(imports: List[str], location: Optional[Path]) -> List[ParsedImport]:
+    return [ParsedImport(i, location) for i in imports]
 
 
 def test_parse_code__simple_import__extracts_module_name():
     code = "import sys"
-    expect = {"sys"}
+    expect = {ParsedImport("sys", None)}
     assert set(parse_code(code)) == expect
 
 
 def test_parse_code__two_imports__extracts_both_modules():
     code = "import platform, sys"
-    expect = {"platform", "sys"}
+    expect = {ParsedImport("platform", None), ParsedImport("sys", None)}
     assert set(parse_code(code)) == expect
 
 
 def test_parse_code__simple_import_from__extracts_module():
     code = "from sys import executable"
-    expect = {"sys"}
+    expect = {ParsedImport("sys", None)}
     assert set(parse_code(code)) == expect
 
 
@@ -30,8 +36,8 @@ def test_parse_code__import_with_compound_names__extracts_first_component():
         from foo.bar import baz
         """
     )
-    expect = {"parent", "foo"}
-    assert set(parse_code(code)) == expect
+    expect = with_location(["parent", "foo"], None)
+    assert set(parse_code(code)) == set(expect)
 
 
 def test_parse_code__relative_imports__are_ignored():
@@ -59,8 +65,10 @@ def test_parse_code__combo_of_simple_imports__extracts_all():
         import numpy as np
         """
     )
-    expect = {"pathlib", "sys", "unittest", "requests", "foo", "numpy"}
-    assert set(parse_code(code)) == expect
+    expect = with_location(
+        ["pathlib", "sys", "unittest", "requests", "foo", "numpy"], None
+    )
+    assert set(parse_code(code)) == set(expect)
 
 
 def test_parse_file__combo_of_simple_imports__extracts_all(tmp_path):
@@ -78,8 +86,11 @@ def test_parse_file__combo_of_simple_imports__extracts_all(tmp_path):
     script = tmp_path / "test.py"
     script.write_text(code)
 
-    expect = {"pathlib", "sys", "unittest", "requests", "foo", "numpy"}
-    assert set(parse_file(script)) == expect
+    expect = with_location(
+        ["pathlib", "sys", "unittest", "requests", "foo", "numpy"],
+        tmp_path / "test.py",
+    )
+    assert set(parse_file(script)) == set(expect)
 
 
 def test_parse_dir__with_py_and_non_py__extracts_only_from_py_files(tmp_path):
@@ -105,7 +116,10 @@ def test_parse_dir__with_py_and_non_py__extracts_only_from_py_files(tmp_path):
     )
     (tmp_path / "not_python.txt").write_text(not_code)
 
-    expect = {"pathlib", "pandas"}
+    expect = {
+        ParsedImport("pathlib", tmp_path / "test1.py"),
+        ParsedImport("pandas", tmp_path / "test2.py"),
+    }
     assert set(parse_dir(tmp_path)) == expect
 
 
@@ -127,5 +141,7 @@ def test_parse_dir__imports__are_extracted_in_order_of_encounter(tmp_path):
     (tmp_path / "subdir").mkdir()
     (tmp_path / "subdir/second.py").write_text(second)
 
-    expect = ["sys", "foo", "sys", "xyzzy"]
+    expect = with_location(["sys", "foo"], tmp_path / "first.py") + with_location(
+        ["sys", "xyzzy"], tmp_path / "subdir/second.py"
+    )
     assert list(parse_dir(tmp_path)) == expect

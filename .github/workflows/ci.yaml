@@ -23,11 +23,35 @@ jobs:
           path: ~/.cache/pypoetry/virtualenvs
           key: ${{ runner.os }}-poetry-tests-${{ hashFiles('poetry.lock') }}
       - name: Install project
-        run: poetry install --no-interaction --sync --with=test
-      - name: Run tests
-        run: poetry run pytest
+        run: poetry install --no-interaction --sync --with=nox,test
+      - name: Run tests on Python ${{ matrix.python-version }}
+        run: poetry run nox --no-venv --no-install --non-interactive -s tests
 
-  linters:
+  lint:
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
+        os: [ubuntu-22.04]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: Gr1N/setup-poetry@v7
+      - uses: actions/cache@v2
+        with:
+          path: ~/.cache/pypoetry/virtualenvs
+          key: ${{ runner.os }}-poetry-lint-${{ hashFiles('poetry.lock') }}
+      - name: Install project
+        run: poetry install --no-interaction --sync --no-root --only=nox,lint
+      - name: Run linters on Python ${{ matrix.python-version }}
+        run: poetry run nox --no-venv --no-install --non-interactive -s lint
+
+  format:
     strategy:
       fail-fast: false
       matrix:
@@ -45,17 +69,11 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: ~/.cache/pypoetry/virtualenvs
-          key: ${{ runner.os }}-poetry-linters-${{ hashFiles('poetry.lock') }}
+          key: ${{ runner.os }}-poetry-format-${{ hashFiles('poetry.lock') }}
       - name: Install project
-        run: poetry install --no-interaction --sync --with=test,dev
-      - name: Run type checker
-        run: poetry run mypy
-      - name: Check formatting with Black
-        run: poetry run black . --check
-      - name: Run linter
-        run: poetry run pylint fawltydeps tests
-      - name: Run import sort checker
-        run: poetry run isort fawltydeps tests --check-only
+        run: poetry install --no-interaction --sync --no-root --only=nox,format
+      - name: Run formatting checks
+        run: poetry run nox --no-venv --no-install --non-interactive -s format
 
 # Inspiration for the CI setup:
 # https://github.com/marketplace/actions/python-poetry-action
