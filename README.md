@@ -103,9 +103,9 @@ poetry shell
 ```
 
 to jump into a development shell with this virtualenv activated. Here you will
-have all the dependencies declared in our `pyproject.toml` installed. (Without
-this shell activated you will have to prefix the more specific commands below
-with `poetry run ...`).
+have all the dependencies declared in our [`pyproject.toml`](./pyproject.toml)
+installed. (Without this shell activated you will have to prefix the more
+specific commands below with `poetry run ...`).
 
 ### Nox
 
@@ -124,7 +124,8 @@ nox -s reformat   # Fix formatting (isort + black)
 ```
 
 If you want to run commands individually, the sessions are defined inside
-`noxfile.py` and should be easy to read. For example, these commands will work:
+[`noxfile.py`](./noxfile.py) and should be easy to read. For example, these
+commands will work:
 
 ```sh
 pytest                   # Run unit tests
@@ -137,9 +138,9 @@ black .                  # Fix code formatting
 
 ### Shortcut: Nix
 
-We have a `shell.nix` that provides Poetry in addition to all of our supported
-Python versions. If you have [Nix](https://nixos.org) available on your machine,
-then running:
+We have a [`shell.nix`](./shell.nix) that provides Poetry in addition to all of
+our supported Python versions. If you have [Nix](https://nixos.org) available
+on your machine, then running:
 
 ```sh
 nix-shell
