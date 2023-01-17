@@ -197,7 +197,7 @@ def test_parse_pyproject_content__pep621_or_poetry_dependencies__yields_dependen
             [],
             "Poetry",
             ["main"],
-            id="dependencies_as_list",
+            id="poetry_dependencies_as_list",
         ),
         pytest.param(
             dedent(
@@ -209,7 +209,7 @@ def test_parse_pyproject_content__pep621_or_poetry_dependencies__yields_dependen
             [],
             "Poetry",
             ["main"],
-            id="dependencies_as_str",
+            id="poetry_dependencies_as_str",
         ),
         pytest.param(
             dedent(
@@ -222,7 +222,7 @@ def test_parse_pyproject_content__pep621_or_poetry_dependencies__yields_dependen
             [],
             "Poetry",
             ["group"],
-            id="dependencies_as_list",
+            id="poetry_dependencies_as_list",
         ),
         pytest.param(
             dedent(
@@ -235,7 +235,7 @@ def test_parse_pyproject_content__pep621_or_poetry_dependencies__yields_dependen
             [],
             "Poetry",
             ["extra"],
-            id="requirements_as_str_instead_of_list",
+            id="poetry_extra_requirements_as_str_instead_of_list",
         ),
         pytest.param(
             dedent(
@@ -247,7 +247,7 @@ def test_parse_pyproject_content__pep621_or_poetry_dependencies__yields_dependen
             [],
             "Poetry",
             ["extra"],
-            id="extra_dependencies_as_list_instead_of_dict",
+            id="poetry_extra_requirements_as_list_instead_of_dict",
         ),
         pytest.param(
             dedent(
@@ -266,7 +266,7 @@ def test_parse_pyproject_content__pep621_or_poetry_dependencies__yields_dependen
             [],
             "Poetry",
             ["main", "group", "extra"],
-            id="all_dependencies_malformatted",
+            id="poetry_all_dependencies_malformatted",
         ),
         pytest.param(
             dedent(
@@ -278,7 +278,7 @@ def test_parse_pyproject_content__pep621_or_poetry_dependencies__yields_dependen
             [],
             "PEP621",
             ["main"],
-            id="dependencies_as_dict_instead_of_list",
+            id="pep621_dependencies_as_dict_instead_of_list",
         ),
         pytest.param(
             dedent(
@@ -336,7 +336,7 @@ def test_parse_pyproject_content__malformatted_poetry_dependencies__yields_no_de
                 ("Poetry", "group"),
                 ("Poetry", "extra"),
             ],
-            id="missing_pep621_fields",
+            id="missing_pep621_and_poetry_fields",
         ),
     ],
 )
