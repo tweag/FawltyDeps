@@ -227,7 +227,7 @@ def test_parse_setup_contents__cannot_parse_install_requires__logs_warning(caplo
     )
     expected = []
     caplog.set_level(logging.WARNING)
-    result = list(parse_setup_contents(setup_contents, ""))
+    result = list(parse_setup_contents(setup_contents, Path("")))
     assert "Could not parse contents of `install_requires`" in caplog.text
     assert expected == result
 
@@ -246,7 +246,7 @@ def test_parse_setup_contents__cannot_parse_extras_require__logs_warning(caplog)
     )
     expected = []
     caplog.set_level(logging.WARNING)
-    result = list(parse_setup_contents(setup_contents, ""))
+    result = list(parse_setup_contents(setup_contents, Path("")))
     assert "Could not parse contents of `extras_require`" in caplog.text
     assert expected == result
 
@@ -266,9 +266,9 @@ def test_parse_setup_contents__cannot_parse_extras_require_value__logs_warning(c
         )
         """
     )
-    expected = [("abc", "")]
+    expected = [("abc", Path(""))]
     caplog.set_level(logging.WARNING)
-    result = list(parse_setup_contents(setup_contents, ""))
+    result = list(parse_setup_contents(setup_contents, Path("")))
     assert "Could not parse contents of `extras_require`" in caplog.text
     assert expected == result
 
@@ -294,14 +294,14 @@ def test_parse_setup_contents__multiple_entries_in_extras_require__returns_list(
     )
     expected = dependency_factory(
         [
-            ("abc", ""),
-            ("bert-serving-server", ""),
-            ("bert-serving-client", ""),
-            ("pytorch-transformer", ""),
-            ("flair", ""),
+            ("abc", Path("")),
+            ("bert-serving-server", Path("")),
+            ("bert-serving-client", Path("")),
+            ("pytorch-transformer", Path("")),
+            ("flair", Path("")),
         ]
     )
-    result = list(parse_setup_contents(setup_contents, ""))
+    result = list(parse_setup_contents(setup_contents, Path("")))
     assert sorted(expected) == sorted(result)
 
 
