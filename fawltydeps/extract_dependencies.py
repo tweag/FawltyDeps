@@ -141,9 +141,9 @@ def parse_poetry_pyproject_dependencies(
         "extra": parse_extra_dependencies,
     }
 
-    for field_type in ["main", "group", "extra"]:
+    for field_type, parser in fields_parsers.items():
         try:
-            yield from fields_parsers[field_type](poetry_config, path_hint)
+            yield from parser(poetry_config, path_hint)
         except KeyError:  # missing fields:
             logger.debug(
                 error_message_template,
@@ -192,9 +192,9 @@ def parse_pep621_pyproject_contents(
         "main": parse_main_dependencies,
         "optional": parse_optional_dependencies,
     }
-    for field_type in ["main", "optional"]:
+    for field_type, parser in fields_parsers.items():
         try:
-            yield from fields_parsers[field_type](parsed_contents, path_hint)
+            yield from parser(parsed_contents, path_hint)
         except KeyError:
             logger.debug(
                 error_message_template, "find", "PEP621", field_type, path_hint
