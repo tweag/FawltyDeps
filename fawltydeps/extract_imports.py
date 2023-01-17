@@ -7,6 +7,8 @@ import sys
 from pathlib import Path
 from typing import Iterator, Optional
 
+import isort
+
 from fawltydeps.types import ParsedImport
 from fawltydeps.utils import walk_dir
 
@@ -28,29 +30,37 @@ def parse_code(
     Generate (i.e. yield) the module names that are imported in the order
     they appear in the code.
     """
+
+    def is_stdlib_import(name: str) -> bool:
+        return isort.place_module(name) == "STDLIB"
+
     filename = "<unknown>" if path_hint is None else str(path_hint)
     for node in ast.walk(ast.parse(code, filename=filename)):
         if isinstance(node, ast.Import):
             logger.debug(ast.dump(node))
             for alias in node.names:
-                yield ParsedImport(
-                    name=alias.name.split(".", 1)[0],
-                    location=path_hint,
-                    lineno=node.lineno,
-                    cellno=cellno,
-                )
+                name = alias.name.split(".", 1)[0]
+                if not is_stdlib_import(name):
+                    yield ParsedImport(
+                        name=name,
+                        location=path_hint,
+                        lineno=node.lineno,
+                        cellno=cellno,
+                    )
         elif isinstance(node, ast.ImportFrom):
             logger.debug(ast.dump(node))
             # Relative imports are always relative to the current package, and
             # will therefore not resolve to a third-party package.
             # They are therefore uninteresting to us.
             if node.level == 0 and node.module is not None:
-                yield ParsedImport(
-                    name=node.module.split(".", 1)[0],
-                    location=path_hint,
-                    lineno=node.lineno,
-                    cellno=cellno,
-                )
+                name = node.module.split(".", 1)[0]
+                if not is_stdlib_import(name):
+                    yield ParsedImport(
+                        name=name,
+                        location=path_hint,
+                        lineno=node.lineno,
+                        cellno=cellno,
+                    )
 
 
 def parse_notebook_file(path: Path) -> Iterator[ParsedImport]:
