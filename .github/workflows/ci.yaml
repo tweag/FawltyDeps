@@ -27,9 +27,9 @@ jobs:
       - name: Install project
         run: poetry install --no-interaction --sync --with=nox,test
       - name: Run unit tests on Python ${{ matrix.python-version }}
-        run: poetry run nox --no-venv --no-install --non-interactive -s tests
+        run: poetry run nox --no-venv --no-install --non-interactive -s tests -- -vv
       - name: Run integration tests on Python ${{ matrix.python-version }}
-        run: poetry run nox --no-venv --no-install --non-interactive -s integration_tests
+        run: poetry run nox --no-venv --no-install --non-interactive -s integration_tests -- -vv
 
   lint:
     strategy:
