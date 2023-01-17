@@ -153,3 +153,17 @@ installed on your system.
 
 From there, a simple `nox` will run all tests + linters against all supported
 Python versions, as well as checking/formatting the code.
+
+## Integration tests
+
+In addition to comprehensive unit tests under `tests/`, we also verify
+FawltyDeps' behavior with integration tests that (among other things) include
+testing with real-world projects. To that end, we have a framework in
+[`tests/test_real_projects.py`](./tests/test_real_projects.py) for downloading
+and unpacking tarball of 3rd-party projects, and then run fawltydeps on them,
+while verifying their output.
+
+When you find a project where FawltyDeps is not doing a good job, we appreciate
+you adding that project here. Look at the existing examples in
+[`tests/test_real_projects.py`](./tests/test_real_projects.py) to see how these
+tests work.
