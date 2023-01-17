@@ -3,8 +3,6 @@
 from itertools import groupby
 from typing import List
 
-import isort
-
 from fawltydeps.types import (
     DeclaredDependency,
     DependencyComparison,
@@ -19,20 +17,14 @@ def compare_imports_to_dependencies(
     """
     Compares imports to dependencies
 
-    Returns set of undeclared non stdlib imports and set of unused dependencies.
+    Returns set of undeclared imports and set of unused dependencies.
     For undeclared dependencies returns files and line numbers
     where they were imported in the code.
     """
-
-    def is_stdlib_import(name: str) -> bool:
-        return isort.place_module(name) == "STDLIB"
-
-    imports_non_stdlib = [i for i in imports if not is_stdlib_import(i.name)]
-
-    imported_names = {i.name for i in imports_non_stdlib}
+    imported_names = {i.name for i in imports}
     declared_names = {d.name for d in dependencies}
 
-    undeclared = [i for i in imports_non_stdlib if i.name not in declared_names]
+    undeclared = [i for i in imports if i.name not in declared_names]
     undeclared.sort(key=lambda i: i.name)  # groupby requires pre-sorting
     undeclared_grouped = {
         name: [

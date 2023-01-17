@@ -69,21 +69,51 @@ def generate_notebook(
     return json.dumps(notebook, indent=2)
 
 
-def test_parse_code__simple_import__extracts_module_name():
+def test_parse_code__no_code__has_no_imports():
+    code = ""
+    expect = []
+    assert set(parse_code(code)) == set(expect)
+
+
+def test_parse_code__stdlib_import__is_omitted():
     code = "import sys"
-    expect = {ParsedImport("sys", lineno=1)}
+    expect = []
+    assert set(parse_code(code)) == set(expect)
+
+
+def test_parse_code__simple_import__extracts_module_name():
+    code = "import numpy"
+    expect = {ParsedImport("numpy", lineno=1)}
+    assert set(parse_code(code)) == expect
+
+
+def test_parse_code__two_stdlib_imports__are_both_omitted():
+    code = "import platform, sys"
+    expect = []
+    assert set(parse_code(code)) == set(expect)
+
+
+def test_parse_code__one_stdlib_one_external_import__extracts_external_import():
+    code = "import sys, pandas"
+    expect = {ParsedImport("pandas", lineno=1)}
     assert set(parse_code(code)) == expect
 
 
 def test_parse_code__two_imports__extracts_both_modules():
-    code = "import platform, sys"
-    expect = {ParsedImport("platform", lineno=1), ParsedImport("sys", lineno=1)}
+    code = "import numpy, pandas"
+    expect = {ParsedImport("numpy", lineno=1), ParsedImport("pandas", lineno=1)}
     assert set(parse_code(code)) == expect
 
 
-def test_parse_code__simple_import_from__extracts_module():
+def test_parse_code__simple_import_from_stdlib__is_omitted():
     code = "from sys import executable"
-    expect = {ParsedImport("sys", lineno=1)}
+    expect = []
+    assert set(parse_code(code)) == set(expect)
+
+
+def test_parse_code__simple_import_from__extracts_module():
+    code = "from numpy import array"
+    expect = {ParsedImport("numpy", lineno=1)}
     assert set(parse_code(code)) == expect
 
 
@@ -111,7 +141,7 @@ def test_parse_code__relative_imports__are_ignored():
     assert set(parse_code(code)) == expect
 
 
-def test_parse_code__combo_of_simple_imports__extracts_all():
+def test_parse_code__combo_of_simple_imports__extracts_all_external_imports():
     code = dedent(
         """\
         from pathlib import Path
@@ -123,14 +153,11 @@ def test_parse_code__combo_of_simple_imports__extracts_all():
         import numpy as np
         """
     )
-    expect = construct_imports(
-        ["pathlib", "sys", "unittest", "requests", "foo", "numpy"],
-        lines=[1, 2, 3, 5, 6, 7],
-    )
+    expect = construct_imports(["requests", "foo", "numpy"], lines=[5, 6, 7])
     assert set(parse_code(code)) == set(expect)
 
 
-def test_parse_python_file__combo_of_simple_imports__extracts_all(tmp_path):
+def test_parse_python_file__combo_of_simple_imports__extracts_all_externals(tmp_path):
     code = dedent(
         """\
         from pathlib import Path
@@ -146,9 +173,9 @@ def test_parse_python_file__combo_of_simple_imports__extracts_all(tmp_path):
     script.write_text(code)
 
     expect = construct_imports(
-        ["pathlib", "sys", "unittest", "requests", "foo", "numpy"],
-        script,
-        [1, 2, 3, 5, 6, 7],
+        ["requests", "foo", "numpy"],
+        tmp_path / "test.py",
+        [5, 6, 7],
     )
     assert set(parse_python_file(script)) == set(expect)
 
@@ -266,7 +293,7 @@ def test_parse_dir__with_py_ipynb_and_non_py__extracts_only_from_py_and_ipynb_fi
 ):
     code1 = dedent(
         """\
-        from pathlib import Path
+        from my_pathlib import Path
         """
     )
     (tmp_path / "test1.py").write_text(code1)
@@ -290,7 +317,7 @@ def test_parse_dir__with_py_ipynb_and_non_py__extracts_only_from_py_and_ipynb_fi
     (tmp_path / "not_python.txt").write_text(not_code)
 
     expect = {
-        ParsedImport("pathlib", tmp_path / "test1.py", 1),
+        ParsedImport("my_pathlib", tmp_path / "test1.py", 1),
         ParsedImport("pandas", tmp_path / "test2.py", 1),
         ParsedImport("pytorch", tmp_path / "test3.ipynb", 1, 0),
     }
@@ -300,7 +327,7 @@ def test_parse_dir__with_py_ipynb_and_non_py__extracts_only_from_py_and_ipynb_fi
 def test_parse_dir__imports__are_extracted_in_order_of_encounter(tmp_path):
     first = dedent(
         """\
-        import sys
+        import my_sys
         import foo
         """
     )
@@ -308,7 +335,7 @@ def test_parse_dir__imports__are_extracted_in_order_of_encounter(tmp_path):
 
     second = dedent(
         """\
-        import sys
+        import my_sys
         import xyzzy
         """
     )
@@ -316,8 +343,8 @@ def test_parse_dir__imports__are_extracted_in_order_of_encounter(tmp_path):
     (tmp_path / "subdir/second.py").write_text(second)
 
     expect = construct_imports(
-        ["sys", "foo"], tmp_path / "first.py", [1, 2]
-    ) + construct_imports(["sys", "xyzzy"], tmp_path / "subdir/second.py", [1, 2])
+        ["my_sys", "foo"], tmp_path / "first.py", [1, 2]
+    ) + construct_imports(["my_sys", "xyzzy"], tmp_path / "subdir/second.py", [1, 2])
     assert list(parse_dir(tmp_path)) == expect
 
 
