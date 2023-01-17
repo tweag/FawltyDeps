@@ -121,6 +121,7 @@ markers = [
     "integration: marks integration tests (disabled by default, enable with '-m integration')",
 ]
 addopts = "-m 'not integration'"
+cache_dir = "~/.cache/pytest"
 
 [build-system]
 requires = ["poetry-core"]
