@@ -50,14 +50,14 @@ def perform_actions(actions: Set[Action], code: Path, deps: Path) -> int:
                 print(f"{name}: {location}")
 
     if is_enabled(Action.REPORT_UNDECLARED, Action.REPORT_UNUSED):
-        # TODO: Better handling of location information
         report = compare_imports_to_dependencies(
             imports=extracted_imports, dependencies=extracted_deps
         )
         if is_enabled(Action.REPORT_UNDECLARED) and report.undeclared:
             print("These imports are not declared as dependencies:")
-            for name in sorted(report.undeclared):
-                print(f"- {name}")
+            for name, locations in sorted(report.undeclared.items()):
+                represent_locations = "".join(["\n" + str(l) for l in locations])
+                print(f"- {name} in locations:{represent_locations}")
         if is_enabled(Action.REPORT_UNUSED) and report.unused:
             print("These dependencies are not imported in your code:")
             for name in sorted(report.unused):
