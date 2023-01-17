@@ -20,12 +20,16 @@ jobs:
       - uses: Gr1N/setup-poetry@v7
       - uses: actions/cache@v2
         with:
-          path: ~/.cache/pypoetry/virtualenvs
+          path: |
+            ~/.cache/pypoetry/virtualenvs
+            ~/.cache/pytest
           key: ${{ runner.os }}-poetry-tests-${{ hashFiles('poetry.lock') }}
       - name: Install project
         run: poetry install --no-interaction --sync --with=nox,test
-      - name: Run tests on Python ${{ matrix.python-version }}
+      - name: Run unit tests on Python ${{ matrix.python-version }}
         run: poetry run nox --no-venv --no-install --non-interactive -s tests
+      - name: Run integration tests on Python ${{ matrix.python-version }}
+        run: poetry run nox --no-venv --no-install --non-interactive -s integration_tests
 
   lint:
     strategy:
