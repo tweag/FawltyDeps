@@ -4,7 +4,11 @@ from typing import List
 
 import pytest
 
-from fawltydeps.check import DependencyComparison, compare_imports_to_dependencies
+from fawltydeps.check import (
+    DependencyComparison,
+    LocationDetails,
+    compare_imports_to_dependencies,
+)
 from fawltydeps.extract_dependencies import DeclaredDependency
 from fawltydeps.extract_imports import ParsedImport
 
@@ -21,48 +25,58 @@ def imports_factory(data: List[str]) -> List[ParsedImport]:
     "imports,dependencies,expected",
     [
         pytest.param(
-            [], [], DependencyComparison(set(), set()), id="no_import_no_dependencies"
+            [], [], DependencyComparison({}, set()), id="no_import_no_dependencies"
         ),
         pytest.param(
             imports_factory(["sys"]),
             [],
-            DependencyComparison(set(), set()),
+            DependencyComparison({}, set()),
             id="stdlib_import_no_dependencies",
         ),
         pytest.param(
             imports_factory(["pandas"]),
             [],
-            DependencyComparison(set(["pandas"]), set()),
+            DependencyComparison({"pandas": []}, set()),
             id="non_stdlib_import_no_dependencies",
         ),
         pytest.param(
             [],
             dependencies_factory(["pandas"]),
-            DependencyComparison(set(), set(["pandas"])),
+            DependencyComparison({}, set(["pandas"])),
             id="no_imports_one_dependency",
         ),
         pytest.param(
             imports_factory(["sys", "pandas"]),
             dependencies_factory(["pandas"]),
-            DependencyComparison(set(), set()),
+            DependencyComparison({}, set()),
             id="mixed_imports_non_stdlib_dependency",
         ),
         pytest.param(
             imports_factory(["sys", "pandas"]),
             [],
-            DependencyComparison(set(["pandas"]), set()),
+            DependencyComparison({"pandas": []}, set()),
             id="mixed_imports_no_dependencies",
         ),
         pytest.param(
             imports_factory(["sys"]),
             dependencies_factory(["pandas"]),
-            DependencyComparison(set(), set(["pandas"])),
+            DependencyComparison({}, set(["pandas"])),
             id="stdlib_import_and_non_stdlib_dependency",
         ),
         pytest.param(
             imports_factory(["sys", "pandas", "numpy"]),
             dependencies_factory(["pandas", "scipy"]),
-            DependencyComparison(set(["numpy"]), set(["scipy"])),
+            DependencyComparison({"numpy": []}, set(["scipy"])),
+            id="mixed_imports_with_unused_and_undeclared_dependencies",
+        ),
+        pytest.param(
+            imports_factory(["sys", "pandas"])
+            + [ParsedImport(name="numpy", location=Path("my_file.py"), lineno=3)],
+            dependencies_factory(["pandas", "scipy"]),
+            DependencyComparison(
+                {"numpy": [LocationDetails(Path("my_file.py"), 3)]},
+                set(["scipy"]),
+            ),
             id="mixed_imports_with_unused_and_undeclared_dependencies",
         ),
     ],

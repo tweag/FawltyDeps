@@ -187,7 +187,8 @@ def test_check__simple_project_with_missing_deps__reports_undeclared(
 
     expect = [
         "These imports are not declared as dependencies:",
-        "- requests",
+        "- requests in locations:",
+        f"{str(tmp_path / 'code.py')}:1",
     ]
     output, errors = run_fawltydeps(
         "--check", f"--code={tmp_path}", f"--deps={tmp_path}"
@@ -225,7 +226,8 @@ def test_check__simple_project__can_report_both_undeclared_and_unused(
 
     expect = [
         "These imports are not declared as dependencies:",
-        "- requests",
+        "- requests in locations:",
+        f"{str(tmp_path / 'code.py')}:1",
         "These dependencies are not imported in your code:",
         "- pandas",
     ]
@@ -246,7 +248,8 @@ def test_check_undeclared__simple_project__reports_only_undeclared(
 
     expect = [
         "These imports are not declared as dependencies:",
-        "- requests",
+        "- requests in locations:",
+        f"{str(tmp_path / 'code.py')}:1",
     ]
     output, errors = run_fawltydeps(
         "--check-undeclared", f"--code={tmp_path}", f"--deps={tmp_path}"
@@ -284,7 +287,8 @@ def test__no_action__defaults_to_check_action(
 
     expect = [
         "These imports are not declared as dependencies:",
-        "- requests",
+        "- requests in locations:",
+        f"{str(tmp_path / 'code.py')}:1",
         "These dependencies are not imported in your code:",
         "- pandas",
     ]
@@ -303,7 +307,8 @@ def test__no_options__defaults_to_check_action_in_current_dir(
 
     expect = [
         "These imports are not declared as dependencies:",
-        "- requests",
+        "- requests in locations:",
+        f"{str(tmp_path / 'code.py')}:1",
         "These dependencies are not imported in your code:",
         "- pandas",
     ]
