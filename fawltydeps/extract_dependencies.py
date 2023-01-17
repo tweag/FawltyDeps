@@ -18,7 +18,7 @@ TomlData = Dict[str, Any]  # type: ignore
 
 logger = logging.getLogger(__name__)
 
-message = "Failed to %s %s %s dependencies in %s."
+error_message_template = "Failed to %s %s %s dependencies in %s."
 
 
 class DependencyParsingError(Exception):
@@ -146,7 +146,7 @@ def parse_poetry_pyproject_dependencies(
             yield from fields_parsers[field_type](poetry_config, path_hint)
         except KeyError:  # missing fields:
             logger.debug(
-                message,
+                error_message_template,
                 "find",
                 "Poetry",
                 field_type,
@@ -154,7 +154,7 @@ def parse_poetry_pyproject_dependencies(
             )
         except (AttributeError, TypeError):  # invalid config
             logger.error(
-                message,
+                error_message_template,
                 "parse",
                 "Poetry",
                 field_type,
@@ -196,9 +196,13 @@ def parse_pep621_pyproject_contents(
         try:
             yield from fields_parsers[field_type](parsed_contents, path_hint)
         except KeyError:
-            logger.debug(message, "find", "PEP621", field_type, path_hint)
+            logger.debug(
+                error_message_template, "find", "PEP621", field_type, path_hint
+            )
         except (AttributeError, TypeError):
-            logger.error(message, "parse", "PEP621", field_type, path_hint)
+            logger.error(
+                error_message_template, "parse", "PEP621", field_type, path_hint
+            )
 
 
 def parse_pyproject_contents(text: str, path_hint: Path) -> Iterator[Tuple[str, Path]]:
