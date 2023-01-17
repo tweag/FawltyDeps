@@ -5,11 +5,20 @@ import logging
 import os
 import sys
 from pathlib import Path
-from typing import Iterator, NamedTuple
+from typing import Any, Dict, Iterator, NamedTuple
 
 from pkg_resources import parse_requirements
 
+if sys.version_info >= (3, 11):
+    import tomllib  # pylint: disable=E1101
+else:
+    import tomli as tomllib
+
+TomlData = Dict[str, Any]  # type: ignore
+
 logger = logging.getLogger(__name__)
+
+error_message_template = "Failed to %s %s %s dependencies in %s."
 
 
 class DeclaredDependency(NamedTuple):
@@ -100,6 +109,129 @@ def parse_setup_contents(text: str, path_hint: Path) -> Iterator[DeclaredDepende
             break
 
 
+def parse_poetry_pyproject_dependencies(
+    poetry_config: TomlData, path_hint: Path
+) -> Iterator[DeclaredDependency]:
+    """
+    Extract dependencies (package names) from Poetry fields in pyproject.toml
+    """
+
+    def parse_main_dependencies(
+        poetry_config: TomlData, path_hint: Path
+    ) -> Iterator[DeclaredDependency]:
+        for requirement in poetry_config["dependencies"].keys():
+            if requirement != "python":
+                yield DeclaredDependency(name=requirement, location=path_hint)
+
+    def parse_group_dependencies(
+        poetry_config: TomlData, path_hint: Path
+    ) -> Iterator[DeclaredDependency]:
+        for group in poetry_config["group"].values():
+            for requirement in group["dependencies"].keys():
+                if requirement != "python":
+                    yield DeclaredDependency(name=requirement, location=path_hint)
+
+    def parse_extra_dependencies(
+        poetry_config: TomlData, path_hint: Path
+    ) -> Iterator[DeclaredDependency]:
+        for group in poetry_config["extras"].values():
+            if isinstance(group, list):
+                for requirement in group:
+                    yield from parse_requirements_contents(requirement, path_hint)
+            else:
+                raise TypeError(f"{group!r} is of type {type(group)}. Expected a list.")
+
+    fields_parsers = {
+        "main": parse_main_dependencies,
+        "group": parse_group_dependencies,
+        "extra": parse_extra_dependencies,
+    }
+
+    for field_type, parser in fields_parsers.items():
+        try:
+            yield from parser(poetry_config, path_hint)
+        except KeyError:  # missing fields:
+            logger.debug(
+                error_message_template,
+                "find",
+                "Poetry",
+                field_type,
+                path_hint,
+            )
+        except (AttributeError, TypeError):  # invalid config
+            logger.error(
+                error_message_template,
+                "parse",
+                "Poetry",
+                field_type,
+                path_hint,
+            )
+
+
+def parse_pep621_pyproject_contents(
+    parsed_contents: TomlData, path_hint: Path
+) -> Iterator[DeclaredDependency]:
+    """
+    Extract dependencies (package names) in PEP 621 styled pyproject.toml
+    """
+
+    def parse_main_dependencies(
+        parsed_contents: TomlData, path_hint: Path
+    ) -> Iterator[DeclaredDependency]:
+        dependencies = parsed_contents["project"]["dependencies"]
+        if isinstance(dependencies, list):
+            for requirement in dependencies:
+                yield from parse_requirements_contents(requirement, path_hint)
+        else:
+            raise TypeError(
+                f"{dependencies!r} of type {type(dependencies)}. Expected list."
+            )
+
+    def parse_optional_dependencies(
+        parsed_contents: TomlData, path_hint: Path
+    ) -> Iterator[DeclaredDependency]:
+        for group in parsed_contents["project"]["optional-dependencies"].values():
+            for requirement in group:
+                yield from parse_requirements_contents(requirement, path_hint)
+
+    fields_parsers = {
+        "main": parse_main_dependencies,
+        "optional": parse_optional_dependencies,
+    }
+    for field_type, parser in fields_parsers.items():
+        try:
+            yield from parser(parsed_contents, path_hint)
+        except KeyError:
+            logger.debug(
+                error_message_template, "find", "PEP621", field_type, path_hint
+            )
+        except (AttributeError, TypeError):
+            logger.error(
+                error_message_template, "parse", "PEP621", field_type, path_hint
+            )
+
+
+def parse_pyproject_contents(
+    text: str, path_hint: Path
+) -> Iterator[DeclaredDependency]:
+    """
+    Parse dependencies from specific metadata fields in a pyproject.toml file.
+    This can currenly parse dependencies from dependency fields in:
+    - PEP 621 core metadata fields
+    - Poetry-specific metadata
+    """
+    parsed_contents = tomllib.loads(text)
+
+    yield from parse_pep621_pyproject_contents(parsed_contents, path_hint)
+
+    if "poetry" in parsed_contents.get("tool", {}):
+        yield from parse_poetry_pyproject_dependencies(
+            parsed_contents["tool"]["poetry"], path_hint
+        )
+    else:
+        logger.debug("%s does not contain [tool.poetry].")
+
+
 def extract_dependencies(path: Path) -> Iterator[DeclaredDependency]:
     """
     Extract dependencies from supported file types.
@@ -112,8 +244,8 @@ def extract_dependencies(path: Path) -> Iterator[DeclaredDependency]:
         "requirements.txt": parse_requirements_contents,
         "requirements.in": parse_requirements_contents,
         "setup.py": parse_setup_contents,
+        "pyproject.toml": parse_pyproject_contents,
     }
-    # TODO extract dependencies from pyproject.toml
 
     logger.debug(path)
 

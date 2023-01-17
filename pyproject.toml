@@ -33,6 +33,7 @@ fawltydeps = "fawltydeps.main:main"
 # Do not add anything here that is only needed by CI/tests/linters/developers
 python = "^3.7.2"
 isort = "^5.10"
+tomli = "^2.0.1"
 
 [tool.poetry.group.nox]
 optional = true
