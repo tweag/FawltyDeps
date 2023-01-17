@@ -115,6 +115,12 @@ disallow_subclassing_any = true
 implicit_optional = false
 strict_optional = true
 
+[tool.pytest.ini_options]
+minversion = 7.0
+markers = [
+    "integration: marks integration tests (disabled by default, enable with '-m integration')",
+]
+addopts = "-m 'not integration'"
 
 [build-system]
 requires = ["poetry-core"]
