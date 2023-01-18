@@ -10,7 +10,7 @@ import hashlib
 import sys
 import tarfile
 from pathlib import Path
-from typing import Dict, Iterator, NamedTuple, Optional, Tuple
+from typing import Dict, Iterator, NamedTuple, Optional
 from urllib.parse import urlparse
 from urllib.request import urlretrieve
 
@@ -193,65 +193,59 @@ class ThirdPartyProject(NamedTuple):
         return [pytest.param(proj, id=proj.name) for proj in cls.all()]
 
 
-@pytest.fixture
-def run_fawltydeps_on_project(cached_tarball, capsys):
-    def _inner(project: ThirdPartyProject, action: main.Action) -> Tuple[str, str]:
-        d = cached_tarball(project.url, project.sha256)
-        capsys.readouterr()  # reset stdout/stderr
-        main.perform_actions({action}, code=d, deps=d)
-        stdout, stderr = capsys.readouterr()
-        return stdout, stderr
-
-    return _inner
-
-
 @pytest.mark.parametrize("project", ThirdPartyProject.pytest_params())
-def test_imports(run_fawltydeps_on_project, project):
+def test_imports(cached_tarball, project):
     if project.imports is None:
         pytest.skip(f"Missing [imports] table in {project.toml_path}")
-    out, err = run_fawltydeps_on_project(project, main.Action.LIST_IMPORTS)
-    actual = {line.split(":", 1)[0] for line in out.splitlines()}
-    expect = {word for words in project.imports.values() for word in words}
+
+    project_dir = cached_tarball(project.url, project.sha256)
+    report = main.perform_actions(
+        {main.Action.LIST_IMPORTS}, code=project_dir, deps=project_dir
+    )
+
+    actual = {name for name, _ in report.imports}
+    expect = {name for names in project.imports.values() for name in names}
     assert actual == expect
-    assert not err
 
 
 @pytest.mark.parametrize("project", ThirdPartyProject.pytest_params())
-def test_declared_deps(run_fawltydeps_on_project, project):
+def test_declared_deps(cached_tarball, project):
     if project.declared_deps is None:
         pytest.skip(f"Missing [declared_deps] table in {project.toml_path}")
-    out, err = run_fawltydeps_on_project(project, main.Action.LIST_DEPS)
-    actual = {line.split(":", 1)[0] for line in out.splitlines()}
-    expect = {word for words in project.declared_deps.values() for word in words}
+
+    project_dir = cached_tarball(project.url, project.sha256)
+    report = main.perform_actions(
+        {main.Action.LIST_DEPS}, code=project_dir, deps=project_dir
+    )
+
+    actual = {name for name, _ in report.declared_deps}
+    expect = {name for names in project.declared_deps.values() for name in names}
     assert actual == expect
-    assert not err
 
 
 @pytest.mark.parametrize("project", ThirdPartyProject.pytest_params())
-def test_undeclared_deps(run_fawltydeps_on_project, project):
+def test_undeclared_deps(cached_tarball, project):
     if project.undeclared_deps is None:
         pytest.skip(f"Missing [undeclared_deps] table in {project.toml_path}")
-    out, err = run_fawltydeps_on_project(project, main.Action.REPORT_UNDECLARED)
-    lines = out.splitlines()
-    if project.undeclared_deps:  # There is something to report
-        assert lines.pop(0) == "These imports are not declared as dependencies:"
-    assert all(line.startswith("- ") for line in lines)
-    actual = set(line[2:] for line in lines)
-    expect = {word for words in project.undeclared_deps.values() for word in words}
-    assert actual == expect
-    assert not err
+
+    project_dir = cached_tarball(project.url, project.sha256)
+    report = main.perform_actions(
+        {main.Action.REPORT_UNDECLARED}, code=project_dir, deps=project_dir
+    )
+
+    expect = {name for names in project.undeclared_deps.values() for name in names}
+    assert report.undeclared_deps == expect
 
 
 @pytest.mark.parametrize("project", ThirdPartyProject.pytest_params())
-def test_unused_deps(run_fawltydeps_on_project, project):
+def test_unused_deps(cached_tarball, project):
     if project.unused_deps is None:
         pytest.skip(f"Missing [unused_deps] table in {project.toml_path}")
-    out, err = run_fawltydeps_on_project(project, main.Action.REPORT_UNUSED)
-    lines = out.splitlines()
-    if project.unused_deps:  # There is something to report
-        assert lines.pop(0) == "These dependencies are not imported in your code:"
-    assert all(line.startswith("- ") for line in lines)
-    actual = set(line[2:] for line in lines)
-    expect = {word for words in project.unused_deps.values() for word in words}
-    assert actual == expect
-    assert not err
+
+    project_dir = cached_tarball(project.url, project.sha256)
+    report = main.perform_actions(
+        {main.Action.REPORT_UNUSED}, code=project_dir, deps=project_dir
+    )
+
+    expect = {name for names in project.unused_deps.values() for name in names}
+    assert report.unused_deps == expect

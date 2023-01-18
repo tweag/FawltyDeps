@@ -2,14 +2,16 @@
 
 import argparse
 import logging
+from dataclasses import dataclass
 from enum import Enum, auto
 from operator import itemgetter
 from pathlib import Path
-from typing import Set
+from typing import Optional, Set
 
 from fawltydeps import extract_imports
 from fawltydeps.check import compare_imports_to_dependencies
 from fawltydeps.extract_dependencies import extract_dependencies
+from fawltydeps.types import DeclaredDependency, ParsedImport
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +25,17 @@ class Action(Enum):
     REPORT_UNUSED = auto()
 
 
-def perform_actions(actions: Set[Action], code: Path, deps: Path) -> int:
+@dataclass
+class Report:
+    """Result from perform_actions(), to be presented to the user."""
+
+    imports: Optional[Set[ParsedImport]] = None
+    declared_deps: Optional[Set[DeclaredDependency]] = None
+    undeclared_deps: Optional[Set[str]] = None
+    unused_deps: Optional[Set[str]] = None
+
+
+def perform_actions(actions: Set[Action], code: Path, deps: Path) -> Report:
     """Perform the requested actions of FawltyDeps core logic.
 
     This is a high-level interface to the services offered by FawltyDeps.
@@ -35,36 +47,54 @@ def perform_actions(actions: Set[Action], code: Path, deps: Path) -> int:
     def is_enabled(*args: Action) -> bool:
         return len(actions.intersection(args)) > 0
 
+    report = Report()
     if is_enabled(Action.LIST_IMPORTS, Action.REPORT_UNDECLARED, Action.REPORT_UNUSED):
-        extracted_imports = set(extract_imports.parse_any_arg(code))
-        if is_enabled(Action.LIST_IMPORTS):
-            # Sort imports by location, then by name
-            for _import in sorted(extracted_imports, key=itemgetter(1, 0)):
-                print(f"{_import.name}: {_import.location}")
+        report.imports = set(extract_imports.parse_any_arg(code))
 
     if is_enabled(Action.LIST_DEPS, Action.REPORT_UNDECLARED, Action.REPORT_UNUSED):
-        extracted_deps = set(extract_dependencies(deps))
-        if is_enabled(Action.LIST_DEPS):
-            # Sort dependencies by location, then by name
-            for name, location in sorted(extracted_deps, key=itemgetter(1, 0)):
-                print(f"{name}: {location}")
+        report.declared_deps = set(extract_dependencies(deps))
 
     if is_enabled(Action.REPORT_UNDECLARED, Action.REPORT_UNUSED):
         # TODO: Better handling of location information
-        report = compare_imports_to_dependencies(
-            {i.name for i in extracted_imports},
-            {name for name, _ in extracted_deps},
+        assert report.imports is not None
+        assert report.declared_deps is not None
+        comparison = compare_imports_to_dependencies(
+            {i.name for i in report.imports},
+            {name for name, _ in report.declared_deps},
         )
-        if is_enabled(Action.REPORT_UNDECLARED) and report.undeclared:
-            print("These imports are not declared as dependencies:")
-            for name in sorted(report.undeclared):
-                print(f"- {name}")
-        if is_enabled(Action.REPORT_UNUSED) and report.unused:
-            print("These dependencies are not imported in your code:")
-            for name in sorted(report.unused):
-                print(f"- {name}")
+        report.undeclared_deps = comparison.undeclared
+        report.unused_deps = comparison.unused
 
-    return 0
+    return report
+
+
+def print_human_readable_report(actions: Set[Action], report: Report) -> None:
+    """Print a human-readable rendering of the given report to stdout."""
+
+    def is_enabled(*args: Action) -> bool:
+        return len(actions.intersection(args)) > 0
+
+    if is_enabled(Action.LIST_IMPORTS):
+        assert report.imports is not None
+        # Sort imports by location, then by name
+        for name, location in sorted(report.imports, key=itemgetter(1, 0)):
+            print(f"{name}: {location}")
+
+    if is_enabled(Action.LIST_DEPS):
+        assert report.declared_deps is not None
+        # Sort dependencies by location, then by name
+        for name, location in sorted(report.declared_deps, key=itemgetter(1, 0)):
+            print(f"{name}: {location}")
+
+    if is_enabled(Action.REPORT_UNDECLARED) and report.undeclared_deps:
+        print("These imports are not declared as dependencies:")
+        for name in sorted(report.undeclared_deps):
+            print(f"- {name}")
+
+    if is_enabled(Action.REPORT_UNUSED) and report.unused_deps:
+        print("These dependencies are not imported in your code:")
+        for name in sorted(report.unused_deps):
+            print(f"- {name}")
 
 
 def main() -> int:
@@ -151,6 +181,10 @@ def main() -> int:
     actions = args.actions or {Action.REPORT_UNDECLARED, Action.REPORT_UNUSED}
 
     try:
-        return perform_actions(actions, args.code, args.deps)
+        report = perform_actions(actions, args.code, args.deps)
     except extract_imports.ParseError as e:
-        return parser.error(e.msg)
+        return parser.error(e.msg)  # exit code 2
+
+    print_human_readable_report(actions, report)
+
+    return 0
