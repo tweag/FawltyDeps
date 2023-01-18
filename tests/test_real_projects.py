@@ -7,9 +7,10 @@ should find/report.
 """
 
 import hashlib
+import sys
 import tarfile
 from pathlib import Path
-from typing import NamedTuple, Optional, Set
+from typing import Dict, Iterator, NamedTuple, Optional
 from urllib.parse import urlparse
 from urllib.request import urlretrieve
 
@@ -17,9 +18,18 @@ import pytest
 
 from fawltydeps.main import Action, Analysis
 
+if sys.version_info >= (3, 11):
+    import tomllib  # pylint: disable=E1101
+else:
+    import tomli as tomllib
+
 # These tests will download and unpacks a 3rd-party project before analyzing it.
 # These are (slow) integration tests that are disabled by default.
 pytestmark = pytest.mark.integration
+
+# Directory with .toml files that define test cases for selected tarballs from
+# 3rd-party/real-world projects.
+REAL_PROJECTS_DIR = Path(__file__).with_name("real_projects")
 
 
 def sha256sum(path: Path):
@@ -117,127 +127,124 @@ def cached_tarball(request):
 
 
 class ThirdPartyProject(NamedTuple):
-    """Excapsulating a 3rd-party project to be tested with FawltyDeps.
+    """Encapsulate a 3rd-party project to be tested with FawltyDeps.
 
-    A tarball containing a 3rd-party Python project, and the things we expect
-    FawltyDeps to find within.
+    This ultimately identifies a tarball containing a 3rd-party Python project,
+    and the things we expect FawltyDeps to find when run on that unpacked
+    tarball.
+
+    The actual data populating these objects is read from TOML files in
+    REAL_PROJECTS_DIR, and the tarballs are downloaded, unpacked, and cached
+    by the cached_tarball() fixture above.
     """
 
+    # TODO: Use TOML array of tables (https://toml.io/en/v1.0.0#array-of-tables)
+    # to allow the definition of more than one sets of tests per .toml file.
+    # The idea is to allow multiple runs of fawltydeps on the project (with
+    # different --code and --deps options, as well as other options in the
+    # future). This would split this class into two parts, one with the
+    # project metadata, and then a list tests, each of which define the
+    # necessary fawltydeps options to use, along with the expected
+    # .imports, .declared_deps, .undeclared_deps, and .unused_deps.
+
+    toml_path: Path
     name: str
     url: str
     sha256: str
-    imports: Set[str] = set()
-    deps: Set[str] = set()
-    undeclared: Set[str] = set()
-    unused: Set[str] = set()
+    description: Optional[str] = None
+    imports: Optional[Dict[Path, str]] = None
+    declared_deps: Optional[Dict[Path, str]] = None
+    undeclared_deps: Optional[Dict[Path, str]] = None
+    unused_deps: Optional[Dict[Path, str]] = None
+
+    @classmethod
+    def parse_from_toml(cls, path: Path) -> "ThirdPartyProject":
+        with path.open("rb") as f:
+            data = tomllib.load(f)
+        # We ultimately _trust_ the .toml files read here, so we can skip all
+        # the usual error checking associated with validating external data.
+        return cls(
+            toml_path=path,
+            name=data["project"]["name"],
+            description=data["project"].get("description"),
+            url=data["project"]["url"],
+            sha256=data["project"]["sha256"],
+            imports=data.get("imports"),
+            declared_deps=data.get("declared_deps"),
+            undeclared_deps=data.get("undeclared_deps"),
+            unused_deps=data.get("unused_deps"),
+        )
+
+    @classmethod
+    def collect_from_subdir(cls) -> Iterator["ThirdPartyProject"]:
+        for path in REAL_PROJECTS_DIR.iterdir():
+            if path.suffix == ".toml":
+                yield cls.parse_from_toml(path)
+
+    @classmethod
+    def all(cls):
+        # Cache the result from .collect_from_subdir()
+        if not hasattr(cls, "_parsed_projects"):
+            cls._parsed_projects = list(cls.collect_from_subdir())
+        return cls._parsed_projects  # pylint: disable=no-member
+
+    @classmethod
+    def pytest_params(cls):
+        return [pytest.param(proj, id=proj.name) for proj in cls.all()]
 
 
-projects_to_test = [
-    # A small/trivial project that has no real dependencies
-    ThirdPartyProject(
-        name="left-pad",
-        url=(
-            "https://files.pythonhosted.org/packages/a0/34/cd668981dc6818d8a39f"
-            "1185af8113268ddc71d99b0ba4aa8ceee2a123e7/left-pad-0.0.3.tar.gz"
-        ),
-        sha256="b842b81fcf157ca09b1e0036c5876295fdfd097640aa85d37f988857eec64654",
-        imports={"setuptools"},  # from setup.py
-        undeclared={"setuptools"},  # TODO: Is this a _real_ dep!?
-    ),
-    # One of the most heavily-used third-party packages in the Python world
-    ThirdPartyProject(
-        name="requests",
-        url="https://github.com/psf/requests/archive/refs/tags/v2.28.2.tar.gz",
-        sha256="375d6bb6b73af27c69487dcf1df51659a8ee7428420caff21253825fb338ce10",
-        imports={
-            "BaseHTTPServer",
-            "certifi",
-            "chardet",
-            "charset_normalizer",
-            "cryptography",
-            "cStringIO",
-            "idna",
-            "OpenSSL",
-            "pygments",
-            "pytest",
-            "requests",
-            "setuptools",
-            "SimpleHTTPServer",
-            "simplejson",
-            "StringIO",
-            "tests",
-            "trustme",
-            "urllib3",
-        },
-        deps={"chardet", "pysocks", "sphinx"},
-        undeclared={
-            "BaseHTTPServer",
-            "certifi",
-            "charset_normalizer",
-            "cryptography",
-            "cStringIO",
-            "idna",
-            "OpenSSL",
-            "pygments",
-            "pytest",
-            "requests",
-            "setuptools",
-            "SimpleHTTPServer",
-            "simplejson",
-            "StringIO",
-            "tests",
-            "trustme",
-            "urllib3",
-        },
-        unused={"pysocks", "sphinx"},
-    ),
-]
-
-
-@pytest.mark.parametrize(
-    "project", [pytest.param(project, id=project.name) for project in projects_to_test]
-)
+@pytest.mark.parametrize("project", ThirdPartyProject.pytest_params())
 def test_imports(cached_tarball, project):
+    if project.imports is None:
+        pytest.skip(f"Missing [imports] table in {project.toml_path}")
+
     project_dir = cached_tarball(project.url, project.sha256)
     analysis = Analysis.create(
         {Action.LIST_IMPORTS}, code=project_dir, deps=project_dir
     )
 
     actual = {i.name for i in analysis.imports}
-    assert actual == project.imports
+    expect = {name for names in project.imports.values() for name in names}
+    assert actual == expect
 
 
-@pytest.mark.parametrize(
-    "project", [pytest.param(project, id=project.name) for project in projects_to_test]
-)
+@pytest.mark.parametrize("project", ThirdPartyProject.pytest_params())
 def test_declared_deps(cached_tarball, project):
+    if project.declared_deps is None:
+        pytest.skip(f"Missing [declared_deps] table in {project.toml_path}")
+
     project_dir = cached_tarball(project.url, project.sha256)
     analysis = Analysis.create({Action.LIST_DEPS}, code=project_dir, deps=project_dir)
 
     actual = {d.name for d in analysis.declared_deps}
-    assert actual == project.deps
+    expect = {name for names in project.declared_deps.values() for name in names}
+    assert actual == expect
 
 
-@pytest.mark.parametrize(
-    "project", [pytest.param(project, id=project.name) for project in projects_to_test]
-)
+@pytest.mark.parametrize("project", ThirdPartyProject.pytest_params())
 def test_undeclared_deps(cached_tarball, project):
+    if project.undeclared_deps is None:
+        pytest.skip(f"Missing [undeclared_deps] table in {project.toml_path}")
+
     project_dir = cached_tarball(project.url, project.sha256)
     analysis = Analysis.create(
         {Action.REPORT_UNDECLARED}, code=project_dir, deps=project_dir
     )
 
     actual = set(analysis.undeclared_deps.keys())
-    assert actual == project.undeclared
+    expect = {name for names in project.undeclared_deps.values() for name in names}
+    assert actual == expect
 
 
-@pytest.mark.parametrize(
-    "project", [pytest.param(project, id=project.name) for project in projects_to_test]
-)
+@pytest.mark.parametrize("project", ThirdPartyProject.pytest_params())
 def test_unused_deps(cached_tarball, project):
+    if project.unused_deps is None:
+        pytest.skip(f"Missing [unused_deps] table in {project.toml_path}")
+
     project_dir = cached_tarball(project.url, project.sha256)
     analysis = Analysis.create(
         {Action.REPORT_UNUSED}, code=project_dir, deps=project_dir
     )
 
-    assert analysis.unused_deps == project.unused
+    expect = {name for names in project.unused_deps.values() for name in names}
+    assert analysis.unused_deps == expect
