@@ -5,9 +5,11 @@ import logging
 import os
 import sys
 from pathlib import Path
-from typing import Any, Dict, Iterator, NamedTuple
+from typing import Any, Dict, Iterator
 
 from pkg_resources import parse_requirements
+
+from fawltydeps.types import DeclaredDependency
 
 if sys.version_info >= (3, 11):
     import tomllib  # pylint: disable=E1101
@@ -19,12 +21,6 @@ TomlData = Dict[str, Any]  # type: ignore
 logger = logging.getLogger(__name__)
 
 error_message_template = "Failed to %s %s %s dependencies in %s."
-
-
-class DeclaredDependency(NamedTuple):
-    "Declared dependencies parsed from configuration-containing files"
-    name: str
-    location: Path
 
 
 class DependencyParsingError(Exception):

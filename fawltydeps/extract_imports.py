@@ -5,17 +5,13 @@ import logging
 import os
 import sys
 from pathlib import Path
-from typing import Iterator, NamedTuple, Optional
+from typing import Iterator, Optional
 
 import isort
 
+from fawltydeps.types import ParsedImport
+
 logger = logging.getLogger(__name__)
-
-
-class ParsedImport(NamedTuple):
-    "Import parsed from the source code."
-    name: str
-    location: Optional[Path]
 
 
 def parse_code(
