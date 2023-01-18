@@ -153,25 +153,27 @@ def test_parse_code(code, expected_import_line_pairs):
     assert list(parse_code(code)) == expect
 
 
-def test_parse_python_file__combo_of_simple_imports__extracts_all_externals(tmp_path):
-    code = dedent(
-        """\
-        from pathlib import Path
-        import sys
-        import unittest as obsolete
+def test_parse_python_file__combo_of_simple_imports__extracts_all_externals(
+    write_tmp_files,
+):
+    tmp_path = write_tmp_files(
+        {
+            "test.py": """\
+                from pathlib import Path
+                import sys
+                import unittest as obsolete
 
-        import requests
-        from foo import bar, baz
-        import numpy as np
-        """
+                import requests
+                from foo import bar, baz
+                import numpy as np
+                """,
+        }
     )
-    script = tmp_path / "test.py"
-    script.write_text(code)
 
     expect = imports_w_linenos(
         [("requests", 5), ("foo", 6), ("numpy", 7)], tmp_path / "test.py"
     )
-    assert list(parse_python_file(script)) == expect
+    assert list(parse_python_file(tmp_path / "test.py")) == expect
 
 
 def test_parse_notebook_file__simple_imports__extracts_all(tmp_path):
@@ -283,32 +285,19 @@ def test_parse_notebook_file__on_no_defined_language_info__logs_skipping_msg_and
 
 
 def test_parse_dir__with_py_ipynb_and_non_py__extracts_only_from_py_and_ipynb_files(
-    tmp_path,
+    write_tmp_files,
 ):
-    code1 = dedent(
-        """\
-        from my_pathlib import Path
-        """
+    tmp_path = write_tmp_files(
+        {
+            "test1.py": "from my_pathlib import Path",
+            "test2.py": "import pandas",
+            "test3.ipynb": generate_notebook([["import pytorch"]]),
+            "not_python.txt": """\
+                This is not code, even if it contains the
+                import word.
+                """,
+        }
     )
-    (tmp_path / "test1.py").write_text(code1)
-
-    code2 = dedent(
-        """\
-        import pandas
-        """
-    )
-    (tmp_path / "test2.py").write_text(code2)
-
-    code3 = generate_notebook([["import pytorch"]])
-    (tmp_path / "test3.ipynb").write_text(code3)
-
-    not_code = dedent(
-        """\
-        This is not code, even if it contains the
-        import word.
-        """
-    )
-    (tmp_path / "not_python.txt").write_text(not_code)
 
     expect = {
         ParsedImport("my_pathlib", tmp_path / "test1.py", 1),
@@ -318,23 +307,19 @@ def test_parse_dir__with_py_ipynb_and_non_py__extracts_only_from_py_and_ipynb_fi
     assert set(parse_dir(tmp_path)) == expect
 
 
-def test_parse_dir__imports__are_extracted_in_order_of_encounter(tmp_path):
-    first = dedent(
-        """\
-        import my_sys
-        import foo
-        """
+def test_parse_dir__imports__are_extracted_in_order_of_encounter(write_tmp_files):
+    tmp_path = write_tmp_files(
+        {
+            "first.py": """\
+                import my_sys
+                import foo
+                """,
+            "subdir/second.py": """\
+                import my_sys
+                import xyzzy
+                """,
+        }
     )
-    (tmp_path / "first.py").write_text(first)
-
-    second = dedent(
-        """\
-        import my_sys
-        import xyzzy
-        """
-    )
-    (tmp_path / "subdir").mkdir()
-    (tmp_path / "subdir/second.py").write_text(second)
 
     expect = imports_w_linenos(
         [("my_sys", 1), ("foo", 2)], tmp_path / "first.py"
