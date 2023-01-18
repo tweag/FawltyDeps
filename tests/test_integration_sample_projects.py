@@ -17,7 +17,14 @@ from fawltydeps.extract_dependencies import extract_dependencies
 from pathlib import Path
 import pytest
 import os
+import sys
 import shutil
+from itertools import groupby
+
+if sys.version_info >= (3, 11):
+    import tomllib  # pylint: disable=E1101
+else:
+    import tomli as tomllib
 
 
 @pytest.fixture
@@ -33,11 +40,18 @@ def datadir(tmp_path: Path) -> Path:
 def test_integration_compare_imports_to_dependencies(datadir):
 
     project_path = datadir / "file__requirements"
-    dependencies = [a for a, _ in extract_dependencies(project_path)]
-    imports = parse_any_arg(project_path)
+    extracted_dependencies = list(extract_dependencies(project_path))
+    dependencies = [d.name for d in extracted_dependencies]
+    imports = [i.name for i in parse_any_arg(project_path)]
 
     result = compare_imports_to_dependencies(imports=imports, dependencies=dependencies)
+    unused_dependencies_locations = {
+        name: [l.location.name for l in locations]
+        for name, locations in groupby(extracted_dependencies, key=lambda x: x.name)
+        if name in result.unused
+    }
+    with (project_path / "expected.toml").open("rb") as f:
+        expected = tomllib.load(f)
 
-    print(result)
-    assert result.unused == {"scipy"}
-    assert result.undeclared == set()
+    assert unused_dependencies_locations == expected["unused_deps"]
+    assert (result.undeclared or {}) == expected["undeclared_deps"]
