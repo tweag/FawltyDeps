@@ -6,7 +6,7 @@ import pytest
 
 from fawltydeps.check import (
     DependencyComparison,
-    LocationDetails,
+    FileLocation,
     compare_imports_to_dependencies,
 )
 from fawltydeps.extract_dependencies import DeclaredDependency
@@ -74,7 +74,7 @@ def imports_factory(data: List[str]) -> List[ParsedImport]:
             + [ParsedImport(name="numpy", location=Path("my_file.py"), lineno=3)],
             dependencies_factory(["pandas", "scipy"]),
             DependencyComparison(
-                {"numpy": [LocationDetails(Path("my_file.py"), 3)]},
+                {"numpy": [FileLocation(Path("my_file.py"), 3)]},
                 set(["scipy"]),
             ),
             id="mixed_imports_with_unused_and_undeclared_dependencies",
