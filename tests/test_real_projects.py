@@ -176,75 +176,41 @@ class ThirdPartyProject(NamedTuple):
         )
 
     @classmethod
-    def collect_from_subdir(cls) -> Iterator["ThirdPartyProject"]:
+    def collect(cls) -> Iterator["ThirdPartyProject"]:
         for path in REAL_PROJECTS_DIR.iterdir():
             if path.suffix == ".toml":
                 yield cls.parse_from_toml(path)
 
-    @classmethod
-    def all(cls):
-        # Cache the result from .collect_from_subdir()
-        if not hasattr(cls, "_parsed_projects"):
-            cls._parsed_projects = list(cls.collect_from_subdir())
-        return cls._parsed_projects  # pylint: disable=no-member
 
-    @classmethod
-    def pytest_params(cls):
-        return [pytest.param(proj, id=proj.name) for proj in cls.all()]
-
-
-@pytest.mark.parametrize("project", ThirdPartyProject.pytest_params())
-def test_imports(cached_tarball, project):
-    if project.imports is None:
-        pytest.skip(f"Missing [imports] table in {project.toml_path}")
-
+@pytest.mark.parametrize(
+    "project",
+    [pytest.param(proj, id=proj.name) for proj in ThirdPartyProject.collect()],
+)
+def test_real_project(cached_tarball, project):
     project_dir = cached_tarball(project.url, project.sha256)
-    analysis = Analysis.create(
-        {Action.LIST_IMPORTS}, code=project_dir, deps=project_dir
-    )
+    all_actions = {
+        Action.LIST_IMPORTS,
+        Action.LIST_DEPS,
+        Action.REPORT_UNDECLARED,
+        Action.REPORT_UNUSED,
+    }
+    analysis = Analysis.create(all_actions, code=project_dir, deps=project_dir)
 
-    actual = {i.name for i in analysis.imports}
-    expect = {name for names in project.imports.values() for name in names}
-    assert actual == expect
+    if project.imports is not None:
+        actual = {i.name for i in analysis.imports}
+        expect = {name for names in project.imports.values() for name in names}
+        assert actual == expect
 
+    if project.declared_deps is not None:
+        actual = {d.name for d in analysis.declared_deps}
+        expect = {name for names in project.declared_deps.values() for name in names}
+        assert actual == expect
 
-@pytest.mark.parametrize("project", ThirdPartyProject.pytest_params())
-def test_declared_deps(cached_tarball, project):
-    if project.declared_deps is None:
-        pytest.skip(f"Missing [declared_deps] table in {project.toml_path}")
+    if project.undeclared_deps is not None:
+        actual = set(analysis.undeclared_deps.keys())
+        expect = {name for names in project.undeclared_deps.values() for name in names}
+        assert actual == expect
 
-    project_dir = cached_tarball(project.url, project.sha256)
-    analysis = Analysis.create({Action.LIST_DEPS}, code=project_dir, deps=project_dir)
-
-    actual = {d.name for d in analysis.declared_deps}
-    expect = {name for names in project.declared_deps.values() for name in names}
-    assert actual == expect
-
-
-@pytest.mark.parametrize("project", ThirdPartyProject.pytest_params())
-def test_undeclared_deps(cached_tarball, project):
-    if project.undeclared_deps is None:
-        pytest.skip(f"Missing [undeclared_deps] table in {project.toml_path}")
-
-    project_dir = cached_tarball(project.url, project.sha256)
-    analysis = Analysis.create(
-        {Action.REPORT_UNDECLARED}, code=project_dir, deps=project_dir
-    )
-
-    actual = set(analysis.undeclared_deps.keys())
-    expect = {name for names in project.undeclared_deps.values() for name in names}
-    assert actual == expect
-
-
-@pytest.mark.parametrize("project", ThirdPartyProject.pytest_params())
-def test_unused_deps(cached_tarball, project):
-    if project.unused_deps is None:
-        pytest.skip(f"Missing [unused_deps] table in {project.toml_path}")
-
-    project_dir = cached_tarball(project.url, project.sha256)
-    analysis = Analysis.create(
-        {Action.REPORT_UNUSED}, code=project_dir, deps=project_dir
-    )
-
-    expect = {name for names in project.unused_deps.values() for name in names}
-    assert analysis.unused_deps == expect
+    if project.unused_deps is not None:
+        expect = {name for names in project.unused_deps.values() for name in names}
+        assert analysis.unused_deps == expect
