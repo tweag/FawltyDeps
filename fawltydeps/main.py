@@ -187,4 +187,14 @@ def main() -> int:
 
     print_human_readable_report(actions, report)
 
+    # Exit codes:
+    # 0 - success, no problems found
+    # 1 - an exception propagates (this should not happen)
+    # 2 - command-line parsing error (see above)
+    # 3 - undeclared dependencies found
+    # 4 - unused dependencies found
+    if report.undeclared_deps and Action.REPORT_UNDECLARED in actions:
+        return 3
+    if report.unused_deps and Action.REPORT_UNUSED in actions:
+        return 4
     return 0
