@@ -4,6 +4,8 @@ from pathlib import Path
 from textwrap import dedent
 from typing import List, Optional
 
+import pytest
+
 from fawltydeps.extract_imports import ParsedImport, parse_code, parse_dir, parse_file
 
 
@@ -11,92 +13,86 @@ def with_location(imports: List[str], location: Optional[Path]) -> List[ParsedIm
     return [ParsedImport(i, location) for i in imports]
 
 
-def test_parse_code__no_code__has_no_imports():
-    code = ""
-    expect = []
-    assert set(parse_code(code)) == set(expect)
+@pytest.mark.parametrize(
+    "code,expect",
+    [
+        pytest.param("", [], id="no_code__has_no_imports"),
+        pytest.param(
+            "import sys",
+            [],
+            id="stdlib_import__is_omitted",
+        ),
+        pytest.param(
+            "import numpy",
+            ["numpy"],
+            id="external_import__extracts_module_name",
+        ),
+        pytest.param(
+            "import platform, sys",
+            [],
+            id="two_stdlib_imports__are_both_omitted",
+        ),
+        pytest.param(
+            "import sys, pandas",
+            ["pandas"],
+            id="one_stdlib_one_external_import__extracts_external_import",
+        ),
+        pytest.param(
+            "import numpy, pandas",
+            ["numpy", "pandas"],
+            id="two_imports__extracts_both_modules",
+        ),
+        pytest.param(
+            "from sys import executable",
+            [],
+            id="simple_import_from_stdlib__is_omitted",
+        ),
+        pytest.param(
+            "from numpy import array",
+            ["numpy"],
+            id="simple_import_from_external__extracts_module",
+        ),
+        pytest.param(
+            dedent(
+                """\
+                import parent.child
+                from foo.bar import baz
+                """
+            ),
+            ["parent", "foo"],
+            id="import_with_compound_names__extracts_first_component",
+        ),
+        pytest.param(
+            dedent(
+                """\
+                from . import bar
+                from .foo import bar
+                from ..foo import bar
+                from .foo.bar import baz
+                """
+            ),
+            [],
+            id="relative_imports__are_omitted",
+        ),
+        pytest.param(
+            dedent(
+                """\
+                from pathlib import Path
+                import sys
+                import unittest as obsolete
 
-
-def test_parse_code__stdlib_import__is_omitted():
-    code = "import sys"
-    expect = []
-    assert set(parse_code(code)) == set(expect)
-
-
-def test_parse_code__simple_import__extracts_module_name():
-    code = "import numpy"
-    expect = {ParsedImport("numpy", None)}
-    assert set(parse_code(code)) == expect
-
-
-def test_parse_code__two_stdlib_imports__are_both_omitted():
-    code = "import platform, sys"
-    expect = []
-    assert set(parse_code(code)) == set(expect)
-
-
-def test_parse_code__one_stdlib_one_external_import__extracts_external_import():
-    code = "import sys, pandas"
-    expect = {ParsedImport("pandas", None)}
-    assert set(parse_code(code)) == expect
-
-
-def test_parse_code__two_imports__extracts_both_modules():
-    code = "import numpy, pandas"
-    expect = {ParsedImport("numpy", None), ParsedImport("pandas", None)}
-    assert set(parse_code(code)) == expect
-
-
-def test_parse_code__simple_import_from_stdlib__is_omitted():
-    code = "from sys import executable"
-    expect = []
-    assert set(parse_code(code)) == set(expect)
-
-
-def test_parse_code__simple_import_from__extracts_module():
-    code = "from numpy import array"
-    expect = {ParsedImport("numpy", None)}
-    assert set(parse_code(code)) == expect
-
-
-def test_parse_code__import_with_compound_names__extracts_first_component():
-    code = dedent(
-        """\
-        import parent.child
-        from foo.bar import baz
-        """
-    )
-    expect = with_location(["parent", "foo"], None)
-    assert set(parse_code(code)) == set(expect)
-
-
-def test_parse_code__relative_imports__are_ignored():
-    code = dedent(
-        """\
-        from . import bar
-        from .foo import bar
-        from ..foo import bar
-        from .foo.bar import baz
-        """
-    )
-    expect = set()
-    assert set(parse_code(code)) == expect
-
-
-def test_parse_code__combo_of_simple_imports__extracts_all_external_imports():
-    code = dedent(
-        """\
-        from pathlib import Path
-        import sys
-        import unittest as obsolete
-
-        import requests
-        from foo import bar, baz
-        import numpy as np
-        """
-    )
-    expect = with_location(["requests", "foo", "numpy"], None)
-    assert set(parse_code(code)) == set(expect)
+                import requests
+                from foo import bar, baz
+                import numpy as np
+                """
+            ),
+            ["requests", "foo", "numpy"],
+            id="combo_of_simple_imports__extracts_all_external_imports",
+        ),
+    ],
+)
+def test_parse_code(code, expect):
+    assert set(parse_code(code)) == set(with_location(expect, None))
 
 
 def test_parse_file__combo_of_simple_imports__extracts_all_externals(tmp_path):
