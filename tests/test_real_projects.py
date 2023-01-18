@@ -9,13 +9,13 @@ should find/report.
 import hashlib
 import tarfile
 from pathlib import Path
-from typing import NamedTuple, Optional, Set, Tuple
+from typing import NamedTuple, Optional, Set
 from urllib.parse import urlparse
 from urllib.request import urlretrieve
 
 import pytest
 
-from fawltydeps import main
+from fawltydeps.main import Action, Analysis
 
 # These tests will download and unpacks a 3rd-party project before analyzing it.
 # These are (slow) integration tests that are disabled by default.
@@ -132,18 +132,6 @@ class ThirdPartyProject(NamedTuple):
     unused: Set[str] = set()
 
 
-@pytest.fixture
-def run_fawltydeps_on_project(cached_tarball, capsys):
-    def _inner(project: ThirdPartyProject, action: main.Action) -> Tuple[str, str]:
-        d = cached_tarball(project.url, project.sha256)
-        capsys.readouterr()  # reset stdout/stderr
-        main.perform_actions({action}, code=d, deps=d)
-        stdout, stderr = capsys.readouterr()
-        return stdout, stderr
-
-    return _inner
-
-
 projects_to_test = [
     # A small/trivial project that has no real dependencies
     ThirdPartyProject(
@@ -209,46 +197,47 @@ projects_to_test = [
 @pytest.mark.parametrize(
     "project", [pytest.param(project, id=project.name) for project in projects_to_test]
 )
-def test_list_imports(run_fawltydeps_on_project, project):
-    out, err = run_fawltydeps_on_project(project, main.Action.LIST_IMPORTS)
-    actual = {line.split(":", 1)[0] for line in out.splitlines()}
+def test_imports(cached_tarball, project):
+    project_dir = cached_tarball(project.url, project.sha256)
+    analysis = Analysis.create(
+        {Action.LIST_IMPORTS}, code=project_dir, deps=project_dir
+    )
+
+    actual = {i.name for i in analysis.imports}
     assert actual == project.imports
-    assert not err
 
 
 @pytest.mark.parametrize(
     "project", [pytest.param(project, id=project.name) for project in projects_to_test]
 )
-def test_list_deps(run_fawltydeps_on_project, project):
-    out, err = run_fawltydeps_on_project(project, main.Action.LIST_DEPS)
-    actual = {line.split(":", 1)[0] for line in out.splitlines()}
+def test_declared_deps(cached_tarball, project):
+    project_dir = cached_tarball(project.url, project.sha256)
+    analysis = Analysis.create({Action.LIST_DEPS}, code=project_dir, deps=project_dir)
+
+    actual = {d.name for d in analysis.declared_deps}
     assert actual == project.deps
-    assert not err
 
 
 @pytest.mark.parametrize(
     "project", [pytest.param(project, id=project.name) for project in projects_to_test]
 )
-def test_report_undeclared(run_fawltydeps_on_project, project):
-    out, err = run_fawltydeps_on_project(project, main.Action.REPORT_UNDECLARED)
-    lines = out.splitlines()
-    if project.undeclared:  # There is something to report
-        assert lines.pop(0) == "These imports are not declared as dependencies:"
-    assert all(line.startswith("- ") or line.startswith("    ") for line in lines)
-    actual = set(line[2:-14] for line in lines if line.startswith("- "))
+def test_undeclared_deps(cached_tarball, project):
+    project_dir = cached_tarball(project.url, project.sha256)
+    analysis = Analysis.create(
+        {Action.REPORT_UNDECLARED}, code=project_dir, deps=project_dir
+    )
+
+    actual = set(analysis.undeclared_deps.keys())
     assert actual == project.undeclared
-    assert not err
 
 
 @pytest.mark.parametrize(
     "project", [pytest.param(project, id=project.name) for project in projects_to_test]
 )
-def test_report_unused(run_fawltydeps_on_project, project):
-    out, err = run_fawltydeps_on_project(project, main.Action.REPORT_UNUSED)
-    lines = out.splitlines()
-    if project.unused:  # There is something to report
-        assert lines.pop(0) == "These dependencies are not imported in your code:"
-    assert all(line.startswith("- ") for line in lines)
-    actual = set(line[2:] for line in lines)
-    assert actual == project.unused
-    assert not err
+def test_unused_deps(cached_tarball, project):
+    project_dir = cached_tarball(project.url, project.sha256)
+    analysis = Analysis.create(
+        {Action.REPORT_UNUSED}, code=project_dir, deps=project_dir
+    )
+
+    assert analysis.unused_deps == project.unused
