@@ -42,29 +42,26 @@ def compare_imports_to_dependencies(
     For undeclared dependencies returns files and line numbers
     where they were imported in the code.
     """
-    imports_names = [i.name for i in imports]
-    dependencies_names = [d.name for d in dependencies]
-    non_stdlib_imports = {
-        module for module in imports_names if isort.place_module(module) != "STDLIB"
-    }
-    unique_dependencies = set(dependencies_names)
-    undeclared = non_stdlib_imports - unique_dependencies
-    unused = unique_dependencies - non_stdlib_imports
 
-    imports_without_dependencies = [i for i in imports if i.name in undeclared]
+    def is_stdlib_import(name: str) -> bool:
+        return isort.place_module(name) == "STDLIB"
 
-    undeclared_with_details = {
-        _import: [
-            FileLocation(path=i.location, lineno=i.lineno)
-            for i in _imports
-            if i.location
+    imports_non_stdlib = [i for i in imports if not is_stdlib_import(i.name)]
+
+    imported_names = {i.name for i in imports_non_stdlib}
+    declared_names = {d.name for d in dependencies}
+
+    undeclared = [i for i in imports_non_stdlib if i.name not in declared_names]
+    undeclared.sort(key=lambda i: i.name)  # groupby requires pre-sorting
+    undeclared_grouped = {
+        name: [
+            FileLocation(path=i.location, lineno=i.lineno) for i in deps if i.location
         ]
-        for _import, _imports in groupby(
-            imports_without_dependencies, key=lambda x: x.name
-        )
+        for name, deps in groupby(undeclared, key=lambda x: x.name)
     }
+    unused = {d.name for d in dependencies if d.name not in imported_names}
 
     return DependencyComparison(
-        undeclared=undeclared_with_details,
+        undeclared=undeclared_grouped,
         unused=unused,
     )
