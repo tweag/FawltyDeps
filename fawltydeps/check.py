@@ -1,34 +1,15 @@
 "Compare imports and dependencies"
 
 from itertools import groupby
-from pathlib import Path
-from typing import Dict, List, NamedTuple, Optional, Set
+from typing import List
 
 import isort
 
-from fawltydeps.extract_dependencies import DeclaredDependency
-from fawltydeps.extract_imports import ParsedImport
-
-
-class FileLocation(NamedTuple):
-    "General location details of imports and dependencies occurrence."
-    path: Path
-    lineno: Optional[int]
-
-    def __str__(self) -> str:
-        "Readable representation."
-        ret = f"{self.path}"
-        if self.lineno is not None:
-            ret += f":{self.lineno}"
-        return ret
-
-
-DependencyComparison = NamedTuple(
-    "DependencyComparison",
-    [
-        ("undeclared", Dict[str, List[FileLocation]]),
-        ("unused", Set[str]),
-    ],
+from fawltydeps.types import (
+    DeclaredDependency,
+    DependencyComparison,
+    FileLocation,
+    ParsedImport,
 )
 
 
