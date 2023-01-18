@@ -3,7 +3,9 @@ import json
 import logging
 from pathlib import Path
 from textwrap import dedent
-from typing import List, Optional, Union
+from typing import List, Optional, Tuple, Union
+
+import pytest
 
 from fawltydeps.extract_imports import (
     ParsedImport,
@@ -14,21 +16,20 @@ from fawltydeps.extract_imports import (
 )
 
 
-def construct_imports(
-    names: List[str],
-    location: Optional[Path] = None,
-    lines: Optional[List[Optional[int]]] = None,
-    cells: Optional[List[Optional[int]]] = None,
+def imports_w_linenos(
+    names_w_linenos: List[Tuple[str, int]],
+    path: Optional[Path] = None,
 ) -> List[ParsedImport]:
+    return [ParsedImport(name, path, lineno) for name, lineno in names_w_linenos]
 
-    if not lines:
-        lines = [None] * len(names)
 
-    if not cells:
-        cells = [None] * len(names)
+def imports_w_linenos_cellnos(
+    names_w_linenos_cellnos: List[Tuple[str, int, int]],
+    path: Optional[Path] = None,
+) -> List[ParsedImport]:
     return [
-        ParsedImport(name=n, location=location, lineno=l, cellno=c)
-        for n, l, c in zip(names, lines, cells)
+        ParsedImport(name, path, lineno, cellno)
+        for name, lineno, cellno in names_w_linenos_cellnos
     ]
 
 
@@ -69,92 +70,87 @@ def generate_notebook(
     return json.dumps(notebook, indent=2)
 
 
-def test_parse_code__no_code__has_no_imports():
-    code = ""
-    expect = []
-    assert set(parse_code(code)) == set(expect)
+@pytest.mark.parametrize(
+    "code,expected_import_line_pairs",
+    [
+        pytest.param("", [], id="no_code__has_no_imports"),
+        pytest.param(
+            "import sys",
+            [],
+            id="stdlib_import__is_omitted",
+        ),
+        pytest.param(
+            "import numpy",
+            [("numpy", 1)],
+            id="external_import__extracts_module_name",
+        ),
+        pytest.param(
+            "import platform, sys",
+            [],
+            id="two_stdlib_imports__are_both_omitted",
+        ),
+        pytest.param(
+            "import sys, pandas",
+            [("pandas", 1)],
+            id="one_stdlib_one_external_import__extracts_external_import",
+        ),
+        pytest.param(
+            "import numpy, pandas",
+            [("numpy", 1), ("pandas", 1)],
+            id="two_imports__extracts_both_modules",
+        ),
+        pytest.param(
+            "from sys import executable",
+            [],
+            id="simple_import_from_stdlib__is_omitted",
+        ),
+        pytest.param(
+            "from numpy import array",
+            [("numpy", 1)],
+            id="simple_import_from_external__extracts_module",
+        ),
+        pytest.param(
+            dedent(
+                """\
+                import parent.child
+                from foo.bar import baz
+                """
+            ),
+            [("parent", 1), ("foo", 2)],
+            id="import_with_compound_names__extracts_first_component",
+        ),
+        pytest.param(
+            dedent(
+                """\
+                from . import bar
+                from .foo import bar
+                from ..foo import bar
+                from .foo.bar import baz
+                """
+            ),
+            [],
+            id="relative_imports__are_omitted",
+        ),
+        pytest.param(
+            dedent(
+                """\
+                from pathlib import Path
+                import sys
+                import unittest as obsolete
 
-
-def test_parse_code__stdlib_import__is_omitted():
-    code = "import sys"
-    expect = []
-    assert set(parse_code(code)) == set(expect)
-
-
-def test_parse_code__simple_import__extracts_module_name():
-    code = "import numpy"
-    expect = {ParsedImport("numpy", lineno=1)}
-    assert set(parse_code(code)) == expect
-
-
-def test_parse_code__two_stdlib_imports__are_both_omitted():
-    code = "import platform, sys"
-    expect = []
-    assert set(parse_code(code)) == set(expect)
-
-
-def test_parse_code__one_stdlib_one_external_import__extracts_external_import():
-    code = "import sys, pandas"
-    expect = {ParsedImport("pandas", lineno=1)}
-    assert set(parse_code(code)) == expect
-
-
-def test_parse_code__two_imports__extracts_both_modules():
-    code = "import numpy, pandas"
-    expect = {ParsedImport("numpy", lineno=1), ParsedImport("pandas", lineno=1)}
-    assert set(parse_code(code)) == expect
-
-
-def test_parse_code__simple_import_from_stdlib__is_omitted():
-    code = "from sys import executable"
-    expect = []
-    assert set(parse_code(code)) == set(expect)
-
-
-def test_parse_code__simple_import_from__extracts_module():
-    code = "from numpy import array"
-    expect = {ParsedImport("numpy", lineno=1)}
-    assert set(parse_code(code)) == expect
-
-
-def test_parse_code__import_with_compound_names__extracts_first_component():
-    code = dedent(
-        """\
-        import parent.child
-        from foo.bar import baz
-        """
-    )
-    expect = construct_imports(["parent", "foo"], lines=[1, 2])
-    assert set(parse_code(code)) == set(expect)
-
-
-def test_parse_code__relative_imports__are_ignored():
-    code = dedent(
-        """\
-        from . import bar
-        from .foo import bar
-        from ..foo import bar
-        from .foo.bar import baz
-        """
-    )
-    expect = set()
-    assert set(parse_code(code)) == expect
-
-
-def test_parse_code__combo_of_simple_imports__extracts_all_external_imports():
-    code = dedent(
-        """\
-        from pathlib import Path
-        import sys
-        import unittest as obsolete
-
-        import requests
-        from foo import bar, baz
-        import numpy as np
-        """
-    )
-    expect = construct_imports(["requests", "foo", "numpy"], lines=[5, 6, 7])
-    assert set(parse_code(code)) == set(expect)
+                import requests
+                from foo import bar, baz
+                import numpy as np
+                """
+            ),
+            [("requests", 5), ("foo", 6), ("numpy", 7)],
+            id="combo_of_simple_imports__extracts_all_external_imports",
+        ),
+    ],
+)
+def test_parse_code(code, expected_import_line_pairs):
+    expect = imports_w_linenos(expected_import_line_pairs, None)
+    assert list(parse_code(code)) == expect
 
 
 def test_parse_python_file__combo_of_simple_imports__extracts_all_externals(tmp_path):
@@ -172,12 +168,10 @@ def test_parse_python_file__combo_of_simple_imports__extracts_all_externals(tmp_
     script = tmp_path / "test.py"
     script.write_text(code)
 
-    expect = construct_imports(
-        ["requests", "foo", "numpy"],
-        tmp_path / "test.py",
-        [5, 6, 7],
+    expect = imports_w_linenos(
+        [("requests", 5), ("foo", 6), ("numpy", 7)], tmp_path / "test.py"
     )
-    assert set(parse_python_file(script)) == set(expect)
+    assert list(parse_python_file(script)) == expect
 
 
 def test_parse_notebook_file__simple_imports__extracts_all(tmp_path):
@@ -185,7 +179,7 @@ def test_parse_notebook_file__simple_imports__extracts_all(tmp_path):
     script = tmp_path / "test.ipynb"
     script.write_text(code)
 
-    expect = construct_imports(["pandas", "pytorch"], script, [1, 2], [0, 0])
+    expect = imports_w_linenos_cellnos([("pandas", 1, 0), ("pytorch", 2, 0)], script)
     assert set(parse_notebook_file(script)) == set(expect)
 
 
@@ -194,7 +188,7 @@ def test_parse_notebook_file__two_cells__extracts_all(tmp_path):
     script = tmp_path / "test.ipynb"
     script.write_text(code)
 
-    expect = construct_imports(["pandas", "pytorch"], script, [1, 1], [0, 1])
+    expect = imports_w_linenos_cellnos([("pandas", 1, 0), ("pytorch", 1, 1)], script)
     assert set(parse_notebook_file(script)) == set(expect)
 
 
@@ -203,7 +197,7 @@ def test_parse_notebook_file__two_cells__extracts_from_cell_with_imports(tmp_pat
     script = tmp_path / "test.ipynb"
     script.write_text(code)
 
-    expect = construct_imports(["pandas"], script, [1], [0, 1])
+    expect = imports_w_linenos_cellnos([("pandas", 1, 0)], script)
     assert set(parse_notebook_file(script)) == set(expect)
 
 
@@ -214,7 +208,7 @@ def test_parse_notebook_file__two_cells__extracts_from_code_cell(tmp_path):
     script = tmp_path / "test.ipynb"
     script.write_text(code)
 
-    expect = construct_imports(["pandas"], script, [1], [0])
+    expect = imports_w_linenos_cellnos([("pandas", 1, 0)], script)
     assert set(parse_notebook_file(script)) == set(expect)
 
 
@@ -342,9 +336,9 @@ def test_parse_dir__imports__are_extracted_in_order_of_encounter(tmp_path):
     (tmp_path / "subdir").mkdir()
     (tmp_path / "subdir/second.py").write_text(second)
 
-    expect = construct_imports(
-        ["my_sys", "foo"], tmp_path / "first.py", [1, 2]
-    ) + construct_imports(["my_sys", "xyzzy"], tmp_path / "subdir/second.py", [1, 2])
+    expect = imports_w_linenos(
+        [("my_sys", 1), ("foo", 2)], tmp_path / "first.py"
+    ) + imports_w_linenos([("my_sys", 1), ("xyzzy", 2)], tmp_path / "subdir/second.py")
     assert list(parse_dir(tmp_path)) == expect
 
 
