@@ -10,20 +10,23 @@ from fawltydeps.extract_dependencies import DeclaredDependency
 from fawltydeps.extract_imports import ParsedImport
 
 
-class LocationDetails(NamedTuple):
+class FileLocation(NamedTuple):
     "General location details of imports and dependencies occurence."
-    location: Path
+    path: Path
     lineno: Optional[int]
 
     def __str__(self) -> str:
         "Readable representation."
-        return f"{self.location}:{self.lineno}"
+        ret = f"{self.path}"
+        if self.lineno is not None:
+            ret += f":{self.lineno}"
+        return ret
 
 
 DependencyComparison = NamedTuple(
     "DependencyComparison",
     [
-        ("undeclared", Dict[str, List[LocationDetails]]),
+        ("undeclared", Dict[str, List[FileLocation]]),
         ("unused", Set[str]),
     ],
 )
@@ -52,7 +55,7 @@ def compare_imports_to_dependencies(
 
     undeclared_with_details = {
         _import: [
-            LocationDetails(location=i.location, lineno=i.lineno)
+            FileLocation(path=i.location, lineno=i.lineno)
             for i in _imports
             if i.location
         ]
