@@ -1,0 +1,46 @@
+[project]
+# General information about the 3rd-party project: Its name, why we test it,
+# and where to find the relevant tarball, along with its expected checksum.
+name = "left-pad"
+description = "A simple project with (almost) no imports and no dependencies."
+url = "https://files.pythonhosted.org/packages/a0/34/cd668981dc6818d8a39f1185af8113268ddc71d99b0ba4aa8ceee2a123e7/left-pad-0.0.3.tar.gz"
+sha256 = "b842b81fcf157ca09b1e0036c5876295fdfd097640aa85d37f988857eec64654"
+# The SHA256 checksum above can be found by running `sha256sum` on the
+# downloaded tarball. It is used to ensure that we run tests against the
+# expected revision of the 3rd-party project.
+
+# Below are our expectations for running FawltyDeps on the above (unpacked)
+# tarball. Each table represents the expectations of a corresponding test case
+# inside ../test_real_projects.py. All tables are optional: Removing a table
+# will disable the corresponding test case. An empty table means that we expect
+# FawltyDeps to produce zero results/empty output for that test.
+#
+# Inside each table, we map filenames to lists of relevant packages (imports or
+# dependencies) that we expect FawltyDeps to return for that test. This is
+# described in more detail under each table:
+
+[imports]
+# What we expect `fawltydeps --list-imports` to return for this project.
+# Key: filename containing import statements
+# Value: list (set) of external packages imported
+"setup.py" = [
+    "setuptools",
+]
+
+[declared_deps]
+# What we expect `fawltydeps --list-deps` to return for this project.
+# Key: filename containing declared dependencies
+# Value: list (set) of packages names that are declared
+
+[undeclared_deps]
+# What we expect `fawltydeps --check-undeclared` to return for this project.
+# Key: filename containing import statements
+# Value: list (set) of external packages imported without being declared
+"setup.py" = [
+    "setuptools",
+]
+
+[unused_deps]
+# What we expect `fawltydeps --check-unused` to return for this project.
+# Key: filename containing declared dependencies
+# Value: list (set) of external packages imported

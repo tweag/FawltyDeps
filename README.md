@@ -161,9 +161,10 @@ FawltyDeps' behavior with integration tests that (among other things) include
 testing with real-world projects. To that end, we have a framework in
 [`tests/test_real_projects.py`](./tests/test_real_projects.py) for downloading
 and unpacking tarball of 3rd-party projects, and then run fawltydeps on them,
-while verifying their output.
+while verifying their output. These projects, along with the expected FawltyDeps
+outputs are defined in TOML files under
+[`tests/real_projects`](./tests/real_projects).
 
 When you find a project where FawltyDeps is not doing a good job, we appreciate
-you adding that project here. Look at the existing examples in
-[`tests/test_real_projects.py`](./tests/test_real_projects.py) to see how these
-tests work.
+you adding that project under [`tests/real_projects`](./tests/real_projects).
+Look at the existing files in that directory to see how these tests work.
