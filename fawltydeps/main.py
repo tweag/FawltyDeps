@@ -185,8 +185,18 @@ def main() -> int:
     try:
         analysis = Analysis.create(actions, args.code, args.deps)
     except extract_imports.ArgParseError as exc:
-        return parser.error(exc.msg)
+        return parser.error(exc.msg)  # exit code 2
 
     analysis.print_human_readable(sys.stdout)
 
+    # Exit codes:
+    # 0 - success, no problems found
+    # 1 - an exception propagates (this should not happen)
+    # 2 - command-line parsing error (see above)
+    # 3 - undeclared dependencies found
+    # 4 - unused dependencies found
+    if analysis.is_enabled(Action.REPORT_UNDECLARED) and analysis.undeclared_deps:
+        return 3
+    if analysis.is_enabled(Action.REPORT_UNUSED) and analysis.unused_deps:
+        return 4
     return 0
