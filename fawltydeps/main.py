@@ -2,14 +2,17 @@
 
 import argparse
 import logging
+import sys
+from dataclasses import dataclass
 from enum import Enum, auto
 from operator import attrgetter
 from pathlib import Path
-from typing import Set
+from typing import Dict, List, Optional, Set, TextIO
 
 from fawltydeps import extract_imports
 from fawltydeps.check import compare_imports_to_dependencies
 from fawltydeps.extract_dependencies import extract_dependencies
+from fawltydeps.types import DeclaredDependency, FileLocation, ParsedImport
 
 logger = logging.getLogger(__name__)
 
@@ -23,51 +26,77 @@ class Action(Enum):
     REPORT_UNUSED = auto()
 
 
-def perform_actions(actions: Set[Action], code: Path, deps: Path) -> int:
-    """Perform the requested actions of FawltyDeps core logic.
+@dataclass
+class Analysis:
+    """Result from FawltyDeps analysis, to be presented to the user."""
 
-    This is a high-level interface to the services offered by FawltyDeps.
-    Although the main caller is the command-line interface defined below, this
-    can also be called from other Python contexts without having to go via the
-    command-line.
-    """
+    request: Set[Action]
+    imports: Optional[List[ParsedImport]] = None
+    declared_deps: Optional[List[DeclaredDependency]] = None
+    undeclared_deps: Optional[Dict[str, List[FileLocation]]] = None
+    unused_deps: Optional[Set[str]] = None
 
-    def is_enabled(*args: Action) -> bool:
-        return len(actions.intersection(args)) > 0
+    def is_enabled(self, *args: Action) -> bool:
+        """Return True if any of the given actions are in self.request."""
+        return len(self.request.intersection(args)) > 0
 
-    if is_enabled(Action.LIST_IMPORTS, Action.REPORT_UNDECLARED, Action.REPORT_UNUSED):
-        extracted_imports = list(extract_imports.parse_any_arg(code))
-        if is_enabled(Action.LIST_IMPORTS):
+    @classmethod
+    def create(cls, request: Set[Action], code: Path, deps: Path) -> "Analysis":
+        """Perform the requested actions of FawltyDeps core logic.
+
+        This is a high-level interface to the services offered by FawltyDeps.
+        Although the main caller is the command-line interface defined below,
+        this can also be called from other Python contexts without having to go
+        via the command-line.
+        """
+        ret = cls(request)
+        if ret.is_enabled(
+            Action.LIST_IMPORTS, Action.REPORT_UNDECLARED, Action.REPORT_UNUSED
+        ):
+            ret.imports = list(extract_imports.parse_any_arg(code))
+
+        if ret.is_enabled(
+            Action.LIST_DEPS, Action.REPORT_UNDECLARED, Action.REPORT_UNUSED
+        ):
+            ret.declared_deps = list(extract_dependencies(deps))
+
+        if ret.is_enabled(Action.REPORT_UNDECLARED, Action.REPORT_UNUSED):
+            assert ret.imports is not None
+            assert ret.declared_deps is not None
+            comparison = compare_imports_to_dependencies(
+                imports=ret.imports, dependencies=ret.declared_deps
+            )
+            ret.undeclared_deps = comparison.undeclared
+            ret.unused_deps = comparison.unused
+
+        return ret
+
+    def print_human_readable(self, out: TextIO) -> None:
+        """Print a human-readable rendering of the given report to stdout."""
+        if self.is_enabled(Action.LIST_IMPORTS):
+            assert self.imports is not None
             # Sort imports by location, then by name
-            for _import in sorted(
-                extracted_imports, key=attrgetter("location", "name")
+            for imp in sorted(
+                self.imports, key=attrgetter("location", "lineno", "name")
             ):
-                print(f"{_import.name}: {_import.location}")
+                print(f"{imp.name}: {imp.location}", file=out)
 
-    if is_enabled(Action.LIST_DEPS, Action.REPORT_UNDECLARED, Action.REPORT_UNUSED):
-        extracted_deps = list(extract_dependencies(deps))
-        if is_enabled(Action.LIST_DEPS):
+        if self.is_enabled(Action.LIST_DEPS):
+            assert self.declared_deps is not None
             # Sort dependencies by location, then by name
-            for name, location in sorted(
-                extracted_deps, key=attrgetter("location", "name")
-            ):
-                print(f"{name}: {location}")
+            for dep in sorted(self.declared_deps, key=attrgetter("location", "name")):
+                print(f"{dep.name}: {dep.location}", file=out)
 
-    if is_enabled(Action.REPORT_UNDECLARED, Action.REPORT_UNUSED):
-        report = compare_imports_to_dependencies(
-            imports=extracted_imports, dependencies=extracted_deps
-        )
-        if is_enabled(Action.REPORT_UNDECLARED) and report.undeclared:
-            print("These imports are not declared as dependencies:")
-            for name, locations in sorted(report.undeclared.items()):
-                represent_locations = "".join(["\n    " + str(l) for l in locations])
-                print(f"- {name} in locations:{represent_locations}")
-        if is_enabled(Action.REPORT_UNUSED) and report.unused:
-            print("These dependencies are not imported in your code:")
-            for name in sorted(report.unused):
-                print(f"- {name}")
+        if self.is_enabled(Action.REPORT_UNDECLARED) and self.undeclared_deps:
+            print("These imports are not declared as dependencies:", file=out)
+            for name, locations in sorted(self.undeclared_deps.items()):
+                represent_locations = "".join([f"\n    {loc}" for loc in locations])
+                print(f"- {name} in locations:{represent_locations}", file=out)
 
-    return 0
+        if self.is_enabled(Action.REPORT_UNUSED) and self.unused_deps:
+            print("These dependencies are not imported in your code:", file=out)
+            for name in sorted(self.unused_deps):
+                print(f"- {name}", file=out)
 
 
 def main() -> int:
@@ -154,6 +183,10 @@ def main() -> int:
     actions = args.actions or {Action.REPORT_UNDECLARED, Action.REPORT_UNUSED}
 
     try:
-        return perform_actions(actions, args.code, args.deps)
+        analysis = Analysis.create(actions, args.code, args.deps)
     except extract_imports.ArgParseError as exc:
         return parser.error(exc.msg)
+
+    analysis.print_human_readable(sys.stdout)
+
+    return 0

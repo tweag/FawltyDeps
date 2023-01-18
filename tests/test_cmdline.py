@@ -65,7 +65,7 @@ def test_list_imports__from_dash__prints_imports_from_stdin():
         """
     )
 
-    expect = [f"{i}: <stdin>" for i in ["foo", "numpy", "requests"]]
+    expect = [f"{i}: <stdin>" for i in ["requests", "foo", "numpy"]]
     output, errors = run_fawltydeps("--list-imports", "--code=-", to_stdin=code)
     assert output.splitlines() == expect
     assert errors == ""
@@ -85,7 +85,7 @@ def test_list_imports__from_py_file__prints_imports_from_file(write_tmp_files):
         }
     )
 
-    expect = ["foo", "numpy", "requests"]
+    expect = ["requests", "foo", "numpy"]
     output, errors = run_fawltydeps("--list-imports", f"--code={tmp_path}/myfile.py")
     found_imports = [line.split(":", 1)[0] for line in output.splitlines()]
     assert found_imports == expect
