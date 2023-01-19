@@ -4,7 +4,12 @@ from textwrap import dedent
 
 import pytest
 
-from fawltydeps.extract_imports import parse_code, parse_dir, parse_file, parse_notebook
+from fawltydeps.extract_imports import (
+    parse_code,
+    parse_dir,
+    parse_python_file,
+    parse_notebook_file,
+)
 
 
 def test_parse_code__on_parse_error__propagates_SyntaxError():
@@ -13,13 +18,13 @@ def test_parse_code__on_parse_error__propagates_SyntaxError():
         list(parse_code(code))
 
 
-def test_parse_file__on_parse_error__SyntaxError_contains_filename(tmp_path):
+def test_parse_python_file__on_parse_error__SyntaxError_contains_filename(tmp_path):
     code = "This is not Python code\n"
     script = tmp_path / "test.py"
     script.write_text(code)
 
     with pytest.raises(SyntaxError) as exc_info:
-        list(parse_file(script))
+        list(parse_python_file(script))
     assert exc_info.value.filename == str(script)
 
 
@@ -38,7 +43,7 @@ def test_parse_dir__on_parse_error__SyntaxError_contains_filename(tmp_path):
     assert exc_info.value.filename == str(script)
 
 
-def test_parse_notebook__on_parse_error__propagates_SyntaxError(tmp_path):
+def test_parse_notebook_file__on_parse_error__propagates_SyntaxError(tmp_path):
     code = dedent(
         """\
         {
@@ -53,10 +58,10 @@ def test_parse_notebook__on_parse_error__propagates_SyntaxError(tmp_path):
     script.write_text(code)
 
     with pytest.raises(SyntaxError):
-        list(parse_notebook(script))
+        list(parse_notebook_file(script))
 
 
-def test_parse_notebook__on_parse_error__SyntaxError_raised_with_msg(tmp_path):
+def test_parse_notebook_file__on_parse_error__SyntaxError_raised_with_msg(tmp_path):
     code = dedent(
         """\
         {
@@ -71,5 +76,5 @@ def test_parse_notebook__on_parse_error__SyntaxError_raised_with_msg(tmp_path):
     script.write_text(code)
 
     with pytest.raises(SyntaxError) as exc_info:
-        list(parse_notebook(script))
+        list(parse_notebook_file(script))
     assert exc_info.value.msg == f"Cannot parse code from {script}: cell 0."
