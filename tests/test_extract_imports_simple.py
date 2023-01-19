@@ -151,3 +151,15 @@ def test_parse_dir__imports__are_extracted_in_order_of_encounter(write_tmp_files
         ["my_sys", "xyzzy"], tmp_path / "subdir/second.py"
     )
     assert list(parse_dir(tmp_path)) == expect
+
+
+def test_parse_dir__files_in_dot_dirs__are_ignored(write_tmp_files):
+    tmp_path = write_tmp_files(
+        {
+            "test1.py": "import numpy",
+            ".venv/test2.py": "import pandas",
+        }
+    )
+
+    expect = {ParsedImport("numpy", tmp_path / "test1.py")}
+    assert set(parse_dir(tmp_path)) == expect

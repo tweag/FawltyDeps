@@ -2,7 +2,6 @@
 
 import ast
 import logging
-import os
 import sys
 from pathlib import Path
 from typing import Iterator, Optional
@@ -10,6 +9,7 @@ from typing import Iterator, Optional
 import isort
 
 from fawltydeps.types import ParsedImport
+from fawltydeps.utils import walk_dir
 
 logger = logging.getLogger(__name__)
 
@@ -61,11 +61,9 @@ def parse_dir(path: Path) -> Iterator[ParsedImport]:
     they appear in the file. Modules that are imported by several files will
     be yielded multiple times.
     """
-    for root, _dirs, files in os.walk(path):
-        for filename in files:
-            path = Path(root, filename)
-            if path.suffix == ".py":
-                yield from parse_file(path)
+    for file in walk_dir(path):
+        if file.suffix == ".py":
+            yield from parse_file(file)
 
 
 class ParseError(Exception):
