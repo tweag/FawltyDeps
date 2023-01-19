@@ -44,7 +44,7 @@ def parse_code(
                 )
 
 
-def parse_notebook(path: Path) -> Iterator[ParsedImport]:
+def parse_notebook_file(path: Path) -> Iterator[ParsedImport]:
     """Extract import statements from an ipynb notebook.
 
     Generate (i.e. yield) the module names that are imported in the order
@@ -61,7 +61,7 @@ def parse_notebook(path: Path) -> Iterator[ParsedImport]:
             ) from exc
 
 
-def parse_file(path: Path) -> Iterator[ParsedImport]:
+def parse_python_file(path: Path) -> Iterator[ParsedImport]:
     """Extract import statements from a file containing Python code.
 
     Generate (i.e. yield) the module names that are imported in the order
@@ -81,9 +81,9 @@ def parse_dir(path: Path) -> Iterator[ParsedImport]:
         for filename in files:
             path = Path(root, filename)
             if path.suffix == ".py":
-                yield from parse_file(path)
+                yield from parse_python_file(path)
             elif path.suffix == ".ipynb":
-                yield from parse_notebook(path)
+                yield from parse_notebook_file(path)
 
 
 class ParseError(Exception):
@@ -98,7 +98,7 @@ def parse_any_arg(arg: Path) -> Iterator[ParsedImport]:
 
     These cases are handled:
       - arg == "-": Read code from stdin and pass to parse_code()
-      - arg refers to a file: Call parse_file()
+      - arg refers to a file: Call parse_python_file() or parse_notebook_file()
       - arg refers to a dir: Call parse_dir()
 
     Otherwise raise ParseError with a suitable error message.
@@ -108,7 +108,7 @@ def parse_any_arg(arg: Path) -> Iterator[ParsedImport]:
         return parse_code(sys.stdin.read(), path_hint=Path("<stdin>"))
     if arg.is_file():
         logger.info("Parsing Python file %s", arg)
-        return parse_file(arg)
+        return parse_python_file(arg)
     if arg.is_dir():
         logger.info("Parsing Python files under %s", arg)
         return parse_dir(arg)

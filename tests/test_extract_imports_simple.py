@@ -8,8 +8,8 @@ from fawltydeps.extract_imports import (
     ParsedImport,
     parse_code,
     parse_dir,
-    parse_file,
-    parse_notebook,
+    parse_python_file,
+    parse_notebook_file,
 )
 
 
@@ -135,7 +135,7 @@ def test_parse_code__combo_of_simple_imports__extracts_all():
     assert set(parse_code(code)) == set(expect)
 
 
-def test_parse_file__combo_of_simple_imports__extracts_all(tmp_path):
+def test_parse_python_file__combo_of_simple_imports__extracts_all(tmp_path):
     code = dedent(
         """\
         from pathlib import Path
@@ -155,37 +155,37 @@ def test_parse_file__combo_of_simple_imports__extracts_all(tmp_path):
         tmp_path / "test.py",
         [1, 2, 3, 5, 6, 7],
     )
-    assert set(parse_file(script)) == set(expect)
+    assert set(parse_python_file(script)) == set(expect)
 
 
-def test_parse_notebook__simple_imports__extracts_all(tmp_path):
+def test_parse_notebook_file__simple_imports__extracts_all(tmp_path):
     code = generate_notebook([["import pandas\n", "import pytorch"]])
     script = tmp_path / "test.ipynb"
     script.write_text(code)
 
     expect = with_location_and_line(["pandas", "pytorch"], script, [1, 2])
-    assert set(parse_notebook(script)) == set(expect)
+    assert set(parse_notebook_file(script)) == set(expect)
 
 
-def test_parse_notebook__two_cells__extracts_all(tmp_path):
+def test_parse_notebook_file__two_cells__extracts_all(tmp_path):
     code = generate_notebook([["import pandas"], ["import pytorch"]])
     script = tmp_path / "test.ipynb"
     script.write_text(code)
 
     expect = with_location_and_line(["pandas", "pytorch"], script, [1, 1])
-    assert set(parse_notebook(script)) == set(expect)
+    assert set(parse_notebook_file(script)) == set(expect)
 
 
-def test_parse_notebook__two_cells__extracts_from_cell_with_imports(tmp_path):
+def test_parse_notebook_file__two_cells__extracts_from_cell_with_imports(tmp_path):
     code = generate_notebook([["import pandas"], ["print('import pytorch')"]])
     script = tmp_path / "test.ipynb"
     script.write_text(code)
 
     expect = with_location_and_line(["pandas"], script, [1])
-    assert set(parse_notebook(script)) == set(expect)
+    assert set(parse_notebook_file(script)) == set(expect)
 
 
-def test_parse_notebook__two_cells__extracts_from_code_cell(tmp_path):
+def test_parse_notebook_file__two_cells__extracts_from_code_cell(tmp_path):
     code = dedent(
         """\
         {
@@ -234,7 +234,7 @@ def test_parse_notebook__two_cells__extracts_from_code_cell(tmp_path):
     script.write_text(code)
 
     expect = with_location_and_line(["pandas"], script, [1])
-    assert set(parse_notebook(script)) == set(expect)
+    assert set(parse_notebook_file(script)) == set(expect)
 
 
 def test_parse_dir__with_py_ipynb_and_non_py__extracts_only_from_py_and_ipynb_files(
