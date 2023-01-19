@@ -268,8 +268,8 @@ def test_report_undeclared(run_fawltydeps_on_project, project):
     lines = out.splitlines()
     if project.undeclared:  # There is something to report
         assert lines.pop(0) == "These imports are not declared as dependencies:"
-    assert all(line.startswith("- ") for line in lines)
-    actual = set(line[2:] for line in lines)
+    assert all(line.startswith("- ") or line.startswith("    ") for line in lines)
+    actual = set(line[2:-14] for line in lines if line.startswith("- "))
     assert actual == project.undeclared
     assert not err
 
