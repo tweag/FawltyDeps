@@ -31,6 +31,11 @@ def project_with_requirements(write_tmp_files):
                 pandas
                 tensorflow>=2
                 """,
+            # This file should be ignored:
+            ".venv/requirements.txt": """\
+                foo_package
+                bar_package
+                """,
             "python_file.py": "import django",
         }
     )

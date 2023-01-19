@@ -3,12 +3,12 @@
 import ast
 import json
 import logging
-import os
 import sys
 from pathlib import Path
 from typing import Iterator, Optional
 
 from fawltydeps.types import ParsedImport
+from fawltydeps.utils import walk_dir
 
 logger = logging.getLogger(__name__)
 
@@ -104,13 +104,11 @@ def parse_dir(path: Path) -> Iterator[ParsedImport]:
     they appear in the file. Modules that are imported by several files will
     be yielded multiple times.
     """
-    for root, _dirs, files in os.walk(path):
-        for filename in files:
-            path = Path(root, filename)
-            if path.suffix == ".py":
-                yield from parse_python_file(path)
-            elif path.suffix == ".ipynb":
-                yield from parse_notebook_file(path)
+    for file in walk_dir(path):
+        if file.suffix == ".py":
+            yield from parse_python_file(file)
+        elif file.suffix == ".ipynb":
+            yield from parse_notebook_file(file)
 
 
 def parse_any_arg(arg: Path) -> Iterator[ParsedImport]:

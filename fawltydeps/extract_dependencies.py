@@ -2,7 +2,6 @@
 
 import ast
 import logging
-import os
 import sys
 from pathlib import Path
 from typing import Any, Dict, Iterator
@@ -10,6 +9,7 @@ from typing import Any, Dict, Iterator
 from pkg_resources import parse_requirements
 
 from fawltydeps.types import DeclaredDependency
+from fawltydeps.utils import walk_dir
 
 if sys.version_info >= (3, 11):
     import tomllib  # pylint: disable=E1101
@@ -254,10 +254,8 @@ def extract_dependencies(path: Path) -> Iterator[DeclaredDependency]:
             logger.error("Parsing file %s is not supported", path.name)
 
     else:
-        for root, _dirs, files in os.walk(path):
-            for filename in files:
-                if filename in parsers:
-                    parser = parsers[filename]
-                    current_path = Path(root, filename)
-                    logger.debug(f"Extracting dependency from {current_path}.")
-                    yield from parser(current_path.read_text(), path_hint=current_path)
+        for file in walk_dir(path):
+            if file.name in parsers:
+                parser = parsers[file.name]
+                logger.debug(f"Extracting dependency from {file}.")
+                yield from parser(file.read_text(), path_hint=file)
