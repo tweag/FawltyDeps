@@ -45,7 +45,7 @@ def parse_code(
 
 
 def parse_notebook(path: Path) -> Iterator[ParsedImport]:
-    """Extract import statements from an ipynb notebooke.
+    """Extract import statements from an ipynb notebook.
 
     Generate (i.e. yield) the module names that are imported in the order
     they appear in the file.
