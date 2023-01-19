@@ -106,8 +106,13 @@ class ThirdPartyProject(NamedTuple):
 
     def tarball_name(self) -> str:
         """The filename used for the tarball in the local cache."""
-        # We cache tarballs using the filename part of the given URL
-        return Path(urlparse(self.url).path).name
+        # We cache tarballs using the filename part of the given URL.
+        # However, tarballs produced from tags at GitHub typically only use the
+        # version number in the filename. Prefix the project name in that case:
+        filename = Path(urlparse(self.url).path).name
+        if self.name not in filename:
+            filename = f"{self.name}-{filename}"
+        return filename
 
     def tarball_is_cached(self, path: Optional[Path]) -> bool:
         """Return True iff the given path contains this project's tarball."""
