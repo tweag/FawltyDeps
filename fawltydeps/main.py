@@ -74,17 +74,26 @@ def print_human_readable_report(actions: Set[Action], report: Report) -> None:
     def is_enabled(*args: Action) -> bool:
         return len(actions.intersection(args)) > 0
 
+    def relpath(path: Optional[Path]) -> Path:
+        """Make 'path' relative to current directory, if possible"""
+        if path is None:
+            return Path("<unknown>")
+        try:
+            return path.relative_to(Path.cwd())
+        except ValueError:
+            return path
+
     if is_enabled(Action.LIST_IMPORTS):
         assert report.imports is not None
         # Sort imports by location, then by name
         for name, location in sorted(report.imports, key=itemgetter(1, 0)):
-            print(f"{name}: {location}")
+            print(f"{name}: {relpath(location)}")
 
     if is_enabled(Action.LIST_DEPS):
         assert report.declared_deps is not None
         # Sort dependencies by location, then by name
         for name, location in sorted(report.declared_deps, key=itemgetter(1, 0)):
-            print(f"{name}: {location}")
+            print(f"{name}: {relpath(location)}")
 
     if is_enabled(Action.REPORT_UNDECLARED) and report.undeclared_deps:
         print("These imports are not declared as dependencies:")
