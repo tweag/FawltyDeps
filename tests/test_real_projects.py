@@ -7,6 +7,7 @@ should find/report.
 """
 
 import hashlib
+import logging
 import sys
 import tarfile
 from pathlib import Path
@@ -22,6 +23,8 @@ if sys.version_info >= (3, 11):
     import tomllib  # pylint: disable=E1101
 else:
     import tomli as tomllib
+
+logger = logging.getLogger(__name__)
 
 # These tests will download and unpacks a 3rd-party project before analyzing it.
 # These are (slow) integration tests that are disabled by default.
@@ -44,86 +47,6 @@ def sha256sum(path: Path):
         for block in iter(lambda: f.read(BLOCK_SIZE), b""):
             sha256.update(block)
     return sha256.hexdigest()
-
-
-@pytest.fixture
-def cached_tarball(request):
-    """Cache unpacked tarballs, identified by URL and SHA256 checksum.
-
-    This makes use of the caching mechanism in pytest, documented on
-    https://docs.pytest.org/en/7.1.x/reference/reference.html#config-cache.
-
-    The caching happens in two stages. First we cache the downloaded tarball,
-    then we also cache the unpacked tarball.
-
-    The cached tarball is keyed by its filename and integrity checked with
-    SHA256. Thus a changed URL with the same filename and sha256 checksum will
-    still be able to reuse a previously downloaded tarball.
-
-    The unpacked tarball is keyed by the given sha256. Thus an updated sha256
-    will cause (a new download and) a new unpack.
-
-    The actual integrity check only happens immediately after a download, hence
-    we assume that the local cache (both the downloaded tarball, as well as the
-    unpacked tarball) is uncorrupted and immutable.
-    """
-
-    def _tarball_is_cached(path: Optional[Path], sha256: str) -> bool:
-        return path is not None and path.is_file() and sha256sum(path) == sha256
-
-    def _get_tarball(url: str, sha256: str) -> Path:
-        # We cache tarballs using the filename part of the given URL
-        filename = Path(urlparse(url).path).name
-        # Cannot store Path objects in request.config.cache, only str.
-        cached_str = request.config.cache.get(f"fawltydeps/{filename}", None)
-        if _tarball_is_cached(cached_str and Path(cached_str), sha256):
-            return Path(cached_str)
-
-        # Must (re)download
-        tarball = Path(request.config.cache.mkdir("fawltydeps")) / filename
-        print(f"Downloading {url!r} to {tarball}...")
-        urlretrieve(url, tarball)
-        if not _tarball_is_cached(tarball, sha256):
-            print(f"Failed integrity check after downloading {url!r}!")
-            print(f"    Downloaded file: {tarball}")
-            print(f"    Retrieved SHA256 {sha256sum(tarball)}")
-            print(f"     Expected SHA256 {sha256}")
-            assert False
-        request.config.cache.set(f"fawltydeps/{filename}", str(tarball))
-        return tarball
-
-    def _unpack_dir_is_cached(path: Optional[Path]) -> bool:
-        return path is not None and path.is_dir()
-
-    def _get_unpack_dir(tarball: Path, sha256: str) -> Path:
-        # We cache unpacked tarballs using the given sha256 sum
-        cached_str = request.config.cache.get(f"fawltydeps/{sha256}", None)
-        if _unpack_dir_is_cached(cached_str and Path(cached_str)):
-            return Path(cached_str)
-
-        # Must unpack
-        unpack_dir = Path(request.config.cache.mkdir(f"fawltydeps_{sha256}"))
-        print(f"Unpacking {tarball} to {unpack_dir}...")
-        with tarfile.open(tarball) as f:
-            f.extractall(unpack_dir)
-        assert _unpack_dir_is_cached(unpack_dir)
-        request.config.cache.set(f"fawltydeps/{sha256}", str(unpack_dir))
-        return unpack_dir
-
-    def _download_and_unpack(url: str, sha256: str) -> Path:
-        tarball = _get_tarball(url, sha256)
-        print(f"Cached tarball is at: {tarball}")
-        unpack_dir = _get_unpack_dir(tarball, sha256)
-
-        # Most tarballs contains a single leading directory; descend into it.
-        entries = list(unpack_dir.iterdir())
-        if len(entries) == 1:
-            unpack_dir = entries[0]
-
-        print(f"Unpacked tarball is at {unpack_dir}")
-        return unpack_dir
-
-    return _download_and_unpack
 
 
 class ThirdPartyProject(NamedTuple):
@@ -181,13 +104,99 @@ class ThirdPartyProject(NamedTuple):
             if path.suffix == ".toml":
                 yield cls.parse_from_toml(path)
 
+    def tarball_name(self) -> str:
+        """The filename used for the tarball in the local cache."""
+        # We cache tarballs using the filename part of the given URL
+        return Path(urlparse(self.url).path).name
+
+    def tarball_is_cached(self, path: Optional[Path]) -> bool:
+        """Return True iff the given path contains this project's tarball."""
+        return path is not None and path.is_file() and sha256sum(path) == self.sha256
+
+    def get_tarball(self, cache: pytest.Cache) -> Path:
+        """Get this project's tarball. Download if not already cached.
+
+        The cached tarball is keyed by its filename and integrity checked with
+        SHA256. Thus a changed URL with the same filename and sha256 checksum
+        will still be able to reuse a previously downloaded tarball.
+
+        """
+        filename = self.tarball_name()
+        # Cannot store Path objects in the pytest cache, only str.
+        cached_str = cache.get(f"fawltydeps/{filename}", None)
+        if self.tarball_is_cached(cached_str and Path(cached_str)):
+            return Path(cached_str)  # already cached
+
+        # Must (re)download
+        tarball = Path(cache.mkdir("fawltydeps")) / filename
+        logger.info(f"Downloading {self.url!r} to {tarball}...")
+        urlretrieve(self.url, tarball)
+        if not self.tarball_is_cached(tarball):
+            logger.error(f"Failed integrity check after downloading {self.url!r}!")
+            logger.error(f"    Downloaded file: {tarball}")
+            logger.error(f"    Retrieved SHA256 {sha256sum(tarball)}")
+            logger.error(f"     Expected SHA256 {self.sha256}")
+            assert False
+        cache.set(f"fawltydeps/{filename}", str(tarball))
+        return tarball
+
+    def get_unpack_dir(self, tarball: Path, cache: pytest.Cache) -> Path:
+        """Get this project's unpack dir. Unpack the given tarball if necessary.
+
+        The unpack dir is where we unpack the project's tarball. It is keyed by
+        the sha256 checksum of the tarball, so that we don't risk reusing a
+        previously cached unpack dir for a different tarball.
+        """
+        # We cache unpacked tarballs using the given sha256 sum
+        cached_str = cache.get(f"fawltydeps/{self.sha256}", None)
+        if cached_str is not None and Path(cached_str).is_dir():
+            return Path(cached_str)  # already cached
+
+        # Must unpack
+        unpack_dir = Path(cache.mkdir(f"fawltydeps_{self.sha256}"))
+        logger.info(f"Unpacking {tarball} to {unpack_dir}...")
+        with tarfile.open(tarball) as f:
+            f.extractall(unpack_dir)
+        assert unpack_dir.is_dir()
+        cache.set(f"fawltydeps/{self.sha256}", str(unpack_dir))
+        return unpack_dir
+
+    def get_project_dir(self, cache: pytest.Cache) -> Path:
+        """Return the cached/unpacked project directory for this project.
+
+        This makes use of the caching mechanism in pytest, documented on
+        https://docs.pytest.org/en/7.1.x/reference/reference.html#config-cache.
+        The caching happens in two stages: we cache the downloaded tarball,
+        as well as the project directory that results from unpacking it.
+
+        The unpacked tarball is keyed by the given sha256. Thus an updated
+        sha256 will cause (a new download and) a new unpack.
+
+        The actual integrity check only happens immediately after a download,
+        hence we assume that the local cache (both the downloaded tarball, as
+        well as the unpacked tarball) is uncorrupted and immutable.
+        """
+        tarball = self.get_tarball(cache)
+        logger.info(f"Cached tarball is at: {tarball}")
+        unpack_dir = self.get_unpack_dir(tarball, cache)
+
+        # Most tarballs contains a single leading directory; descend into it.
+        entries = list(unpack_dir.iterdir())
+        if len(entries) == 1:
+            project_dir = entries[0]
+        else:
+            project_dir = unpack_dir
+
+        logger.info(f"Unpacked project is at {project_dir}")
+        return project_dir
+
 
 @pytest.mark.parametrize(
     "project",
     [pytest.param(proj, id=proj.name) for proj in ThirdPartyProject.collect()],
 )
-def test_real_project(cached_tarball, project):
-    project_dir = cached_tarball(project.url, project.sha256)
+def test_real_project(request, project):
+    project_dir = project.get_project_dir(request.config.cache)
     all_actions = {
         Action.LIST_IMPORTS,
         Action.LIST_DEPS,
