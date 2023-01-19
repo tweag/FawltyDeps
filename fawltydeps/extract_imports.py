@@ -108,11 +108,12 @@ def parse_python_file(path: Path) -> Iterator[ParsedImport]:
 
 
 def parse_dir(path: Path) -> Iterator[ParsedImport]:
-    """Extract import statements Python files in the given directory.
+    """Extract import statements from Python files in the given directory.
 
     Generate (i.e. yield) the module names that are imported in the order
-    they appear in the file. Modules that are imported by several files will
-    be yielded multiple times.
+    they appear in each file, but the order in which files are parsed is
+    unspecified. Modules that are imported multiple times (in the same file or
+    across several files) will be yielded multiple times.
     """
     for file in walk_dir(path):
         if file.suffix == ".py":
