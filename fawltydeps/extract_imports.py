@@ -113,7 +113,9 @@ def parse_any_arg(arg: Path) -> Iterator[ParsedImport]:
         if arg.suffix == ".ipynb":
             logger.info("Parsing Notebook file %s", arg)
             return parse_notebook_file(arg)
-        raise ParseError(f"Cannot parse code from {arg}: supported formats are .py and .ipynb.")
+        raise ParseError(
+            f"Cannot parse code from {arg}: supported formats are .py and .ipynb."
+        )
     if arg.is_dir():
         logger.info("Parsing Python files under %s", arg)
         return parse_dir(arg)

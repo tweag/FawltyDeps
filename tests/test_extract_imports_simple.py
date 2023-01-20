@@ -8,8 +8,8 @@ from fawltydeps.extract_imports import (
     ParsedImport,
     parse_code,
     parse_dir,
-    parse_python_file,
     parse_notebook_file,
+    parse_python_file,
 )
 
 
@@ -24,13 +24,14 @@ def with_location_and_line(
 
 def generate_notebook(cells_content: List[List[str]]) -> str:
     """Generate a valid ipynb json string from a list of code cells content."""
+
     def cell_template(source: List[str]):
         return {
             "cell_type": "code",
             "execution_count": "null",
             "metadata": {"id": ""},
             "outputs": [],
-            "source": source
+            "source": source,
         }
 
     notebook = {
@@ -38,15 +39,10 @@ def generate_notebook(cells_content: List[List[str]]) -> str:
         "nbformat_minor": 0,
         "metadata": {
             "colab": {"provenance": []},
-            "kernelspec": {
-                "name": "python3",
-                "display_name": "Python 3"
-            },
-            "language_info": {"name": "python"}
+            "kernelspec": {"name": "python3", "display_name": "Python 3"},
+            "language_info": {"name": "python"},
         },
-        "cells": [
-            cell_template(cell_content) for cell_content in cells_content
-        ]
+        "cells": [cell_template(cell_content) for cell_content in cells_content],
     }
     return json.dumps(notebook, indent=2)
 
