@@ -1,5 +1,5 @@
 """Test that we can extract simple imports from Python code."""
-
+import json
 from pathlib import Path
 from textwrap import dedent
 from typing import List, Optional
@@ -24,53 +24,31 @@ def with_location_and_line(
 
 def generate_notebook(cells_content: List[List[str]]) -> str:
     """Generate a valid ipynb json string from a list of code cells content."""
-    notebook_template = dedent(
-        """\
-        {
+    def cell_template(source: List[str]):
+        return {
+            "cell_type": "code",
+            "execution_count": "null",
+            "metadata": {"id": ""},
+            "outputs": [],
+            "source": source
+        }
+
+    notebook = {
         "nbformat": 4,
         "nbformat_minor": 0,
         "metadata": {
-            "colab": {
-            "provenance": []
-            },
+            "colab": {"provenance": []},
             "kernelspec": {
-            "name": "python3",
-            "display_name": "Python 3"
+                "name": "python3",
+                "display_name": "Python 3"
             },
-            "language_info": {
-            "name": "python"
-            }
+            "language_info": {"name": "python"}
         },
         "cells": [
-            %s
+            cell_template(cell_content) for cell_content in cells_content
         ]
-        }
-        """
-    )
-    cell_template = dedent(
-        """
-        {
-            "cell_type": "code",
-            "execution_count": null,
-            "metadata": {
-                "id": "GCOkrQdSXb0N"
-            },
-            "outputs": [],
-            "source": [
-                %s
-            ]
-            }
-        """
-    )
-    cells = [
-        cell_template
-        % ",".join(
-            f'"{line}"'.encode("unicode_escape").decode() for line in cell_content
-        )
-        for cell_content in cells_content
-    ]
-
-    return notebook_template % ",\n".join(cells)
+    }
+    return json.dumps(notebook, indent=2)
 
 
 def test_parse_code__simple_import__extracts_module_name():
