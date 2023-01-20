@@ -26,6 +26,7 @@ def construct_imports(
     if not cells:
         cells = [None for _ in names]
 
+    file_locations: List[Optional[Path]]
     if not locations:
         file_locations = [None for _ in names]
     elif isinstance(locations, Path):
