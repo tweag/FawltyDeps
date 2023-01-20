@@ -13,6 +13,13 @@ from fawltydeps.types import ParsedImport
 logger = logging.getLogger(__name__)
 
 
+class ArgParseError(Exception):
+    """Indicate errors while parsing command-line arguments"""
+
+    def __init__(self, msg: str):
+        self.msg = msg
+
+
 def parse_code(
     code: str, *, path_hint: Optional[Path] = None
 ) -> Iterator[ParsedImport]:
@@ -67,12 +74,12 @@ def parse_notebook_file(path: Path) -> Iterator[ParsedImport]:
                 ) from exc
     elif not language_name:
         logger.info(
-            f"Skipping the notebook on {path}. "\
+            f"Skipping the notebook on {path}. "
             "Could not find the programming language name in the notebook's metadata.",
         )
     else:
         logger.info(
-            "FawltyDeps supports parsing Python notebooks. "\
+            "FawltyDeps supports parsing Python notebooks. "
             f"Found {language_name} in the notebook's metadata on {path}.",
         )
 
@@ -102,13 +109,6 @@ def parse_dir(path: Path) -> Iterator[ParsedImport]:
                 yield from parse_notebook_file(path)
 
 
-class ParseError(Exception):
-    """Indicate errors while parsing command-line arguments"""
-
-    def __init__(self, msg: str):
-        self.msg = msg
-
-
 def parse_any_arg(arg: Path) -> Iterator[ParsedImport]:
     """Interpret the given command-line argument and invoke a suitable parser.
 
@@ -117,7 +117,7 @@ def parse_any_arg(arg: Path) -> Iterator[ParsedImport]:
       - arg refers to a file: Call parse_python_file() or parse_notebook_file()
       - arg refers to a dir: Call parse_dir()
 
-    Otherwise raise ParseError with a suitable error message.
+    Otherwise raise ArgParseError with a suitable error message.
     """
     if arg == Path("-"):
         logger.info("Parsing Python code from standard input")
@@ -129,10 +129,10 @@ def parse_any_arg(arg: Path) -> Iterator[ParsedImport]:
         if arg.suffix == ".ipynb":
             logger.info("Parsing Notebook file %s", arg)
             return parse_notebook_file(arg)
-        raise ParseError(
+        raise ArgParseError(
             f"Cannot parse code from {arg}: supported formats are .py and .ipynb."
         )
     if arg.is_dir():
         logger.info("Parsing Python files under %s", arg)
         return parse_dir(arg)
-    raise ParseError(f"Cannot parse code from {arg}: Not a dir or file!")
+    raise ArgParseError(f"Cannot parse code from {arg}: Not a dir or file!")

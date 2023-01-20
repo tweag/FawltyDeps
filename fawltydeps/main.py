@@ -151,5 +151,5 @@ def main() -> int:
 
     try:
         return perform_actions(actions, args.code, args.deps)
-    except extract_imports.ParseError as e:
+    except extract_imports.ArgParseError as e:
         return parser.error(e.msg)
