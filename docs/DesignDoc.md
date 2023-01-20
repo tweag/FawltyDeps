@@ -193,7 +193,7 @@ To determine the list of transitive dependencies of a library `myLibrary`, the p
 
 may be used or the `poetry show` command.
 
-Since a transitive dependency does not need to be explicitly declared, declaring transitive dependencies that are not also direct dependencies in requirements is not a common practice. Checking for these dependecies is therefore not supported by FawltyDeps.
+Since a transitive dependency does not need to be explicitly declared, declaring transitive dependencies that are not also direct dependencies in requirements is not a common practice. Checking for these dependencies is therefore not supported by FawltyDeps.
 
 ### 3.5 Translating dependencies to imports
 

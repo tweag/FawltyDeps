@@ -216,7 +216,7 @@ def parse_pyproject_contents(
 ) -> Iterator[DeclaredDependency]:
     """
     Parse dependencies from specific metadata fields in a pyproject.toml file.
-    This can currenly parse dependencies from dependency fields in:
+    This can currently parse dependencies from dependency fields in:
     - PEP 621 core metadata fields
     - Poetry-specific metadata
     """

@@ -81,7 +81,7 @@ Run `fawltydeps --help` to get the full list of available options.
 
 At the start of this project, an exploration and overall project design was performed. The resulting [design document is available in this repo](./docs/DesignDoc.md). It lays out the main objective for this project as well as comparing various strategies that have been considered since the start.
 
-In the [code design](./docs/CodeDesign.md) section of documenation we lay out rules we adopt for code architecture and quality assurance.
+In the [code design](./docs/CodeDesign.md) section of documentation we lay out rules we adopt for code architecture and quality assurance.
 
 ## Development
 
