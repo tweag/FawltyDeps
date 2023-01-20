@@ -1,15 +1,15 @@
 """Verify graceful failure when we cannot extract imports from Python code."""
 
+import json
 from textwrap import dedent
 
-import json
 import pytest
 
 from fawltydeps.extract_imports import (
     parse_code,
     parse_dir,
-    parse_python_file,
     parse_notebook_file,
+    parse_python_file,
 )
 
 
@@ -116,5 +116,5 @@ def test_parse_notebook_file__on_invalid_json__SyntaxError_raised_with_msg(tmp_p
     script = tmp_path / "test.ipynb"
     script.write_text(code)
 
-    with pytest.raises(json.decoder.JSONDecodeError) as exc_info:
+    with pytest.raises(json.decoder.JSONDecodeError):
         list(parse_notebook_file(script))

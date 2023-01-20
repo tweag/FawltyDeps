@@ -9,7 +9,9 @@ import subprocess
 from pathlib import Path
 from textwrap import dedent
 from typing import Iterable, Optional, Tuple
+
 import pytest
+
 from .test_extract_imports_simple import generate_notebook
 
 
@@ -92,6 +94,7 @@ def test_list_imports__from_py_file__prints_imports_from_file(write_tmp_files):
     assert found_imports == expect
     assert errors == ""
 
+
 def test_list_imports__from_ipynb_file__prints_imports_from_file(write_tmp_files):
     content = generate_notebook([["import pytorch"]])
     filename = "myfile.ipynb"
@@ -107,7 +110,10 @@ def test_list_imports__from_ipynb_file__prints_imports_from_file(write_tmp_files
     assert found_imports == expect
     assert errors == ""
 
-def test_list_imports__from_dir__prints_imports_from_py_and_ipynb_files_only(write_tmp_files):
+
+def test_list_imports__from_dir__prints_imports_from_py_and_ipynb_files_only(
+    write_tmp_files,
+):
     notebook_content = generate_notebook([["import pytorch"]])
     tmp_path = write_tmp_files(
         {
@@ -120,7 +126,7 @@ def test_list_imports__from_dir__prints_imports_from_py_and_ipynb_files_only(wri
                 from foo import bar, baz
                 import numpy as np
                 """,
-            "file3.ipynb": notebook_content
+            "file3.ipynb": notebook_content,
         }
     )
 
@@ -131,16 +137,18 @@ def test_list_imports__from_dir__prints_imports_from_py_and_ipynb_files_only(wri
     assert errors == ""
 
 
-def test_list_imports__from_non_supported_file_format__fails_with_exit_code_2(tmp_path, capsys):
+def test_list_imports__from_non_supported_file_format__fails_with_exit_code_2(
+    tmp_path, capsys
+):
     filepath = tmp_path / "test.NOT_SUPPORTED"
     filepath.write_text("import pandas")
     with pytest.raises(subprocess.CalledProcessError) as exc_info:
         run_fawltydeps("--list-imports", f"--code={filepath}")
     assert exc_info.value.returncode == 2
     assert (
-            f"Cannot parse code from {filepath}: supported formats are .py and .ipynb."
-            in capsys.readouterr().out
-        )
+        f"Cannot parse code from {filepath}: supported formats are .py and .ipynb."
+        in capsys.readouterr().out
+    )
 
 
 def test_list_imports__from_missing_file__fails_with_exit_code_2(tmp_path, capsys):
@@ -151,7 +159,7 @@ def test_list_imports__from_missing_file__fails_with_exit_code_2(tmp_path, capsy
     assert (
         f"Cannot parse code from {filepath}: Not a dir or file!"
         in capsys.readouterr().out
-        )
+    )
 
 
 def test_list_imports__from_empty_dir__logs_but_extracts_nothing(tmp_path):
