@@ -17,10 +17,14 @@ def construct_imports(
     names: List[str],
     locations: Union[List[Optional[Path]], Optional[Path]] = None,
     lines: Union[List[Optional[int]], None] = None,
+    cells: Union[List[Optional[int]], None] = None,
 ) -> List[ParsedImport]:
 
     if not lines:
         lines = [None for _ in names]
+
+    if not cells:
+        cells = [None for _ in names]
 
     if not locations:
         file_locations = [None for _ in names]
@@ -30,8 +34,8 @@ def construct_imports(
         file_locations = locations
 
     return [
-        ParsedImport(name=n, location=f, lineno=l)
-        for n, f, l in zip(names, file_locations, lines)
+        ParsedImport(name=n, location=f, lineno=l, cellno=c)
+        for n, f, l, c in zip(names, file_locations, lines, cells)
     ]
 
 
@@ -149,7 +153,7 @@ def test_parse_notebook_file__simple_imports__extracts_all(tmp_path):
     script = tmp_path / "test.ipynb"
     script.write_text(code)
 
-    expect = construct_imports(["pandas", "pytorch"], script, [1, 2])
+    expect = construct_imports(["pandas", "pytorch"], script, [1, 2], [0, 0])
     assert set(parse_notebook_file(script)) == set(expect)
 
 
@@ -158,7 +162,7 @@ def test_parse_notebook_file__two_cells__extracts_all(tmp_path):
     script = tmp_path / "test.ipynb"
     script.write_text(code)
 
-    expect = construct_imports(["pandas", "pytorch"], script, [1, 1])
+    expect = construct_imports(["pandas", "pytorch"], script, [1, 1], [0, 1])
     assert set(parse_notebook_file(script)) == set(expect)
 
 
@@ -167,7 +171,7 @@ def test_parse_notebook_file__two_cells__extracts_from_cell_with_imports(tmp_pat
     script = tmp_path / "test.ipynb"
     script.write_text(code)
 
-    expect = construct_imports(["pandas"], script, [1])
+    expect = construct_imports(["pandas"], script, [1], [0, 1])
     assert set(parse_notebook_file(script)) == set(expect)
 
 
@@ -219,7 +223,7 @@ def test_parse_notebook_file__two_cells__extracts_from_code_cell(tmp_path):
     script = tmp_path / "test.ipynb"
     script.write_text(code)
 
-    expect = construct_imports(["pandas"], script, [1])
+    expect = construct_imports(["pandas"], script, [1], [0])
     assert set(parse_notebook_file(script)) == set(expect)
 
 
@@ -254,7 +258,7 @@ def test_parse_dir__with_py_ipynb_and_non_py__extracts_only_from_py_and_ipynb_fi
     expect = {
         ParsedImport("pathlib", tmp_path / "test1.py", 1),
         ParsedImport("pandas", tmp_path / "test2.py", 1),
-        ParsedImport("pytorch", tmp_path / "test3.ipynb", 1),
+        ParsedImport("pytorch", tmp_path / "test3.ipynb", 1, 0),
     }
     assert set(parse_dir(tmp_path)) == expect
 
