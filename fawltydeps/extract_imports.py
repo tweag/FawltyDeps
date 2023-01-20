@@ -52,14 +52,29 @@ def parse_notebook_file(path: Path) -> Iterator[ParsedImport]:
     """
     with path.open("rb") as f:
         notebook_content = json.load(f, strict=False)
-    for cell_index, cell in enumerate(notebook_content["cells"]):
-        try:
-            if cell["cell_type"] == "code":
-                yield from parse_code("".join(cell["source"]), path_hint=path)
-        except Exception as exc:
-            raise SyntaxError(
-                f"Cannot parse code from {path}: cell {cell_index}."
-            ) from exc
+    language_name = (
+        notebook_content.get("metadata", {}).get("language_info", {}).get("name", "")
+    )
+
+    if language_name.lower() == "python":
+        for cell_index, cell in enumerate(notebook_content["cells"]):
+            try:
+                if cell["cell_type"] == "code":
+                    yield from parse_code("".join(cell["source"]), path_hint=path)
+            except Exception as exc:
+                raise SyntaxError(
+                    f"Cannot parse code from {path}: cell {cell_index}."
+                ) from exc
+    elif not language_name:
+        logger.info(
+            f"Skipping the notebook on {path}. "\
+            "Could not find the programming language name in the notebook's metadata.",
+        )
+    else:
+        logger.info(
+            "FawltyDeps supports parsing Python notebooks. "\
+            f"Found {language_name} in the notebook's metadata on {path}.",
+        )
 
 
 def parse_python_file(path: Path) -> Iterator[ParsedImport]:
