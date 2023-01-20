@@ -107,8 +107,13 @@ def parse_any_arg(arg: Path) -> Iterator[ParsedImport]:
         logger.info("Parsing Python code from standard input")
         return parse_code(sys.stdin.read(), path_hint=Path("<stdin>"))
     if arg.is_file():
-        logger.info("Parsing Python file %s", arg)
-        return parse_python_file(arg)
+        if arg.suffix == ".py":
+            logger.info("Parsing Python file %s", arg)
+            return parse_python_file(arg)
+        if arg.suffix == ".ipynb":
+            logger.info("Parsing Notebook file %s", arg)
+            return parse_notebook_file(arg)
+        raise ParseError(f"Cannot parse code from {arg}: supported formats are .py and .ipynb.")
     if arg.is_dir():
         logger.info("Parsing Python files under %s", arg)
         return parse_dir(arg)
