@@ -11,6 +11,7 @@ class ParsedImport:
     name: str
     location: Optional[Path] = None
     lineno: Optional[int] = None
+    cellno: Optional[int] = None
 
 
 class DeclaredDependency(NamedTuple):

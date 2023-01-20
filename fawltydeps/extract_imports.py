@@ -21,7 +21,7 @@ class ArgParseError(Exception):
 
 
 def parse_code(
-    code: str, *, path_hint: Optional[Path] = None
+    code: str, *, path_hint: Optional[Path] = None, cellno: Optional[int] = None
 ) -> Iterator[ParsedImport]:
     """Extract import statements from a string containing Python code.
 
@@ -37,6 +37,7 @@ def parse_code(
                     name=alias.name.split(".", 1)[0],
                     location=path_hint,
                     lineno=node.lineno,
+                    cellno=cellno,
                 )
         elif isinstance(node, ast.ImportFrom):
             logger.debug(ast.dump(node))
@@ -48,6 +49,7 @@ def parse_code(
                     name=node.module.split(".", 1)[0],
                     location=path_hint,
                     lineno=node.lineno,
+                    cellno=cellno,
                 )
 
 
@@ -67,7 +69,9 @@ def parse_notebook_file(path: Path) -> Iterator[ParsedImport]:
         for cell_index, cell in enumerate(notebook_content["cells"]):
             try:
                 if cell["cell_type"] == "code":
-                    yield from parse_code("".join(cell["source"]), path_hint=path)
+                    yield from parse_code(
+                        "".join(cell["source"]), path_hint=path, cellno=cell_index
+                    )
             except Exception as exc:
                 raise SyntaxError(
                     f"Cannot parse code from {path}: cell {cell_index}."
