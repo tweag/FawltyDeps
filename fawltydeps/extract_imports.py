@@ -50,7 +50,8 @@ def parse_notebook_file(path: Path) -> Iterator[ParsedImport]:
     Generate (i.e. yield) the module names that are imported in the order
     they appear in the file.
     """
-    notebook_content = json.loads(path.read_text(), strict=False)
+    with path.open("rb") as f:
+        notebook_content = json.load(f, strict=False)
     for cell_index, cell in enumerate(notebook_content["cells"]):
         try:
             if cell["cell_type"] == "code":
