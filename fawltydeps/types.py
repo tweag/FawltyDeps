@@ -30,10 +30,7 @@ class FileLocation(NamedTuple):
         return ret
 
 
-DependencyComparison = NamedTuple(
-    "DependencyComparison",
-    [
-        ("undeclared", Dict[str, List[FileLocation]]),
-        ("unused", Set[str]),
-    ],
-)
+class DependencyComparison(NamedTuple):
+    "The results of the analysis performed in the 'check' module."
+    undeclared: Dict[str, List[FileLocation]]
+    unused: Set[str]
