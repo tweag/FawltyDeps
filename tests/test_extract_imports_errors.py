@@ -2,6 +2,7 @@
 
 from textwrap import dedent
 
+import json
 import pytest
 
 from fawltydeps.extract_imports import (
@@ -100,3 +101,20 @@ def test_parse_notebook_file__on_invalid_python__SyntaxError_raised_with_msg(tmp
     with pytest.raises(SyntaxError) as exc_info:
         list(parse_notebook_file(script))
     assert exc_info.value.msg == f"Cannot parse code from {script}: cell 0."
+
+
+def test_parse_notebook_file__on_invalid_json__SyntaxError_raised_with_msg(tmp_path):
+    code = dedent(
+        """\
+        {
+            "cells": [
+            {"cell_type": "code",
+            }
+        }
+       """
+    )
+    script = tmp_path / "test.ipynb"
+    script.write_text(code)
+
+    with pytest.raises(json.decoder.JSONDecodeError) as exc_info:
+        list(parse_notebook_file(script))
