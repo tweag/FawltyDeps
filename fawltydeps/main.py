@@ -3,7 +3,7 @@
 import argparse
 import logging
 from enum import Enum, auto
-from operator import itemgetter
+from operator import attrgetter
 from pathlib import Path
 from typing import Set
 
@@ -39,14 +39,18 @@ def perform_actions(actions: Set[Action], code: Path, deps: Path) -> int:
         extracted_imports = list(extract_imports.parse_any_arg(code))
         if is_enabled(Action.LIST_IMPORTS):
             # Sort imports by location, then by name
-            for _import in sorted(extracted_imports, key=itemgetter(1, 0)):
+            for _import in sorted(
+                extracted_imports, key=attrgetter("location", "name")
+            ):
                 print(f"{_import.name}: {_import.location}")
 
     if is_enabled(Action.LIST_DEPS, Action.REPORT_UNDECLARED, Action.REPORT_UNUSED):
         extracted_deps = list(extract_dependencies(deps))
         if is_enabled(Action.LIST_DEPS):
             # Sort dependencies by location, then by name
-            for name, location in sorted(extracted_deps, key=itemgetter(1, 0)):
+            for name, location in sorted(
+                extracted_deps, key=attrgetter("location", "name")
+            ):
                 print(f"{name}: {location}")
 
     if is_enabled(Action.REPORT_UNDECLARED, Action.REPORT_UNUSED):

@@ -49,19 +49,19 @@ def generate_notebook(cells_content: List[List[str]]) -> str:
 
 def test_parse_code__simple_import__extracts_module_name():
     code = "import sys"
-    expect = {ParsedImport("sys", None, 1)}
+    expect = {ParsedImport("sys", lineno=1)}
     assert set(parse_code(code)) == expect
 
 
 def test_parse_code__two_imports__extracts_both_modules():
     code = "import platform, sys"
-    expect = {ParsedImport("platform", None, 1), ParsedImport("sys", None, 1)}
+    expect = {ParsedImport("platform", lineno=1), ParsedImport("sys", lineno=1)}
     assert set(parse_code(code)) == expect
 
 
 def test_parse_code__simple_import_from__extracts_module():
     code = "from sys import executable"
-    expect = {ParsedImport("sys", None, 1)}
+    expect = {ParsedImport("sys", lineno=1)}
     assert set(parse_code(code)) == expect
 
 

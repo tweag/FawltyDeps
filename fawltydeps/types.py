@@ -1,14 +1,16 @@
 """Common types used across FawltyDeps."""
 
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, NamedTuple, Optional, Set
 
 
-class ParsedImport(NamedTuple):
+@dataclass(eq=True, frozen=True)
+class ParsedImport:
     "Import parsed from the source code."
     name: str
-    location: Optional[Path]
-    lineno: Optional[int]
+    location: Optional[Path] = None
+    lineno: Optional[int] = None
 
 
 class DeclaredDependency(NamedTuple):
