@@ -39,17 +39,24 @@ def construct_imports(
     ]
 
 
-def generate_notebook(cells_content: List[List[str]]) -> str:
+def generate_notebook(
+    cells_source: List[List[str]], cell_types: Union[List[str], str] = "code"
+) -> str:
     """Generate a valid ipynb json string from a list of code cells content."""
 
-    def cell_template(source: List[str]):
+    def cell_template(cell_type: str, source: List[str]):
         return {
-            "cell_type": "code",
+            "cell_type": cell_type,
             "execution_count": "null",
             "metadata": {"id": ""},
             "outputs": [],
             "source": source,
         }
+
+    if isinstance(cell_types, str):
+        types = [cell_types for _ in cells_source]
+    else:
+        types = cell_types
 
     notebook = {
         "nbformat": 4,
@@ -59,7 +66,10 @@ def generate_notebook(cells_content: List[List[str]]) -> str:
             "kernelspec": {"name": "python3", "display_name": "Python 3"},
             "language_info": {"name": "python"},
         },
-        "cells": [cell_template(cell_content) for cell_content in cells_content],
+        "cells": [
+            cell_template(cell_type, cell_content)
+            for cell_type, cell_content in zip(types, cells_source)
+        ],
     }
     return json.dumps(notebook, indent=2)
 
@@ -176,49 +186,8 @@ def test_parse_notebook_file__two_cells__extracts_from_cell_with_imports(tmp_pat
 
 
 def test_parse_notebook_file__two_cells__extracts_from_code_cell(tmp_path):
-    code = dedent(
-        """\
-        {
-        "nbformat": 4,
-        "nbformat_minor": 0,
-        "metadata": {
-            "colab": {
-            "provenance": []
-            },
-            "kernelspec": {
-            "name": "python3",
-            "display_name": "Python 3"
-            },
-            "language_info": {
-            "name": "python"
-            }
-        },
-        "cells": [
-            {
-            "cell_type": "code",
-            "execution_count": null,
-            "metadata": {
-                "id": "GCOkrQdSXb0N"
-            },
-            "outputs": [],
-            "source": [
-                "import pandas"
-            ]
-            },
-            {
-            "cell_type": "markdown",
-            "source": [
-                "import sys"
-            ],
-            "metadata": {
-                "id": "s8qzZ_p02PGG"
-            },
-            "execution_count": null,
-            "outputs": []
-            }
-        ]
-        }
-       """
+    code = generate_notebook(
+        [["import pandas"], ["import pytcorch"]], ["code", "markdown"]
     )
     script = tmp_path / "test.ipynb"
     script.write_text(code)
