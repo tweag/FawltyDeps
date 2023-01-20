@@ -2,7 +2,7 @@
 import json
 from pathlib import Path
 from textwrap import dedent
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from fawltydeps.extract_imports import (
     ParsedImport,
@@ -13,12 +13,25 @@ from fawltydeps.extract_imports import (
 )
 
 
-def with_location_and_line(
-    imports: List[str], location: Optional[Path], lines: List[Optional[int]]
+def construct_imports(
+    names: List[str],
+    locations: Union[List[Optional[Path]], Optional[Path]] = None,
+    lines: Union[List[Optional[int]], None] = None,
 ) -> List[ParsedImport]:
+
+    if not lines:
+        lines = [None for _ in names]
+
+    if not locations:
+        file_locations = [None for _ in names]
+    elif isinstance(locations, Path):
+        file_locations = [locations for _ in names]
+    else:
+        file_locations = locations
+
     return [
-        ParsedImport(name=i, location=location, lineno=j)
-        for i, j in zip(imports, lines)
+        ParsedImport(name=n, location=f, lineno=l)
+        for n, f, l in zip(names, file_locations, lines)
     ]
 
 
@@ -72,7 +85,7 @@ def test_parse_code__import_with_compound_names__extracts_first_component():
         from foo.bar import baz
         """
     )
-    expect = with_location_and_line(["parent", "foo"], None, [1, 2])
+    expect = construct_imports(["parent", "foo"], lines=[1, 2])
     assert set(parse_code(code)) == set(expect)
 
 
@@ -101,10 +114,9 @@ def test_parse_code__combo_of_simple_imports__extracts_all():
         import numpy as np
         """
     )
-    expect = with_location_and_line(
+    expect = construct_imports(
         ["pathlib", "sys", "unittest", "requests", "foo", "numpy"],
-        None,
-        [1, 2, 3, 5, 6, 7],
+        lines=[1, 2, 3, 5, 6, 7],
     )
     assert set(parse_code(code)) == set(expect)
 
@@ -124,9 +136,9 @@ def test_parse_python_file__combo_of_simple_imports__extracts_all(tmp_path):
     script = tmp_path / "test.py"
     script.write_text(code)
 
-    expect = with_location_and_line(
+    expect = construct_imports(
         ["pathlib", "sys", "unittest", "requests", "foo", "numpy"],
-        tmp_path / "test.py",
+        script,
         [1, 2, 3, 5, 6, 7],
     )
     assert set(parse_python_file(script)) == set(expect)
@@ -137,7 +149,7 @@ def test_parse_notebook_file__simple_imports__extracts_all(tmp_path):
     script = tmp_path / "test.ipynb"
     script.write_text(code)
 
-    expect = with_location_and_line(["pandas", "pytorch"], script, [1, 2])
+    expect = construct_imports(["pandas", "pytorch"], script, [1, 2])
     assert set(parse_notebook_file(script)) == set(expect)
 
 
@@ -146,7 +158,7 @@ def test_parse_notebook_file__two_cells__extracts_all(tmp_path):
     script = tmp_path / "test.ipynb"
     script.write_text(code)
 
-    expect = with_location_and_line(["pandas", "pytorch"], script, [1, 1])
+    expect = construct_imports(["pandas", "pytorch"], script, [1, 1])
     assert set(parse_notebook_file(script)) == set(expect)
 
 
@@ -155,7 +167,7 @@ def test_parse_notebook_file__two_cells__extracts_from_cell_with_imports(tmp_pat
     script = tmp_path / "test.ipynb"
     script.write_text(code)
 
-    expect = with_location_and_line(["pandas"], script, [1])
+    expect = construct_imports(["pandas"], script, [1])
     assert set(parse_notebook_file(script)) == set(expect)
 
 
@@ -207,7 +219,7 @@ def test_parse_notebook_file__two_cells__extracts_from_code_cell(tmp_path):
     script = tmp_path / "test.ipynb"
     script.write_text(code)
 
-    expect = with_location_and_line(["pandas"], script, [1])
+    expect = construct_imports(["pandas"], script, [1])
     assert set(parse_notebook_file(script)) == set(expect)
 
 
@@ -265,7 +277,7 @@ def test_parse_dir__imports__are_extracted_in_order_of_encounter(tmp_path):
     (tmp_path / "subdir").mkdir()
     (tmp_path / "subdir/second.py").write_text(second)
 
-    expect = with_location_and_line(
+    expect = construct_imports(
         ["sys", "foo"], tmp_path / "first.py", [1, 2]
-    ) + with_location_and_line(["sys", "xyzzy"], tmp_path / "subdir/second.py", [1, 2])
+    ) + construct_imports(["sys", "xyzzy"], tmp_path / "subdir/second.py", [1, 2])
     assert list(parse_dir(tmp_path)) == expect
