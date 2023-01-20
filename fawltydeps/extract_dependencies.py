@@ -20,7 +20,7 @@ TomlData = Dict[str, Any]  # type: ignore
 
 logger = logging.getLogger(__name__)
 
-error_message_template = "Failed to %s %s %s dependencies in %s."
+ERROR_MESSAGE_TEMPLATE = "Failed to %s %s %s dependencies in %s."
 
 
 class DependencyParsingError(Exception):
@@ -76,12 +76,12 @@ def parse_setup_contents(text: str, path_hint: Path) -> Iterator[DeclaredDepende
                             yield from _extract_deps_from_bottom_level_list(elements)
                     else:
                         raise DependencyParsingError(keyword.value)
-            except DependencyParsingError as e:
-                logger.debug(e)
+            except DependencyParsingError as exc:
+                logger.debug(exc)
                 if sys.version_info >= (3, 9):
-                    unparsed_content = ast.unparse(e.value)  # pylint: disable=E1101
+                    unparsed_content = ast.unparse(exc.value)  # pylint: disable=E1101
                 else:
-                    unparsed_content = ast.dump(e.value)
+                    unparsed_content = ast.dump(exc.value)
                 logger.warning(
                     "Could not parse contents of `%s`: %s",
                     keyword.arg,
@@ -148,7 +148,7 @@ def parse_poetry_pyproject_dependencies(
             yield from parser(poetry_config, path_hint)
         except KeyError:  # missing fields:
             logger.debug(
-                error_message_template,
+                ERROR_MESSAGE_TEMPLATE,
                 "find",
                 "Poetry",
                 field_type,
@@ -156,7 +156,7 @@ def parse_poetry_pyproject_dependencies(
             )
         except (AttributeError, TypeError):  # invalid config
             logger.error(
-                error_message_template,
+                ERROR_MESSAGE_TEMPLATE,
                 "parse",
                 "Poetry",
                 field_type,
@@ -199,11 +199,11 @@ def parse_pep621_pyproject_contents(
             yield from parser(parsed_contents, path_hint)
         except KeyError:
             logger.debug(
-                error_message_template, "find", "PEP621", field_type, path_hint
+                ERROR_MESSAGE_TEMPLATE, "find", "PEP621", field_type, path_hint
             )
         except (AttributeError, TypeError):
             logger.error(
-                error_message_template, "parse", "PEP621", field_type, path_hint
+                ERROR_MESSAGE_TEMPLATE, "parse", "PEP621", field_type, path_hint
             )
 
 
