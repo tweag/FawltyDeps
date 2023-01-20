@@ -119,7 +119,9 @@ def test_parse_notebook_file__on_invalid_python__SyntaxError_raised_with_msg(tmp
     assert exc_info.value.msg == f"Cannot parse code from {script}: cell 0."
 
 
-def test_parse_notebook_file__on_invalid_json__JSONDecodeError_raised_with_msg(tmp_path):
+def test_parse_notebook_file__on_invalid_json__JSONDecodeError_raised_with_msg(
+    tmp_path,
+):
     code = dedent(
         """\
         {
