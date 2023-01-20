@@ -59,8 +59,8 @@ def parse_notebook_file(path: Path) -> Iterator[ParsedImport]:
     Generate (i.e. yield) the module names that are imported in the order
     they appear in the file.
     """
-    with path.open("rb") as f:
-        notebook_content = json.load(f, strict=False)
+    with path.open("rb") as notebook:
+        notebook_content = json.load(notebook, strict=False)
     language_name = (
         notebook_content.get("metadata", {}).get("language_info", {}).get("name", "")
     )
