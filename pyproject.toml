@@ -64,6 +64,7 @@ optional = true
 [tool.poetry.group.format.dependencies]
 black = "^22"
 isort = "^5.10"
+codespell = "^2.2.2"
 
 [tool.poetry.group.dev]
 optional = true
@@ -74,6 +75,7 @@ optional = true
 # (e.g. a CI action), consider whether it's also useful to have this avaiable
 # in a developers environment
 black = "^22"
+codespell = "^2.2.2"
 isort = "^5.10"
 mypy = "^0.991"
 nox = "^2022.11.21"
@@ -122,6 +124,12 @@ markers = [
 ]
 addopts = "-m 'not integration'"
 cache_dir = "~/.cache/pytest"
+
+[tool.codespell]
+skip = ".git,.mypy_cache,.nox,.vscode,__pycache__"
+builtin = "clear,rare,informal,usage,code,names"
+ignore-words-list = "jupyter"
+check-filenames = true
 
 [build-system]
 requires = ["poetry-core"]
