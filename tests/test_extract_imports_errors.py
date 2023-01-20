@@ -48,6 +48,11 @@ def test_parse_notebook_file__on_parse_error__propagates_SyntaxError(tmp_path):
     code = dedent(
         """\
         {
+            "metadata": {
+                "language_info": {
+                    "name": "Python"
+                }
+            },
             "cells": [
             {"cell_type": "code"
             }
@@ -66,6 +71,11 @@ def test_parse_notebook_file__on_parse_error__SyntaxError_raised_with_msg(tmp_pa
     code = dedent(
         """\
         {
+            "metadata": {
+                "language_info": {
+                    "name": "Python"
+                }
+            },
             "cells": [
             {"cell_type": "code"
             }
@@ -85,11 +95,17 @@ def test_parse_notebook_file__on_invalid_python__SyntaxError_raised_with_msg(tmp
     code = dedent(
         """\
         {
+            "metadata": {
+                "language_info": {
+                    "name": "Python"
+                }
+            },
             "cells": [
-            {"cell_type": "code",
-            "source": [
-                "import json..."
-            ]
+            {
+                "cell_type": "code",
+                "source": [
+                    "import json..."
+                ]
             }
         ]
         }
