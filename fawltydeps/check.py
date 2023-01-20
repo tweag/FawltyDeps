@@ -11,7 +11,7 @@ from fawltydeps.extract_imports import ParsedImport
 
 
 class FileLocation(NamedTuple):
-    "General location details of imports and dependencies occurence."
+    "General location details of imports and dependencies occurrence."
     path: Path
     lineno: Optional[int]
 
