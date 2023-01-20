@@ -4,7 +4,7 @@ from textwrap import dedent
 
 import pytest
 
-from fawltydeps.extract_imports import parse_code, parse_dir, parse_file
+from fawltydeps.extract_imports import parse_code, parse_dir, parse_file, parse_notebook
 
 
 def test_parse_code__on_parse_error__propagates_SyntaxError():
@@ -36,3 +36,40 @@ def test_parse_dir__on_parse_error__SyntaxError_contains_filename(tmp_path):
     with pytest.raises(SyntaxError) as exc_info:
         list(parse_dir(tmp_path))
     assert exc_info.value.filename == str(script)
+
+
+def test_parse_notebook__on_parse_error__propagates_SyntaxError(tmp_path):
+    code = dedent(
+        """\
+        {
+            "cells": [
+            {"cell_type": "code"
+            }
+        ]
+        }
+       """
+    )
+    script = tmp_path / "test.ipynb"
+    script.write_text(code)
+
+    with pytest.raises(SyntaxError):
+        list(parse_notebook(script))
+
+
+def test_parse_notebook__on_parse_error__SyntaxError_raised_with_msg(tmp_path):
+    code = dedent(
+        """\
+        {
+            "cells": [
+            {"cell_type": "code"
+            }
+        ]
+        }
+       """
+    )
+    script = tmp_path / "test.ipynb"
+    script.write_text(code)
+
+    with pytest.raises(SyntaxError) as exc_info:
+        list(parse_notebook(script))
+    assert exc_info.value.msg == f"Cannot parse code from {script}: cell 0."

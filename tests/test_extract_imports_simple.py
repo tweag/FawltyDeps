@@ -4,7 +4,13 @@ from pathlib import Path
 from textwrap import dedent
 from typing import List, Optional
 
-from fawltydeps.extract_imports import ParsedImport, parse_code, parse_dir, parse_file
+from fawltydeps.extract_imports import (
+    ParsedImport,
+    parse_code,
+    parse_dir,
+    parse_file,
+    parse_notebook,
+)
 
 
 def with_location_and_line(
@@ -101,7 +107,223 @@ def test_parse_file__combo_of_simple_imports__extracts_all(tmp_path):
     assert set(parse_file(script)) == set(expect)
 
 
-def test_parse_dir__with_py_and_non_py__extracts_only_from_py_files(tmp_path):
+def test_parse_notebook__simple_imports__extracts_all(tmp_path):
+    code = dedent(
+        """\
+        {
+        "nbformat": 4,
+        "nbformat_minor": 0,
+        "metadata": {
+            "colab": {
+            "provenance": []
+            },
+            "kernelspec": {
+            "name": "python3",
+            "display_name": "Python 3"
+            },
+            "language_info": {
+            "name": "python"
+            }
+        },
+        "cells": [
+            {
+            "cell_type": "code",
+            "execution_count": null,
+            "metadata": {
+                "id": "GCOkrQdSXb0N"
+            },
+            "outputs": [],
+            "source": [
+                "import pandas\n",
+                "import pytorch"
+            ]
+            }
+        ]
+        }
+       """
+    )
+    script = tmp_path / "test.ipynb"
+    script.write_text(code)
+
+    expect = with_location_and_line(
+        ["pandas", "pytorch"],
+        script,
+        [1, 2]
+    )
+    assert set(parse_notebook(script)) == set(expect)
+
+
+def test_parse_notebook__two_cells__extracts_all(tmp_path):
+    code = dedent(
+        """\
+        {
+        "nbformat": 4,
+        "nbformat_minor": 0,
+        "metadata": {
+            "colab": {
+            "provenance": []
+            },
+            "kernelspec": {
+            "name": "python3",
+            "display_name": "Python 3"
+            },
+            "language_info": {
+            "name": "python"
+            }
+        },
+        "cells": [
+            {
+            "cell_type": "code",
+            "execution_count": null,
+            "metadata": {
+                "id": "GCOkrQdSXb0N"
+            },
+            "outputs": [],
+            "source": [
+                "import pandas"
+            ]
+            },
+            {
+            "cell_type": "code",
+            "source": [
+                "import pytorch"
+            ],
+            "metadata": {
+                "id": "s8qzZ_p02PGG"
+            },
+            "execution_count": null,
+            "outputs": []
+            }
+        ]
+        }
+       """
+    )
+    script = tmp_path / "test.ipynb"
+    script.write_text(code)
+
+    expect = with_location_and_line(
+        ["pandas", "pytorch"],
+        script,
+        [1, 1]
+    )
+    assert set(parse_notebook(script)) == set(expect)
+
+
+def test_parse_notebook__two_cells__extracts_from_cell_with_imports(tmp_path):
+    code = dedent(
+        """\
+        {
+        "nbformat": 4,
+        "nbformat_minor": 0,
+        "metadata": {
+            "colab": {
+            "provenance": []
+            },
+            "kernelspec": {
+            "name": "python3",
+            "display_name": "Python 3"
+            },
+            "language_info": {
+            "name": "python"
+            }
+        },
+        "cells": [
+            {
+            "cell_type": "code",
+            "execution_count": null,
+            "metadata": {
+                "id": "GCOkrQdSXb0N"
+            },
+            "outputs": [],
+            "source": [
+                "import pandas"
+            ]
+            },
+            {
+            "cell_type": "code",
+            "source": [
+                "print('import sys')"
+            ],
+            "metadata": {
+                "id": "s8qzZ_p02PGG"
+            },
+            "execution_count": null,
+            "outputs": []
+            }
+        ]
+        }
+       """
+    )
+    script = tmp_path / "test.ipynb"
+    script.write_text(code)
+
+    expect = with_location_and_line(
+        ["pandas"],
+        script,
+        [1]
+    )
+    assert set(parse_notebook(script)) == set(expect)
+
+
+def test_parse_notebook__two_cells__extracts_from_code_cell(tmp_path):
+    code = dedent(
+        """\
+        {
+        "nbformat": 4,
+        "nbformat_minor": 0,
+        "metadata": {
+            "colab": {
+            "provenance": []
+            },
+            "kernelspec": {
+            "name": "python3",
+            "display_name": "Python 3"
+            },
+            "language_info": {
+            "name": "python"
+            }
+        },
+        "cells": [
+            {
+            "cell_type": "code",
+            "execution_count": null,
+            "metadata": {
+                "id": "GCOkrQdSXb0N"
+            },
+            "outputs": [],
+            "source": [
+                "import pandas"
+            ]
+            },
+            {
+            "cell_type": "markdown",
+            "source": [
+                "import sys"
+            ],
+            "metadata": {
+                "id": "s8qzZ_p02PGG"
+            },
+            "execution_count": null,
+            "outputs": []
+            }
+        ]
+        }
+       """
+    )
+    script = tmp_path / "test.ipynb"
+    script.write_text(code)
+
+    expect = with_location_and_line(
+        ["pandas"],
+        script,
+        [1]
+    )
+    assert set(parse_notebook(script)) == set(expect)
+
+
+def test_parse_dir__with_py_ipynb_and_non_py__extracts_only_from_py_and_ipynb_files(
+    tmp_path,
+):
     code1 = dedent(
         """\
         from pathlib import Path
@@ -116,6 +338,41 @@ def test_parse_dir__with_py_and_non_py__extracts_only_from_py_files(tmp_path):
     )
     (tmp_path / "test2.py").write_text(code2)
 
+    code3 = dedent(
+        """\
+        {
+        "nbformat": 4,
+        "nbformat_minor": 0,
+        "metadata": {
+            "colab": {
+            "provenance": []
+            },
+            "kernelspec": {
+            "name": "python3",
+            "display_name": "Python 3"
+            },
+            "language_info": {
+            "name": "python"
+            }
+        },
+        "cells": [
+            {
+            "cell_type": "code",
+            "execution_count": null,
+            "metadata": {
+                "id": "GCOkrQdSXb0N"
+            },
+            "outputs": [],
+            "source": [
+                "import pytorch"
+            ]
+            }
+        ]
+        }
+        """
+    )
+    (tmp_path / "test3.ipynb").write_text(code3)
+
     not_code = dedent(
         """\
         This is not code, even if it contains the
@@ -127,6 +384,7 @@ def test_parse_dir__with_py_and_non_py__extracts_only_from_py_files(tmp_path):
     expect = {
         ParsedImport("pathlib", tmp_path / "test1.py", 1),
         ParsedImport("pandas", tmp_path / "test2.py", 1),
+        ParsedImport("pytorch", tmp_path / "test3.ipynb", 1),
     }
     assert set(parse_dir(tmp_path)) == expect
 

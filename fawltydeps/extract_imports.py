@@ -1,6 +1,7 @@
 """Parse Python source code and extract import statements."""
 
 import ast
+import json
 import logging
 import os
 import sys
@@ -43,6 +44,23 @@ def parse_code(
                 )
 
 
+def parse_notebook(path: Path) -> Iterator[ParsedImport]:
+    """Extract import statements from an ipynb notebooke.
+
+    Generate (i.e. yield) the module names that are imported in the order
+    they appear in the file.
+    """
+    notebook_content = json.loads(path.read_text(), strict=False)
+    for cell_index, cell in enumerate(notebook_content["cells"]):
+        try:
+            if cell["cell_type"] == "code":
+                yield from parse_code("".join(cell["source"]), path_hint=path)
+        except Exception as exc:
+            raise SyntaxError(
+                f"Cannot parse code from {path}: cell {cell_index}."
+            ) from exc
+
+
 def parse_file(path: Path) -> Iterator[ParsedImport]:
     """Extract import statements from a file containing Python code.
 
@@ -64,6 +82,8 @@ def parse_dir(path: Path) -> Iterator[ParsedImport]:
             path = Path(root, filename)
             if path.suffix == ".py":
                 yield from parse_file(path)
+            elif path.suffix == ".ipynb":
+                yield from parse_notebook(path)
 
 
 class ParseError(Exception):
