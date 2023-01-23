@@ -22,10 +22,10 @@ def construct_imports(
 ) -> List[ParsedImport]:
 
     if not lines:
-        lines = [None for _ in names]
+        lines = [None] * len(names)
 
     if not cells:
-        cells = [None for _ in names]
+        cells = [None] * len(names)
 
     file_locations: List[Optional[Path]]
     if not locations:
