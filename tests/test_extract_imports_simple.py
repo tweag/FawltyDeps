@@ -16,7 +16,7 @@ from fawltydeps.extract_imports import (
 
 def construct_imports(
     names: List[str],
-    locations: Union[List[Optional[Path]], Optional[Path]] = None,
+    location: Optional[Path] = None,
     lines: Optional[List[Optional[int]]] = None,
     cells: Optional[List[Optional[int]]] = None,
 ) -> List[ParsedImport]:
@@ -26,18 +26,9 @@ def construct_imports(
 
     if not cells:
         cells = [None] * len(names)
-
-    file_locations: List[Optional[Path]]
-    if not locations:
-        file_locations = [None for _ in names]
-    elif isinstance(locations, Path):
-        file_locations = [locations for _ in names]
-    else:
-        file_locations = locations
-
     return [
-        ParsedImport(name=n, location=f, lineno=l, cellno=c)
-        for n, f, l, c in zip(names, file_locations, lines, cells)
+        ParsedImport(name=n, location=location, lineno=l, cellno=c)
+        for n, l, c in zip(names, lines, cells)
     ]
 
 
