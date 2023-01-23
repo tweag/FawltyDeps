@@ -1,5 +1,6 @@
 """Test that we can extract simple imports from Python code."""
 import json
+import logging
 from pathlib import Path
 from textwrap import dedent
 from typing import List, Optional, Union
@@ -195,6 +196,108 @@ def test_parse_notebook_file__two_cells__extracts_from_code_cell(tmp_path):
 
     expect = construct_imports(["pandas"], script, [1], [0])
     assert set(parse_notebook_file(script)) == set(expect)
+
+
+def test_parse_notebook_file__on_non_python_language__logs_skipping_msg_and_returns_no_imports(
+    tmp_path, caplog
+):
+    code = dedent(
+        """\
+        {
+            "metadata": {
+                "language_info": {
+                    "name": "Haskell"
+                }
+            },
+            "cells": [
+            {
+                "cell_type": "code",
+                "source": [
+                    "import Numeric.Log\n",
+                    "import Statistics.Distribution"
+                ]
+            }
+            ]
+        }
+       """
+    )
+    script = tmp_path / "test.ipynb"
+    script.write_text(code)
+    caplog.set_level(logging.INFO)
+
+    assert set(parse_notebook_file(script)) == set()
+
+    assert (
+        "FawltyDeps supports parsing Python notebooks. "
+        f"Found Haskell in the notebook's metadata on {script}." in caplog.text
+    )
+
+
+def test_parse_notebook_file__on_no_defined_language__logs_skipping_msg_and_returns_no_imports(
+    tmp_path, caplog
+):
+    code = dedent(
+        """\
+        {
+            "metadata": {
+                "language_info": {
+                    "name": ""
+                }
+            },
+            "cells": [
+            {
+                "cell_type": "code",
+                "source": [
+                    "import Numeric.Log\n",
+                    "import Statistics.Distribution"
+                ]
+            }
+            ]
+        }
+       """
+    )
+    script = tmp_path / "test.ipynb"
+    script.write_text(code)
+    caplog.set_level(logging.INFO)
+
+    assert set(parse_notebook_file(script)) == set()
+
+    assert (
+        f"Skipping the notebook on {script}. "
+        "Could not find the programming language name in the notebook's metadata."
+        in caplog.text
+    )
+
+
+def test_parse_notebook_file__on_no_defined_language_info__logs_skipping_msg_and_returns_no_imports(
+    tmp_path, caplog
+):
+    code = dedent(
+        """\
+        {
+            "cells": [
+            {
+                "cell_type": "code",
+                "source": [
+                    "import Numeric.Log\n",
+                    "import Statistics.Distribution"
+                ]
+            }
+            ]
+        }
+       """
+    )
+    script = tmp_path / "test.ipynb"
+    script.write_text(code)
+    caplog.set_level(logging.INFO)
+
+    assert set(parse_notebook_file(script)) == set()
+
+    assert (
+        f"Skipping the notebook on {script}. "
+        "Could not find the programming language name in the notebook's metadata."
+        in caplog.text
+    )
 
 
 def test_parse_dir__with_py_ipynb_and_non_py__extracts_only_from_py_and_ipynb_files(
