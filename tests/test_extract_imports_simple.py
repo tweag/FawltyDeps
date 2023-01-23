@@ -49,7 +49,7 @@ def generate_notebook(
         }
 
     if isinstance(cell_types, str):
-        types = [cell_types for _ in cells_source]
+        types = [cell_types]* len(cells_source)
     else:
         types = cell_types
 
