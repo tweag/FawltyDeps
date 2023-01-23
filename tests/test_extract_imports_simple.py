@@ -16,8 +16,8 @@ from fawltydeps.extract_imports import (
 def construct_imports(
     names: List[str],
     locations: Union[List[Optional[Path]], Optional[Path]] = None,
-    lines: Union[List[Optional[int]], None] = None,
-    cells: Union[List[Optional[int]], None] = None,
+    lines: Optional[List[Optional[int]]] = None,
+    cells: Optional[List[Optional[int]]] = None,
 ) -> List[ParsedImport]:
 
     if not lines:
