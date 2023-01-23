@@ -42,7 +42,9 @@ def construct_imports(
 
 
 def generate_notebook(
-    cells_source: List[List[str]], cell_types: Union[List[str], str] = "code"
+    cells_source: List[List[str]],
+    cell_types: Union[List[str], str] = "code",
+    language_name: str = "python",
 ) -> str:
     """Generate a valid ipynb json string from a list of code cells content."""
 
@@ -66,7 +68,7 @@ def generate_notebook(
         "metadata": {
             "colab": {"provenance": []},
             "kernelspec": {"name": "python3", "display_name": "Python 3"},
-            "language_info": {"name": "python"},
+            "language_info": {"name": language_name},
         },
         "cells": [
             cell_template(cell_type, cell_content)
@@ -201,25 +203,10 @@ def test_parse_notebook_file__two_cells__extracts_from_code_cell(tmp_path):
 def test_parse_notebook_file__on_non_python_language__logs_skipping_msg_and_returns_no_imports(
     tmp_path, caplog
 ):
-    code = dedent(
-        """\
-        {
-            "metadata": {
-                "language_info": {
-                    "name": "Haskell"
-                }
-            },
-            "cells": [
-            {
-                "cell_type": "code",
-                "source": [
-                    "import Numeric.Log\n",
-                    "import Statistics.Distribution"
-                ]
-            }
-            ]
-        }
-       """
+    language_name = "Haskell"
+    code = generate_notebook(
+        [["import Numeric.Log\n", "import Statistics.Distribution"]],
+        language_name=language_name,
     )
     script = tmp_path / "test.ipynb"
     script.write_text(code)
@@ -229,32 +216,16 @@ def test_parse_notebook_file__on_non_python_language__logs_skipping_msg_and_retu
 
     assert (
         "FawltyDeps supports parsing Python notebooks. "
-        f"Found Haskell in the notebook's metadata on {script}." in caplog.text
+        f"Found {language_name} in the notebook's metadata on {script}." in caplog.text
     )
 
 
 def test_parse_notebook_file__on_no_defined_language__logs_skipping_msg_and_returns_no_imports(
     tmp_path, caplog
 ):
-    code = dedent(
-        """\
-        {
-            "metadata": {
-                "language_info": {
-                    "name": ""
-                }
-            },
-            "cells": [
-            {
-                "cell_type": "code",
-                "source": [
-                    "import Numeric.Log\n",
-                    "import Statistics.Distribution"
-                ]
-            }
-            ]
-        }
-       """
+    code = generate_notebook(
+        [["import Numeric.Log\n", "import Statistics.Distribution"]],
+        language_name="",
     )
     script = tmp_path / "test.ipynb"
     script.write_text(code)
@@ -279,8 +250,7 @@ def test_parse_notebook_file__on_no_defined_language_info__logs_skipping_msg_and
             {
                 "cell_type": "code",
                 "source": [
-                    "import Numeric.Log\n",
-                    "import Statistics.Distribution"
+                    "import pandas"
                 ]
             }
             ]
