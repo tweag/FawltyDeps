@@ -224,7 +224,7 @@ def test_parse_setup_contents(file_content, file_name, expected):
                 name = "Package-A"
 
                 [options]
-                install_requires = 
+                install_requires =
                     pandas
                     click
                 """
@@ -234,6 +234,75 @@ def test_parse_setup_contents(file_content, file_name, expected):
                 [("pandas", Path("setup.cfg")), ("click", Path("setup.cfg"))]
             ),
             id="__simple_requirements_in_setup_cfg__succeeds",
+        ),
+        pytest.param(
+            dedent(
+                """\
+                [metadata]
+                license_files = LICENSE
+
+                [global]
+                verbose=0
+
+                [build]
+                force=1
+                """
+            ),
+            Path("setup.cfg"),
+            [],
+            id="__no_requirements_in_setup_cfg__returns_none",
+        ),
+        pytest.param(
+            dedent(
+                """\
+                [metadata]
+                name = my_project
+                version = 1.2.3
+
+                license = Revised BSD License
+
+                classifiers =
+                    Programming Language :: Python :: 3
+
+                [options]
+                zip_safe = True
+                py_modules = setuptools_py2cfg
+                python_requires = >=3.6
+
+                [options.extras_require]
+                test = pytest
+
+                [options.entry_points]
+                console_scripts = setuptools-py2cfg = setuptools_py2cfg:main
+                """
+            ),
+            Path("setup.cfg"),
+            [DeclaredDependency("pytest", Path("setup.cfg"))],
+            id="__extra_requirements_in_setup_cfg__succeeds",
+        ),
+        pytest.param(
+            dedent(
+                """\
+                [metadata]
+
+                [options]
+                include_package_data = True
+                packages = find:
+                tests_require =
+                    hypothesis
+                    tox
+                zip_safe = True
+
+                [options.entry_points]
+                console_scripts =
+                    pycharm-setup = pycharmsetup.cli:main
+                """
+            ),
+            Path("setup.cfg"),
+            dependency_factory(
+                [("hypothesis", Path("setup.cfg")), ("tox", Path("setup.cfg"))]
+            ),
+            id="__tests_requirements_in_setup_cfg__succeeds",
         ),
     ],
 )
