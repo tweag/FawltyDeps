@@ -1,3 +1,14 @@
+[project]
+# General information about a simplified project: Its name, why we test it,
+# its relation to real world projects
+name = "file__requirements"
+description = '''
+  A project with:
+  - a single python file containing the source code
+  - requirements.txt with listed dependencies. 
+  Identity mapping between import and dependencies is sufficient.
+'''
+
 [undeclared_deps]
 # Names of imports found in the code which 
 # do not have a matching dependency declared.
