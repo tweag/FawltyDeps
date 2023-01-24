@@ -10,6 +10,7 @@ from fawltydeps.extract_dependencies import (
     DeclaredDependency,
     extract_dependencies,
     parse_requirements_contents,
+    parse_setup_cfg_contents,
     parse_setup_contents,
 )
 
@@ -210,6 +211,34 @@ def test_parse_requirements_contents(file_content, file_name, expected):
 )
 def test_parse_setup_contents(file_content, file_name, expected):
     result = list(parse_setup_contents(file_content, file_name))
+    assert sorted(result) == sorted(expected)
+
+
+@pytest.mark.parametrize(
+    "file_content,file_name,expected",
+    [
+        pytest.param(
+            dedent(
+                """\
+                [metadata]
+                name = "Package-A"
+
+                [options]
+                install_requires = 
+                    pandas
+                    click
+                """
+            ),
+            Path("setup.cfg"),
+            dependency_factory(
+                [("pandas", Path("setup.cfg")), ("click", Path("setup.cfg"))]
+            ),
+            id="__simple_requirements_in_setup_cfg__succeeds",
+        ),
+    ],
+)
+def test_parse_setup_cfg_contents(file_content, file_name, expected):
+    result = list(parse_setup_cfg_contents(file_content, file_name))
     assert sorted(result) == sorted(expected)
 
 

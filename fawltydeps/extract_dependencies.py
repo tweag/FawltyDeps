@@ -5,6 +5,7 @@ import logging
 import sys
 from pathlib import Path
 from typing import Any, Dict, Iterator
+import configparser
 
 from pkg_resources import parse_requirements
 
@@ -103,6 +104,22 @@ def parse_setup_contents(text: str, path_hint: Path) -> Iterator[DeclaredDepende
             # makes sure that `node` is of a proper type.
             yield from _extract_deps_from_setup_call(node.value)  # type: ignore
             break
+
+
+def parse_setup_cfg_contents(
+    text: str, path_hint: Path
+) -> Iterator[DeclaredDependency]:
+    """
+    Extract dependencies (package names) from setup.cfg.
+    Dependencies are listed under "options".
+    """
+    parser = configparser.ConfigParser()
+    parser.read_string(text)
+
+    yield from parse_requirements_contents(
+        parser["options"]["install_requires"],
+        path_hint=path_hint,
+    )
 
 
 def parse_poetry_pyproject_dependencies(
@@ -240,6 +257,7 @@ def extract_dependencies(path: Path) -> Iterator[DeclaredDependency]:
         "requirements.txt": parse_requirements_contents,
         "requirements.in": parse_requirements_contents,
         "setup.py": parse_setup_contents,
+        "setup.cfg": parse_setup_cfg_contents,
         "pyproject.toml": parse_pyproject_contents,
     }
 
