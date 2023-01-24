@@ -61,8 +61,8 @@ class Analysis:
             ret.declared_deps = list(extract_dependencies(deps))
 
         if ret.is_enabled(Action.REPORT_UNDECLARED, Action.REPORT_UNUSED):
-            assert ret.imports is not None
-            assert ret.declared_deps is not None
+            assert ret.imports is not None  # convince Mypy that these cannot
+            assert ret.declared_deps is not None  # be None at this time.
             comparison = compare_imports_to_dependencies(
                 imports=ret.imports, dependencies=ret.declared_deps
             )
@@ -74,7 +74,7 @@ class Analysis:
     def print_human_readable(self, out: TextIO) -> None:
         """Print a human-readable rendering of the given report to stdout."""
         if self.is_enabled(Action.LIST_IMPORTS):
-            assert self.imports is not None
+            assert self.imports is not None  # sanity-check / convince Mypy
             # Sort imports by location, then by name
             for imp in sorted(
                 self.imports, key=attrgetter("location", "lineno", "name")
@@ -82,7 +82,7 @@ class Analysis:
                 print(f"{imp.name}: {imp.location}", file=out)
 
         if self.is_enabled(Action.LIST_DEPS):
-            assert self.declared_deps is not None
+            assert self.declared_deps is not None  # sanity-check / convince Mypy
             # Sort dependencies by location, then by name
             for dep in sorted(self.declared_deps, key=attrgetter("location", "name")):
                 print(f"{dep.name}: {dep.location}", file=out)
