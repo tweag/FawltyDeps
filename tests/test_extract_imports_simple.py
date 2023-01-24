@@ -181,7 +181,7 @@ def test_parse_notebook_file__simple_imports__extracts_all(tmp_path):
     script = tmp_path / "test.ipynb"
     script.write_text(code)
 
-    expect = imports_w_linenos_cellnos([("pandas", 1, 0), ("pytorch", 2, 0)], script)
+    expect = imports_w_linenos_cellnos([("pandas", 1, 1), ("pytorch", 2, 1)], script)
     assert set(parse_notebook_file(script)) == set(expect)
 
 
@@ -190,7 +190,7 @@ def test_parse_notebook_file__two_cells__extracts_all(tmp_path):
     script = tmp_path / "test.ipynb"
     script.write_text(code)
 
-    expect = imports_w_linenos_cellnos([("pandas", 1, 0), ("pytorch", 1, 1)], script)
+    expect = imports_w_linenos_cellnos([("pandas", 1, 1), ("pytorch", 1, 2)], script)
     assert set(parse_notebook_file(script)) == set(expect)
 
 
@@ -199,7 +199,7 @@ def test_parse_notebook_file__two_cells__extracts_from_cell_with_imports(tmp_pat
     script = tmp_path / "test.ipynb"
     script.write_text(code)
 
-    expect = imports_w_linenos_cellnos([("pandas", 1, 0)], script)
+    expect = imports_w_linenos_cellnos([("pandas", 1, 1)], script)
     assert set(parse_notebook_file(script)) == set(expect)
 
 
@@ -210,7 +210,7 @@ def test_parse_notebook_file__two_cells__extracts_from_code_cell(tmp_path):
     script = tmp_path / "test.ipynb"
     script.write_text(code)
 
-    expect = imports_w_linenos_cellnos([("pandas", 1, 0)], script)
+    expect = imports_w_linenos_cellnos([("pandas", 1, 1)], script)
     assert set(parse_notebook_file(script)) == set(expect)
 
 
@@ -302,7 +302,7 @@ def test_parse_dir__with_py_ipynb_and_non_py__extracts_only_from_py_and_ipynb_fi
     expect = {
         ParsedImport("my_pathlib", tmp_path / "test1.py", 1),
         ParsedImport("pandas", tmp_path / "test2.py", 1),
-        ParsedImport("pytorch", tmp_path / "test3.ipynb", 1, 0),
+        ParsedImport("pytorch", tmp_path / "test3.ipynb", 1, 1),
     }
     assert set(parse_dir(tmp_path)) == expect
 
