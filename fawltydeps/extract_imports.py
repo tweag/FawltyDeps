@@ -80,11 +80,11 @@ def parse_notebook_file(path: Path) -> Iterator[ParsedImport]:
             try:
                 if cell["cell_type"] == "code":
                     yield from parse_code(
-                        "".join(cell["source"]), path_hint=path, cellno=cell_index
+                        "".join(cell["source"]), path_hint=path, cellno=cell_index + 1
                     )
             except Exception as exc:
                 raise SyntaxError(
-                    f"Cannot parse code from {path}: cell {cell_index}."
+                    f"Cannot parse code from {path}: cell {cell_index+1}."
                 ) from exc
     elif not language_name:
         logger.info(
