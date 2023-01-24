@@ -1,11 +1,11 @@
 "Collect declared dependencies of the project"
 
 import ast
+import configparser
 import logging
 import sys
 from pathlib import Path
-from typing import Any, Dict, Iterator
-import configparser
+from typing import Any, Dict, Iterator, List
 
 from pkg_resources import parse_requirements
 
@@ -111,15 +111,48 @@ def parse_setup_cfg_contents(
 ) -> Iterator[DeclaredDependency]:
     """
     Extract dependencies (package names) from setup.cfg.
-    Dependencies are listed under "options".
+
+    `ConfigParser` basic building blocks are "sections"
+    which are marked by "[..]" in the configuration file
+    Requirements are declared as main dependencies (install_requires),
+    extra dependencies (extras_require) and tests dependencies (tests_require)
+    see https://setuptools.pypa.io/en/latest/userguide/declarative_config.html
+    subsection: configuring-setup-using-setup-cfg-files for more details.
+    The declaration uses `section` + `option` syntax where section may be [options]
+    or [options.{requirements_type}].
     """
     parser = configparser.ConfigParser()
     parser.read_string(text)
 
-    yield from parse_requirements_contents(
-        parser["options"]["install_requires"],
-        path_hint=path_hint,
-    )
+    sections = parser.sections()
+
+    def _extract_additional_requirements(name: str) -> List[str]:
+        additional_requirements = []
+        composed_section = "options." + name
+        if composed_section in sections:
+            additional_requirements += [
+                parser.get(composed_section, o)
+                for o in parser.options(composed_section)
+            ]
+        elif "options" in sections and name in parser.options("options"):
+            additional_requirements += [parser.get("options", name)]
+
+        logger.debug(
+            "requirements found for %s: %s", name, str(additional_requirements)
+        )
+        return additional_requirements
+
+    install_requires = [parser.get("options", "install_requires", fallback="")]
+    extras_require = _extract_additional_requirements("extras_require")
+    tests_require = _extract_additional_requirements("tests_require")
+
+    requirements = install_requires + extras_require + tests_require
+
+    for requirement in requirements:
+        yield from parse_requirements_contents(
+            requirement,
+            path_hint=path_hint,
+        )
 
 
 def parse_poetry_pyproject_dependencies(
