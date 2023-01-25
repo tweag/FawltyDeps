@@ -228,8 +228,8 @@ def test_check__simple_project_with_missing_deps__reports_undeclared(
     )
 
     expect = [
-        "These imports are not declared as dependencies:",
-        "- requests in locations:",
+        "These imports appear to be undeclared dependencies:",
+        "- 'requests' imported at:",
         f"    {str(tmp_path / 'code.py')}:1",
     ]
     output, errors, returncode = run_fawltydeps(
@@ -270,8 +270,8 @@ def test_check__simple_project__can_report_both_undeclared_and_unused(
     )
 
     expect = [
-        "These imports are not declared as dependencies:",
-        "- requests in locations:",
+        "These imports appear to be undeclared dependencies:",
+        "- 'requests' imported at:",
         f"    {tmp_path / 'code.py'}:1",
         "These dependencies appear to be unused (i.e. not imported):",
         "- 'pandas' declared in:",
@@ -294,8 +294,8 @@ def test_check_undeclared__simple_project__reports_only_undeclared(
     )
 
     expect = [
-        "These imports are not declared as dependencies:",
-        "- requests in locations:",
+        "These imports appear to be undeclared dependencies:",
+        "- 'requests' imported at:",
         f"    {str(tmp_path / 'code.py')}:1",
     ]
     output, errors, returncode = run_fawltydeps(
@@ -336,8 +336,8 @@ def test__no_action__defaults_to_check_action(
     )
 
     expect = [
-        "These imports are not declared as dependencies:",
-        "- requests in locations:",
+        "These imports appear to be undeclared dependencies:",
+        "- 'requests' imported at:",
         f"    {tmp_path / 'code.py'}:1",
         "These dependencies appear to be unused (i.e. not imported):",
         "- 'pandas' declared in:",
@@ -360,8 +360,8 @@ def test__no_options__defaults_to_check_action_in_current_dir(
     )
 
     expect = [
-        "These imports are not declared as dependencies:",
-        "- requests in locations:",
+        "These imports appear to be undeclared dependencies:",
+        "- 'requests' imported at:",
         f"    {str(tmp_path / 'code.py')}:1",
         "These dependencies appear to be unused (i.e. not imported):",
         "- 'pandas' declared in:",
