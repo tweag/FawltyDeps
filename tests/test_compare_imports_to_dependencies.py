@@ -4,13 +4,17 @@ from typing import List
 
 import pytest
 
-from fawltydeps.check import (
+from fawltydeps.check import compare_imports_to_dependencies
+from fawltydeps.types import (
+    DeclaredDependency,
     DependencyComparison,
     FileLocation,
-    compare_imports_to_dependencies,
+    Location,
+    ParsedImport,
 )
-from fawltydeps.extract_dependencies import DeclaredDependency
-from fawltydeps.extract_imports import ParsedImport
+
+# Temporary placeholder while we propagate Location into all relevant types
+default_location = FileLocation(Path("<stdin>"), lineno=None)
 
 
 def dependencies_factory(data: List[str]) -> List[DeclaredDependency]:
@@ -18,7 +22,7 @@ def dependencies_factory(data: List[str]) -> List[DeclaredDependency]:
 
 
 def imports_factory(data: List[str]) -> List[ParsedImport]:
-    return [ParsedImport(name=d, location=None, lineno=None) for d in data]
+    return [ParsedImport(name=d, source=Location("<stdin>")) for d in data]
 
 
 @pytest.mark.parametrize(
@@ -30,7 +34,7 @@ def imports_factory(data: List[str]) -> List[ParsedImport]:
         pytest.param(
             imports_factory(["pandas"]),
             [],
-            DependencyComparison({"pandas": []}, set()),
+            DependencyComparison({"pandas": [default_location]}, set()),
             id="one_import_no_dependencies",
         ),
         pytest.param(
@@ -48,12 +52,12 @@ def imports_factory(data: List[str]) -> List[ParsedImport]:
         pytest.param(
             imports_factory(["pandas", "numpy"]),
             dependencies_factory(["pandas", "scipy"]),
-            DependencyComparison({"numpy": []}, set(["scipy"])),
+            DependencyComparison({"numpy": [default_location]}, set(["scipy"])),
             id="mixed_imports_with_unused_and_undeclared_dependencies",
         ),
         pytest.param(
             imports_factory(["pandas"])
-            + [ParsedImport(name="numpy", location=Path("my_file.py"), lineno=3)],
+            + [ParsedImport("numpy", Location(Path("my_file.py"), lineno=3))],
             dependencies_factory(["pandas", "scipy"]),
             DependencyComparison(
                 {"numpy": [FileLocation(Path("my_file.py"), 3)]},

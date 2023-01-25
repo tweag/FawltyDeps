@@ -94,9 +94,7 @@ class Location:
 class ParsedImport:
     "Import parsed from the source code."
     name: str
-    location: Optional[Path] = None
-    lineno: Optional[int] = None
-    cellno: Optional[int] = None
+    source: Location
 
 
 class DeclaredDependency(NamedTuple):

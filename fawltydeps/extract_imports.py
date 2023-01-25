@@ -5,11 +5,11 @@ import json
 import logging
 import sys
 from pathlib import Path
-from typing import Iterator, Optional
+from typing import Iterator
 
 import isort
 
-from fawltydeps.types import ParsedImport
+from fawltydeps.types import Location, ParsedImport, PathOrSpecial
 from fawltydeps.utils import walk_dir
 
 logger = logging.getLogger(__name__)
@@ -22,9 +22,7 @@ class ArgParseError(Exception):
         self.msg = msg
 
 
-def parse_code(
-    code: str, *, path_hint: Optional[Path] = None, cellno: Optional[int] = None
-) -> Iterator[ParsedImport]:
+def parse_code(code: str, *, source: Location) -> Iterator[ParsedImport]:
     """Extract import statements from a string containing Python code.
 
     Generate (i.e. yield) the module names that are imported in the order
@@ -34,18 +32,14 @@ def parse_code(
     def is_stdlib_import(name: str) -> bool:
         return isort.place_module(name) == "STDLIB"
 
-    filename = "<unknown>" if path_hint is None else str(path_hint)
-    for node in ast.walk(ast.parse(code, filename=filename)):
+    for node in ast.walk(ast.parse(code, filename=str(source.path))):
         if isinstance(node, ast.Import):
             logger.debug(ast.dump(node))
             for alias in node.names:
                 name = alias.name.split(".", 1)[0]
                 if not is_stdlib_import(name):
                     yield ParsedImport(
-                        name=name,
-                        location=path_hint,
-                        lineno=node.lineno,
-                        cellno=cellno,
+                        name=name, source=source.supply(lineno=node.lineno)
                     )
         elif isinstance(node, ast.ImportFrom):
             logger.debug(ast.dump(node))
@@ -56,10 +50,7 @@ def parse_code(
                 name = node.module.split(".", 1)[0]
                 if not is_stdlib_import(name):
                     yield ParsedImport(
-                        name=name,
-                        location=path_hint,
-                        lineno=node.lineno,
-                        cellno=cellno,
+                        name=name, source=source.supply(lineno=node.lineno)
                     )
 
 
@@ -77,15 +68,12 @@ def parse_notebook_file(path: Path) -> Iterator[ParsedImport]:
 
     if language_name.lower() == "python":
         for cell_index, cell in enumerate(notebook_content["cells"], start=1):
+            source = Location(path, cell_index)
             try:
                 if cell["cell_type"] == "code":
-                    yield from parse_code(
-                        "".join(cell["source"]), path_hint=path, cellno=cell_index
-                    )
+                    yield from parse_code("".join(cell["source"]), source=source)
             except Exception as exc:
-                raise SyntaxError(
-                    f"Cannot parse code from {path}: cell {cell_index}."
-                ) from exc
+                raise SyntaxError(f"Cannot parse code from {source}.") from exc
     elif not language_name:
         logger.info(
             f"Skipping the notebook on {path}. "
@@ -104,7 +92,7 @@ def parse_python_file(path: Path) -> Iterator[ParsedImport]:
     Generate (i.e. yield) the module names that are imported in the order
     they appear in the file.
     """
-    yield from parse_code(path.read_text(), path_hint=path)
+    yield from parse_code(path.read_text(), source=Location(path))
 
 
 def parse_dir(path: Path) -> Iterator[ParsedImport]:
@@ -122,7 +110,7 @@ def parse_dir(path: Path) -> Iterator[ParsedImport]:
             yield from parse_notebook_file(file)
 
 
-def parse_any_arg(arg: Path) -> Iterator[ParsedImport]:
+def parse_any_arg(arg: PathOrSpecial) -> Iterator[ParsedImport]:
     """Interpret the given command-line argument and invoke a suitable parser.
 
     These cases are handled:
@@ -132,9 +120,10 @@ def parse_any_arg(arg: Path) -> Iterator[ParsedImport]:
 
     Otherwise raise ArgParseError with a suitable error message.
     """
-    if arg == Path("-"):
+    if arg == "<stdin>":
         logger.info("Parsing Python code from standard input")
-        return parse_code(sys.stdin.read(), path_hint=Path("<stdin>"))
+        return parse_code(sys.stdin.read(), source=Location(arg))
+    assert isinstance(arg, Path)
     if arg.is_file():
         if arg.suffix == ".py":
             logger.info("Parsing Python file %s", arg)

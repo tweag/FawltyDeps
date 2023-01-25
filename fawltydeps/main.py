@@ -12,7 +12,12 @@ from typing import Dict, List, Optional, Set, TextIO
 from fawltydeps import extract_imports
 from fawltydeps.check import compare_imports_to_dependencies
 from fawltydeps.extract_dependencies import extract_dependencies
-from fawltydeps.types import DeclaredDependency, FileLocation, ParsedImport
+from fawltydeps.types import (
+    DeclaredDependency,
+    FileLocation,
+    ParsedImport,
+    PathOrSpecial,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +46,9 @@ class Analysis:
         return len(self.request.intersection(args)) > 0
 
     @classmethod
-    def create(cls, request: Set[Action], code: Path, deps: Path) -> "Analysis":
+    def create(
+        cls, request: Set[Action], code: PathOrSpecial, deps: Path
+    ) -> "Analysis":
         """Perform the requested actions of FawltyDeps core logic.
 
         This is a high-level interface to the services offered by FawltyDeps.
@@ -75,11 +82,9 @@ class Analysis:
         """Print a human-readable rendering of the given report to stdout."""
         if self.is_enabled(Action.LIST_IMPORTS):
             assert self.imports is not None  # sanity-check / convince Mypy
-            # Sort imports by location, then by name
-            for imp in sorted(
-                self.imports, key=attrgetter("location", "lineno", "name")
-            ):
-                print(f"{imp.name}: {imp.location}", file=out)
+            # Sort imports by source, then by name
+            for imp in sorted(self.imports, key=attrgetter("source", "name")):
+                print(f"{imp.name}: {imp.source}", file=out)
 
         if self.is_enabled(Action.LIST_DEPS):
             assert self.declared_deps is not None  # sanity-check / convince Mypy
@@ -97,6 +102,13 @@ class Analysis:
             print("These dependencies are not imported in your code:", file=out)
             for name in sorted(self.unused_deps):
                 print(f"- {name}", file=out)
+
+
+def parse_path_or_stdin(arg: str) -> PathOrSpecial:
+    """Convert --code argument into Path or "<stdin>"."""
+    if arg == "-":
+        return "<stdin>"
+    return Path(arg)
 
 
 def main() -> int:
@@ -142,7 +154,7 @@ def main() -> int:
 
     parser.add_argument(
         "--code",
-        type=Path,
+        type=parse_path_or_stdin,
         default=Path.cwd(),
         help=(
             "Code to parse for import statements (file or directory, use '-' "

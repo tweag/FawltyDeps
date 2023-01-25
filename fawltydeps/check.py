@@ -1,6 +1,7 @@
 "Compare imports and dependencies"
 
 from itertools import groupby
+from pathlib import Path
 from typing import List
 
 from fawltydeps.types import (
@@ -28,7 +29,7 @@ def compare_imports_to_dependencies(
     undeclared.sort(key=lambda i: i.name)  # groupby requires pre-sorting
     undeclared_grouped = {
         name: [
-            FileLocation(path=i.location, lineno=i.lineno) for i in deps if i.location
+            FileLocation(path=Path(i.source.path), lineno=i.source.lineno) for i in deps
         ]
         for name, deps in groupby(undeclared, key=lambda x: x.name)
     }

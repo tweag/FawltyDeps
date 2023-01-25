@@ -59,7 +59,9 @@ def test_list_imports__from_dash__prints_imports_from_stdin():
         """
     )
 
-    expect = [f"{i}: <stdin>" for i in ["requests", "foo", "numpy"]]
+    expect = [
+        f"{i}: <stdin>:{n}" for i, n in [("requests", 4), ("foo", 5), ("numpy", 6)]
+    ]
     output, errors, returncode = run_fawltydeps(
         "--list-imports", "--code=-", to_stdin=code
     )
