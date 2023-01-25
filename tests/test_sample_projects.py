@@ -33,11 +33,11 @@ else:
 # These are (slow) integration tests that are disabled by default.
 pytestmark = pytest.mark.integration
 
-test_dir = Path("./tests/sample_projects")
+SAMPLE_PROJECTS_DIR = Path(__file__).with_name("sample_projects")
 
 sample_projects_params = [
     pytest.param(sample_project, id=sample_project.name)
-    for sample_project in test_dir.iterdir()
+    for sample_project in SAMPLE_PROJECTS_DIR.iterdir()
     if sample_project.is_dir()
 ]
 
