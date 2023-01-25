@@ -471,3 +471,15 @@ def test_extract_dependencies__project_with_pyproject__returns_list(
     assert sorted(
         [a for (a, _) in extract_dependencies(project_with_pyproject)]
     ) == sorted(expect)
+
+
+def test_extract_dependencies__project_with_setup_cfg__returns_list(
+    project_with_setup_cfg,
+):
+    expect = [
+        "pandas",
+        "django",
+    ]
+    assert sorted(
+        [a for (a, _) in extract_dependencies(project_with_setup_cfg)]
+    ) == sorted(expect)

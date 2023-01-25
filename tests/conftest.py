@@ -124,3 +124,28 @@ def project_with_pyproject(write_tmp_files):
             "python_file.py": "import django",
         }
     )
+
+
+@pytest.fixture()
+def project_with_setup_cfg(write_tmp_files):
+    return write_tmp_files(
+        {
+            "setup.cfg": """\
+                [metadata]
+                name = "fawltydeps"
+
+                [options]
+                install_requires =
+                    pandas
+                    django
+                  
+            """,
+            "setup.py": """\
+                import setuptools
+
+                if __name__ == "__main__":
+                    setuptools.setup()
+            """,
+            "python_file.py": "import django",
+        }
+    )
