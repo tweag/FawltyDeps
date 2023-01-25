@@ -18,7 +18,7 @@ default_location = FileLocation(Path("<stdin>"), lineno=None)
 
 
 def dependencies_factory(data: List[str]) -> List[DeclaredDependency]:
-    return [DeclaredDependency(name=d, location=Path("")) for d in data]
+    return [DeclaredDependency(name=d, source=Location(Path(""))) for d in data]
 
 
 def imports_factory(data: List[str]) -> List[ParsedImport]:

@@ -9,7 +9,7 @@ from typing import Any, Dict, Iterator
 
 from pkg_resources import parse_requirements
 
-from fawltydeps.types import DeclaredDependency
+from fawltydeps.types import DeclaredDependency, Location
 from fawltydeps.utils import walk_dir
 
 if sys.version_info >= (3, 11):
@@ -33,7 +33,7 @@ class DependencyParsingError(Exception):
 
 
 def parse_requirements_contents(
-    text: str, path_hint: Path
+    text: str, source: Location
 ) -> Iterator[DeclaredDependency]:
     """
     Extract dependencies (packages names) from the requirement.txt file
@@ -43,10 +43,10 @@ def parse_requirements_contents(
     Parsed requirements keys are put to lower cases.
     """
     for requirement in parse_requirements(text):
-        yield DeclaredDependency(name=requirement.key, location=path_hint)
+        yield DeclaredDependency(name=requirement.key, source=source)
 
 
-def parse_setup_contents(text: str, path_hint: Path) -> Iterator[DeclaredDependency]:
+def parse_setup_contents(text: str, source: Location) -> Iterator[DeclaredDependency]:
     """
     Extract dependencies (package names) from setup.py.
     Function call `setup` where dependencies are listed
@@ -61,7 +61,7 @@ def parse_setup_contents(text: str, path_hint: Path) -> Iterator[DeclaredDepende
                 # Python v3.8 changed from ast.Str to ast.Constant
                 if isinstance(element, (ast.Constant, ast.Str)):
                     yield from parse_requirements_contents(
-                        ast.literal_eval(element), path_hint=path_hint
+                        ast.literal_eval(element), source=source
                     )
         else:
             raise DependencyParsingError(deps)
@@ -99,7 +99,7 @@ def parse_setup_contents(text: str, path_hint: Path) -> Iterator[DeclaredDepende
             and node.value.func.id == "setup"
         )
 
-    setup_contents = ast.parse(text, filename=str(path_hint))
+    setup_contents = ast.parse(text, filename=str(source.path))
     for node in ast.walk(setup_contents):
         if _is_setup_function_call(node):
             # Below line is not checked by mypy, but `_is_setup_function_call`
@@ -109,7 +109,7 @@ def parse_setup_contents(text: str, path_hint: Path) -> Iterator[DeclaredDepende
 
 
 def parse_setup_cfg_contents(
-    text: str, path_hint: Path
+    text: str, source: Location
 ) -> Iterator[DeclaredDependency]:
     """
     Extract dependencies (package names) from setup.cfg.
@@ -127,10 +127,7 @@ def parse_setup_cfg_contents(
     parser.read_string(text)
 
     def parse_value(value: str) -> Iterator[DeclaredDependency]:
-        yield from parse_requirements_contents(
-            value,
-            path_hint=path_hint,
-        )
+        yield from parse_requirements_contents(value, source=source)
 
     def extract_section(section: str) -> Iterator[DeclaredDependency]:
         if section in parser:
@@ -160,34 +157,34 @@ def parse_setup_cfg_contents(
 
 
 def parse_poetry_pyproject_dependencies(
-    poetry_config: TomlData, path_hint: Path
+    poetry_config: TomlData, source: Location
 ) -> Iterator[DeclaredDependency]:
     """
     Extract dependencies (package names) from Poetry fields in pyproject.toml
     """
 
     def parse_main_dependencies(
-        poetry_config: TomlData, path_hint: Path
+        poetry_config: TomlData, source: Location
     ) -> Iterator[DeclaredDependency]:
         for requirement in poetry_config["dependencies"].keys():
             if requirement != "python":
-                yield DeclaredDependency(name=requirement, location=path_hint)
+                yield DeclaredDependency(name=requirement, source=source)
 
     def parse_group_dependencies(
-        poetry_config: TomlData, path_hint: Path
+        poetry_config: TomlData, source: Location
     ) -> Iterator[DeclaredDependency]:
         for group in poetry_config["group"].values():
             for requirement in group["dependencies"].keys():
                 if requirement != "python":
-                    yield DeclaredDependency(name=requirement, location=path_hint)
+                    yield DeclaredDependency(name=requirement, source=source)
 
     def parse_extra_dependencies(
-        poetry_config: TomlData, path_hint: Path
+        poetry_config: TomlData, source: Location
     ) -> Iterator[DeclaredDependency]:
         for group in poetry_config["extras"].values():
             if isinstance(group, list):
                 for requirement in group:
-                    yield from parse_requirements_contents(requirement, path_hint)
+                    yield from parse_requirements_contents(requirement, source)
             else:
                 raise TypeError(f"{group!r} is of type {type(group)}. Expected a list.")
 
@@ -199,14 +196,14 @@ def parse_poetry_pyproject_dependencies(
 
     for field_type, parser in fields_parsers.items():
         try:
-            yield from parser(poetry_config, path_hint)
+            yield from parser(poetry_config, source)
         except KeyError:  # missing fields:
             logger.debug(
                 ERROR_MESSAGE_TEMPLATE,
                 "find",
                 "Poetry",
                 field_type,
-                path_hint,
+                source,
             )
         except (AttributeError, TypeError):  # invalid config
             logger.error(
@@ -214,35 +211,35 @@ def parse_poetry_pyproject_dependencies(
                 "parse",
                 "Poetry",
                 field_type,
-                path_hint,
+                source,
             )
 
 
 def parse_pep621_pyproject_contents(
-    parsed_contents: TomlData, path_hint: Path
+    parsed_contents: TomlData, source: Location
 ) -> Iterator[DeclaredDependency]:
     """
     Extract dependencies (package names) in PEP 621 styled pyproject.toml
     """
 
     def parse_main_dependencies(
-        parsed_contents: TomlData, path_hint: Path
+        parsed_contents: TomlData, source: Location
     ) -> Iterator[DeclaredDependency]:
         dependencies = parsed_contents["project"]["dependencies"]
         if isinstance(dependencies, list):
             for requirement in dependencies:
-                yield from parse_requirements_contents(requirement, path_hint)
+                yield from parse_requirements_contents(requirement, source)
         else:
             raise TypeError(
                 f"{dependencies!r} of type {type(dependencies)}. Expected list."
             )
 
     def parse_optional_dependencies(
-        parsed_contents: TomlData, path_hint: Path
+        parsed_contents: TomlData, source: Location
     ) -> Iterator[DeclaredDependency]:
         for group in parsed_contents["project"]["optional-dependencies"].values():
             for requirement in group:
-                yield from parse_requirements_contents(requirement, path_hint)
+                yield from parse_requirements_contents(requirement, source)
 
     fields_parsers = {
         "main": parse_main_dependencies,
@@ -250,19 +247,15 @@ def parse_pep621_pyproject_contents(
     }
     for field_type, parser in fields_parsers.items():
         try:
-            yield from parser(parsed_contents, path_hint)
+            yield from parser(parsed_contents, source)
         except KeyError:
-            logger.debug(
-                ERROR_MESSAGE_TEMPLATE, "find", "PEP621", field_type, path_hint
-            )
+            logger.debug(ERROR_MESSAGE_TEMPLATE, "find", "PEP621", field_type, source)
         except (AttributeError, TypeError):
-            logger.error(
-                ERROR_MESSAGE_TEMPLATE, "parse", "PEP621", field_type, path_hint
-            )
+            logger.error(ERROR_MESSAGE_TEMPLATE, "parse", "PEP621", field_type, source)
 
 
 def parse_pyproject_contents(
-    text: str, path_hint: Path
+    text: str, source: Location
 ) -> Iterator[DeclaredDependency]:
     """
     Parse dependencies from specific metadata fields in a pyproject.toml file.
@@ -272,11 +265,11 @@ def parse_pyproject_contents(
     """
     parsed_contents = tomllib.loads(text)
 
-    yield from parse_pep621_pyproject_contents(parsed_contents, path_hint)
+    yield from parse_pep621_pyproject_contents(parsed_contents, source)
 
     if "poetry" in parsed_contents.get("tool", {}):
         yield from parse_poetry_pyproject_dependencies(
-            parsed_contents["tool"]["poetry"], path_hint
+            parsed_contents["tool"]["poetry"], source
         )
     else:
         logger.debug("%s does not contain [tool.poetry].")
@@ -304,7 +297,7 @@ def extract_dependencies(path: Path) -> Iterator[DeclaredDependency]:
         logger.debug(path)
         parser = parsers.get(path.name)
         if parser:
-            yield from parser(path.read_text(), path_hint=path)
+            yield from parser(path.read_text(), source=Location(path))
         else:
             logger.error("Parsing file %s is not supported", path.name)
 
@@ -313,4 +306,4 @@ def extract_dependencies(path: Path) -> Iterator[DeclaredDependency]:
             if file.name in parsers:
                 parser = parsers[file.name]
                 logger.debug(f"Extracting dependency from {file}.")
-                yield from parser(file.read_text(), path_hint=file)
+                yield from parser(file.read_text(), source=Location(file))

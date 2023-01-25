@@ -7,16 +7,16 @@ from typing import List
 import pytest
 
 from fawltydeps.extract_dependencies import (
-    DeclaredDependency,
     extract_dependencies,
     parse_requirements_contents,
     parse_setup_cfg_contents,
     parse_setup_contents,
 )
+from fawltydeps.types import DeclaredDependency, Location
 
 
 def dependency_factory(data: List[str], path: str) -> List[DeclaredDependency]:
-    return [DeclaredDependency(d, Path(path)) for d in data]
+    return [DeclaredDependency(d, Location(Path(path))) for d in data]
 
 
 @pytest.mark.parametrize(
@@ -52,8 +52,8 @@ def dependency_factory(data: List[str], path: str) -> List[DeclaredDependency]:
     ],
 )
 def test_parse_requirements_contents(file_content, expected):
-    file_name = Path("requirements.txt")
-    result = list(parse_requirements_contents(file_content, file_name))
+    source = Location(Path("requirements.txt"))
+    result = list(parse_requirements_contents(file_content, source))
     assert sorted(result) == sorted(expected)
 
 
@@ -181,8 +181,8 @@ def test_parse_requirements_contents(file_content, expected):
     ],
 )
 def test_parse_setup_contents(file_content, expected):
-    file_name = Path("setup.py")
-    result = list(parse_setup_contents(file_content, file_name))
+    source = Location(Path("setup.py"))
+    result = list(parse_setup_contents(file_content, source))
     assert sorted(result) == sorted(expected)
 
 
@@ -218,7 +218,7 @@ def test_parse_setup_contents(file_content, expected):
                 test = pytest
                 """
             ),
-            [DeclaredDependency("pytest", Path("setup.cfg"))],
+            [DeclaredDependency("pytest", Location(Path("setup.cfg")))],
             id="__extra_requirements_section_in_setup_cfg__succeeds",
         ),
         pytest.param(
@@ -228,7 +228,7 @@ def test_parse_setup_contents(file_content, expected):
                 test = pytest
                 """
             ),
-            [DeclaredDependency("pytest", Path("setup.cfg"))],
+            [DeclaredDependency("pytest", Location(Path("setup.cfg")))],
             id="__tests_requirements_section_in_setup_cfg__succeeds",
         ),
         pytest.param(
@@ -282,8 +282,8 @@ def test_parse_setup_contents(file_content, expected):
     ],
 )
 def test_parse_setup_cfg_contents(file_content, expected):
-    file_name = Path("setup.cfg")
-    result = list(parse_setup_cfg_contents(file_content, file_name))
+    source = Location(Path("setup.cfg"))
+    result = list(parse_setup_cfg_contents(file_content, source))
     assert sorted(result) == sorted(expected)
 
 
@@ -301,7 +301,7 @@ def test_parse_setup_contents__cannot_parse_install_requires__logs_warning(caplo
     )
     expected = []
     caplog.set_level(logging.WARNING)
-    result = list(parse_setup_contents(setup_contents, Path("")))
+    result = list(parse_setup_contents(setup_contents, Location(Path(""))))
     assert "Could not parse contents of `install_requires`" in caplog.text
     assert expected == result
 
@@ -320,7 +320,7 @@ def test_parse_setup_contents__cannot_parse_extras_require__logs_warning(caplog)
     )
     expected = []
     caplog.set_level(logging.WARNING)
-    result = list(parse_setup_contents(setup_contents, Path("")))
+    result = list(parse_setup_contents(setup_contents, Location(Path(""))))
     assert "Could not parse contents of `extras_require`" in caplog.text
     assert expected == result
 
@@ -340,9 +340,9 @@ def test_parse_setup_contents__cannot_parse_extras_require_value__logs_warning(c
         )
         """
     )
-    expected = [("abc", Path(""))]
+    expected = [DeclaredDependency("abc", Location(Path("")))]
     caplog.set_level(logging.WARNING)
-    result = list(parse_setup_contents(setup_contents, Path("")))
+    result = list(parse_setup_contents(setup_contents, Location(Path(""))))
     assert "Could not parse contents of `extras_require`" in caplog.text
     assert expected == result
 
@@ -376,7 +376,7 @@ def test_parse_setup_contents__multiple_entries_in_extras_require__returns_list(
         ],
         Path(""),
     )
-    result = list(parse_setup_contents(setup_contents, Path("")))
+    result = list(parse_setup_contents(setup_contents, Location(Path(""))))
     assert sorted(expected) == sorted(result)
 
 
