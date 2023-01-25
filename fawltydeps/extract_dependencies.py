@@ -113,10 +113,10 @@ def parse_setup_cfg_contents(
     Extract dependencies (package names) from setup.cfg.
 
     `ConfigParser` basic building blocks are "sections"
-    which are marked by "[..]" in the configuration file
+    which are marked by "[..]" in the configuration file.
     Requirements are declared as main dependencies (install_requires),
-    extra dependencies (extras_require) and tests dependencies (tests_require)
-    see https://setuptools.pypa.io/en/latest/userguide/declarative_config.html
+    extra dependencies (extras_require) and tests dependencies (tests_require).
+    See https://setuptools.pypa.io/en/latest/userguide/declarative_config.html
     subsection: configuring-setup-using-setup-cfg-files for more details.
     The declaration uses `section` + `option` syntax where section may be [options]
     or [options.{requirements_type}].
