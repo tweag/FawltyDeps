@@ -221,10 +221,11 @@ def test_real_project(request, project):
         assert actual == expect
 
     if project.undeclared_deps is not None:
-        actual = set(analysis.undeclared_deps.keys())
+        actual = {u.name for u in analysis.undeclared_deps}
         expect = {name for names in project.undeclared_deps.values() for name in names}
         assert actual == expect
 
     if project.unused_deps is not None:
+        actual = {u.name for u in analysis.unused_deps}
         expect = {name for names in project.unused_deps.values() for name in names}
-        assert analysis.unused_deps == expect
+        assert actual == expect

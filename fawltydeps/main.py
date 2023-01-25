@@ -7,12 +7,18 @@ from dataclasses import dataclass
 from enum import Enum, auto
 from operator import attrgetter
 from pathlib import Path
-from typing import Dict, List, Optional, Set, TextIO
+from typing import List, Optional, Set, TextIO
 
 from fawltydeps import extract_imports
 from fawltydeps.check import compare_imports_to_dependencies
 from fawltydeps.extract_dependencies import extract_dependencies
-from fawltydeps.types import DeclaredDependency, Location, ParsedImport, PathOrSpecial
+from fawltydeps.types import (
+    DeclaredDependency,
+    ParsedImport,
+    PathOrSpecial,
+    UndeclaredDependency,
+    UnusedDependency,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -33,8 +39,8 @@ class Analysis:
     request: Set[Action]
     imports: Optional[List[ParsedImport]] = None
     declared_deps: Optional[List[DeclaredDependency]] = None
-    undeclared_deps: Optional[Dict[str, List[Location]]] = None
-    unused_deps: Optional[Set[str]] = None
+    undeclared_deps: Optional[List[UndeclaredDependency]] = None
+    unused_deps: Optional[List[UnusedDependency]] = None
 
     def is_enabled(self, *args: Action) -> bool:
         """Return True if any of the given actions are in self.request."""
@@ -65,11 +71,9 @@ class Analysis:
         if ret.is_enabled(Action.REPORT_UNDECLARED, Action.REPORT_UNUSED):
             assert ret.imports is not None  # convince Mypy that these cannot
             assert ret.declared_deps is not None  # be None at this time.
-            comparison = compare_imports_to_dependencies(
+            ret.undeclared_deps, ret.unused_deps = compare_imports_to_dependencies(
                 imports=ret.imports, dependencies=ret.declared_deps
             )
-            ret.undeclared_deps = comparison.undeclared
-            ret.unused_deps = comparison.unused
 
         return ret
 
@@ -89,14 +93,15 @@ class Analysis:
 
         if self.is_enabled(Action.REPORT_UNDECLARED) and self.undeclared_deps:
             print("These imports are not declared as dependencies:", file=out)
-            for name, locations in sorted(self.undeclared_deps.items()):
-                represent_locations = "".join([f"\n    {loc}" for loc in locations])
-                print(f"- {name} in locations:{represent_locations}", file=out)
+            for undeclared in self.undeclared_deps:
+                print(f"- {undeclared.name} in locations:", file=out)
+                for imp in undeclared.references:
+                    print(f"    {imp.source}", file=out)
 
         if self.is_enabled(Action.REPORT_UNUSED) and self.unused_deps:
             print("These dependencies are not imported in your code:", file=out)
-            for name in sorted(self.unused_deps):
-                print(f"- {name}", file=out)
+            for unused in self.unused_deps:
+                print(f"- {unused.name}", file=out)
 
 
 def parse_path_or_stdin(arg: str) -> PathOrSpecial:

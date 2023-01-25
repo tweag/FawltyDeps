@@ -7,57 +7,69 @@ import pytest
 from fawltydeps.check import compare_imports_to_dependencies
 from fawltydeps.types import (
     DeclaredDependency,
-    DependencyComparison,
     Location,
     ParsedImport,
+    UndeclaredDependency,
+    UnusedDependency,
 )
 
 
-def dependencies_factory(data: List[str]) -> List[DeclaredDependency]:
-    return [DeclaredDependency(name=d, source=Location(Path(""))) for d in data]
+def imports_factory(*imports: str) -> List[ParsedImport]:
+    return [ParsedImport(imp, Location("<stdin>")) for imp in imports]
 
 
-def imports_factory(data: List[str]) -> List[ParsedImport]:
-    return [ParsedImport(name=d, source=Location("<stdin>")) for d in data]
+def deps_factory(*deps: str) -> List[DeclaredDependency]:
+    return [DeclaredDependency(dep, Location(Path("foo"))) for dep in deps]
+
+
+def undeclared_factory(*deps: str) -> List[UndeclaredDependency]:
+    return [UndeclaredDependency(dep, imports_factory(dep)) for dep in deps]
+
+
+def unused_factory(*deps: str) -> List[UnusedDependency]:
+    return [UnusedDependency(dep, deps_factory(dep)) for dep in deps]
 
 
 @pytest.mark.parametrize(
     "imports,dependencies,expected",
     [
+        pytest.param([], [], ([], []), id="no_import_no_dependencies"),
         pytest.param(
-            [], [], DependencyComparison({}, set()), id="no_import_no_dependencies"
-        ),
-        pytest.param(
-            imports_factory(["pandas"]),
+            imports_factory("pandas"),
             [],
-            DependencyComparison({"pandas": [Location("<stdin>")]}, set()),
+            (undeclared_factory("pandas"), []),
             id="one_import_no_dependencies",
         ),
         pytest.param(
             [],
-            dependencies_factory(["pandas"]),
-            DependencyComparison({}, set(["pandas"])),
+            deps_factory("pandas"),
+            ([], unused_factory("pandas")),
             id="no_imports_one_dependency",
         ),
         pytest.param(
-            imports_factory(["pandas"]),
-            dependencies_factory(["pandas"]),
-            DependencyComparison({}, set()),
+            imports_factory("pandas"),
+            deps_factory("pandas"),
+            ([], []),
             id="matched_import_with_dependency",
         ),
         pytest.param(
-            imports_factory(["pandas", "numpy"]),
-            dependencies_factory(["pandas", "scipy"]),
-            DependencyComparison({"numpy": [Location("<stdin>")]}, set(["scipy"])),
+            imports_factory("pandas", "numpy"),
+            deps_factory("pandas", "scipy"),
+            (undeclared_factory("numpy"), unused_factory("scipy")),
             id="mixed_imports_with_unused_and_undeclared_dependencies",
         ),
         pytest.param(
-            imports_factory(["pandas"])
+            imports_factory("pandas")
             + [ParsedImport("numpy", Location(Path("my_file.py"), lineno=3))],
-            dependencies_factory(["pandas", "scipy"]),
-            DependencyComparison(
-                {"numpy": [Location(Path("my_file.py"), lineno=3)]},
-                set(["scipy"]),
+            deps_factory("pandas", "scipy"),
+            (
+                [
+                    UndeclaredDependency(
+                        "numpy",
+                        [ParsedImport("numpy", Location(Path("my_file.py"), lineno=3))],
+                    )
+                ],
+                unused_factory("scipy"),
             ),
             id="mixed_imports_from_diff_files_with_unused_and_undeclared_dependencies",
         ),

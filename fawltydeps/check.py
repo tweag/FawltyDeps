@@ -1,14 +1,19 @@
 "Compare imports and dependencies"
 
 from itertools import groupby
-from typing import List
+from typing import List, Tuple
 
-from fawltydeps.types import DeclaredDependency, DependencyComparison, ParsedImport
+from fawltydeps.types import (
+    DeclaredDependency,
+    ParsedImport,
+    UndeclaredDependency,
+    UnusedDependency,
+)
 
 
 def compare_imports_to_dependencies(
     imports: List[ParsedImport], dependencies: List[DeclaredDependency]
-) -> DependencyComparison:
+) -> Tuple[List[UndeclaredDependency], List[UnusedDependency]]:
     """
     Compares imports to dependencies
 
@@ -21,13 +26,16 @@ def compare_imports_to_dependencies(
 
     undeclared = [i for i in imports if i.name not in declared_names]
     undeclared.sort(key=lambda i: i.name)  # groupby requires pre-sorting
-    undeclared_grouped = {
-        name: [i.source for i in deps]
-        for name, deps in groupby(undeclared, key=lambda x: x.name)
-    }
-    unused = {d.name for d in dependencies if d.name not in imported_names}
+    undeclared_grouped = [
+        UndeclaredDependency(name, list(imports))
+        for name, imports in groupby(undeclared, key=lambda i: i.name)
+    ]
 
-    return DependencyComparison(
-        undeclared=undeclared_grouped,
-        unused=unused,
-    )
+    unused = [d for d in dependencies if d.name not in imported_names]
+    unused.sort(key=lambda d: d.name)  # groupby requires pre-sorting
+    unused_grouped = [
+        UnusedDependency(name, list(deps))
+        for name, deps in groupby(unused, key=lambda d: d.name)
+    ]
+
+    return undeclared_grouped, unused_grouped
