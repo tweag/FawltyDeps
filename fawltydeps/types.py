@@ -4,7 +4,7 @@ import sys
 from dataclasses import dataclass, field, replace
 from functools import total_ordering
 from pathlib import Path
-from typing import Dict, List, NamedTuple, Optional, Set, Union
+from typing import List, NamedTuple, Optional, Union
 
 if sys.version_info >= (3, 8):
     from typing import Literal  # pylint: disable=E1101
@@ -103,7 +103,15 @@ class DeclaredDependency(NamedTuple):
     source: Location
 
 
-class DependencyComparison(NamedTuple):
-    "The results of the analysis performed in the 'check' module."
-    undeclared: Dict[str, List[Location]]
-    unused: Set[str]
+@dataclass
+class UndeclaredDependency:
+    "Undeclared dependency found by analysis in the 'check' module."
+    name: str
+    references: List[ParsedImport]
+
+
+@dataclass
+class UnusedDependency:
+    "Unused dependency found by analysis in the 'check' module."
+    name: str
+    references: List[DeclaredDependency]

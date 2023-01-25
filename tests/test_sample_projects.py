@@ -53,11 +53,12 @@ def test_integration_analysis_on_sample_projects__(project_path):
     with (project_path / "expected.toml").open("rb") as f:
         expected = tomllib.load(f)
 
-    assert (
-        analysis.unused_deps
-        == set(expected.get("analysis_result", {}).get("unused_deps"))
-        or set()
+    actual_unused = {u.name for u in analysis.unused_deps}
+    expect_unused = set(expected.get("analysis_result", {}).get("unused_deps", []))
+    assert actual_unused == expect_unused
+
+    actual_undeclared = {u.name for u in analysis.undeclared_deps}
+    expect_undeclared = set(
+        expected.get("analysis_result", {}).get("undeclared_deps", [])
     )
-    assert set(analysis.undeclared_deps.keys()) == set(
-        expected.get("analysis_result", {}).get("undeclared_deps") or {}
-    )
+    assert actual_undeclared == expect_undeclared
