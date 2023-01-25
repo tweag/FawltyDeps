@@ -83,7 +83,7 @@ class Analysis:
             assert self.imports is not None  # sanity-check / convince Mypy
             # Sort imports by source, then by name
             for imp in sorted(self.imports, key=attrgetter("source", "name")):
-                print(f"{imp.name}: {imp.source}", file=out)
+                print(f"{imp.source}: {imp.name}", file=out)
 
         if self.is_enabled(Action.LIST_DEPS):
             assert self.declared_deps is not None  # sanity-check / convince Mypy

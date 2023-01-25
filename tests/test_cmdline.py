@@ -60,7 +60,7 @@ def test_list_imports__from_dash__prints_imports_from_stdin():
     )
 
     expect = [
-        f"{i}: <stdin>:{n}" for i, n in [("requests", 4), ("foo", 5), ("numpy", 6)]
+        f"<stdin>:{n}: {i}" for i, n in [("requests", 4), ("foo", 5), ("numpy", 6)]
     ]
     output, errors, returncode = run_fawltydeps(
         "--list-imports", "--code=-", to_stdin=code
@@ -84,12 +84,14 @@ def test_list_imports__from_py_file__prints_imports_from_file(write_tmp_files):
         }
     )
 
-    expect = ["requests", "foo", "numpy"]
+    expect = [
+        f"{tmp_path}/myfile.py:{n}: {i}"
+        for i, n in [("requests", 4), ("foo", 5), ("numpy", 6)]
+    ]
     output, errors, returncode = run_fawltydeps(
         "--list-imports", f"--code={tmp_path}/myfile.py"
     )
-    found_imports = [line.split(":", 1)[0] for line in output.splitlines()]
-    assert found_imports == expect
+    assert output.splitlines() == expect
     assert errors == ""
     assert returncode == 0
 
@@ -101,12 +103,11 @@ def test_list_imports__from_ipynb_file__prints_imports_from_file(write_tmp_files
         }
     )
 
-    expect = ["pytorch"]
+    expect = [f"{tmp_path}/myfile.ipynb[1]:1: pytorch"]
     output, errors, returncode = run_fawltydeps(
         "--list-imports", f"--code={tmp_path}/myfile.ipynb"
     )
-    found_imports = [line.split(":", 1)[0] for line in output.splitlines()]
-    assert found_imports == expect
+    assert output.splitlines() == expect
     assert errors == ""
     assert returncode == 0
 
@@ -130,10 +131,12 @@ def test_list_imports__from_dir__prints_imports_from_py_and_ipynb_files_only(
         }
     )
 
-    expect = ["my_pathlib", "pandas", "scipy", "pytorch"]
+    expect = [
+        f"{tmp_path}/file1.py:{n}: {i}"
+        for i, n in [("my_pathlib", 1), ("pandas", 2), ("scipy", 2)]
+    ] + [f"{tmp_path}/file3.ipynb[1]:1: pytorch"]
     output, errors, returncode = run_fawltydeps("--list-imports", f"--code={tmp_path}")
-    found_imports = [line.split(":", 1)[0] for line in output.splitlines()]
-    assert found_imports == expect
+    assert output.splitlines() == expect
     assert errors == ""
     assert returncode == 0
 
