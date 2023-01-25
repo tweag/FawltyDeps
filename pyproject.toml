@@ -98,8 +98,7 @@ reports.output-format = "colorized"
 "messages control".disable = "fixme,logging-fstring-interpolation,unspecified-encoding"
 
 [tool.mypy]
-packages = ['fawltydeps', 'tests']
-exclude = 'tests/projects_gallery'
+files = ['*.py', 'fawltydeps/*.py', 'tests/*.py']
 warn_redundant_casts = true
 warn_unused_ignores = true
 warn_return_any = true
