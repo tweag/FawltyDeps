@@ -136,11 +136,14 @@ def parse_setup_cfg_contents(
                 parser.get(composed_section, o)
                 for o in parser.options(composed_section)
             ]
-        elif "options" in sections and name in parser.options("options"):
+        if "options" in sections and name in parser.options("options"):
             additional_requirements += [parser.get("options", name)]
 
         logger.debug(
-            "Requirements found for %s: %s", name, str(additional_requirements)
+            "Requirements found inf file %s for %s: %s",
+            str(path_hint),
+            name,
+            str(additional_requirements),
         )
         return additional_requirements
 
