@@ -39,6 +39,8 @@ def parse_requirements_contents(
     Extract dependencies (packages names) from the requirement.txt file
     and other following Requirements File Format. For more information, see
     https://pip.pypa.io/en/stable/reference/requirements-file-format/.
+
+    Parsed requirements keys are put to lower cases.
     """
     for requirement in parse_requirements(text):
         yield DeclaredDependency(name=requirement.key, location=path_hint)
@@ -117,7 +119,7 @@ def parse_setup_cfg_contents(
     Requirements are declared as main dependencies (install_requires),
     extra dependencies (extras_require) and tests dependencies (tests_require).
     See https://setuptools.pypa.io/en/latest/userguide/declarative_config.html
-    subsection: configuring-setup-using-setup-cfg-files for more details.
+    section: configuring-setup-using-setup-cfg-files for more details.
     The declaration uses `section` + `option` syntax where section may be [options]
     or [options.{requirements_type}].
     """
@@ -147,6 +149,7 @@ def parse_setup_cfg_contents(
     tests_require = _extract_additional_requirements("tests_require")
 
     requirements = install_requires + extras_require + tests_require
+    logger.debug("CFG dependencies: %s", str(requirements))
 
     for requirement in requirements:
         yield from parse_requirements_contents(
