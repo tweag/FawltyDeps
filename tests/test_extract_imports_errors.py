@@ -11,12 +11,13 @@ from fawltydeps.extract_imports import (
     parse_notebook_file,
     parse_python_file,
 )
+from fawltydeps.types import Location
 
 
 def test_parse_code__on_parse_error__propagates_SyntaxError():
     code = "This is not Python code\n"
     with pytest.raises(SyntaxError):
-        list(parse_code(code))
+        list(parse_code(code, source=Location("<stdin>")))
 
 
 def test_parse_python_file__on_parse_error__SyntaxError_contains_filename(tmp_path):
@@ -88,7 +89,7 @@ def test_parse_notebook_file__on_parse_error__SyntaxError_raised_with_msg(tmp_pa
 
     with pytest.raises(SyntaxError) as exc_info:
         list(parse_notebook_file(script))
-    assert exc_info.value.msg == f"Cannot parse code from {script}: cell 1."
+    assert exc_info.value.msg == f"Cannot parse code from {script}[1]."
 
 
 def test_parse_notebook_file__on_invalid_python__SyntaxError_raised_with_msg(tmp_path):
@@ -116,7 +117,7 @@ def test_parse_notebook_file__on_invalid_python__SyntaxError_raised_with_msg(tmp
 
     with pytest.raises(SyntaxError) as exc_info:
         list(parse_notebook_file(script))
-    assert exc_info.value.msg == f"Cannot parse code from {script}: cell 1."
+    assert exc_info.value.msg == f"Cannot parse code from {script}[1]."
 
 
 def test_parse_notebook_file__on_invalid_json__JSONDecodeError_raised_with_msg(

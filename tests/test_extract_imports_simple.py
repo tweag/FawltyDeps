@@ -1,34 +1,36 @@
 """Test that we can extract simple imports from Python code."""
 import json
 import logging
-from pathlib import Path
 from textwrap import dedent
-from typing import List, Optional, Tuple, Union
+from typing import List, Tuple, Union
 
 import pytest
 
 from fawltydeps.extract_imports import (
-    ParsedImport,
     parse_code,
     parse_dir,
     parse_notebook_file,
     parse_python_file,
 )
+from fawltydeps.types import Location, ParsedImport, PathOrSpecial
 
 
 def imports_w_linenos(
     names_w_linenos: List[Tuple[str, int]],
-    path: Optional[Path] = None,
+    path: PathOrSpecial = "<stdin>",
 ) -> List[ParsedImport]:
-    return [ParsedImport(name, path, lineno) for name, lineno in names_w_linenos]
+    return [
+        ParsedImport(name, Location(path, lineno=lineno))
+        for name, lineno in names_w_linenos
+    ]
 
 
 def imports_w_linenos_cellnos(
     names_w_linenos_cellnos: List[Tuple[str, int, int]],
-    path: Optional[Path] = None,
+    path: PathOrSpecial = "<stdin>",
 ) -> List[ParsedImport]:
     return [
-        ParsedImport(name, path, lineno, cellno)
+        ParsedImport(name, Location(path, cellno=cellno, lineno=lineno))
         for name, lineno, cellno in names_w_linenos_cellnos
     ]
 
@@ -149,8 +151,8 @@ def generate_notebook(
     ],
 )
 def test_parse_code(code, expected_import_line_pairs):
-    expect = imports_w_linenos(expected_import_line_pairs, None)
-    assert list(parse_code(code)) == expect
+    expect = imports_w_linenos(expected_import_line_pairs, "<stdin>")
+    assert list(parse_code(code, source=Location("<stdin>"))) == expect
 
 
 def test_parse_python_file__combo_of_simple_imports__extracts_all_externals(
@@ -300,9 +302,9 @@ def test_parse_dir__with_py_ipynb_and_non_py__extracts_only_from_py_and_ipynb_fi
     )
 
     expect = {
-        ParsedImport("my_pathlib", tmp_path / "test1.py", 1),
-        ParsedImport("pandas", tmp_path / "test2.py", 1),
-        ParsedImport("pytorch", tmp_path / "test3.ipynb", 1, 1),
+        ParsedImport("my_pathlib", Location(tmp_path / "test1.py", lineno=1)),
+        ParsedImport("pandas", Location(tmp_path / "test2.py", lineno=1)),
+        ParsedImport("pytorch", Location(tmp_path / "test3.ipynb", cellno=1, lineno=1)),
     }
     assert set(parse_dir(tmp_path)) == expect
 
@@ -335,5 +337,5 @@ def test_parse_dir__files_in_dot_dirs__are_ignored(write_tmp_files):
         }
     )
 
-    expect = {ParsedImport("numpy", tmp_path / "test1.py", 1)}
+    expect = {ParsedImport("numpy", Location(tmp_path / "test1.py", lineno=1))}
     assert set(parse_dir(tmp_path)) == expect
