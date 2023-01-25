@@ -103,20 +103,7 @@ class DeclaredDependency(NamedTuple):
     source: Location
 
 
-class FileLocation(NamedTuple):
-    "General location details of imports and dependencies occurrence."
-    path: Path
-    lineno: Optional[int]
-
-    def __str__(self) -> str:
-        "Readable representation."
-        ret = f"{self.path}"
-        if self.lineno is not None:
-            ret += f":{self.lineno}"
-        return ret
-
-
 class DependencyComparison(NamedTuple):
     "The results of the analysis performed in the 'check' module."
-    undeclared: Dict[str, List[FileLocation]]
+    undeclared: Dict[str, List[Location]]
     unused: Set[str]

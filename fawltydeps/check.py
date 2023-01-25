@@ -1,15 +1,9 @@
 "Compare imports and dependencies"
 
 from itertools import groupby
-from pathlib import Path
 from typing import List
 
-from fawltydeps.types import (
-    DeclaredDependency,
-    DependencyComparison,
-    FileLocation,
-    ParsedImport,
-)
+from fawltydeps.types import DeclaredDependency, DependencyComparison, ParsedImport
 
 
 def compare_imports_to_dependencies(
@@ -28,9 +22,7 @@ def compare_imports_to_dependencies(
     undeclared = [i for i in imports if i.name not in declared_names]
     undeclared.sort(key=lambda i: i.name)  # groupby requires pre-sorting
     undeclared_grouped = {
-        name: [
-            FileLocation(path=Path(i.source.path), lineno=i.source.lineno) for i in deps
-        ]
+        name: [i.source for i in deps]
         for name, deps in groupby(undeclared, key=lambda x: x.name)
     }
     unused = {d.name for d in dependencies if d.name not in imported_names}

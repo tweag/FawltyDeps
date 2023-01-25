@@ -8,13 +8,9 @@ from fawltydeps.check import compare_imports_to_dependencies
 from fawltydeps.types import (
     DeclaredDependency,
     DependencyComparison,
-    FileLocation,
     Location,
     ParsedImport,
 )
-
-# Temporary placeholder while we propagate Location into all relevant types
-default_location = FileLocation(Path("<stdin>"), lineno=None)
 
 
 def dependencies_factory(data: List[str]) -> List[DeclaredDependency]:
@@ -34,7 +30,7 @@ def imports_factory(data: List[str]) -> List[ParsedImport]:
         pytest.param(
             imports_factory(["pandas"]),
             [],
-            DependencyComparison({"pandas": [default_location]}, set()),
+            DependencyComparison({"pandas": [Location("<stdin>")]}, set()),
             id="one_import_no_dependencies",
         ),
         pytest.param(
@@ -52,7 +48,7 @@ def imports_factory(data: List[str]) -> List[ParsedImport]:
         pytest.param(
             imports_factory(["pandas", "numpy"]),
             dependencies_factory(["pandas", "scipy"]),
-            DependencyComparison({"numpy": [default_location]}, set(["scipy"])),
+            DependencyComparison({"numpy": [Location("<stdin>")]}, set(["scipy"])),
             id="mixed_imports_with_unused_and_undeclared_dependencies",
         ),
         pytest.param(
@@ -60,7 +56,7 @@ def imports_factory(data: List[str]) -> List[ParsedImport]:
             + [ParsedImport("numpy", Location(Path("my_file.py"), lineno=3))],
             dependencies_factory(["pandas", "scipy"]),
             DependencyComparison(
-                {"numpy": [FileLocation(Path("my_file.py"), 3)]},
+                {"numpy": [Location(Path("my_file.py"), lineno=3)]},
                 set(["scipy"]),
             ),
             id="mixed_imports_from_diff_files_with_unused_and_undeclared_dependencies",

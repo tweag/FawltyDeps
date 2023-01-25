@@ -12,12 +12,7 @@ from typing import Dict, List, Optional, Set, TextIO
 from fawltydeps import extract_imports
 from fawltydeps.check import compare_imports_to_dependencies
 from fawltydeps.extract_dependencies import extract_dependencies
-from fawltydeps.types import (
-    DeclaredDependency,
-    FileLocation,
-    ParsedImport,
-    PathOrSpecial,
-)
+from fawltydeps.types import DeclaredDependency, Location, ParsedImport, PathOrSpecial
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +33,7 @@ class Analysis:
     request: Set[Action]
     imports: Optional[List[ParsedImport]] = None
     declared_deps: Optional[List[DeclaredDependency]] = None
-    undeclared_deps: Optional[Dict[str, List[FileLocation]]] = None
+    undeclared_deps: Optional[Dict[str, List[Location]]] = None
     unused_deps: Optional[Set[str]] = None
 
     def is_enabled(self, *args: Action) -> bool:
