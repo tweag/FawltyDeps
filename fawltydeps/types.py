@@ -100,7 +100,7 @@ class ParsedImport:
 class DeclaredDependency(NamedTuple):
     "Declared dependencies parsed from configuration-containing files"
     name: str
-    location: Path
+    source: Location
 
 
 class FileLocation(NamedTuple):
