@@ -138,7 +138,7 @@ def parse_setup_cfg_contents(
             additional_requirements += [parser.get("options", name)]
 
         logger.debug(
-            "requirements found for %s: %s", name, str(additional_requirements)
+            "Requirements found for %s: %s", name, str(additional_requirements)
         )
         return additional_requirements
 
