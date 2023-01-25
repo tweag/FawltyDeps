@@ -12,12 +12,10 @@ description = '''
 [undeclared_deps]
 # Names of imports found in the code which 
 # do not have a matching dependency declared.
-# What we expect the `compare_imports_to_dependencies` function
-# to return.
+# What we expect the analysis to return.
 
 [unused_deps]
 # Names of declared dependencies which were not used in any `import` 
 # statement within the code.
-# What we expect the `compare_imports_to_dependencies` function
-# to return.
-"scipy" = ["requirements.txt"]
+# What we expect the nalysis to return.
+scipy = "no_location_details"
