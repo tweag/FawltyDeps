@@ -99,9 +99,13 @@ class Analysis:
                     print(f"    {imp.source}", file=out)
 
         if self.is_enabled(Action.REPORT_UNUSED) and self.unused_deps:
-            print("These dependencies are not imported in your code:", file=out)
+            print(
+                "These dependencies appear to be unused (i.e. not imported):", file=out
+            )
             for unused in self.unused_deps:
-                print(f"- {unused.name}", file=out)
+                print(f"- {unused.name!r} declared in:", file=out)
+                for dep in sorted(unused.references, key=attrgetter("source")):
+                    print(f"    {dep.source}", file=out)
 
 
 def parse_path_or_stdin(arg: str) -> PathOrSpecial:

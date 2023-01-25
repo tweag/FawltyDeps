@@ -249,8 +249,9 @@ def test_check__simple_project_with_extra_deps__reports_unused(
     )
 
     expect = [
-        "These dependencies are not imported in your code:",
-        "- pandas",
+        "These dependencies appear to be unused (i.e. not imported):",
+        "- 'pandas' declared in:",
+        f"    {tmp_path / 'requirements.txt'}",
     ]
     output, errors, returncode = run_fawltydeps(
         "--check", f"--code={tmp_path}", f"--deps={tmp_path}"
@@ -271,9 +272,10 @@ def test_check__simple_project__can_report_both_undeclared_and_unused(
     expect = [
         "These imports are not declared as dependencies:",
         "- requests in locations:",
-        f"    {str(tmp_path / 'code.py')}:1",
-        "These dependencies are not imported in your code:",
-        "- pandas",
+        f"    {tmp_path / 'code.py'}:1",
+        "These dependencies appear to be unused (i.e. not imported):",
+        "- 'pandas' declared in:",
+        f"    {tmp_path / 'requirements.txt'}",
     ]
     output, errors, returncode = run_fawltydeps(
         "--check", f"--code={tmp_path}", f"--deps={tmp_path}"
@@ -313,8 +315,9 @@ def test_check_unused__simple_project__reports_only_unused(
     )
 
     expect = [
-        "These dependencies are not imported in your code:",
-        "- pandas",
+        "These dependencies appear to be unused (i.e. not imported):",
+        "- 'pandas' declared in:",
+        f"    {tmp_path / 'requirements.txt'}",
     ]
     output, errors, returncode = run_fawltydeps(
         "--check-unused", f"--code={tmp_path}", f"--deps={tmp_path}"
@@ -335,9 +338,10 @@ def test__no_action__defaults_to_check_action(
     expect = [
         "These imports are not declared as dependencies:",
         "- requests in locations:",
-        f"    {str(tmp_path / 'code.py')}:1",
-        "These dependencies are not imported in your code:",
-        "- pandas",
+        f"    {tmp_path / 'code.py'}:1",
+        "These dependencies appear to be unused (i.e. not imported):",
+        "- 'pandas' declared in:",
+        f"    {tmp_path / 'requirements.txt'}",
     ]
     output, errors, returncode = run_fawltydeps(
         f"--code={tmp_path}", f"--deps={tmp_path}"
@@ -359,8 +363,9 @@ def test__no_options__defaults_to_check_action_in_current_dir(
         "These imports are not declared as dependencies:",
         "- requests in locations:",
         f"    {str(tmp_path / 'code.py')}:1",
-        "These dependencies are not imported in your code:",
-        "- pandas",
+        "These dependencies appear to be unused (i.e. not imported):",
+        "- 'pandas' declared in:",
+        f"    {tmp_path / 'requirements.txt'}",
     ]
     output, errors, returncode = run_fawltydeps(cwd=tmp_path)
     assert output.splitlines() == expect
