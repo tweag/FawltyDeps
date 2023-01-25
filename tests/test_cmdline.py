@@ -178,8 +178,8 @@ def test_list_deps__dir__prints_deps_from_requirements_txt(
     )
 
     expect = [
-        f"pandas: {tmp_path}/requirements.txt",
-        f"requests: {tmp_path}/requirements.txt",
+        f"{tmp_path}/requirements.txt: pandas",
+        f"{tmp_path}/requirements.txt: requests",
     ]
     output, errors, returncode = run_fawltydeps("--list-deps", f"--deps={tmp_path}")
     assert output.splitlines() == expect

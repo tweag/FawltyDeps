@@ -89,7 +89,7 @@ class Analysis:
             assert self.declared_deps is not None  # sanity-check / convince Mypy
             # Sort dependencies by location, then by name
             for dep in sorted(self.declared_deps, key=attrgetter("source", "name")):
-                print(f"{dep.name}: {dep.source}", file=out)
+                print(f"{dep.source}: {dep.name}", file=out)
 
         if self.is_enabled(Action.REPORT_UNDECLARED) and self.undeclared_deps:
             print("These imports appear to be undeclared dependencies:", file=out)
