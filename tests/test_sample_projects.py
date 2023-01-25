@@ -28,7 +28,6 @@ if sys.version_info >= (3, 11):
 else:
     import tomli as tomllib
 
-# These tests will download and unpacks a 3rd-party project before analyzing it.
 # These are (slow) integration tests that are disabled by default.
 pytestmark = pytest.mark.integration
 
