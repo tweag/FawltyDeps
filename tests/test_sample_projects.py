@@ -4,15 +4,19 @@ Integration tests for the FawltyDeps project
 Check for given a simple project that following workflows work:
 - discover all imports and dependencies
   and correctly identify unused and missing dependencies
-- given only part of the project to search in
+- TODO given only part of the project to search in
   correctly identify unused and missing dependencies
 
-Sample projects from `tests/project_gallery` are used via fixtures.
+Sample projects from `tests/sample_projects` are auto-dicovered and
+used in `sample_projects_params.
 
-
+The structure of sample project is following
+```
+└── sample_project
+    ├── expected.toml (mandatory)
+    └── ... (regular Python project)
+```
 """
-import os
-import shutil
 import sys
 from pathlib import Path
 
@@ -29,21 +33,17 @@ else:
 # These are (slow) integration tests that are disabled by default.
 pytestmark = pytest.mark.integration
 
+test_dir = Path("./tests/sample_projects")
 
-@pytest.fixture
-def datadir(tmp_path: Path) -> Path:
-
-    test_dir = "./tests/sample_projects"
-    if os.path.isdir(test_dir):
-        shutil.copytree(test_dir, tmp_path / "data")
-
-    return tmp_path / "data"
+sample_projects_params = [
+    pytest.param(sample_project, id=sample_project.name)
+    for sample_project in test_dir.iterdir()
+    if sample_project.is_dir()
+]
 
 
-def test_integration_compare_imports_to_dependencies(datadir):
-
-    # project_path = datadir / "file__requirements_unused"
-    project_path = datadir / "file__requirements_undeclared"
+@pytest.mark.parametrize("project_path", sample_projects_params)
+def test_integration_analysis_on_sample_projects__(project_path):
 
     actions = {Action.REPORT_UNDECLARED, Action.REPORT_UNUSED}
     analysis = Analysis.create(actions, code=project_path, deps=project_path)
@@ -51,7 +51,7 @@ def test_integration_compare_imports_to_dependencies(datadir):
     with (project_path / "expected.toml").open("rb") as f:
         expected = tomllib.load(f)
 
-    # parse FileLocation properly
+    # parse FileLocation from toml file
     expected["undeclared_deps"] = {
         k: [
             FileLocation(project_path / value["path"], value.get("lineno"))
