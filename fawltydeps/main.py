@@ -92,10 +92,10 @@ class Analysis:
                 print(f"{dep.name}: {dep.source}", file=out)
 
         if self.is_enabled(Action.REPORT_UNDECLARED) and self.undeclared_deps:
-            print("These imports are not declared as dependencies:", file=out)
+            print("These imports appear to be undeclared dependencies:", file=out)
             for undeclared in self.undeclared_deps:
-                print(f"- {undeclared.name} in locations:", file=out)
-                for imp in undeclared.references:
+                print(f"- {undeclared.name!r} imported at:", file=out)
+                for imp in sorted(undeclared.references, key=attrgetter("source")):
                     print(f"    {imp.source}", file=out)
 
         if self.is_enabled(Action.REPORT_UNUSED) and self.unused_deps:
