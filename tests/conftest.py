@@ -149,3 +149,44 @@ def project_with_setup_cfg(write_tmp_files):
             "python_file.py": "import django",
         }
     )
+
+
+@pytest.fixture()
+def project_with_setup_with_cfg_pyproject_and_requirements(write_tmp_files):
+    return write_tmp_files(
+        {
+            "requirements.txt": """\
+                pandas
+                click
+            """,
+            "subdir/requirements.txt": """\
+                pandas
+                tensorflow>=2
+            """,
+            "setup.py": """\
+                from setuptools import setup
+                
+                setup(use_scm_version=True)
+            """,
+            "setup.cfg": """\
+                [metadata]
+                name = "fawltydeps"
+
+                [options]
+                install_requires =
+                    dependencyA
+                    dependencyB
+                  
+            """,
+            "pyproject.toml": """\
+                [project]
+                name = "fawltydeps"
+
+                dependencies = ["pandas", "pydantic>1.10.4"]
+
+                [project.optional-dependencies]
+                dev = ["pylint >= 2.15.8"]
+            """,
+            "python_file.py": "import django",
+        }
+    )

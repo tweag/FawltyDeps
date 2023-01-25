@@ -483,3 +483,29 @@ def test_extract_dependencies__project_with_setup_cfg__returns_list(
     assert sorted(
         [a for (a, _) in extract_dependencies(project_with_setup_cfg)]
     ) == sorted(expect)
+
+
+def test_extract_dependencies__project_with_setup_cfg_pyproject_requirements__returns_list(
+    project_with_setup_with_cfg_pyproject_and_requirements,
+):
+    expect = [
+        # from requirements.txt:
+        "pandas",
+        "click",
+        # from setup.py:
+        # from setup.cfg:
+        "dependencya",
+        "dependencyb",
+        # from subdir/requirements.txt:
+        "pandas",
+        "tensorflow",
+        # from pyproject.toml:
+        "pandas",
+        "pydantic",
+        "pylint",
+    ]
+    ddd = list(
+        extract_dependencies(project_with_setup_with_cfg_pyproject_and_requirements)
+    )
+    print(ddd)
+    assert sorted([a for (a, _) in ddd]) == sorted(expect)
