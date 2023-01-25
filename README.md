@@ -181,5 +181,3 @@ For bug reports, when a user reports that `fawltydeps` not working on their proj
 - we can examine the issue more closely and start changing core logic, adding/changing unit tests along the way.
 
 The resulting updates are introduced to `fawltydeps` and reflected in our expectations, first in the TOML for the sample project(s) and then finally in the real_projects TOML.
-
-> > > > > > > c037af1 (ADD development section to Integration tests)
