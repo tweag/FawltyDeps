@@ -22,7 +22,7 @@ _undeclared_ dependencies as well as _unused_ dependencies.
 
 _Undeclared_ dependencies are dependencies that are `import`ed by the code, but
 not declared by your project. For example, if you `import numpy` somewhere in
-your code, but then you forget to include `numpy` in  your `requirements.txt`.
+your code, but then you forget to include `numpy` in your `requirements.txt`.
 
 _Unused_ dependencies are dependencies that your project claims to be using,
 but that does not seem to be `import`ed anywhere. For example if you have
@@ -46,12 +46,13 @@ When none of these are specified, the default action is `--check`.
 
 The `--code` option tells FawltyDeps where to find the Python code to parse for
 `import` statements. You can pass either of these:
- - a directory: FawltyDeps will find all Python scripts (`*.py`) and Jupyter
-   notebooks (`*.ipynb`) under this directory.
- - a single file: Either a Python script (`*.py`) or a Jupyter Notebook
-   (`*.ipynb`)
- - `-`: Passing a single dash (`--code=-`) tells FawltyDeps to read Python code
-   from stdin.
+
+- a directory: FawltyDeps will find all Python scripts (`*.py`) and Jupyter
+  notebooks (`*.ipynb`) under this directory.
+- a single file: Either a Python script (`*.py`) or a Jupyter Notebook
+  (`*.ipynb`)
+- `-`: Passing a single dash (`--code=-`) tells FawltyDeps to read Python code
+  from stdin.
 
 If no `--code` option is passed, FawltyDeps will find all Python code under the
 current directory, i.e. same as `--code=.`
@@ -60,11 +61,12 @@ current directory, i.e. same as `--code=.`
 
 The `--deps` option tells FawltyDeps where to look for your project's declared
 dependencies. A number of file formats are supported:
- - `requirements.txt`
- - `pyproject.toml` (following PEP 621 or Poetry conventions)
- - `setup.py` (only limited support for simple files with a single `setup()`
-   call and literals passed directly to the `install_requires` and
-   `extras_require` arguments)
+
+- `requirements.txt`
+- `pyproject.toml` (following PEP 621 or Poetry conventions)
+- `setup.py` (only limited support for simple files with a single `setup()`
+  call and literals passed directly to the `install_requires` and
+  `extras_require` arguments)
 
 The `--deps` option accepts either a directory, in which case FawltyDeps will go
 looking for the above files under that directory. or a file, in case you want to
@@ -168,3 +170,16 @@ outputs are defined in TOML files under
 When you find a project where FawltyDeps is not doing a good job, we appreciate
 you adding that project under [`tests/real_projects`](./tests/real_projects).
 Look at the existing files in that directory to see how these tests work.
+
+### Development
+
+To give minimal working examples of supported projects we introduce [`tests/sample_projects`](./tests/sample_projects) in integration tests, where simplified version of real-world projects are stored.
+For bug reports, when a user reports that `fawltydeps` not working on their project, we adopt the following process:
+
+- the project is added to `real_projects`
+- we isolate the problems/issues/features and phrase them succinctly as a sample project under `sample_projects`
+- we can examine the issue more closely and start changing core logic, adding/changing unit tests along the way.
+
+The resulting updates are introduced to `fawltydeps` and reflected in our expectations, first in the TOML for the sample project(s) and then finally in the real_projects TOML.
+
+> > > > > > > c037af1 (ADD development section to Integration tests)
