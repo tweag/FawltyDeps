@@ -159,7 +159,7 @@ def main() -> int:
     parser.add_argument(
         "--code",
         type=parse_path_or_stdin,
-        default=Path.cwd(),
+        default=Path("."),
         help=(
             "Code to parse for import statements (file or directory, use '-' "
             "to read code from stdin; defaults to the current directory)"
@@ -168,7 +168,7 @@ def main() -> int:
     parser.add_argument(
         "--deps",
         type=Path,
-        default=Path.cwd(),
+        default=Path("."),
         help=(
             "Where to find dependency declarations (file or directory, defaults"
             " to looking for requirements.txt/.in/setup.py/pyproject.toml in "
