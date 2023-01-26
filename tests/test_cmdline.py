@@ -365,10 +365,10 @@ def test__no_options__defaults_to_check_action_in_current_dir(
     expect = [
         "These imports appear to be undeclared dependencies:",
         "- 'requests' imported at:",
-        f"    {str(tmp_path / 'code.py')}:1",
+        "    code.py:1",
         "These dependencies appear to be unused (i.e. not imported):",
         "- 'pandas' declared in:",
-        f"    {tmp_path / 'requirements.txt'}",
+        "    requirements.txt",
     ]
     output, errors, returncode = run_fawltydeps(cwd=tmp_path)
     assert output.splitlines() == expect
