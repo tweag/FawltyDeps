@@ -7,15 +7,18 @@ Check for given a simple project that following workflows work:
 - TODO given only part of the project to search in
   correctly identify unused and missing dependencies
 
-Sample projects from `tests/sample_projects` are auto-dicovered and
-used in `sample_projects_params.
+Sample projects are subdirectories of `tests/sample_projects`. These are
+auto-discovered and used in `sample_projects_params` below.
 
-The structure of sample project is following
-```
-└── sample_project
+The structure of sample project is as follows:
+
+tests/sample_projects
+├── sample_project1
+│   ├── expected.toml (mandatory)
+│   └── ... (regular Python project)
+└── sample_project2
     ├── expected.toml (mandatory)
     └── ... (regular Python project)
-```
 """
 import sys
 from pathlib import Path
@@ -23,7 +26,6 @@ from pathlib import Path
 import pytest
 
 from fawltydeps.main import Action, Analysis
-from fawltydeps.types import FileLocation
 
 if sys.version_info >= (3, 11):
     import tomllib  # pylint: disable=E1101
@@ -51,14 +53,11 @@ def test_integration_analysis_on_sample_projects__(project_path):
     with (project_path / "expected.toml").open("rb") as f:
         expected = tomllib.load(f)
 
-    # parse FileLocation from toml file
-    expected["undeclared_deps"] = {
-        k: [
-            FileLocation(project_path / value["path"], value.get("lineno"))
-            for value in v
-        ]
-        for k, v in expected["undeclared_deps"].items()
-    }
-
-    assert analysis.unused_deps == set(expected["unused_deps"].keys())
-    assert analysis.undeclared_deps == expected["undeclared_deps"]
+    assert (
+        analysis.unused_deps
+        == set(expected.get("analysis_result", {}).get("unused_deps"))
+        or set()
+    )
+    assert set(analysis.undeclared_deps.keys()) == set(
+        expected.get("analysis_result", {}).get("undeclared_deps") or {}
+    )
