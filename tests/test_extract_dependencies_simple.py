@@ -20,7 +20,7 @@ def dependency_factory(data: List[str], path: str) -> List[DeclaredDependency]:
 
 
 @pytest.mark.parametrize(
-    "file_content,file_name,expected",
+    "file_content,expected",
     [
         pytest.param(
             dedent(
@@ -29,7 +29,6 @@ def dependency_factory(data: List[str], path: str) -> List[DeclaredDependency]:
                 click
                 """
             ),
-            Path("requirements.txt"),
             dependency_factory(
                 ["pandas", "click"],
                 "requirements.txt",
@@ -44,7 +43,6 @@ def dependency_factory(data: List[str], path: str) -> List[DeclaredDependency]:
                 click >=1.2
                 """
             ),
-            Path("requirements.txt"),
             dependency_factory(
                 ["pandas", "click"],
                 "requirements.txt",
@@ -53,13 +51,14 @@ def dependency_factory(data: List[str], path: str) -> List[DeclaredDependency]:
         ),
     ],
 )
-def test_parse_requirements_contents(file_content, file_name, expected):
+def test_parse_requirements_contents(file_content, expected):
+    file_name = Path("requirements.txt")
     result = list(parse_requirements_contents(file_content, file_name))
     assert sorted(result) == sorted(expected)
 
 
 @pytest.mark.parametrize(
-    "file_content,file_name,expected",
+    "file_content,expected",
     [
         pytest.param(
             dedent(
@@ -72,7 +71,6 @@ def test_parse_requirements_contents(file_content, file_name, expected):
                 )
                 """
             ),
-            Path("setup.py"),
             dependency_factory(["pandas", "click"], "setup.py"),
             id="__simple_requirements_in_setup_py__succeeds",
         ),
@@ -87,7 +85,6 @@ def test_parse_requirements_contents(file_content, file_name, expected):
                 )
                 """
             ),
-            Path("setup.py"),
             dependency_factory(["pandas", "click"], "setup.py"),
             id="__requirements_with_versions__yields_names",
         ),
@@ -101,7 +98,6 @@ def test_parse_requirements_contents(file_content, file_name, expected):
                 )
                 """
             ),
-            Path("setup.py"),
             [],
             id="__no_requirements__yields_nothing",
         ),
@@ -120,7 +116,6 @@ def test_parse_requirements_contents(file_content, file_name, expected):
                 )
                 """
             ),
-            Path("setup.py"),
             dependency_factory(["pandas", "click"], "setup.py"),
             id="__handles_nested_functions__yields_names",
         ),
@@ -145,7 +140,6 @@ def test_parse_requirements_contents(file_content, file_name, expected):
 
                 """
             ),
-            Path("setup.py"),
             dependency_factory(["pandas", "click"], "setup.py"),
             id="__two_setup_calls__uses_only_top_level",
         ),
@@ -163,7 +157,6 @@ def test_parse_requirements_contents(file_content, file_name, expected):
                 )
                 """
             ),
-            Path("setup.py"),
             dependency_factory(["annoy", "jieba"], "setup.py"),
             id="__extras_present__yields_names",
         ),
@@ -182,19 +175,19 @@ def test_parse_requirements_contents(file_content, file_name, expected):
                 )
                 """
             ),
-            Path("setup.py"),
             dependency_factory(["pandas", "click", "annoy", "jieba"], "setup.py"),
             id="__extras_and_regular_dependencies__yields_all_names",
         ),
     ],
 )
-def test_parse_setup_contents(file_content, file_name, expected):
+def test_parse_setup_contents(file_content, expected):
+    file_name = Path("setup.py")
     result = list(parse_setup_contents(file_content, file_name))
     assert sorted(result) == sorted(expected)
 
 
 @pytest.mark.parametrize(
-    "file_content,file_name,expected",
+    "file_content,expected",
     [
         pytest.param(
             dedent(
@@ -205,7 +198,6 @@ def test_parse_setup_contents(file_content, file_name, expected):
                     click
                 """
             ),
-            Path("setup.cfg"),
             dependency_factory(["pandas", "click"], "setup.cfg"),
             id="__simple_requirements_in_setup_cfg__succeeds",
         ),
@@ -216,7 +208,6 @@ def test_parse_setup_contents(file_content, file_name, expected):
                 license_files = LICENSE
                 """
             ),
-            Path("setup.cfg"),
             [],
             id="__no_requirements_in_setup_cfg__returns_none",
         ),
@@ -227,7 +218,6 @@ def test_parse_setup_contents(file_content, file_name, expected):
                 test = pytest
                 """
             ),
-            Path("setup.cfg"),
             [DeclaredDependency("pytest", Path("setup.cfg"))],
             id="__extra_requirements_section_in_setup_cfg__succeeds",
         ),
@@ -238,7 +228,6 @@ def test_parse_setup_contents(file_content, file_name, expected):
                 test = pytest
                 """
             ),
-            Path("setup.cfg"),
             [DeclaredDependency("pytest", Path("setup.cfg"))],
             id="__tests_requirements_section_in_setup_cfg__succeeds",
         ),
@@ -251,7 +240,6 @@ def test_parse_setup_contents(file_content, file_name, expected):
                     tox
                 """
             ),
-            Path("setup.cfg"),
             dependency_factory(["hypothesis", "tox"], "setup.cfg"),
             id="__tests_requirements_in_setup_cfg__succeeds",
         ),
@@ -264,7 +252,6 @@ def test_parse_setup_contents(file_content, file_name, expected):
                     tox
                 """
             ),
-            Path("setup.cfg"),
             dependency_factory(["hypothesis", "tox"], "setup.cfg"),
             id="__extras_requirements_in_setup_cfg__succeeds",
         ),
@@ -287,7 +274,6 @@ def test_parse_setup_contents(file_content, file_name, expected):
                 test = hypothesis
                 """
             ),
-            Path("setup.cfg"),
             dependency_factory(
                 ["pandas", "click", "tox", "scipy", "pytest", "hypothesis"], "setup.cfg"
             ),
@@ -295,7 +281,8 @@ def test_parse_setup_contents(file_content, file_name, expected):
         ),
     ],
 )
-def test_parse_setup_cfg_contents(file_content, file_name, expected):
+def test_parse_setup_cfg_contents(file_content, expected):
+    file_name = Path("setup.cfg")
     result = list(parse_setup_cfg_contents(file_content, file_name))
     assert sorted(result) == sorted(expected)
 
@@ -518,8 +505,7 @@ def test_extract_dependencies__project_with_setup_cfg_pyproject_requirements__re
         "pydantic",
         "pylint",
     ]
-    ddd = list(
+    actual = list(
         extract_dependencies(project_with_setup_with_cfg_pyproject_and_requirements)
     )
-    print(ddd)
-    assert sorted([a for (a, _) in ddd]) == sorted(expect)
+    assert sorted([a for (a, _) in actual]) == sorted(expect)
