@@ -268,6 +268,31 @@ def test_parse_setup_contents(file_content, file_name, expected):
             dependency_factory(["hypothesis", "tox"], "setup.cfg"),
             id="__extras_requirements_in_setup_cfg__succeeds",
         ),
+        pytest.param(
+            dedent(
+                """\
+                [options]
+                install_requires =
+                    pandas
+                    click
+                tests_require =
+                    tox
+                extras_require =
+                    scipy
+
+                [options.extras_require]
+                test = pytest
+
+                [options.tests_require]
+                test = hypothesis
+                """
+            ),
+            Path("setup.cfg"),
+            dependency_factory(
+                ["pandas", "click", "tox", "scipy", "pytest", "hypothesis"], "setup.cfg"
+            ),
+            id="__all_requirements_types_in_setup_cfg__succeeds",
+        ),
     ],
 )
 def test_parse_setup_cfg_contents(file_content, file_name, expected):
