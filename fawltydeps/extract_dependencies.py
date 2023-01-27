@@ -126,17 +126,15 @@ def parse_setup_cfg_contents(
     parser = configparser.ConfigParser()
     parser.read_string(text)
 
-    sections = parser.sections()
-
     def _extract_additional_requirements(name: str) -> List[str]:
         additional_requirements = []
         composed_section = "options." + name
-        if composed_section in sections:
+        if composed_section in parser:
             additional_requirements += [
                 parser.get(composed_section, o)
                 for o in parser.options(composed_section)
             ]
-        if "options" in sections and name in parser.options("options"):
+        if "options" in parser and name in parser.options("options"):
             additional_requirements += [parser.get("options", name)]
 
         logger.debug(
