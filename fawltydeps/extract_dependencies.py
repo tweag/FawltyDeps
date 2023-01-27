@@ -5,7 +5,7 @@ import configparser
 import logging
 import sys
 from pathlib import Path
-from typing import Any, Dict, Iterator, List
+from typing import Any, Dict, Iterator
 
 from pkg_resources import parse_requirements
 
@@ -126,37 +126,37 @@ def parse_setup_cfg_contents(
     parser = configparser.ConfigParser()
     parser.read_string(text)
 
-    def _extract_additional_requirements(name: str) -> List[str]:
-        additional_requirements = []
-        composed_section = "options." + name
-        if composed_section in parser:
-            additional_requirements += [
-                parser.get(composed_section, o)
-                for o in parser.options(composed_section)
-            ]
-        if "options" in parser and name in parser.options("options"):
-            additional_requirements += [parser.get("options", name)]
-
-        logger.debug(
-            "Requirements found inf file %s for %s: %s",
-            str(path_hint),
-            name,
-            str(additional_requirements),
-        )
-        return additional_requirements
-
-    install_requires = [parser.get("options", "install_requires", fallback="")]
-    extras_require = _extract_additional_requirements("extras_require")
-    tests_require = _extract_additional_requirements("tests_require")
-
-    requirements = install_requires + extras_require + tests_require
-    logger.debug("CFG dependencies: %s", str(requirements))
-
-    for requirement in requirements:
+    def parse_value(value: str) -> Iterator[DeclaredDependency]:
         yield from parse_requirements_contents(
-            requirement,
+            value,
             path_hint=path_hint,
         )
+
+    def extract_section(section: str) -> Iterator[DeclaredDependency]:
+        if section in parser:
+            for option in parser.options(section):
+                value = parser.get(section, option)
+                logger.debug("deps found for [%s]: %s", section, value)
+                yield from parse_value(value)
+
+    def extract_option_from_section(
+        section: str, option: str
+    ) -> Iterator[DeclaredDependency]:
+        if section in parser and option in parser.options(section):
+            value = parser.get(section, option)
+            logger.debug("deps found for [%s] / %s: %s", section, option, value)
+            yield from parse_value(value)
+
+    # Parse [options] -> install_requires
+    yield from extract_option_from_section("options", "install_requires")
+
+    # Parse [options] -> extras_require, or [options.extras_require]
+    yield from extract_option_from_section("options", "extras_require")
+    yield from extract_section("options.extras_require")
+
+    # Parse [options] -> tests_require, or [options.tests_require]
+    yield from extract_option_from_section("options", "tests_require")
+    yield from extract_section("options.tests_require")
 
 
 def parse_poetry_pyproject_dependencies(
