@@ -15,8 +15,8 @@ from fawltydeps.extract_dependencies import (
 )
 
 
-def dependency_factory(data: List[str], path: Path) -> List[DeclaredDependency]:
-    return [DeclaredDependency(d, path) for d in data]
+def dependency_factory(data: List[str], path: str) -> List[DeclaredDependency]:
+    return [DeclaredDependency(d, Path(path)) for d in data]
 
 
 @pytest.mark.parametrize(
@@ -32,7 +32,7 @@ def dependency_factory(data: List[str], path: Path) -> List[DeclaredDependency]:
             Path("requirements.txt"),
             dependency_factory(
                 ["pandas", "click"],
-                Path("requirements.txt"),
+                "requirements.txt",
             ),
             id="__simple_requirements_success",
         ),
@@ -47,7 +47,7 @@ def dependency_factory(data: List[str], path: Path) -> List[DeclaredDependency]:
             Path("requirements.txt"),
             dependency_factory(
                 ["pandas", "click"],
-                Path("requirements.txt"),
+                "requirements.txt",
             ),
             id="__requirements_with_versions__yields_names",
         ),
@@ -73,7 +73,7 @@ def test_parse_requirements_contents(file_content, file_name, expected):
                 """
             ),
             Path("setup.py"),
-            dependency_factory(["pandas", "click"], Path("setup.py")),
+            dependency_factory(["pandas", "click"], "setup.py"),
             id="__simple_requirements_in_setup_py__succeeds",
         ),
         pytest.param(
@@ -88,7 +88,7 @@ def test_parse_requirements_contents(file_content, file_name, expected):
                 """
             ),
             Path("setup.py"),
-            dependency_factory(["pandas", "click"], Path("setup.py")),
+            dependency_factory(["pandas", "click"], "setup.py"),
             id="__requirements_with_versions__yields_names",
         ),
         pytest.param(
@@ -121,7 +121,7 @@ def test_parse_requirements_contents(file_content, file_name, expected):
                 """
             ),
             Path("setup.py"),
-            dependency_factory(["pandas", "click"], Path("setup.py")),
+            dependency_factory(["pandas", "click"], "setup.py"),
             id="__handles_nested_functions__yields_names",
         ),
         pytest.param(
@@ -146,7 +146,7 @@ def test_parse_requirements_contents(file_content, file_name, expected):
                 """
             ),
             Path("setup.py"),
-            dependency_factory(["pandas", "click"], Path("setup.py")),
+            dependency_factory(["pandas", "click"], "setup.py"),
             id="__two_setup_calls__uses_only_top_level",
         ),
         pytest.param(
@@ -164,7 +164,7 @@ def test_parse_requirements_contents(file_content, file_name, expected):
                 """
             ),
             Path("setup.py"),
-            dependency_factory(["annoy", "jieba"], Path("setup.py")),
+            dependency_factory(["annoy", "jieba"], "setup.py"),
             id="__extras_present__yields_names",
         ),
         pytest.param(
@@ -183,7 +183,7 @@ def test_parse_requirements_contents(file_content, file_name, expected):
                 """
             ),
             Path("setup.py"),
-            dependency_factory(["pandas", "click", "annoy", "jieba"], Path("setup.py")),
+            dependency_factory(["pandas", "click", "annoy", "jieba"], "setup.py"),
             id="__extras_and_regular_dependencies__yields_all_names",
         ),
     ],
@@ -199,9 +199,6 @@ def test_parse_setup_contents(file_content, file_name, expected):
         pytest.param(
             dedent(
                 """\
-                [metadata]
-                name = "Package-A"
-
                 [options]
                 install_requires =
                     pandas
@@ -209,7 +206,7 @@ def test_parse_setup_contents(file_content, file_name, expected):
                 """
             ),
             Path("setup.cfg"),
-            dependency_factory(["pandas", "click"], Path("setup.cfg")),
+            dependency_factory(["pandas", "click"], "setup.cfg"),
             id="__simple_requirements_in_setup_cfg__succeeds",
         ),
         pytest.param(
@@ -217,12 +214,6 @@ def test_parse_setup_contents(file_content, file_name, expected):
                 """\
                 [metadata]
                 license_files = LICENSE
-
-                [global]
-                verbose=0
-
-                [build]
-                force=1
                 """
             ),
             Path("setup.cfg"),
@@ -232,52 +223,50 @@ def test_parse_setup_contents(file_content, file_name, expected):
         pytest.param(
             dedent(
                 """\
-                [metadata]
-                name = my_project
-                version = 1.2.3
-
-                license = Revised BSD License
-
-                classifiers =
-                    Programming Language :: Python :: 3
-
-                [options]
-                zip_safe = True
-                py_modules = setuptools_py2cfg
-                python_requires = >=3.6
-
                 [options.extras_require]
                 test = pytest
-
-                [options.entry_points]
-                console_scripts = setuptools-py2cfg = setuptools_py2cfg:main
                 """
             ),
             Path("setup.cfg"),
             [DeclaredDependency("pytest", Path("setup.cfg"))],
-            id="__extra_requirements_in_setup_cfg__succeeds",
+            id="__extra_requirements_section_in_setup_cfg__succeeds",
         ),
         pytest.param(
             dedent(
                 """\
-                [metadata]
-
-                [options]
-                include_package_data = True
-                packages = find:
-                tests_require =
-                    hypothesis
-                    tox
-                zip_safe = True
-
-                [options.entry_points]
-                console_scripts =
-                    pycharm-setup = pycharmsetup.cli:main
+                [options.tests_require]
+                test = pytest
                 """
             ),
             Path("setup.cfg"),
-            dependency_factory(["hypothesis", "tox"], Path("setup.cfg")),
+            [DeclaredDependency("pytest", Path("setup.cfg"))],
+            id="__tests_requirements_section_in_setup_cfg__succeeds",
+        ),
+        pytest.param(
+            dedent(
+                """\
+                [options]
+                tests_require =
+                    hypothesis
+                    tox
+                """
+            ),
+            Path("setup.cfg"),
+            dependency_factory(["hypothesis", "tox"], "setup.cfg"),
             id="__tests_requirements_in_setup_cfg__succeeds",
+        ),
+        pytest.param(
+            dedent(
+                """\
+                [options]
+                extras_require =
+                    hypothesis
+                    tox
+                """
+            ),
+            Path("setup.cfg"),
+            dependency_factory(["hypothesis", "tox"], "setup.cfg"),
+            id="__extras_requirements_in_setup_cfg__succeeds",
         ),
     ],
 )
