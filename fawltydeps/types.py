@@ -92,26 +92,30 @@ class Location:
 
 @dataclass(eq=True, frozen=True)
 class ParsedImport:
-    "Import parsed from the source code."
+    """Import parsed from the source code."""
+
     name: str
     source: Location
 
 
 class DeclaredDependency(NamedTuple):
-    "Declared dependencies parsed from configuration-containing files"
+    """Declared dependencies parsed from configuration-containing files"""
+
     name: str
     source: Location
 
 
 @dataclass
 class UndeclaredDependency:
-    "Undeclared dependency found by analysis in the 'check' module."
+    """Undeclared dependency found by analysis in the 'check' module."""
+
     name: str
     references: List[ParsedImport]
 
 
 @dataclass
 class UnusedDependency:
-    "Unused dependency found by analysis in the 'check' module."
+    """Unused dependency found by analysis in the 'check' module."""
+
     name: str
     references: List[DeclaredDependency]
