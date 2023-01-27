@@ -60,6 +60,14 @@ def parse_notebook_file(path: Path) -> Iterator[ParsedImport]:
     Generate (i.e. yield) the module names that are imported in the order
     they appear in the file.
     """
+
+    def remove_magic_command(line: str, source: Location) -> str:
+        """Remove magic notebook commands from the given line."""
+        if line.lstrip().startswith(("!", "%")):
+            logger.warning(f"Found magic command {line!r} at {source}")
+            return "\n"
+        return line
+
     with path.open("rb") as notebook:
         notebook_content = json.load(notebook, strict=False)
     language_name = (
@@ -67,13 +75,18 @@ def parse_notebook_file(path: Path) -> Iterator[ParsedImport]:
     )
 
     if language_name.lower() == "python":
-        for cell_index, cell in enumerate(notebook_content["cells"], start=1):
-            source = Location(path, cell_index)
+        for cellno, cell in enumerate(notebook_content["cells"], start=1):
+            source = Location(path, cellno)
             try:
                 if cell["cell_type"] == "code":
-                    yield from parse_code("".join(cell["source"]), source=source)
+                    lines = [
+                        remove_magic_command(line, source.supply(lineno=n))
+                        for n, line in enumerate(cell["source"], start=1)
+                    ]
+                    yield from parse_code("".join(lines), source=source)
             except Exception as exc:
                 raise SyntaxError(f"Cannot parse code from {source}.") from exc
+
     elif not language_name:
         logger.info(
             f"Skipping the notebook on {path}. "

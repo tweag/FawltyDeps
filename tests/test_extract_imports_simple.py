@@ -256,6 +256,23 @@ def test_parse_notebook_file__on_no_defined_language__logs_skipping_msg_and_retu
     )
 
 
+def test_parse_notebook_file__with_magic_commands__ignores_magic_commands(tmp_path):
+    code = generate_notebook(
+        [
+            [
+                "   ! pip3 install -r 'requirements.txt'\n",
+                "% pip install numpy\n",
+                "import pandas",
+            ]
+        ]
+    )
+    script = tmp_path / "test.ipynb"
+    script.write_text(code)
+
+    expect = imports_w_linenos_cellnos([("pandas", 3, 1)], script)
+    assert set(parse_notebook_file(script)) == set(expect)
+
+
 def test_parse_notebook_file__on_no_defined_language_info__logs_skipping_msg_and_returns_no_imports(
     tmp_path, caplog
 ):
