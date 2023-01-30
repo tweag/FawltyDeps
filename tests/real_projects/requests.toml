@@ -25,21 +25,17 @@ sha256 = "375d6bb6b73af27c69487dcf1df51659a8ee7428420caff21253825fb338ce10"
 # Value: list (set) of external packages imported
 # TODO: Analyze requests properly
 "<unused>" = [
-    "BaseHTTPServer",
     "certifi",
     "chardet",
     "charset_normalizer",
     "cryptography",
-    "cStringIO",
     "idna",
     "OpenSSL",
     "pygments",
     "pytest",
     "requests",
     "setuptools",
-    "SimpleHTTPServer",
     "simplejson",
-    "StringIO",
     "trustme",
     "urllib3",
 ]
@@ -57,20 +53,16 @@ sha256 = "375d6bb6b73af27c69487dcf1df51659a8ee7428420caff21253825fb338ce10"
 # Value: list (set) of external packages imported without being declared
 # TODO: Analyze requests properly
 "<unused>" = [
-    "BaseHTTPServer",
     "certifi",
     "charset_normalizer",
     "cryptography",
-    "cStringIO",
     "idna",
     "OpenSSL",
     "pygments",
     "pytest",
     "requests",
     "setuptools",
-    "SimpleHTTPServer",
     "simplejson",
-    "StringIO",
     "trustme",
     "urllib3",
 ]

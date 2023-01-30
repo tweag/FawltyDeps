@@ -153,6 +153,32 @@ def generate_notebook(
             [("requests", 5), ("foo", 6), ("numpy", 7)],
             id="combo_of_simple_imports__extracts_all_external_imports",
         ),
+        pytest.param(
+            dedent(
+                """\
+                try:  # Python 3
+                    from http.server import HTTPServer, SimpleHTTPRequestHandler
+                except ImportError:  # Python 2
+                    from BaseHTTPServer import HTTPServer
+                    from SimpleHTTPServer import SimpleHTTPRequestHandler
+                """
+            ),
+            [],
+            id="stdlib_import_with_ImportError_fallback__ignores_all",
+        ),
+        pytest.param(
+            dedent(
+                """\
+                if sys.version_info >= (3, 0):
+                    from http.server import HTTPServer, SimpleHTTPRequestHandler
+                else:
+                    from BaseHTTPServer import HTTPServer
+                    from SimpleHTTPServer import SimpleHTTPRequestHandler
+                """
+            ),
+            [],
+            id="stdlib_import_with_if_else_fallback__ignores_all",
+        ),
     ],
 )
 def test_parse_code(code, expected_import_line_pairs):
