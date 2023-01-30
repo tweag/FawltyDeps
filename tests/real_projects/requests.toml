@@ -40,7 +40,6 @@ sha256 = "375d6bb6b73af27c69487dcf1df51659a8ee7428420caff21253825fb338ce10"
     "SimpleHTTPServer",
     "simplejson",
     "StringIO",
-    "tests",
     "trustme",
     "urllib3",
 ]
@@ -72,7 +71,6 @@ sha256 = "375d6bb6b73af27c69487dcf1df51659a8ee7428420caff21253825fb338ce10"
     "SimpleHTTPServer",
     "simplejson",
     "StringIO",
-    "tests",
     "trustme",
     "urllib3",
 ]
