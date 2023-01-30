@@ -14,7 +14,21 @@ from fawltydeps.utils import walk_dir
 
 logger = logging.getLogger(__name__)
 
-ISORT_CONFIG = isort.Config(py_version="all")
+
+def isort_config(path: Path) -> isort.Config:
+    """Configure isort to correctly classify import statements.
+
+    In order for isort to correctly differentiate between first- and third-party
+    imports, we need to pass in a configuration object that tells isort where
+    to look for first-party imports.
+    """
+    return isort.Config(
+        directory=str(path),  # Resolve first-party imports from this directory
+        py_version="all",  # Ignore stdlib imports from all stdlib versions
+    )
+
+
+ISORT_CONFIG = isort_config(Path("."))
 
 
 class ArgParseError(Exception):
@@ -118,11 +132,17 @@ def parse_dir(path: Path) -> Iterator[ParsedImport]:
     unspecified. Modules that are imported multiple times (in the same file or
     across several files) will be yielded multiple times.
     """
-    for file in walk_dir(path):
-        if file.suffix == ".py":
-            yield from parse_python_file(file)
-        elif file.suffix == ".ipynb":
-            yield from parse_notebook_file(file)
+    global ISORT_CONFIG  # pylint: disable=global-statement
+    old_config = ISORT_CONFIG
+    ISORT_CONFIG = isort_config(path)
+    try:
+        for file in walk_dir(path):
+            if file.suffix == ".py":
+                yield from parse_python_file(file)
+            elif file.suffix == ".ipynb":
+                yield from parse_notebook_file(file)
+    finally:
+        ISORT_CONFIG = old_config
 
 
 def parse_any_arg(arg: PathOrSpecial) -> Iterator[ParsedImport]:

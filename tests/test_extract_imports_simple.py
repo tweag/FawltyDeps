@@ -386,6 +386,30 @@ def test_parse_dir__imports__are_extracted_in_order_of_encounter(write_tmp_files
     assert list(parse_dir(tmp_path)) == expect
 
 
+def test_parse_dir__imports_from_same_dir__are_ignored(write_tmp_files):
+    tmp_path = write_tmp_files(
+        {
+            "my_application.py": "import my_utils",
+            "my_utils.py": "import sys",
+        }
+    )
+
+    assert set(parse_dir(tmp_path)) == set()
+
+
+def test_parse_dir__self_imports__are_ignored(write_tmp_files):
+    tmp_path = write_tmp_files(
+        {
+            "my_app/__init__.py": "",
+            "my_app/main.py": "from my_app import utils",
+            "my_app/utils.py": "import numpy",
+        }
+    )
+
+    expect = {ParsedImport("numpy", Location(tmp_path / "my_app/utils.py", lineno=1))}
+    assert set(parse_dir(tmp_path)) == expect
+
+
 def test_parse_dir__files_in_dot_dirs__are_ignored(write_tmp_files):
     tmp_path = write_tmp_files(
         {
