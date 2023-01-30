@@ -107,6 +107,11 @@ def generate_notebook(
             id="simple_import_from_stdlib__is_omitted",
         ),
         pytest.param(
+            "from __future__ import annotations",
+            [],
+            id="import_from_future__is_omitted",
+        ),
+        pytest.param(
             "from numpy import array",
             [("numpy", 1)],
             id="simple_import_from_external__extracts_module",

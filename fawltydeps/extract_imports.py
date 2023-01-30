@@ -29,15 +29,15 @@ def parse_code(code: str, *, source: Location) -> Iterator[ParsedImport]:
     they appear in the code.
     """
 
-    def is_stdlib_import(name: str) -> bool:
-        return isort.place_module(name) == "STDLIB"
+    def is_external_import(name: str) -> bool:
+        return isort.place_module(name) == "THIRDPARTY"
 
     for node in ast.walk(ast.parse(code, filename=str(source.path))):
         if isinstance(node, ast.Import):
             logger.debug(ast.dump(node))
             for alias in node.names:
                 name = alias.name.split(".", 1)[0]
-                if not is_stdlib_import(name):
+                if is_external_import(name):
                     yield ParsedImport(
                         name=name, source=source.supply(lineno=node.lineno)
                     )
@@ -48,7 +48,7 @@ def parse_code(code: str, *, source: Location) -> Iterator[ParsedImport]:
             # They are therefore uninteresting to us.
             if node.level == 0 and node.module is not None:
                 name = node.module.split(".", 1)[0]
-                if not is_stdlib_import(name):
+                if is_external_import(name):
                     yield ParsedImport(
                         name=name, source=source.supply(lineno=node.lineno)
                     )
