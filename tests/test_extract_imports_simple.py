@@ -256,12 +256,17 @@ def test_parse_notebook_file__on_no_defined_language__logs_skipping_msg_and_retu
     )
 
 
-def test_parse_notebook_file__with_magic_commands__ignores_magic_commands(tmp_path):
+def test_parse_notebook_file__with_magic_commands__ignores_magic_commands(
+    tmp_path, caplog
+):
+    exclamation_line = "   ! pip3 install -r 'requirements.txt'\n"
+    percent_line = "% pip install numpy\n"
+
     code = generate_notebook(
         [
             [
-                "   ! pip3 install -r 'requirements.txt'\n",
-                "% pip install numpy\n",
+                exclamation_line,
+                percent_line,
                 "import pandas",
             ]
         ]
@@ -270,7 +275,11 @@ def test_parse_notebook_file__with_magic_commands__ignores_magic_commands(tmp_pa
     script.write_text(code)
 
     expect = imports_w_linenos_cellnos([("pandas", 3, 1)], script)
+
     assert set(parse_notebook_file(script)) == set(expect)
+    for lineno, line in enumerate([exclamation_line, percent_line], start=1):
+        source = Location(script, 1, lineno)
+        assert f"Found magic command {line!r} at {source}" in caplog.text
 
 
 def test_parse_notebook_file__on_no_defined_language_info__logs_skipping_msg_and_returns_no_imports(
