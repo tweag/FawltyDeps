@@ -14,6 +14,8 @@ from fawltydeps.utils import walk_dir
 
 logger = logging.getLogger(__name__)
 
+ISORT_CONFIG = isort.Config(py_version="all")
+
 
 class ArgParseError(Exception):
     """Indicate errors while parsing command-line arguments"""
@@ -30,7 +32,7 @@ def parse_code(code: str, *, source: Location) -> Iterator[ParsedImport]:
     """
 
     def is_external_import(name: str) -> bool:
-        return isort.place_module(name) == "THIRDPARTY"
+        return isort.place_module(name, config=ISORT_CONFIG) == "THIRDPARTY"
 
     for node in ast.walk(ast.parse(code, filename=str(source.path))):
         if isinstance(node, ast.Import):
