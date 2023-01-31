@@ -3,9 +3,10 @@
 import ast
 import configparser
 import logging
+import re
 import sys
 from pathlib import Path
-from typing import Any, Dict, Iterator
+from typing import Any, Callable, Dict, Iterator, Optional
 
 from pkg_resources import Requirement
 
@@ -294,27 +295,33 @@ def extract_declared_dependencies(path: Path) -> Iterator[DeclaredDependency]:
     There is no guaranteed ordering on the generated dependencies.
     """
     parsers = {
-        "requirements.txt": parse_requirements_contents,
-        "requirements-all.txt": parse_requirements_contents,
-        "requirements.in": parse_requirements_contents,
+        re.compile(r".*\brequirements\b.*\.(txt|in)"): parse_requirements_contents,
         "setup.py": parse_setup_contents,
         "setup.cfg": parse_setup_cfg_contents,
         "pyproject.toml": parse_pyproject_contents,
     }
 
-    def parse_dependencies_in_file(path: Path) -> Iterator[DeclaredDependency]:
-        if path.name in parsers:
-            parser = parsers[path.name]
-            logger.debug(f"Extracting dependencies from {path}.")
-            yield from parser(path.read_text(), source=Location(path))
+    def get_parser(
+        path: Path,
+    ) -> Optional[Callable[[str, Location], Iterator[DeclaredDependency]]]:
+        for pattern, parse_func in parsers.items():
+            if (isinstance(pattern, re.Pattern) and pattern.fullmatch(path.name)) or (
+                isinstance(pattern, str) and pattern == path.name
+            ):
+                return parse_func
+        return None
 
     logger.debug(path)
 
     if path.is_file():
-        if not path.name in parsers:
+        parser = get_parser(path)
+        if parser is None:
             raise ArgParseError(f"Parsing file {path.name} is not supported")
-        yield from parse_dependencies_in_file(path)
-
+        logger.debug(f"Extracting dependencies from {path}.")
+        yield from parser(path.read_text(), Location(path))
     else:
         for file in walk_dir(path):
-            yield from parse_dependencies_in_file(file)
+            parser = get_parser(file)
+            if parser:
+                logger.debug(f"Extracting dependencies from {file}.")
+                yield from parser(file.read_text(), Location(file))
