@@ -523,9 +523,13 @@ def test_extract_declared_dependencies__project_with_setup_cfg_pyproject_require
         # from setup.cfg:
         "dependencyA",
         "dependencyB",
+        # from subdir/dev-requirements.txt:
+        "black",
         # from subdir/requirements.txt:
         "pandas",
         "tensorflow",
+        # from subdir/requirements-docs.txt:
+        "sphinx",
         # from pyproject.toml:
         "pandas",
         "pydantic",

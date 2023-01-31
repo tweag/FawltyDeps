@@ -41,7 +41,15 @@ sha256 = "04338a1b53852c1b30d84d9d333185485725b0097462045397f84c721bab59cd"
 "<unused>" = [
     "attmap",
     "logmuse",
+    "markdown-include",
+    "mkdocs",
+    "mock",
     "pandas",
+    "peppy",  # Declared in ./requirements/requirements-doc.txt
+    "pydoc-markdown",
+    "pytest",
+    "pytest-cov",
+    "pytest-remotedata",
     "rich",
     "ubiquerg", 
     "pyyaml"
@@ -53,7 +61,6 @@ sha256 = "04338a1b53852c1b30d84d9d333185485725b0097462045397f84c721bab59cd"
 # Value: list (set) of external packages imported without being declared
 "<unused>" = [
     "numpy", 
-    "pytest",
     "yaml",
     "setuptools"
 ]
@@ -64,6 +71,13 @@ sha256 = "04338a1b53852c1b30d84d9d333185485725b0097462045397f84c721bab59cd"
 # Value: list (set) of external packages imported
 "requirements-all.txt" = [
     "logmuse", 
+    "markdown-include",
+    "mkdocs",
+    "mock",
+    "peppy",  # Declared in ./requirements/requirements-doc.txt
+    "pydoc-markdown",
+    "pytest-cov",
+    "pytest-remotedata",
     "pyyaml"
 ]
 

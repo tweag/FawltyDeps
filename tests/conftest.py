@@ -159,9 +159,15 @@ def project_with_setup_with_cfg_pyproject_and_requirements(write_tmp_files):
                 pandas
                 click
             """,
+            "subdir/dev-requirements.txt": """\
+                black
+            """,
             "subdir/requirements.txt": """\
                 pandas
                 tensorflow>=2
+            """,
+            "subdir/requirements-docs.txt": """\
+                sphinx
             """,
             "setup.py": """\
                 from setuptools import setup

@@ -45,13 +45,22 @@ sha256 = "375d6bb6b73af27c69487dcf1df51659a8ee7428420caff21253825fb338ce10"
 # Value: list (set) of packages names that are declared
 # TODO: Analyze requests properly
 "<unused>" =  [
+    "Flask",
     "PySocks",
     "Sphinx",
     "certifi",
     "chardet",
     "charset_normalizer",
+    "httpbin",
     "idna",
+    "markupsafe",
+    "pytest",
+    "pytest-cov",
+    "pytest-httpbin",
+    "pytest-mock",
+    "trustme",
     "urllib3",
+    "wheel",
 ]
 
 [undeclared_deps]
@@ -63,10 +72,8 @@ sha256 = "375d6bb6b73af27c69487dcf1df51659a8ee7428420caff21253825fb338ce10"
     "cryptography",
     "OpenSSL",
     "pygments",
-    "pytest",
     "setuptools",
     "simplejson",
-    "trustme",
 ]
 
 [unused_deps]
@@ -74,4 +81,14 @@ sha256 = "375d6bb6b73af27c69487dcf1df51659a8ee7428420caff21253825fb338ce10"
 # Key: filename containing declared dependencies
 # Value: list (set) of external packages imported
 # TODO: Analyze requests properly
-"<unused>" =  ["PySocks", "Sphinx"]
+"<unused>" =  [
+    "Flask",
+    "PySocks",
+    "Sphinx",
+    "httpbin",
+    "markupsafe",
+    "pytest-cov",
+    "pytest-httpbin",
+    "pytest-mock",
+    "wheel",
+]

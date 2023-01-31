@@ -68,7 +68,7 @@ current directory, i.e. same as `--code=.`
 The `--deps` option tells FawltyDeps where to look for your project's declared
 dependencies. A number of file formats are supported:
 
-- `requirements.txt`, including the variants `requirements-all.txt` and `requirements.in`
+- `*requirements*.txt` and `*requirements*.in`
 - `pyproject.toml` (following PEP 621 or Poetry conventions)
 - `setup.py` (only limited support for simple files with a single `setup()`
   call and no computation involved for setting the `install_requires` and
