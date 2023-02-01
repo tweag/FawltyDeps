@@ -34,7 +34,7 @@ class DependencyParsingError(Exception):
 
 def parse_one_req(req_text: str, source: Location) -> DeclaredDependency:
     """Returns the name of a dependency declared in a requirement specifier."""
-    return DeclaredDependency(Requirement.parse(req_text).key, source)
+    return DeclaredDependency(Requirement.parse(req_text).unsafe_name, source)
 
 
 def parse_requirements_contents(
@@ -45,10 +45,6 @@ def parse_requirements_contents(
     This is usually a requirements.txt file or any other file following the
     Requirements File Format as documented here:
     https://pip.pypa.io/en/stable/reference/requirements-file-format/.
-
-    Note that parsed requirements keys are transformed to lower-case and also
-    sanitized in other ways (e.g. '_' -> '-') by the pkg_resources parser that
-    we are currently using.
     """
     for line in text.splitlines():
         if not line or line.lstrip().startswith(("-", "#")):
