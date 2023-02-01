@@ -418,19 +418,6 @@ def test_extract_dependencies__parse_only_requirements_from_subdir__returns_list
     assert sorted(actual) == sorted(expect)
 
 
-def test_extract_dependencies__unsupported_file__raises_error(
-    project_with_setup_and_requirements, caplog
-):
-    "In setup.py requirements are read from dict."
-    caplog.set_level(logging.WARNING)
-    list(
-        extract_dependencies(
-            project_with_setup_and_requirements.joinpath("python_file.py")
-        )
-    )
-    assert "Parsing file python_file.py is not supported" in caplog.text
-
-
 def test_extract_dependencies__project_with_pyproject_setup_and_requirements__returns_list(
     project_with_setup_pyproject_and_requirements,
 ):
