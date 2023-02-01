@@ -1,4 +1,5 @@
 "Test unhappy path, where parsing of dependencies fails"
+import logging
 from pathlib import Path
 from textwrap import dedent
 
@@ -14,11 +15,11 @@ from fawltydeps.types import ArgParseError, Location
 def test_parse_setup_cfg_contents__malformed__fails():
 
     file_content = dedent(
-            """\
+        """\
             [options]
             install_requires = pandas
             """
-        )
+    )
     file_name = Path("setup.cfg")
     with pytest.raises(TypeError):
         list(parse_setup_cfg_contents(file_content, Location(file_name)))
@@ -33,3 +34,20 @@ def test_extract_dependencies__unsupported_file__raises_error(
                 project_with_setup_and_requirements.joinpath("python_file.py")
             )
         )
+
+
+def test_parse_setup_cfg_contents__malformed__logs_error(caplog):
+    setup_contents = dedent(
+        """\
+        [options
+        install_requires =
+            pandas
+        """
+    )
+    expected = []
+    caplog.set_level(logging.ERROR)
+
+    source = Location(Path("setup.cfg"))
+    result = list(parse_setup_cfg_contents(setup_contents, source))
+    assert f"Could not parse contents of `{source}`" in caplog.text
+    assert expected == result
