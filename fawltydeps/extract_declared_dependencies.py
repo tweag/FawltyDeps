@@ -1,4 +1,4 @@
-"Collect declared dependencies of the project"
+"""Collect declared dependencies of the project"""
 
 import ast
 import configparser
@@ -40,12 +40,15 @@ def parse_one_req(req_text: str, source: Location) -> DeclaredDependency:
 def parse_requirements_contents(
     text: str, source: Location
 ) -> Iterator[DeclaredDependency]:
-    """
-    Extract dependencies (packages names) from the requirement.txt file
-    and other following Requirements File Format. For more information, see
+    """Extract dependencies (packages names) from a requirements file.
+
+    This is usually a requirements.txt file or any other file following the
+    Requirements File Format as documented here:
     https://pip.pypa.io/en/stable/reference/requirements-file-format/.
 
-    Parsed requirements keys are put to lower cases.
+    Note that parsed requirements keys are transformed to lower-case and also
+    sanitized in other ways (e.g. '_' -> '-') by the pkg_resources parser that
+    we are currently using.
     """
     for line in text.splitlines():
         if not line or line.lstrip().startswith(("-", "#")):
@@ -54,10 +57,13 @@ def parse_requirements_contents(
 
 
 def parse_setup_contents(text: str, source: Location) -> Iterator[DeclaredDependency]:
-    """
-    Extract dependencies (package names) from setup.py.
-    Function call `setup` where dependencies are listed
-    is at the outermost level of setup.py file.
+    """Extract dependencies (package names) from setup.py.
+
+    This file can contain arbitrary Python code, and simply executing it has
+    potential security implications. For now, we parse it with the `ast` module,
+    looking for the first call to a `setup()` function, and attempt to extract
+    the `install_requires` and `extras_require` keyword args from that function
+    call.
     """
 
     def _extract_deps_from_bottom_level_list(
@@ -114,8 +120,7 @@ def parse_setup_contents(text: str, source: Location) -> Iterator[DeclaredDepend
 def parse_setup_cfg_contents(
     text: str, source: Location
 ) -> Iterator[DeclaredDependency]:
-    """
-    Extract dependencies (package names) from setup.cfg.
+    """Extract dependencies (package names) from setup.cfg.
 
     `ConfigParser` basic building blocks are "sections"
     which are marked by "[..]" in the configuration file.
@@ -167,9 +172,7 @@ def parse_setup_cfg_contents(
 def parse_poetry_pyproject_dependencies(
     poetry_config: TomlData, source: Location
 ) -> Iterator[DeclaredDependency]:
-    """
-    Extract dependencies (package names) from Poetry fields in pyproject.toml
-    """
+    """Extract dependencies from `tool.poetry` fields in a pyproject.toml."""
 
     def parse_main_dependencies(
         poetry_config: TomlData, source: Location
@@ -226,9 +229,7 @@ def parse_poetry_pyproject_dependencies(
 def parse_pep621_pyproject_contents(
     parsed_contents: TomlData, source: Location
 ) -> Iterator[DeclaredDependency]:
-    """
-    Extract dependencies (package names) in PEP 621 styled pyproject.toml
-    """
+    """Extract dependencies from a pyproject.toml using the PEP 621 fields."""
 
     def parse_main_dependencies(
         parsed_contents: TomlData, source: Location
@@ -265,11 +266,12 @@ def parse_pep621_pyproject_contents(
 def parse_pyproject_contents(
     text: str, source: Location
 ) -> Iterator[DeclaredDependency]:
-    """
-    Parse dependencies from specific metadata fields in a pyproject.toml file.
-    This can currently parse dependencies from dependency fields in:
+    """Extract dependencies (package names) from pyproject.toml.
+
+    There are multiple ways to declare dependencies inside a pyproject.toml.
+    We currently handle:
     - PEP 621 core metadata fields
-    - Poetry-specific metadata
+    - Poetry-specific metadata in `tool.poetry` sections.
     """
     parsed_contents = tomllib.loads(text)
 
@@ -284,12 +286,14 @@ def parse_pyproject_contents(
 
 
 def extract_declared_dependencies(path: Path) -> Iterator[DeclaredDependency]:
-    """
-    Extract dependencies from supported file types.
-    Traverse directory tree to find matching files.
+    """Extract dependencies (package names) from supported file types.
 
-    Generate (i.e. yield) dependency names that are declared in the supported files.
-    There is no guaranteed ordering on the dependency names.
+    Pass a file to parse dependency declarations found inside that file. Pass
+    a directory to traverse that directory tree to find and automatically parse
+    any supported files.
+
+    Generate (i.e. yield) a DeclaredDependency object for each dependency found.
+    There is no guaranteed ordering on the generated dependencies.
     """
     parsers = {
         "requirements.txt": parse_requirements_contents,
