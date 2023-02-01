@@ -291,19 +291,19 @@ def extract_dependencies(path: Path) -> Iterator[DeclaredDependency]:
         "pyproject.toml": parse_pyproject_contents,
     }
 
+    def parse_dependencies_in_file(path: Path) -> Iterator[DeclaredDependency]:
+        if path.name in parsers:
+            parser = parsers[path.name]
+            logger.debug(f"Extracting dependencies from {path}.")
+            yield from parser(path.read_text(), source=Location(path))
+
     logger.debug(path)
 
     if path.is_file():
-        logger.debug(path)
-        parser = parsers.get(path.name)
-        if parser:
-            yield from parser(path.read_text(), source=Location(path))
-        else:
+        if not path.name in parsers:
             raise ArgParseError(f"Parsing file {path.name} is not supported")
+        yield from parse_dependencies_in_file(path)
 
     else:
         for file in walk_dir(path):
-            if file.name in parsers:
-                parser = parsers[file.name]
-                logger.debug(f"Extracting dependency from {file}.")
-                yield from parser(file.read_text(), source=Location(file))
+            yield from parse_dependencies_in_file(file)
