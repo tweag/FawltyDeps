@@ -44,7 +44,7 @@ sha256 = "375d6bb6b73af27c69487dcf1df51659a8ee7428420caff21253825fb338ce10"
 # Key: filename containing declared dependencies
 # Value: list (set) of packages names that are declared
 # TODO: Analyze requests properly
-"<unused>" =  ["chardet", "pysocks", "sphinx"]
+"<unused>" =  ["chardet", "PySocks", "Sphinx"]
 
 [undeclared_deps]
 # What we expect `fawltydeps --check-undeclared` to return for this project.
@@ -70,4 +70,4 @@ sha256 = "375d6bb6b73af27c69487dcf1df51659a8ee7428420caff21253825fb338ce10"
 # Key: filename containing declared dependencies
 # Value: list (set) of external packages imported
 # TODO: Analyze requests properly
-"<unused>" =  ["pysocks", "sphinx"]
+"<unused>" =  ["PySocks", "Sphinx"]

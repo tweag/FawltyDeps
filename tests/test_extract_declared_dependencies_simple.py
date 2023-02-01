@@ -498,8 +498,8 @@ def test_extract_declared_dependencies__project_with_setup_cfg_pyproject_require
         "click",
         # from setup.py:
         # from setup.cfg:
-        "dependencya",
-        "dependencyb",
+        "dependencyA",
+        "dependencyB",
         # from subdir/requirements.txt:
         "pandas",
         "tensorflow",
