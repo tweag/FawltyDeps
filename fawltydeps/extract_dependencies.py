@@ -124,7 +124,12 @@ def parse_setup_cfg_contents(
     or [options.{requirements_type}].
     """
     parser = configparser.ConfigParser()
-    parser.read_string(text)
+    try:
+        parser.read_string(text)
+    except configparser.Error as exc:
+        logger.debug(exc)
+        logger.error("Could not parse contents of `%s`", source)
+        return
 
     def parse_value(value: str) -> Iterator[DeclaredDependency]:
         yield from parse_requirements_contents(value, source=source)
@@ -133,7 +138,7 @@ def parse_setup_cfg_contents(
         if section in parser:
             for option in parser.options(section):
                 value = parser.get(section, option)
-                logger.debug("deps found for [%s]: %s", section, value)
+                logger.debug("Dependencies found in [%s]: %s", section, value)
                 yield from parse_value(value)
 
     def extract_option_from_section(
@@ -141,7 +146,7 @@ def parse_setup_cfg_contents(
     ) -> Iterator[DeclaredDependency]:
         if section in parser and option in parser.options(section):
             value = parser.get(section, option)
-            logger.debug("deps found for [%s] / %s: %s", section, option, value)
+            logger.debug("Dependencies found in [%s] / %s: %s", section, option, value)
             yield from parse_value(value)
 
     # Parse [options] -> install_requires
