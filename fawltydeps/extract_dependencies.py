@@ -25,7 +25,7 @@ ERROR_MESSAGE_TEMPLATE = "Failed to %s %s %s dependencies in %s."
 
 
 class DependencyParsingError(Exception):
-    "Error raised when parsing of dependency fails"
+    """Error raised when parsing of dependency fails"""
 
     def __init__(self, value: ast.AST):
         super().__init__(value)
