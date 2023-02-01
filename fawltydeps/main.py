@@ -13,6 +13,7 @@ from fawltydeps import extract_imports
 from fawltydeps.check import compare_imports_to_dependencies
 from fawltydeps.extract_dependencies import extract_dependencies
 from fawltydeps.types import (
+    ArgParseError,
     DeclaredDependency,
     ParsedImport,
     PathOrSpecial,
@@ -195,7 +196,7 @@ def main() -> int:
 
     try:
         analysis = Analysis.create(actions, args.code, args.deps)
-    except extract_imports.ArgParseError as exc:
+    except ArgParseError as exc:
         return parser.error(exc.msg)  # exit code 2
 
     analysis.print_human_readable(sys.stdout, details=verbosity >= 0)

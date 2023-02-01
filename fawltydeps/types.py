@@ -16,6 +16,13 @@ SpecialPath = Literal["<stdin>"]
 PathOrSpecial = Union[Path, SpecialPath]
 
 
+class ArgParseError(Exception):
+    """Indicate errors while parsing command-line arguments"""
+
+    def __init__(self, msg: str):
+        self.msg = msg
+
+
 @total_ordering
 @dataclass(frozen=True)
 class Location:

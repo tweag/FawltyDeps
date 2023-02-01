@@ -9,7 +9,7 @@ from typing import Iterable, Iterator
 
 import isort
 
-from fawltydeps.types import Location, ParsedImport, PathOrSpecial
+from fawltydeps.types import ArgParseError, Location, ParsedImport, PathOrSpecial
 from fawltydeps.utils import walk_dir
 
 logger = logging.getLogger(__name__)
@@ -29,13 +29,6 @@ def isort_config(path: Path) -> isort.Config:
 
 
 ISORT_CONFIG = isort_config(Path("."))
-
-
-class ArgParseError(Exception):
-    """Indicate errors while parsing command-line arguments"""
-
-    def __init__(self, msg: str):
-        self.msg = msg
 
 
 def parse_code(code: str, *, source: Location) -> Iterator[ParsedImport]:

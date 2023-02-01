@@ -9,7 +9,7 @@ from typing import Any, Dict, Iterator
 
 from pkg_resources import parse_requirements
 
-from fawltydeps.types import DeclaredDependency, Location
+from fawltydeps.types import ArgParseError, DeclaredDependency, Location
 from fawltydeps.utils import walk_dir
 
 if sys.version_info >= (3, 11):
@@ -299,7 +299,7 @@ def extract_dependencies(path: Path) -> Iterator[DeclaredDependency]:
         if parser:
             yield from parser(path.read_text(), source=Location(path))
         else:
-            logger.error("Parsing file %s is not supported", path.name)
+            raise ArgParseError(f"Parsing file {path.name} is not supported")
 
     else:
         for file in walk_dir(path):
