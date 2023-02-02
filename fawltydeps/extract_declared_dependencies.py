@@ -9,6 +9,7 @@ from typing import Any, Dict, Iterator
 
 from pkg_resources import Requirement
 
+from fawltydeps.limited_eval import CannotResolve, VariableTracker
 from fawltydeps.types import ArgParseError, DeclaredDependency, Location
 from fawltydeps.utils import walk_dir
 
@@ -27,9 +28,9 @@ ERROR_MESSAGE_TEMPLATE = "Failed to %s %s %s dependencies in %s."
 class DependencyParsingError(Exception):
     """Error raised when parsing of dependency fails"""
 
-    def __init__(self, value: ast.AST):
-        super().__init__(value)
-        self.value = value
+    def __init__(self, node: ast.AST):
+        super().__init__(node)
+        self.node = node
 
 
 def parse_one_req(req_text: str, source: Location) -> DeclaredDependency:
@@ -62,36 +63,32 @@ def parse_setup_contents(text: str, source: Location) -> Iterator[DeclaredDepend
     call.
     """
 
-    def _extract_deps_from_bottom_level_list(
-        deps: ast.AST,
-    ) -> Iterator[DeclaredDependency]:
-        if isinstance(deps, ast.List):
-            for element in deps.elts:
-                # Python v3.8 changed from ast.Str to ast.Constant
-                if isinstance(element, (ast.Constant, ast.Str)):
-                    yield parse_one_req(ast.literal_eval(element), source)
-        else:
-            raise DependencyParsingError(deps)
+    # Attempt to keep track of simple variable assignments (name -> value)
+    # declared in the setup.py prior to the setup() call, so that we can
+    # resolve any variable references in the arguments to the setup() call.
+    tracked_vars = VariableTracker(source)
 
     def _extract_deps_from_setup_call(node: ast.Call) -> Iterator[DeclaredDependency]:
         for keyword in node.keywords:
             try:
                 if keyword.arg == "install_requires":
-                    yield from _extract_deps_from_bottom_level_list(keyword.value)
-                elif keyword.arg == "extras_require":
-                    if isinstance(keyword.value, ast.Dict):
-                        logger.debug(ast.dump(keyword.value))
-                        for elements in keyword.value.values:
-                            logger.debug(ast.dump(elements))
-                            yield from _extract_deps_from_bottom_level_list(elements)
-                    else:
+                    value = tracked_vars.resolve(keyword.value)
+                    if not isinstance(value, list):
                         raise DependencyParsingError(keyword.value)
-            except DependencyParsingError as exc:
-                logger.debug(exc)
+                    for item in value:
+                        yield parse_one_req(item, source)
+                elif keyword.arg == "extras_require":
+                    value = tracked_vars.resolve(keyword.value)
+                    if not isinstance(value, dict):
+                        raise DependencyParsingError(keyword.value)
+                    for items in value.values():
+                        for item in items:
+                            yield parse_one_req(item, source)
+            except (DependencyParsingError, CannotResolve) as exc:
                 if sys.version_info >= (3, 9):
-                    unparsed_content = ast.unparse(exc.value)  # pylint: disable=E1101
+                    unparsed_content = ast.unparse(exc.node)  # pylint: disable=E1101
                 else:
-                    unparsed_content = ast.dump(exc.value)
+                    unparsed_content = ast.dump(exc.node)
                 logger.warning(
                     f"Could not parse contents of `{keyword.arg}`: {unparsed_content} in {source}."
                 )
@@ -106,6 +103,7 @@ def parse_setup_contents(text: str, source: Location) -> Iterator[DeclaredDepend
 
     setup_contents = ast.parse(text, filename=str(source.path))
     for node in ast.walk(setup_contents):
+        tracked_vars.evaluate(node)
         if _is_setup_function_call(node):
             # Below line is not checked by mypy, but `_is_setup_function_call`
             # makes sure that `node` is of a proper type.

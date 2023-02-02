@@ -196,6 +196,94 @@ def test_parse_requirements_contents(file_content, expected):
             dependency_factory(["pandas", "click", "annoy", "jieba"], "setup.py"),
             id="__extras_and_regular_dependencies__yields_all_names",
         ),
+        pytest.param(
+            """\
+            from setuptools import setup
+
+            my_deps = ["pandas", "click"]
+
+            setup(
+                name="MyLib",
+                install_requires=my_deps,
+            )
+            """,
+            dependency_factory(["pandas", "click"], "setup.py"),
+            id="__direct_list_variable_reference__succeeds",
+        ),
+        pytest.param(
+            """\
+            from setuptools import setup
+
+            my_extra_deps = {
+                "annoy": ["annoy==1.15.2"],
+                "chinese": ["jieba"],
+            }
+
+            setup(
+                name="MyLib",
+                extras_require=my_extra_deps,
+            )
+            """,
+            dependency_factory(["annoy", "jieba"], "setup.py"),
+            id="__direct_dict_variable_reference__succeeds",
+        ),
+        pytest.param(
+            """\
+            from setuptools import setup
+
+            pandas = "pandas"
+            click = "click"
+
+            setup(
+                name="MyLib",
+                install_requires=[pandas, click],
+            )
+            """,
+            dependency_factory(["pandas", "click"], "setup.py"),
+            id="__variable_reference_inside_list__succeeds",
+        ),
+        pytest.param(
+            """\
+            from setuptools import setup
+
+            annoy = "annoy"
+            annoy_deps = ["annoy==1.15.2"]
+            foobar = "foobar"
+
+            setup(
+                name="MyLib",
+                extras_require={
+                    annoy: annoy_deps,
+                    foobar: [foobar],
+                },
+            )
+            """,
+            dependency_factory(["annoy", "foobar"], "setup.py"),
+            id="__variable_reference_inside_dict__succeeds",
+        ),
+        pytest.param(
+            """\
+            from setuptools import setup
+
+            pandas = "pandas"
+            my_deps = [pandas, "click"]
+            annoy = "annoy"
+            annoy_deps = ["annoy==1.15.2"]
+            foobar = "foobar"
+            my_extra_deps = {
+                annoy: annoy_deps,
+                foobar: [foobar],
+            }
+
+            setup(
+                name="MyLib",
+                install_requires=my_deps,
+                extras_require=my_extra_deps,
+            )
+            """,
+            dependency_factory(["pandas", "click", "annoy", "foobar"], "setup.py"),
+            id="__nested_variable_reference__succeeds",
+        ),
     ],
 )
 def test_parse_setup_contents(file_content, expected):
