@@ -5,7 +5,7 @@ import json
 import logging
 import sys
 from pathlib import Path
-from typing import Iterator, List
+from typing import Iterable, Iterator
 
 import isort
 
@@ -78,22 +78,19 @@ def parse_notebook_file(path: Path) -> Iterator[ParsedImport]:
     """
 
     def filter_out_magic_commands(
-        cell_source: List[str], source: Location
-    ) -> List[str]:
-        """Remove magic notebook commands from the given cell."""
-        result = []
+        lines: Iterable[str], source: Location
+    ) -> Iterator[str]:
+        """Convert lines with magic notebook commands into empty lines."""
         command_continues = False
-        for lineno, line in enumerate(cell_source, start=1):
-            if line.lstrip().startswith(("!", "%")):
+        for lineno, line in enumerate(lines, start=1):
+            if line.lstrip().startswith(("!", "%")) or command_continues:
                 logger.warning(
                     f"Found magic command {line!r} at {source.supply(lineno=lineno)}"
                 )
                 command_continues = line.endswith("\\")
-                result.append("\n")
+                yield "\n"
             else:
-                result.append(line if not command_continues else "\n")
-
-        return result
+                yield line
 
     with path.open("rb") as notebook:
         notebook_content = json.load(notebook, strict=False)
