@@ -83,7 +83,12 @@ def parse_notebook_file(path: Path) -> Iterator[ParsedImport]:
         return line
 
     with path.open("rb") as notebook:
-        notebook_content = json.load(notebook, strict=False)
+        try:
+            notebook_content = json.load(notebook, strict=False)
+        except json.decoder.JSONDecodeError as exc:
+            logger.error(f"Could not parse code from {path}, {exc}")
+            return
+
     language_name = (
         notebook_content.get("metadata", {}).get("language_info", {}).get("name", "")
     )
@@ -98,8 +103,8 @@ def parse_notebook_file(path: Path) -> Iterator[ParsedImport]:
                         for n, line in enumerate(cell["source"], start=1)
                     ]
                     yield from parse_code("".join(lines), source=source)
-            except Exception as exc:
-                raise SyntaxError(f"Cannot parse code from {source}.") from exc
+            except KeyError as exc:
+                logger.error(f"Could not parse code from {source}, {exc}.")
 
     elif not language_name:
         logger.info(
