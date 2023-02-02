@@ -374,3 +374,23 @@ def test__no_options__defaults_to_check_action_in_current_dir(
     assert output.splitlines() == expect
     assert errors == ""
     assert returncode == 3
+
+
+def test__quiet_check__writes_only_names_of_unused_and_undeclared(
+    project_with_code_and_requirements_txt,
+):
+    tmp_path = project_with_code_and_requirements_txt(
+        imports=["requests"],
+        declares=["pandas"],
+    )
+
+    expect = [
+        "These imports appear to be undeclared dependencies:",
+        "- 'requests'",
+        "These dependencies appear to be unused (i.e. not imported):",
+        "- 'pandas'",
+    ]
+    output, errors, returncode = run_fawltydeps("--check", "-q", cwd=tmp_path)
+    assert output.splitlines() == expect
+    assert errors == ""
+    assert returncode == 3
