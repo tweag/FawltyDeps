@@ -3,6 +3,7 @@
 import sys
 from dataclasses import dataclass, field, replace
 from functools import total_ordering
+from operator import attrgetter
 from pathlib import Path
 from typing import List, NamedTuple, Optional, Union
 
@@ -112,6 +113,19 @@ class UndeclaredDependency:
     name: str
     references: List[ParsedImport]
 
+    def render(self, include_references: bool) -> str:
+        """Return a human-readable string representation.
+
+        Level of detail is determined by `include_references`.
+        """
+        ret = f"{self.name!r}"
+        if include_references:
+            ret += " imported at:" + "".join(
+                f"\n    {ref.source}"
+                for ref in sorted(self.references, key=attrgetter("source"))
+            )
+        return ret
+
 
 @dataclass
 class UnusedDependency:
@@ -119,3 +133,16 @@ class UnusedDependency:
 
     name: str
     references: List[DeclaredDependency]
+
+    def render(self, include_references: bool) -> str:
+        """Return a human-readable string representation.
+
+        Level of detail is determined by `include_references`.
+        """
+        ret = f"{self.name!r}"
+        if include_references:
+            ret += " declared in:" + "".join(
+                f"\n    {ref.source}"
+                for ref in sorted(self.references, key=attrgetter("source"))
+            )
+        return ret

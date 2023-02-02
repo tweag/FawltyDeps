@@ -77,28 +77,6 @@ class Analysis:
 
         return ret
 
-    @staticmethod
-    def _display_undeclared(undeclared: UndeclaredDependency, details: bool) -> str:
-        if details:
-            references = sorted(undeclared.references, key=attrgetter("source"))
-            str_representation = f"- {undeclared.name!r} imported at:\n" + "\n".join(
-                [f"    {imp.source}" for imp in references]
-            )
-        else:
-            str_representation = f"- {undeclared.name!r}"
-        return str_representation
-
-    @staticmethod
-    def _display_unused(unused: UnusedDependency, details: bool) -> str:
-        if details:
-            references = sorted(unused.references, key=attrgetter("source"))
-            str_representation = f"- {unused.name!r} declared in:\n" + "\n".join(
-                [f"    {dep.source}" for dep in references]
-            )
-        else:
-            str_representation = f"- {unused.name!r}"
-        return str_representation
-
     def print_human_readable(self, out: TextIO, details: bool = True) -> None:
         """Print a human-readable rendering of the given report to stdout."""
         if self.is_enabled(Action.LIST_IMPORTS):
@@ -116,14 +94,14 @@ class Analysis:
         if self.is_enabled(Action.REPORT_UNDECLARED) and self.undeclared_deps:
             print("These imports appear to be undeclared dependencies:", file=out)
             for undeclared in self.undeclared_deps:
-                print(self._display_undeclared(undeclared, details), file=out)
+                print(f"- {undeclared.render(details)}", file=out)
 
         if self.is_enabled(Action.REPORT_UNUSED) and self.unused_deps:
             print(
                 "These dependencies appear to be unused (i.e. not imported):", file=out
             )
             for unused in self.unused_deps:
-                print(self._display_unused(unused, details), file=out)
+                print(f"- {unused.render(details)}", file=out)
 
 
 def parse_path_or_stdin(arg: str) -> PathOrSpecial:
@@ -210,9 +188,8 @@ def main() -> int:
 
     args = parser.parse_args()
 
-    logging.basicConfig(
-        level=logging.WARNING + 10 * (args.quiet - args.verbose),
-    )
+    verbosity = args.verbose - args.quiet
+    logging.basicConfig(level=logging.WARNING - 10 * verbosity)
 
     actions = args.actions or {Action.REPORT_UNDECLARED, Action.REPORT_UNUSED}
 
@@ -221,7 +198,7 @@ def main() -> int:
     except extract_imports.ArgParseError as exc:
         return parser.error(exc.msg)  # exit code 2
 
-    analysis.print_human_readable(sys.stdout, details=args.verbose - args.quiet >= 0)
+    analysis.print_human_readable(sys.stdout, details=verbosity >= 0)
 
     # Exit codes:
     # 0 - success, no problems found
