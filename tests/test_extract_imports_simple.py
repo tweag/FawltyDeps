@@ -341,6 +341,32 @@ def test_parse_notebook_file__with_magic_commands__ignores__multilines_magic_com
         assert f"Found magic command {line!r} at {source}" in caplog.text
 
 
+def test_parse_notebook_file__with_magic_commands__ignores__shell_magic_commands(
+    tmp_path, caplog
+):
+    exclamation_line = "   ! pip3 install -r 'requirements.txt '\\"
+    continuation_line = "-- verbose"
+
+    code = generate_notebook(
+        [
+            [
+                exclamation_line,
+                continuation_line,
+                "import pandas",
+            ]
+        ]
+    )
+    script = tmp_path / "test.ipynb"
+    script.write_text(code)
+
+    expect = imports_w_linenos_cellnos([("pandas", 3, 1)], script)
+
+    assert set(parse_notebook_file(script)) == set(expect)
+    for lineno, line in [(1, exclamation_line), (2, continuation_line)]:
+        source = Location(script, 1, lineno)
+        assert f"Found magic command {line!r} at {source}" in caplog.text
+
+
 def test_parse_notebook_file__on_no_defined_language_info__logs_skipping_msg_and_returns_no_imports(
     tmp_path, caplog
 ):
