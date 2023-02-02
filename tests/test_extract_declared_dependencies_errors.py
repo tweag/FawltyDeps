@@ -11,7 +11,7 @@ from fawltydeps.extract_declared_dependencies import (
     parse_setup_cfg_contents,
     parse_setup_contents,
 )
-from fawltydeps.types import ArgParseError, DeclaredDependency, Location
+from fawltydeps.types import ArgParseError, Location
 
 
 def test_extract_declared_dependencies__unsupported_file__raises_error(
@@ -88,9 +88,39 @@ def test_parse_setup_cfg_contents__malformed__logs_error(caplog):
                     }
             )
             """,
-            [DeclaredDependency("abc", Location(Path("setup.py")))],
+            [],
             "extras_require",
             id="lambda_call_inside_extras_require_dict",
+        ),
+        pytest.param(
+            """\
+            from setuptools import setup
+
+            # my_deps is unset
+
+            setup(
+                name="MyLib",
+                install_requires=my_deps,
+            )
+            """,
+            [],
+            "install_requires",
+            id="reference_to_unset_variable",
+        ),
+        pytest.param(
+            """\
+            from setuptools import setup
+
+            my_deps = [my_deps]
+
+            setup(
+                name="MyLib",
+                install_requires=my_deps,
+            )
+            """,
+            [],
+            "install_requires",
+            id="unresolvable_self_reference",
         ),
     ],
 )
