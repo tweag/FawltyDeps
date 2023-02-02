@@ -17,9 +17,7 @@ def test_extract_dependencies__unsupported_file__raises_error(
 ):
     with pytest.raises(ArgParseError):
         list(
-            extract_dependencies(
-                project_with_setup_and_requirements.joinpath("python_file.py")
-            )
+            extract_dependencies(project_with_setup_and_requirements / "python_file.py")
         )
 
 
