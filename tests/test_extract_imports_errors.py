@@ -1,9 +1,6 @@
 """Verify graceful failure when we cannot extract imports from Python code."""
 
-import json
 from textwrap import dedent
-
-import pytest
 
 from fawltydeps.extract_imports import (
     parse_code,
@@ -14,56 +11,7 @@ from fawltydeps.extract_imports import (
 from fawltydeps.types import Location, ParsedImport
 
 
-def test_parse_notebook_file__on_parse_error__propagates_SyntaxError(tmp_path):
-    code = dedent(
-        """\
-        {
-            "metadata": {
-                "language_info": {
-                    "name": "Python"
-                }
-            },
-            "cells": [
-            {"cell_type": "code"
-            }
-        ]
-        }
-       """
-    )
-    script = tmp_path / "test.ipynb"
-    script.write_text(code)
-
-    with pytest.raises(SyntaxError):
-        list(parse_notebook_file(script))
-
-
-def test_parse_notebook_file__on_parse_error__SyntaxError_raised_with_msg(tmp_path):
-    code = dedent(
-        """\
-        {
-            "metadata": {
-                "language_info": {
-                    "name": "Python"
-                }
-            },
-            "cells": [
-            {"cell_type": "code"
-            }
-        ]
-        }
-       """
-    )
-    script = tmp_path / "test.ipynb"
-    script.write_text(code)
-
-    with pytest.raises(SyntaxError) as exc_info:
-        list(parse_notebook_file(script))
-    assert exc_info.value.msg == f"Cannot parse code from {script}[1]."
-
-
-def test_parse_notebook_file__on_invalid_json__JSONDecodeError_raised_with_msg(
-    tmp_path,
-):
+def test_parse_notebook_file__on_invalid_json__logs_error(tmp_path, caplog):
     code = dedent(
         """\
         {
@@ -75,9 +23,40 @@ def test_parse_notebook_file__on_invalid_json__JSONDecodeError_raised_with_msg(
     )
     script = tmp_path / "test.ipynb"
     script.write_text(code)
+    expected = []
+    assert list(parse_notebook_file(script)) == expected
+    assert f"Could not parse code from {script}" in caplog.text
 
-    with pytest.raises(json.decoder.JSONDecodeError):
-        list(parse_notebook_file(script))
+
+def test_parse_notebook_file__on_parse_error_one_cell__logs_error_and_continues(
+    tmp_path, caplog
+):
+    code = dedent(
+        """\
+        {
+            "metadata": {
+                "language_info": {
+                    "name": "Python"
+                }
+            },
+            "cells": [
+            {
+                "cell_type": "code"
+            },
+            {
+                "cell_type": "code",
+                "source": ["import pandas"]
+            }
+        ]
+        }
+       """
+    )
+    script = tmp_path / "test.ipynb"
+    script.write_text(code)
+
+    expected = [ParsedImport("pandas", Location(script, lineno=1, cellno=2))]
+    assert list(parse_notebook_file(script)) == expected
+    assert f"Could not parse code from {script}[1]" in caplog.text
 
 
 def test_parse_code__on_parse_error__logs_error(caplog):
