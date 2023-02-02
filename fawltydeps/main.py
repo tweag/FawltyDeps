@@ -1,4 +1,4 @@
-"""Find undeclared 3rd-party dependencies in your Python project."""
+"""Find undeclared and/or unused 3rd-party dependencies in your Python project."""
 
 import argparse
 import logging
