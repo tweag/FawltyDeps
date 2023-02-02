@@ -5,7 +5,7 @@ import json
 import logging
 import sys
 from pathlib import Path
-from typing import Iterator
+from typing import Iterator, List
 
 import isort
 
@@ -77,12 +77,23 @@ def parse_notebook_file(path: Path) -> Iterator[ParsedImport]:
     they appear in the file.
     """
 
-    def remove_magic_command(line: str, source: Location) -> str:
-        """Remove magic notebook commands from the given line."""
-        if line.lstrip().startswith(("!", "%", "--")):
-            logger.warning(f"Found magic command {line!r} at {source}")
-            return "\n"
-        return line
+    def filter_out_magic_commands(
+        cell_source: List[str], source: Location
+    ) -> List[str]:
+        """Remove magic notebook commands from the given cell."""
+        result = []
+        command_continues = False
+        for lineno, line in enumerate(cell_source, start=1):
+            if line.lstrip().startswith(("!", "%")):
+                logger.warning(
+                    f"Found magic command {line!r} at {source.supply(lineno=lineno)}"
+                )
+                command_continues = line.endswith("\\")
+                result.append("\n")
+            else:
+                result.append(line if not command_continues else "\n")
+
+        return result
 
     with path.open("rb") as notebook:
         notebook_content = json.load(notebook, strict=False)
@@ -95,10 +106,7 @@ def parse_notebook_file(path: Path) -> Iterator[ParsedImport]:
             source = Location(path, cellno)
             try:
                 if cell["cell_type"] == "code":
-                    lines = [
-                        remove_magic_command(line, source.supply(lineno=n))
-                        for n, line in enumerate(cell["source"], start=1)
-                    ]
+                    lines = filter_out_magic_commands(cell["source"], source=source)
                     yield from parse_code("".join(lines), source=source)
             except Exception as exc:
                 raise SyntaxError(f"Cannot parse code from {source}.") from exc
