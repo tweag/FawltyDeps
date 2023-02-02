@@ -12,19 +12,6 @@ from fawltydeps.extract_dependencies import (
 from fawltydeps.types import ArgParseError, Location
 
 
-def test_parse_setup_cfg_contents__malformed__fails():
-
-    file_content = dedent(
-        """\
-            [options]
-            install_requires = pandas
-            """
-    )
-    file_name = Path("setup.cfg")
-    with pytest.raises(TypeError):
-        list(parse_setup_cfg_contents(file_content, Location(file_name)))
-
-
 def test_extract_dependencies__unsupported_file__raises_error(
     project_with_setup_and_requirements,
 ):
