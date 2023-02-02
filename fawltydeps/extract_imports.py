@@ -41,7 +41,12 @@ def parse_code(code: str, *, source: Location) -> Iterator[ParsedImport]:
     def is_external_import(name: str) -> bool:
         return isort.place_module(name, config=ISORT_CONFIG) == "THIRDPARTY"
 
-    for node in ast.walk(ast.parse(code, filename=str(source.path))):
+    try:
+        parsed_code = ast.parse(code, filename=str(source.path))
+    except SyntaxError as exc:
+        logger.error(f"Could not parse code from {source}; {exc}")
+        return
+    for node in ast.walk(parsed_code):
         if isinstance(node, ast.Import):
             logger.debug(ast.dump(node))
             for alias in node.names:
