@@ -79,7 +79,7 @@ def parse_notebook_file(path: Path) -> Iterator[ParsedImport]:
 
     def remove_magic_command(line: str, source: Location) -> str:
         """Remove magic notebook commands from the given line."""
-        if line.lstrip().startswith(("!", "%")):
+        if line.lstrip().startswith(("!", "%", "--")):
             logger.warning(f"Found magic command {line!r} at {source}")
             return "\n"
         return line
