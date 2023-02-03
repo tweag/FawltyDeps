@@ -1,0 +1,67 @@
+[project]
+# General information about the 3rd-party project: Its name, why we test it,
+# and where to find the relevant tarball, along with its expected checksum.
+name = "peppy"
+description = ""
+url = "https://files.pythonhosted.org/packages/6b/ba/dc5a705d156b29207728307770db10ea9263eb8cf3ab8460aea55fac506c/peppy-0.35.4.tar.gz"
+sha256 = "04338a1b53852c1b30d84d9d333185485725b0097462045397f84c721bab59cd"
+# The SHA256 checksum above can be found by running `sha256sum` on the
+# downloaded tarball. It is used to ensure that we run tests against the
+# expected revision of the 3rd-party project.
+
+# Below are our expectations for running FawltyDeps on the above (unpacked)
+# tarball. Each table represents the expectations of a corresponding test case
+# inside ../test_real_projects.py. All tables are optional: Removing a table
+# will disable the corresponding test case. An empty table means that we expect
+# FawltyDeps to produce zero results/empty output for that test.
+#
+# Inside each table, we map filenames to lists of relevant packages (imports or
+# dependencies) that we expect FawltyDeps to return for that test. This is
+# described in more detail under each table:
+
+[imports]
+# What we expect `fawltydeps --list-imports` to return for this project.
+# Key: filename containing import statements
+# Value: list (set) of external packages imported
+"<unused>" = [
+    "attmap",
+    "numpy",
+    "pandas",
+    "pytest",
+    "rich",
+    "setuptools",
+    "ubiquerg",
+    "yaml"
+]
+
+[declared_deps]
+# What we expect `fawltydeps --list-deps` to return for this project.
+# Key: filename containing declared dependencies
+# Value: list (set) of packages names that are declared
+"<unused>" = [
+    "attmap",
+    "logmuse",
+    "pandas",
+    "rich",
+    "ubiquerg", 
+    "pyyaml"
+]
+
+[undeclared_deps]
+# What we expect `fawltydeps --check-undeclared` to return for this project.
+# Key: filename containing import statements
+# Value: list (set) of external packages imported without being declared
+"<unused>" = [
+    "numpy", 
+    "pytest",
+    "setuptools"
+]
+
+[unused_deps]
+# What we expect `fawltydeps --check-unused` to return for this project.
+# Key: filename containing declared dependencies
+# Value: list (set) of external packages imported
+"requirements-all.txt" = [
+    "logmuse>=0.2"
+]
+

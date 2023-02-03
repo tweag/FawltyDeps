@@ -6,8 +6,8 @@ from typing import List
 
 import pytest
 
-from fawltydeps.extract_dependencies import (
-    extract_dependencies,
+from fawltydeps.extract_declared_dependencies import (
+    extract_declared_dependencies,
     parse_requirements_contents,
     parse_setup_cfg_contents,
     parse_setup_contents,
@@ -380,14 +380,14 @@ def test_parse_setup_contents__multiple_entries_in_extras_require__returns_list(
     assert sorted(expected) == sorted(result)
 
 
-def test_extract_dependencies__simple_project__returns_list(project_with_requirements):
+def test_extract_declared_dependencies__simple_project__returns_list(project_with_requirements):
     expect = ["pandas", "click", "pandas", "tensorflow"]
     assert sorted(
-        [a for (a, _) in extract_dependencies(project_with_requirements)]
+        [a for (a, _) in extract_declared_dependencies(project_with_requirements)]
     ) == sorted(expect)
 
 
-def test_extract_dependencies__project_with_requirements_and_setup__returns_list(
+def test_extract_declared_dependencies__project_with_requirements_and_setup__returns_list(
     project_with_setup_and_requirements,
 ):
     expect = [
@@ -401,11 +401,11 @@ def test_extract_dependencies__project_with_requirements_and_setup__returns_list
         "tensorflow",
     ]
     assert sorted(
-        [a for (a, _) in extract_dependencies(project_with_setup_and_requirements)]
+        [a for (a, _) in extract_declared_dependencies(project_with_setup_and_requirements)]
     ) == sorted(expect)
 
 
-def test_extract_dependencies__parse_only_requirements_from_subdir__returns_list(
+def test_extract_declared_dependencies__parse_only_requirements_from_subdir__returns_list(
     project_with_setup_and_requirements,
 ):
     "In setup.py requirements are read from dict."
@@ -414,11 +414,11 @@ def test_extract_dependencies__parse_only_requirements_from_subdir__returns_list
         "tensorflow",
     ]
     path = project_with_setup_and_requirements / "subdir/requirements.txt"
-    actual = [dep for (dep, _) in extract_dependencies(path)]
+    actual = [dep for (dep, _) in extract_declared_dependencies(path)]
     assert sorted(actual) == sorted(expect)
 
 
-def test_extract_dependencies__project_with_pyproject_setup_and_requirements__returns_list(
+def test_extract_declared_dependencies__project_with_pyproject_setup_and_requirements__returns_list(
     project_with_setup_pyproject_and_requirements,
 ):
     expect = [
@@ -441,14 +441,14 @@ def test_extract_dependencies__project_with_pyproject_setup_and_requirements__re
     assert sorted(
         [
             a
-            for (a, _) in extract_dependencies(
+            for (a, _) in extract_declared_dependencies(
                 project_with_setup_pyproject_and_requirements
             )
         ]
     ) == sorted(expect)
 
 
-def test_extract_dependencies__project_with_pyproject__returns_list(
+def test_extract_declared_dependencies__project_with_pyproject__returns_list(
     project_with_pyproject,
 ):
     expect = [
@@ -457,11 +457,11 @@ def test_extract_dependencies__project_with_pyproject__returns_list(
         "pylint",
     ]
     assert sorted(
-        [a for (a, _) in extract_dependencies(project_with_pyproject)]
+        [a for (a, _) in extract_declared_dependencies(project_with_pyproject)]
     ) == sorted(expect)
 
 
-def test_extract_dependencies__project_with_setup_cfg__returns_list(
+def test_extract_declared_dependencies__project_with_setup_cfg__returns_list(
     project_with_setup_cfg,
 ):
     expect = [
@@ -469,11 +469,11 @@ def test_extract_dependencies__project_with_setup_cfg__returns_list(
         "django",
     ]
     assert sorted(
-        [a for (a, _) in extract_dependencies(project_with_setup_cfg)]
+        [a for (a, _) in extract_declared_dependencies(project_with_setup_cfg)]
     ) == sorted(expect)
 
 
-def test_extract_dependencies__project_with_setup_cfg_pyproject_requirements__returns_list(
+def test_extract_declared_dependencies__project_with_setup_cfg_pyproject_requirements__returns_list(
     project_with_setup_with_cfg_pyproject_and_requirements,
 ):
     expect = [
@@ -493,6 +493,6 @@ def test_extract_dependencies__project_with_setup_cfg_pyproject_requirements__re
         "pylint",
     ]
     actual = list(
-        extract_dependencies(project_with_setup_with_cfg_pyproject_and_requirements)
+        extract_declared_dependencies(project_with_setup_with_cfg_pyproject_and_requirements)
     )
     assert sorted([a for (a, _) in actual]) == sorted(expect)

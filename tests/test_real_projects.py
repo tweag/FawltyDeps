@@ -26,8 +26,8 @@ else:
 
 logger = logging.getLogger(__name__)
 
-# These tests will download and unpacks a 3rd-party project before analyzing it.
-# These are (slow) integration tests that are disabled by default.
+# Each of these tests will download and unpack a 3rd-party project before analyzing it;
+# therefore, they're slow and are skipped by default.
 pytestmark = pytest.mark.integration
 
 # Directory with .toml files that define test cases for selected tarballs from
@@ -82,8 +82,12 @@ class ThirdPartyProject(NamedTuple):
 
     @classmethod
     def parse_from_toml(cls, path: Path) -> "ThirdPartyProject":
-        with path.open("rb") as f:
-            data = tomllib.load(f)
+        try:
+            with path.open("rb") as f:
+                data = tomllib.load(f)
+        except tomllib.TOMLDecodeError:
+            print(f"Error occurred while parsing file: {path}")
+            raise
         # We ultimately _trust_ the .toml files read here, so we can skip all
         # the usual error checking associated with validating external data.
         return cls(
@@ -209,23 +213,36 @@ def test_real_project(request, project):
         Action.REPORT_UNUSED,
     }
     analysis = Analysis.create(all_actions, code=project_dir, deps=project_dir)
+    prj_name = project.name
 
     if project.imports is not None:
+        print(f"Checking imports: {prj_name}")
         actual = {i.name for i in analysis.imports}
         expect = {name for names in project.imports.values() for name in names}
         assert actual == expect
+    else:
+        print(f"No imports to check: {prj_name}")
 
     if project.declared_deps is not None:
+        print(f"Checking declared dependencies: {prj_name}")
         actual = {d.name for d in analysis.declared_deps}
         expect = {name for names in project.declared_deps.values() for name in names}
         assert actual == expect
+    else:
+        print(f"No declared dependencies to check: {prj_name}")
 
     if project.undeclared_deps is not None:
+        print(f"Checking undeclared dependencies: {prj_name}")
         actual = {u.name for u in analysis.undeclared_deps}
         expect = {name for names in project.undeclared_deps.values() for name in names}
         assert actual == expect
+    else:
+        print(f"No undeclared dependencies to check: {prj_name}")
 
     if project.unused_deps is not None:
+        print(f"Checking unused dependencies: {prj_name}")
         actual = {u.name for u in analysis.unused_deps}
         expect = {name for names in project.unused_deps.values() for name in names}
         assert actual == expect
+    else:
+        print(f"No unused dependencies to check: {prj_name}")

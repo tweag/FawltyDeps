@@ -280,7 +280,7 @@ def parse_pyproject_contents(
         logger.debug("%s does not contain [tool.poetry].")
 
 
-def extract_dependencies(path: Path) -> Iterator[DeclaredDependency]:
+def extract_declared_dependencies(path: Path) -> Iterator[DeclaredDependency]:
     """
     Extract dependencies from supported file types.
     Traverse directory tree to find matching files.
@@ -290,6 +290,7 @@ def extract_dependencies(path: Path) -> Iterator[DeclaredDependency]:
     """
     parsers = {
         "requirements.txt": parse_requirements_contents,
+        "requirements-all.txt": parse_requirements_contents,
         "requirements.in": parse_requirements_contents,
         "setup.py": parse_setup_contents,
         "setup.cfg": parse_setup_cfg_contents,
