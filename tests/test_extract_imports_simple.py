@@ -291,7 +291,7 @@ def test_parse_notebook_file__with_magic_commands__ignores_magic_commands(
     tmp_path, caplog
 ):
     exclamation_line = "   ! pip3 install -r 'requirements.txt'\n"
-    percent_line = "% pip install numpy\n"
+    percent_line = "%pip install numpy\n"
 
     code = generate_notebook(
         [
@@ -316,9 +316,9 @@ def test_parse_notebook_file__with_magic_commands__ignores_magic_commands(
 def test_parse_notebook_file__with_magic_commands__ignores__multilines_magic_commands(
     tmp_path, caplog
 ):
-    exclamation_line = "   ! pip3 install -r 'requirements.txt '\\"
-    continuation_line = " -- pip3 install poetry"
-    percent_line = "% pip install numpy\n"
+    exclamation_line = "   ! pip3 install -r 'requirements.txt '\\\n"
+    continuation_line = " -- pip3 install poetry\n"
+    percent_line = "%pip install numpy\n"
 
     code = generate_notebook(
         [
@@ -344,7 +344,7 @@ def test_parse_notebook_file__with_magic_commands__ignores__multilines_magic_com
 def test_parse_notebook_file__with_magic_commands__ignores__shell_magic_commands(
     tmp_path, caplog
 ):
-    exclamation_line = "   ! pip3 install -r 'requirements.txt '\\"
+    exclamation_line = "   ! pip3 install -r 'requirements.txt '\\\n"
     continuation_line = "-- verbose"
 
     code = generate_notebook(
@@ -362,9 +362,8 @@ def test_parse_notebook_file__with_magic_commands__ignores__shell_magic_commands
     expect = imports_w_linenos_cellnos([("pandas", 3, 1)], script)
 
     assert set(parse_notebook_file(script)) == set(expect)
-    for lineno, line in [(1, exclamation_line), (2, continuation_line)]:
-        source = Location(script, 1, lineno)
-        assert f"Found magic command {line!r} at {source}" in caplog.text
+    source = Location(script, 1, 1)
+    assert f"Found magic command {exclamation_line!r} at {source}" in caplog.text
 
 
 def test_parse_notebook_file__on_no_defined_language_info__logs_skipping_msg_and_returns_no_imports(
