@@ -82,15 +82,23 @@ class Analysis:
         """Print a human-readable rendering of the given report to stdout."""
         if self.is_enabled(Action.LIST_IMPORTS):
             assert self.imports is not None  # sanity-check / convince Mypy
-            # Sort imports by source, then by name
-            for imp in sorted(self.imports, key=attrgetter("source", "name")):
-                print(f"{imp.source}: {imp.name}", file=out)
+            if details:
+                # Sort imports by source, then by name
+                for imp in sorted(self.imports, key=attrgetter("source", "name")):
+                    print(f"{imp.source}: {imp.name}", file=out)
+            else:
+                unique_imports = {i.name for i in self.imports}
+                print("\n".join(sorted(unique_imports)), file=out)
 
         if self.is_enabled(Action.LIST_DEPS):
             assert self.declared_deps is not None  # sanity-check / convince Mypy
-            # Sort dependencies by location, then by name
-            for dep in sorted(self.declared_deps, key=attrgetter("source", "name")):
-                print(f"{dep.source}: {dep.name}", file=out)
+            if details:
+                # Sort dependencies by location, then by name
+                for dep in sorted(self.declared_deps, key=attrgetter("source", "name")):
+                    print(f"{dep.source}: {dep.name}", file=out)
+            else:
+                unique_dependencies = {i.name for i in self.declared_deps}
+                print("\n".join(sorted(unique_dependencies)), file=out)
 
         if self.is_enabled(Action.REPORT_UNDECLARED) and self.undeclared_deps:
             print("These imports appear to be undeclared dependencies:", file=out)

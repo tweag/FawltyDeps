@@ -70,6 +70,27 @@ def test_list_imports__from_dash__prints_imports_from_stdin():
     assert returncode == 0
 
 
+def test_list_imports_quiet__from_dash__prints_imports_from_stdin():
+    code = dedent(
+        """\
+        from pathlib import Path
+        import platform, sys
+
+        import requests
+        from foo import bar, baz
+        import numpy as np
+        """
+    )
+
+    expect = ["foo", "numpy", "requests"]  # alphabetically sorted
+    output, errors, returncode = run_fawltydeps(
+        "--list-imports", "-q", "--code=-", to_stdin=code
+    )
+    assert output.splitlines() == expect
+    assert errors == ""
+    assert returncode == 0
+
+
 def test_list_imports__from_py_file__prints_imports_from_file(write_tmp_files):
     tmp_path = write_tmp_files(
         {
@@ -182,6 +203,23 @@ def test_list_deps__dir__prints_deps_from_requirements_txt(
         f"{tmp_path}/requirements.txt: requests",
     ]
     output, errors, returncode = run_fawltydeps("--list-deps", f"--deps={tmp_path}")
+    assert output.splitlines() == expect
+    assert errors == ""
+    assert returncode == 0
+
+
+def test_list_deps_quiet__dir__prints_deps_from_requirements_txt(
+    project_with_code_and_requirements_txt,
+):
+    tmp_path = project_with_code_and_requirements_txt(
+        imports=["requests", "pandas"],
+        declares=["requests", "pandas"],
+    )
+
+    expect = ["pandas", "requests"]
+    output, errors, returncode = run_fawltydeps(
+        "--list-deps", "-q", f"--deps={tmp_path}"
+    )
     assert output.splitlines() == expect
     assert errors == ""
     assert returncode == 0
