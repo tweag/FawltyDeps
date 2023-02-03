@@ -84,13 +84,13 @@ def parse_notebook_file(path: Path) -> Iterator[ParsedImport]:
         command_continues = False
         for lineno, line in enumerate(lines, start=1):
             if line.lstrip().startswith(("!", "%")):
-                logger.warning(
+                logger.info(
                     f"Found magic command {line!r} at {source.supply(lineno=lineno)}"
                 )
-                command_continues = line.rstrip().endswith("\\")
+                command_continues = line.rstrip("\n").endswith("\\")
                 yield "\n"
             elif command_continues:
-                command_continues = line.rstrip().endswith("\\")
+                command_continues = line.rstrip("\n").endswith("\\")
                 yield "\n"
             else:
                 yield line
