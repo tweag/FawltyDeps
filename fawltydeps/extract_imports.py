@@ -44,7 +44,7 @@ def parse_code(code: str, *, source: Location) -> Iterator[ParsedImport]:
     try:
         parsed_code = ast.parse(code, filename=str(source.path))
     except SyntaxError as exc:
-        logger.error(f"Could not parse code from {source}; {exc}")
+        logger.error(f"Could not parse code from {source}: {exc}")
         return
     for node in ast.walk(parsed_code):
         if isinstance(node, ast.Import):
@@ -86,7 +86,7 @@ def parse_notebook_file(path: Path) -> Iterator[ParsedImport]:
         try:
             notebook_content = json.load(notebook, strict=False)
         except json.decoder.JSONDecodeError as exc:
-            logger.error(f"Could not parse code from {path}; {exc}")
+            logger.error(f"Could not parse code from {path}: {exc}")
             return
 
     language_name = (
@@ -104,7 +104,7 @@ def parse_notebook_file(path: Path) -> Iterator[ParsedImport]:
                     ]
                     yield from parse_code("".join(lines), source=source)
             except KeyError as exc:
-                logger.error(f"Could not parse code from {source}; {exc}.")
+                logger.error(f"Could not parse code from {source}: {exc}.")
 
     elif not language_name:
         logger.info(
