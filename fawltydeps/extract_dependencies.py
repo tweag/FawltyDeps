@@ -86,9 +86,7 @@ def parse_setup_contents(text: str, source: Location) -> Iterator[DeclaredDepend
                 else:
                     unparsed_content = ast.dump(exc.value)
                 logger.warning(
-                    "Could not parse contents of `%s`: %s",
-                    keyword.arg,
-                    unparsed_content,
+                    f"Could not parse contents of `{keyword.arg}`: {unparsed_content} in {source}."
                 )
 
     def _is_setup_function_call(node: ast.AST) -> bool:
