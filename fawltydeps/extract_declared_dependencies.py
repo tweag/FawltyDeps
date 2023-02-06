@@ -62,8 +62,8 @@ def parse_setup_contents(text: str, source: Location) -> Iterator[DeclaredDepend
             for element in deps.elts:
                 # Python v3.8 changed from ast.Str to ast.Constant
                 if isinstance(element, (ast.Constant, ast.Str)):
-                    yield from parse_requirements_contents(
-                        ast.literal_eval(element), source=source
+                    yield DeclaredDependency(
+                        Requirement.parse(ast.literal_eval(element)).key, source
                     )
         else:
             raise DependencyParsingError(deps)
@@ -189,7 +189,7 @@ def parse_poetry_pyproject_dependencies(
         for group in poetry_config["extras"].values():
             if isinstance(group, list):
                 for requirement in group:
-                    yield from parse_requirements_contents(requirement, source)
+                    yield DeclaredDependency(Requirement.parse(requirement).key, source)
             else:
                 raise TypeError(f"{group!r} is of type {type(group)}. Expected a list.")
 
@@ -233,7 +233,7 @@ def parse_pep621_pyproject_contents(
         dependencies = parsed_contents["project"]["dependencies"]
         if isinstance(dependencies, list):
             for requirement in dependencies:
-                yield from parse_requirements_contents(requirement, source)
+                yield DeclaredDependency(Requirement.parse(requirement).key, source)
         else:
             raise TypeError(
                 f"{dependencies!r} of type {type(dependencies)}. Expected list."
@@ -244,7 +244,7 @@ def parse_pep621_pyproject_contents(
     ) -> Iterator[DeclaredDependency]:
         for group in parsed_contents["project"]["optional-dependencies"].values():
             for requirement in group:
-                yield from parse_requirements_contents(requirement, source)
+                yield DeclaredDependency(Requirement.parse(requirement).key, source)
 
     fields_parsers = {
         "main": parse_main_dependencies,
