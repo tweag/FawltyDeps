@@ -52,7 +52,7 @@ def dependency_factory(data: List[str], path: str) -> List[DeclaredDependency]:
         pytest.param(
             dedent(
                 """\
-                requests [security] @ https://github.com/psf/requests/archive/refs/heads/main.zip ; python_version >= "3.11"
+                requests [security] @ https://github.com/psf/requests/archive/refs/heads/main.zip
                 """
             ),
             dependency_factory(
