@@ -185,19 +185,28 @@ def main() -> int:
         "--verbose",
         action="count",
         default=0,
-        help="Increase log level (WARNING by default, -v: INFO, -vv: DEBUG)",
+        help=(
+            "Increase log level (WARNING by default, -v: INFO, -vv: DEBUG)"
+            " and verbosity of the output (without location details by default,"
+            " -v, -vv: with location details)"
+        ),
     )
     parser.add_argument(
         "-q",
         "--quiet",
         action="count",
         default=0,
-        help="Decrease log level (WARNING by default, -q: ERROR, -qq: FATAL)",
+        help=(
+            "Decrease log level (WARNING by default, -q: ERROR, -qq: FATAL)"
+            " and verbosity of the output (without location details by default,"
+            " -q, -qq: without location details)"
+        ),
     )
 
     args = parser.parse_args()
 
     verbosity = args.verbose - args.quiet
+    verbose_report = verbosity > 0
     logging.basicConfig(level=logging.WARNING - 10 * verbosity)
 
     actions = args.actions or {Action.REPORT_UNDECLARED, Action.REPORT_UNUSED}
@@ -207,7 +216,9 @@ def main() -> int:
     except ArgParseError as exc:
         return parser.error(exc.msg)  # exit code 2
 
-    analysis.print_human_readable(sys.stdout, details=verbosity >= 0)
+    analysis.print_human_readable(sys.stdout, details=verbose_report)
+    if not verbose_report:
+        print("\nFor a more verbose report re-run with `-v` option.\n")
 
     # Exit codes:
     # 0 - success, no problems found
