@@ -287,7 +287,9 @@ def test_parse_setup_cfg_contents(file_content, expected):
     assert sorted(result) == sorted(expected)
 
 
-def test_parse_setup_contents__cannot_parse_install_requires__logs_warning(caplog):
+def test_parse_setup_contents__cannot_parse_install_requires__logs_warning(
+    tmp_path, caplog
+):
     setup_contents = dedent(
         """\
         from setuptools import setup
@@ -301,8 +303,10 @@ def test_parse_setup_contents__cannot_parse_install_requires__logs_warning(caplo
     )
     expected = []
     caplog.set_level(logging.WARNING)
-    result = list(parse_setup_contents(setup_contents, Location(Path(""))))
-    assert "Could not parse contents of `install_requires`" in caplog.text
+    setup_path = tmp_path / "setup.py"
+    result = list(parse_setup_contents(setup_contents, Location(setup_path)))
+    assert "Could not parse contents of `install_requires`:" in caplog.text
+    assert str(setup_path) in caplog.text
     assert expected == result
 
 
