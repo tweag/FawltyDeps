@@ -239,7 +239,7 @@ def test_list_deps_quiet__dir__prints_deps_from_requirements_txt(
     assert returncode == 0
 
 
-# TODO: The following tests need changes inside extract_dependencies
+# TODO: The following tests need changes inside extract_declared_dependencies
 
 
 def TODO_test_list_deps__missing_dir__fails_with_exit_code_2(tmp_path):
