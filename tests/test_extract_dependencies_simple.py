@@ -49,7 +49,7 @@ def dependency_factory(data: List[str], path: str) -> List[DeclaredDependency]:
             ),
             id="__requirements_with_versions__yields_names",
         ),
-      pytest.param(
+        pytest.param(
             dedent(
                 """\
                 requests [security] @ https://github.com/psf/requests/archive/refs/heads/main.zip ; python_version >= "3.11"
@@ -60,6 +60,32 @@ def dependency_factory(data: List[str], path: str) -> List[DeclaredDependency]:
                 "requirements.txt",
             ),
             id="__requirements_with_url_based_specifier__yields_names",
+        ),
+        pytest.param(
+            dedent(
+                """\
+                # this is a comment
+                click >=1.2
+                """
+            ),
+            dependency_factory(
+                ["click"],
+                "requirements.txt",
+            ),
+            id="__requirements_with_comment__ignores_comment",
+        ),
+        pytest.param(
+            dedent(
+                """\
+                -e .
+                click >=1.2
+                """
+            ),
+            dependency_factory(
+                ["click"],
+                "requirements.txt",
+            ),
+            id="__requirements_with_option__ignores_option",
         ),
     ],
 )

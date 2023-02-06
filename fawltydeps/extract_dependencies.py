@@ -43,10 +43,9 @@ def parse_requirements_contents(
     Parsed requirements keys are put to lower cases.
     """
     for line in text.splitlines():
-        if not line:
+        if not line or line.lstrip().startswith(("-", "#")):
             continue
-        yield DeclaredDependency(
-            name=Requirement.parse(line).key, source=source)
+        yield DeclaredDependency(name=Requirement.parse(line).key, source=source)
 
 
 def parse_setup_contents(text: str, source: Location) -> Iterator[DeclaredDependency]:
