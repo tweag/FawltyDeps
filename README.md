@@ -5,16 +5,29 @@ A dependency checker for Python.
 Find _undeclared_ and/or _unused_ 3rd-party dependencies in your Python project.
 
 ## Key Concepts
-- ***undeclared* dependency**: a package that's used (in particular, `import`ed) by a project and which lacks a corresponding declaration to ensure that it's available.
-For example, you `import numpy`, but you've forgotten to include `numpy` in your `requirements.txt`.
-Pragmatically, this means the project is prone to runtime errors.
-- ***unused* dependency**: a package that's declared as necessary for a project but which is never used by project code. 
-For example, you have `numpy` listed in your `requirements.txt`, but you never actually `import numpy`.
-Pragmatically, this means that project installation may consume more space than needed and will be more likely to break with future software releases; in short, these are costs paid for no benefit.
+
+- **_undeclared_ dependency**: a package that's used (in particular, `import`ed) by a project and which lacks a corresponding declaration to ensure that it's available.
+  For example, you `import numpy`, but you've forgotten to include `numpy` in your `requirements.txt`.
+  Pragmatically, this means the project is prone to runtime errors.
+- **_unused_ dependency**: a package that's declared as necessary for a project but which is never used by project code.
+  For example, you have `numpy` listed in your `requirements.txt`, but you never actually `import numpy`.
+  Pragmatically, this means that project installation may consume more space than needed and will be more likely to break with future software releases; in short, these are costs paid for no benefit.
 
 ## Installation
 
-TODO: Fill when released in PyPI. See the [release ticket](https://github.com/tweag/FawltyDeps/issues/100).
+The library is distributed with PyPI, so simply:
+
+```
+pip install fawltydeps
+```
+
+and add `fawltydeps` to your development dependencies, not to generate undeclared dependencies.
+
+If you are using poetry:
+
+```
+poetry install fawltydeps
+```
 
 ## Usage
 
@@ -24,7 +37,7 @@ To check the project in the current directory run:
 fawltydeps
 ```
 
-This will find imports in all the Python code under the current directory, 
+This will find imports in all the Python code under the current directory,
 extract dependencies declared by your project, and then report
 [_undeclared_ and _unused_ dependencies](#key-concepts).
 
