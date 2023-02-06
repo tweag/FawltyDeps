@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, Iterator
 
-from pkg_resources import parse_requirements
+from pkg_resources import Requirement
 
 from fawltydeps.types import ArgParseError, DeclaredDependency, Location
 from fawltydeps.utils import walk_dir
@@ -42,8 +42,11 @@ def parse_requirements_contents(
 
     Parsed requirements keys are put to lower cases.
     """
-    for requirement in parse_requirements(text):
-        yield DeclaredDependency(name=requirement.key, source=source)
+    for line in text.splitlines():
+        if not line:
+            continue
+        yield DeclaredDependency(
+            name=Requirement.parse(line).key, source=source)
 
 
 def parse_setup_contents(text: str, source: Location) -> Iterator[DeclaredDependency]:
