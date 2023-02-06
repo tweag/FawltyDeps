@@ -27,16 +27,9 @@ sha256 = "b7c34d528bba97a4ace1aa6efee90d31ae1419581577d6ee13c3cf6718357e36"
   "PIL",
   "albumentations",
   "apex",
-  "coco_eval",
-  "coco_utils",
-  "cut_bbox_litter",
   "cv2",
-  "data",
-  "datasets",
   "demo",
-  "effdet",
   "efficientnet_pytorch",
-  "engine",
   "funcy",
   "iterstrat",
   "matplotlib",
@@ -46,7 +39,6 @@ sha256 = "b7c34d528bba97a4ace1aa6efee90d31ae1419581577d6ee13c3cf6718357e36"
   "omegaconf",
   "pandas",
   "panopticapi",
-  "plot_utils",
   "pycocotools",
   "pylab",
   "pytorch_lightning",
@@ -62,10 +54,6 @@ sha256 = "b7c34d528bba97a4ace1aa6efee90d31ae1419581577d6ee13c3cf6718357e36"
   "torch",
   "torchvision",
   "tqdm",
-  "train",
-  "train_resnet",
-  "transforms",
-  "util",
   "yaml"
 ]
 
@@ -101,38 +89,31 @@ sha256 = "b7c34d528bba97a4ace1aa6efee90d31ae1419581577d6ee13c3cf6718357e36"
 # Key: filename containing import statements
 # Value: list (set) of external packages imported without being declared
 "<unused>" = [
-  "PIL",
-  "apex",
-  "coco_eval",
-  "coco_utils",
-  "cut_bbox_litter",
-  "cv2",
-  "data",
-  "datasets",
-  "demo",
-  "effdet",
+  # found internally in the project
+  "demo", # undeclared comes from `make_predictions.py` and 
+          # `detr/notebooks/Detect_Waste_finetuning_detr.ipynb` 
+          # They extend `sys.path` to include modules from children directories
+  "models", # undeclared comes from `make_predictions.py` which is imported by extending `sys.path`
+  # actually undeclared
+  "apex", # controversial - wrapped in `ImportError`
   "efficientnet_pytorch",
-  "engine",
-  "iterstrat",
-  "models",
   "neptune",
   "pandas",
   "panopticapi",
-  "plot_utils",
-  "pylab",
+  "pylab", # part of matplotlib
   "pytorch_lightning",
   "requests",
-  "scikitplot",
   "setuptools",
-  "skimage",
-  "sklearn",
-  "sotabencheval",
-  "tqdm",
-  "train",
-  "train_resnet",
-  "transforms",
-  "util",
+  "sotabencheval", # looks like it is an artifact of some refactor
+  "scikitplot", # scikit-plot
+  "tqdm", #tqdm
+  # unmatched due to identity mapping
+  "cv2",
+  "iterstrat",
+  "PIL",
   "yaml",
+  "sklearn",
+  "skimage",
 
 ]
 
@@ -141,13 +122,15 @@ sha256 = "b7c34d528bba97a4ace1aa6efee90d31ae1419581577d6ee13c3cf6718357e36"
 # Key: filename containing declared dependencies
 # Value: list (set) of external packages imported
 "<unused>" =  [
-  "cython",
-  "iterative-stratification",
+  "cython" , # needed to install scipy via conda
+  # actually unused
   "oauthlib",
   "olefile",
+  # unmatched due to identity mapping
   "opencv-contrib-python",
+  "iterative-stratification",
   "pillow",
   "pyyaml",
+  "scikit-learn",
   "scikit-image",
-  "scikit-learn"
   ]
