@@ -290,6 +290,7 @@ def extract_dependencies(path: Path) -> Iterator[DeclaredDependency]:
     """
     parsers = {
         "requirements.txt": parse_requirements_contents,
+        "requirements-all.txt": parse_requirements_contents,
         "requirements.in": parse_requirements_contents,
         "setup.py": parse_setup_contents,
         "setup.cfg": parse_setup_cfg_contents,

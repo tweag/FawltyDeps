@@ -174,7 +174,7 @@ For bug reports, when a user reports that `fawltydeps` does not work on their pr
 The resulting updates are introduced to `fawltydeps` and reflected in our expectations, first in the TOML for the sample project(s) and then finally in the `real_projects` TOML.
 
 If you find a project where FawltyDeps is not doing a good job, we would appreciate
-if you would add that project under [`tests/real_projects`](./tests/real_projects).
+if you add that project under [`tests/real_projects`](./tests/real_projects).
 To see how these tests work, look at the existing files in that directory.
 
 
