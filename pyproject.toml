@@ -131,6 +131,7 @@ skip = ".git,.mypy_cache,.nox,.vscode,__pycache__"
 builtin = "clear,rare,informal,usage,code,names"
 ignore-words-list = "jupyter,iff"  # prevent jupyter -> jupiter, iff -> if
 check-filenames = true
+uri-ignore-words-list = "*"
 
 [build-system]
 requires = ["poetry-core"]
