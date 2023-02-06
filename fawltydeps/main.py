@@ -196,11 +196,7 @@ def main() -> int:
         "--quiet",
         action="count",
         default=0,
-        help=(
-            "Decrease log level (WARNING by default, -q: ERROR, -qq: FATAL)"
-            " and verbosity of the output (without location details by default,"
-            " -q, -qq: without location details)"
-        ),
+        help="Decrease log level (WARNING by default, -q: ERROR, -qq: FATAL)",
     )
 
     args = parser.parse_args()
@@ -218,7 +214,7 @@ def main() -> int:
 
     analysis.print_human_readable(sys.stdout, details=verbose_report)
     if not verbose_report:
-        print("\nFor a more verbose report re-run with `-v` option.\n")
+        print("\nFor a more verbose report re-run with the `-v` option.\n")
 
     # Exit codes:
     # 0 - success, no problems found

@@ -265,7 +265,7 @@ def test_check__simple_project_imports_match_dependencies__prints_verbose_option
         declares=["requests", "pandas"],
     )
 
-    expect = ["For a more verbose report re-run with `-v` option."]
+    expect = ["For a more verbose report re-run with the `-v` option."]
     output, errors, returncode = run_fawltydeps(
         "--check", f"--code={tmp_path}", f"--deps={tmp_path}"
     )
@@ -461,7 +461,7 @@ def test__quiet_check__writes_only_names_of_unused_and_undeclared(
         "These dependencies appear to be unused (i.e. not imported):",
         "- 'pandas'",
         "",
-        "For a more verbose report re-run with `-v` option.",
+        "For a more verbose report re-run with the `-v` option.",
     ]
     output, errors, returncode = run_fawltydeps("--check", cwd=tmp_path)
     assert output.splitlines() == expect
