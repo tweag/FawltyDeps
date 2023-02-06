@@ -84,6 +84,19 @@ In the [code design](./docs/CodeDesign.md) section of documentation we lay out r
 
 ## Development
 
+To give minimal working examples of supported projects, we add to the real-world projects some simplified versions in [`tests/sample_projects`](./tests/sample_projects).
+For bug reports, when a user reports that `fawltydeps` does not work on their project, we adopt the following process:
+
+- The project is added to `real_projects`.
+- We isolate the problems/issues/features and define/express them succinctly as a sample project under `sample_projects`.
+- We examine the issue more closely and update core logic, adding/altering unit tests along the way.
+
+The resulting updates are introduced to `fawltydeps` and reflected in our expectations, first in the TOML for the sample project(s) and then finally in the `real_projects` TOML.
+
+If you find a project where FawltyDeps is not doing a good job, we would appreciate
+if you would add that project under [`tests/real_projects`](./tests/real_projects).
+To see how these tests work, look at the existing files in that directory.
+
 ### Poetry
 
 The project uses [Poetry](https://python-poetry.org/). Install Poetry, and then
@@ -167,18 +180,4 @@ outputs, are defined in TOML files under
 Note: Execution of these integration tests is disabled by default.
 To run the integration tests, pass the `-m integration` option to pytest or an appropriate argument to the Nox session argument. Refer to the [Nox section](#nox) for example(s).
 
-## Development
-
-To give minimal working examples of supported projects, we add to the real-world projects some simplified versions in [`tests/sample_projects`](./tests/sample_projects).
-For bug reports, when a user reports that `fawltydeps` does not work on their project, we adopt the following process:
-
-- The project is added to `real_projects`.
-- We isolate the problems/issues/features and define/express them succinctly as a sample project under `sample_projects`.
-- We examine the issue more closely and update core logic, adding/altering unit tests along the way.
-
-The resulting updates are introduced to `fawltydeps` and reflected in our expectations, first in the TOML for the sample project(s) and then finally in the `real_projects` TOML.
-
-If you find a project where FawltyDeps is not doing a good job, we would appreciate
-if you would add that project under [`tests/real_projects`](./tests/real_projects).
-To see how these tests work, look at the existing files in that directory.
 
