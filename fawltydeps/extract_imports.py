@@ -23,8 +23,7 @@ def make_isort_config(path: Path, src_paths: Tuple[Path] = ()) -> isort.Config:
     to look for first-party imports.
     """
     return isort.Config(
-        directory=str(path),  # Resolve first-party imports from this directory
-        src_paths=src_paths,
+        src_paths=(path, *src_paths),  # Resolve first-party imports
         py_version="all",  # Ignore stdlib imports from all stdlib versions
     )
 
