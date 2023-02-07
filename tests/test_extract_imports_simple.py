@@ -439,27 +439,58 @@ def test_parse_dir__imports__are_extracted_in_order_of_encounter(write_tmp_files
     assert list(parse_dir(tmp_path)) == expect
 
 
-def test_parse_dir__imports_from_same_dir__are_ignored(write_tmp_files):
-    tmp_path = write_tmp_files(
+@pytest.mark.parametrize(
+    "code,expect_data",
+    [
+        pytest.param(
+            {
+                "my_application.py": "import my_utils",
+                "my_utils.py": "import sys",
+            },
+            None,
+            id="__ignore_imports_from_the_same_dir",
+        ),
+        pytest.param(
+            {
+                "my_app/__init__.py": "",
+                "my_app/main.py": "from my_app import utils",
+                "my_app/utils.py": "import numpy",
+            },
+            ("numpy", "my_app/utils.py", 1),
+            id="__ignore_self_imports",
+        ),
+        pytest.param(
+            {
+                "classifier/train_effnet.py": "from train_resnet import make_weights_for_balanced_classes",
+                "classifier/train_resnet.py": "make_weights_for_balanced_classes = lambda x:x",
+            },
+            None,
+            id="__ignore_imports_from_the_same_child_dir",
+        ),
+        pytest.param(
+            {
+                "detr/main.py": "import util.misc as utils",
+                "detr/util/__init__.py": "",
+                "detr/util/misc.py": "a = 1",
+            },
+            None,
+            id="__ignore_imports_from_submodule",
+        ),
+    ],
+)
+def test_parse_dir__ignore_first_party_imports(code, expect_data, write_tmp_files):
+    tmp_path = write_tmp_files(code)
+    expect = (
         {
-            "my_application.py": "import my_utils",
-            "my_utils.py": "import sys",
+            ParsedImport(
+                name=expect_data[0],
+                source=Location(path=tmp_path / expect_data[1], lineno=expect_data[2]),
+            )
         }
+        if expect_data
+        else set()
     )
 
-    assert set(parse_dir(tmp_path)) == set()
-
-
-def test_parse_dir__self_imports__are_ignored(write_tmp_files):
-    tmp_path = write_tmp_files(
-        {
-            "my_app/__init__.py": "",
-            "my_app/main.py": "from my_app import utils",
-            "my_app/utils.py": "import numpy",
-        }
-    )
-
-    expect = {ParsedImport("numpy", Location(tmp_path / "my_app/utils.py", lineno=1))}
     assert set(parse_dir(tmp_path)) == expect
 
 
