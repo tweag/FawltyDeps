@@ -384,7 +384,9 @@ def test_parse_setup_contents__multiple_entries_in_extras_require__returns_list(
     assert sorted(expected) == sorted(result)
 
 
-def test_extract_declared_dependencies__simple_project__returns_list(project_with_requirements):
+def test_extract_declared_dependencies__simple_project__returns_list(
+    project_with_requirements,
+):
     expect = ["pandas", "click", "pandas", "tensorflow"]
     assert sorted(
         [a for (a, _) in extract_declared_dependencies(project_with_requirements)]
@@ -405,7 +407,12 @@ def test_extract_declared_dependencies__project_with_requirements_and_setup__ret
         "tensorflow",
     ]
     assert sorted(
-        [a for (a, _) in extract_declared_dependencies(project_with_setup_and_requirements)]
+        [
+            a
+            for (a, _) in extract_declared_dependencies(
+                project_with_setup_and_requirements
+            )
+        ]
     ) == sorted(expect)
 
 
@@ -497,6 +504,8 @@ def test_extract_declared_dependencies__project_with_setup_cfg_pyproject_require
         "pylint",
     ]
     actual = list(
-        extract_declared_dependencies(project_with_setup_with_cfg_pyproject_and_requirements)
+        extract_declared_dependencies(
+            project_with_setup_with_cfg_pyproject_and_requirements
+        )
     )
     assert sorted([a for (a, _) in actual]) == sorted(expect)
