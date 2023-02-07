@@ -29,16 +29,17 @@ def make_isort_config(path: Path, src_paths: Tuple[Path] = ()) -> isort.Config:
     )
 
 
+ISORT_FALLBACK_CONFIG = make_isort_config(Path("."))
+
+
 def parse_code(
-    code: str, *, source: Location, local_context: Optional[isort.Config] = None
+    code: str, *, source: Location, local_context: isort.Config = ISORT_FALLBACK_CONFIG
 ) -> Iterator[ParsedImport]:
     """Extract import statements from a string containing Python code.
 
     Generate (i.e. yield) the module names that are imported in the order
     they appear in the code.
     """
-    if not local_context:
-        local_context = make_isort_config(Path("."))
 
     def is_external_import(name: str) -> bool:
         return isort.place_module(name, config=local_context) == "THIRDPARTY"
@@ -79,7 +80,7 @@ def parse_notebook_file(
     they appear in the file.
     """
     if not local_context:
-        local_context = make_isort_config(path)
+        local_context = make_isort_config(Path("."), (path.parent,))
 
     def filter_out_magic_commands(
         lines: Iterable[str], source: Location
@@ -143,7 +144,7 @@ def parse_python_file(
     they appear in the file.
     """
     if not local_context:
-        local_context = make_isort_config(path)
+        local_context = make_isort_config(Path("."), (path.parent,))
     yield from parse_code(
         path.read_text(), source=Location(path), local_context=local_context
     )
