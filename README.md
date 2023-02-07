@@ -21,13 +21,9 @@ The library is distributed with PyPI, so simply:
 pip install fawltydeps
 ```
 
-and add `fawltydeps` to your development dependencies, not to generate undeclared dependencies.
+or any other way to install Python packages from PyPI should be enough to make it available in your environment.
 
-If you are using poetry:
-
-```
-poetry install fawltydeps
-```
+Consider adding `fawltydeps` to your development dependencies, to help you catch undeclared and unused dependencies in your projects.
 
 ## Usage
 
