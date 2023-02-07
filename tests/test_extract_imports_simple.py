@@ -449,7 +449,7 @@ def test_parse_dir__imports__are_extracted_in_order_of_encounter(write_tmp_files
                 "my_application.py": "import my_utils",
                 "my_utils.py": "import sys",
             },
-            None,
+            [],
             id="__ignore_imports_from_the_same_dir",
         ),
         pytest.param(
@@ -458,7 +458,7 @@ def test_parse_dir__imports__are_extracted_in_order_of_encounter(write_tmp_files
                 "my_app/main.py": "from my_app import utils",
                 "my_app/utils.py": "import numpy",
             },
-            ("numpy", "my_app/utils.py", 1),
+            [("numpy", "my_app/utils.py", 1)],
             id="__ignore_self_imports",
         ),
         pytest.param(
@@ -466,7 +466,7 @@ def test_parse_dir__imports__are_extracted_in_order_of_encounter(write_tmp_files
                 "classifier/effnet.py": "from resnet import make_weights_for_balanced_classes",
                 "classifier/resnet.py": "make_weights_for_balanced_classes = lambda x:x",
             },
-            None,
+            [],
             id="__ignore_imports_from_the_same_child_dir",
         ),
         pytest.param(
@@ -474,7 +474,7 @@ def test_parse_dir__imports__are_extracted_in_order_of_encounter(write_tmp_files
                 "dir/classifier/effnet.py": "from resnet import make_weights_for_balanced_classes",
                 "dir/classifier/resnet.py": "make_weights_for_balanced_classes = lambda x:x",
             },
-            None,
+            [],
             id="__ignore_imports_from_the_same_nested_dir",
         ),
         pytest.param(
@@ -483,7 +483,7 @@ def test_parse_dir__imports__are_extracted_in_order_of_encounter(write_tmp_files
                 "detr/util/__init__.py": "",
                 "detr/util/misc.py": "a = 1",
             },
-            None,
+            [],
             id="__ignore_imports_from_submodule",
         ),
         pytest.param(
@@ -493,26 +493,22 @@ def test_parse_dir__imports__are_extracted_in_order_of_encounter(write_tmp_files
                 "efficientdet/effdet/__init__.py": "",
                 "efficientdet/effdet/anchors.py": "class AnchorLabel",
             },
-            None,
+            [],
             id="__ignore_imports_from_uncle",
         ),
     ],
 )
 def test_parse_dir__ignore_first_party_imports(code, expect_data, write_tmp_files):
     tmp_path = write_tmp_files(code)
-    expect = (
-        {
-            ParsedImport(
-                name=expect_data[0],
-                source=Location(path=tmp_path / expect_data[1], lineno=expect_data[2]),
-            )
-        }
-        if expect_data
-        else set()
-    )
+    expect = [
+        ParsedImport(
+            name=e[0],
+            source=Location(path=tmp_path / e[1], lineno=e[2]),
+        )
+        for e in expect_data
+    ]
 
-    print(sys.path)
-    assert set(parse_dir(tmp_path)) == expect
+    assert list(parse_dir(tmp_path)) == expect
 
 
 def test_parse_dir__files_in_dot_dirs__are_ignored(write_tmp_files):
