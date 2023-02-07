@@ -486,6 +486,16 @@ def test_parse_dir__imports__are_extracted_in_order_of_encounter(write_tmp_files
             None,
             id="__ignore_imports_from_submodule",
         ),
+        pytest.param(
+            {
+                "efficientdet/effdet/data/loader.py": "from effdet.anchors import AnchorLabeler",
+                "efficientdet/effdet/data/__init__.py": "",
+                "efficientdet/effdet/__init__.py": "",
+                "efficientdet/effdet/anchors.py": "class AnchorLabel",
+            },
+            None,
+            id="__ignore_imports_from_uncle",
+        ),
     ],
 )
 def test_parse_dir__ignore_first_party_imports(code, expect_data, write_tmp_files):
