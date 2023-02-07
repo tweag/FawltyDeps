@@ -5,7 +5,7 @@ from dataclasses import dataclass, field, replace
 from functools import total_ordering
 from operator import attrgetter
 from pathlib import Path
-from typing import List, NamedTuple, Optional, Union
+from typing import List, NamedTuple, Optional, Tuple, Union
 
 if sys.version_info >= (3, 8):
     from typing import Literal  # pylint: disable=E1101
@@ -56,7 +56,7 @@ class Location:
     # instances of 'PosixPath' and 'NoneType'.
     # Instead, we must implement our own. Do so based on a comparable/sortable
     # string created/cached together with the instance.
-    _sort_key: str = field(init=False, repr=False)  # see .__post_init__()
+    _sort_key: Tuple[str, int, int] = field(init=False, repr=False)
 
     def __post_init__(self) -> None:
         """Initialize a sort key that uniquely reflects this instance.
@@ -68,9 +68,12 @@ class Location:
         - Unspecified members sort together, and separate from specified members
         - Paths sort alphabetically, the other members sort numerically
         """
-        object.__setattr__(
-            self, "_sort_key", repr((self.path, self.cellno, self.lineno))
+        sortable_tuple = (
+            repr(self.path),
+            -1 if self.cellno is None else self.cellno,
+            -1 if self.lineno is None else self.lineno,
         )
+        object.__setattr__(self, "_sort_key", sortable_tuple)
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Location):
