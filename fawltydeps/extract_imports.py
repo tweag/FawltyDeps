@@ -5,7 +5,7 @@ import json
 import logging
 import sys
 from pathlib import Path
-from typing import Iterable, Iterator
+from typing import Iterable, Iterator, Optional, Tuple
 
 import isort
 
@@ -15,7 +15,7 @@ from fawltydeps.utils import walk_dir
 logger = logging.getLogger(__name__)
 
 
-def isort_config(path: Path) -> isort.Config:
+def make_isort_config(path: Path, src_paths: Tuple[Path] = ()) -> isort.Config:
     """Configure isort to correctly classify import statements.
 
     In order for isort to correctly differentiate between first- and third-party
@@ -24,22 +24,24 @@ def isort_config(path: Path) -> isort.Config:
     """
     return isort.Config(
         directory=str(path),  # Resolve first-party imports from this directory
+        src_paths=src_paths,
         py_version="all",  # Ignore stdlib imports from all stdlib versions
     )
 
 
-ISORT_CONFIG = isort_config(Path("."))
-
-
-def parse_code(code: str, *, source: Location) -> Iterator[ParsedImport]:
+def parse_code(
+    code: str, *, source: Location, local_context: Optional[isort.Config] = None
+) -> Iterator[ParsedImport]:
     """Extract import statements from a string containing Python code.
 
     Generate (i.e. yield) the module names that are imported in the order
     they appear in the code.
     """
+    if not local_context:
+        local_context = make_isort_config(Path("."))
 
     def is_external_import(name: str) -> bool:
-        return isort.place_module(name, config=ISORT_CONFIG) == "THIRDPARTY"
+        return isort.place_module(name, config=local_context) == "THIRDPARTY"
 
     try:
         parsed_code = ast.parse(code, filename=str(source.path))
@@ -68,12 +70,16 @@ def parse_code(code: str, *, source: Location) -> Iterator[ParsedImport]:
                     )
 
 
-def parse_notebook_file(path: Path) -> Iterator[ParsedImport]:
+def parse_notebook_file(
+    path: Path, local_context: Optional[isort.Config] = None
+) -> Iterator[ParsedImport]:
     """Extract import statements from an ipynb notebook.
 
     Generate (i.e. yield) the module names that are imported in the order
     they appear in the file.
     """
+    if not local_context:
+        local_context = make_isort_config(path)
 
     def filter_out_magic_commands(
         lines: Iterable[str], source: Location
@@ -110,7 +116,9 @@ def parse_notebook_file(path: Path) -> Iterator[ParsedImport]:
             try:
                 if cell["cell_type"] == "code":
                     lines = filter_out_magic_commands(cell["source"], source=source)
-                    yield from parse_code("".join(lines), source=source)
+                    yield from parse_code(
+                        "".join(lines), source=source, local_context=local_context
+                    )
             except KeyError as exc:
                 logger.error(f"Could not parse code from {source}: {exc}.")
 
@@ -126,13 +134,19 @@ def parse_notebook_file(path: Path) -> Iterator[ParsedImport]:
         )
 
 
-def parse_python_file(path: Path) -> Iterator[ParsedImport]:
+def parse_python_file(
+    path: Path, local_context: Optional[isort.Config] = None
+) -> Iterator[ParsedImport]:
     """Extract import statements from a file containing Python code.
 
     Generate (i.e. yield) the module names that are imported in the order
     they appear in the file.
     """
-    yield from parse_code(path.read_text(), source=Location(path))
+    if not local_context:
+        local_context = make_isort_config(path)
+    yield from parse_code(
+        path.read_text(), source=Location(path), local_context=local_context
+    )
 
 
 def parse_dir(path: Path) -> Iterator[ParsedImport]:
@@ -143,17 +157,12 @@ def parse_dir(path: Path) -> Iterator[ParsedImport]:
     unspecified. Modules that are imported multiple times (in the same file or
     across several files) will be yielded multiple times.
     """
-    global ISORT_CONFIG  # pylint: disable=global-statement
-    old_config = ISORT_CONFIG
-    ISORT_CONFIG = isort_config(path)
-    try:
-        for file in walk_dir(path):
-            if file.suffix == ".py":
-                yield from parse_python_file(file)
-            elif file.suffix == ".ipynb":
-                yield from parse_notebook_file(file)
-    finally:
-        ISORT_CONFIG = old_config
+    for file in walk_dir(path):
+        local_context = make_isort_config(path=path, src_paths=(file.parent,))
+        if file.suffix == ".py":
+            yield from parse_python_file(file, local_context=local_context)
+        elif file.suffix == ".ipynb":
+            yield from parse_notebook_file(file, local_context=local_context)
 
 
 def parse_any_arg(arg: PathOrSpecial) -> Iterator[ParsedImport]:
