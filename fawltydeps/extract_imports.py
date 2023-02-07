@@ -158,7 +158,7 @@ def parse_dir(path: Path) -> Iterator[ParsedImport]:
     across several files) will be yielded multiple times.
     """
     for file in walk_dir(path):
-        local_context = make_isort_config(path=path, src_paths=(file.parent,))
+        local_context = make_isort_config(path=path, src_paths=file.parents)
         if file.suffix == ".py":
             yield from parse_python_file(file, local_context=local_context)
         elif file.suffix == ".ipynb":
