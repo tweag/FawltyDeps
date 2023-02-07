@@ -5,7 +5,7 @@ from textwrap import dedent
 
 import pytest
 
-from fawltydeps.extract_dependencies import parse_pyproject_contents
+from fawltydeps.extract_declared_dependencies import parse_pyproject_contents
 
 
 @pytest.mark.parametrize(

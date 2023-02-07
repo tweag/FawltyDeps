@@ -11,7 +11,7 @@ from typing import List, Optional, Set, TextIO
 
 from fawltydeps import extract_imports
 from fawltydeps.check import compare_imports_to_dependencies
-from fawltydeps.extract_dependencies import extract_dependencies
+from fawltydeps.extract_declared_dependencies import extract_declared_dependencies
 from fawltydeps.types import (
     ArgParseError,
     DeclaredDependency,
@@ -67,7 +67,7 @@ class Analysis:
         if ret.is_enabled(
             Action.LIST_DEPS, Action.REPORT_UNDECLARED, Action.REPORT_UNUSED
         ):
-            ret.declared_deps = list(extract_dependencies(deps))
+            ret.declared_deps = list(extract_declared_dependencies(deps))
 
         if ret.is_enabled(Action.REPORT_UNDECLARED, Action.REPORT_UNUSED):
             assert ret.imports is not None  # convince Mypy that these cannot

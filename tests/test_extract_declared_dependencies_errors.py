@@ -5,19 +5,21 @@ from textwrap import dedent
 
 import pytest
 
-from fawltydeps.extract_dependencies import (
-    extract_dependencies,
+from fawltydeps.extract_declared_dependencies import (
+    extract_declared_dependencies,
     parse_setup_cfg_contents,
 )
 from fawltydeps.types import ArgParseError, Location
 
 
-def test_extract_dependencies__unsupported_file__raises_error(
+def test_extract_declared_dependencies__unsupported_file__raises_error(
     project_with_setup_and_requirements,
 ):
     with pytest.raises(ArgParseError):
         list(
-            extract_dependencies(project_with_setup_and_requirements / "python_file.py")
+            extract_declared_dependencies(
+                project_with_setup_and_requirements / "python_file.py"
+            )
         )
 
 

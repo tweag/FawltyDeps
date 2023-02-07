@@ -1,4 +1,9 @@
+# Python
 __pycache__/
 dist/
 .nox/
+
+# Editors
 .vscode/
+.idea/
+
