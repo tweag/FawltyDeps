@@ -7,26 +7,22 @@ import pytest
 from fawltydeps.types import Location
 
 testdata = {  # Test ID -> (Location args, expected string representation, sort order)
-    # The sort order below reveals that "None" sorts before "PosixPath(...)",
-    # but after ASCII digits. In practice this does not matter, as we expect
-    # Location objects in the same process to have the ~same members specified.
-    #
     # First arg must be a Path, or "<stdin>"
     "nothing": (("<stdin>",), "<stdin>", 111),
     "abs_path": ((Path("/foo/bar"),), "/foo/bar", 211),
     "rel_path": ((Path("foo"),), "foo", 311),
     # Second arg refers to notebook cell, and is rendered in [square brackets]
-    "no_path_cell": (("<stdin>", 1), "<stdin>[1]", 101),
-    "abs_path_cell": ((Path("/foo/bar"), 2), "/foo/bar[2]", 201),
-    "rel_path_cell": ((Path("foo"), 3), "foo[3]", 301),
+    "no_path_cell": (("<stdin>", 1), "<stdin>[1]", 121),
+    "abs_path_cell": ((Path("/foo/bar"), 2), "/foo/bar[2]", 221),
+    "rel_path_cell": ((Path("foo"), 3), "foo[3]", 321),
     # Third arg is line number, and is prefixed by colon
-    "no_path_cell_line": (("<stdin>", 1, 2), "<stdin>[1]:2", 100),
-    "abs_path_cell_line": ((Path("/foo/bar"), 2, 3), "/foo/bar[2]:3", 200),
-    "rel_path_cell_line": ((Path("foo"), 3, 4), "foo[3]:4", 300),
+    "no_path_cell_line": (("<stdin>", 1, 2), "<stdin>[1]:2", 122),
+    "abs_path_cell_line": ((Path("/foo/bar"), 2, 3), "/foo/bar[2]:3", 222),
+    "rel_path_cell_line": ((Path("foo"), 3, 4), "foo[3]:4", 322),
     # Cell number is omitted for non-notebooks.
-    "no_path_line": (("<stdin>", None, 2), "<stdin>:2", 110),
-    "abs_path_line": ((Path("/foo/bar"), None, 3), "/foo/bar:3", 210),
-    "rel_path_line": ((Path("foo"), None, 4), "foo:4", 310),
+    "no_path_line": (("<stdin>", None, 2), "<stdin>:2", 112),
+    "abs_path_line": ((Path("/foo/bar"), None, 3), "/foo/bar:3", 212),
+    "rel_path_line": ((Path("foo"), None, 4), "foo:4", 312),
 }
 
 
@@ -46,6 +42,17 @@ def test_location__sorting():
     actual = sorted([Location(*args) for args, *_ in testdata.values()])
 
     assert actual == expect
+
+
+def test_location__numbers_are_sorted_numerically():
+    pre_sorted = [
+        Location(Path("foo"), 9, 5),
+        Location(Path("foo"), 9, 22),
+        Location(Path("foo"), 11, 5),
+        Location(Path("foo"), 11, 22),
+    ]
+    post_sorted = sorted(pre_sorted)
+    assert pre_sorted == post_sorted
 
 
 def test_location__hashable_and_unique():
