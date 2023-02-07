@@ -32,6 +32,11 @@ class DependencyParsingError(Exception):
         self.value = value
 
 
+def parse_one_req(req_text: str, source: Location) -> DeclaredDependency:
+    """Returns the name of a dependency declared in a requirement specifier."""
+    return DeclaredDependency(Requirement.parse(req_text).key, source)
+
+
 def parse_requirements_contents(
     text: str, source: Location
 ) -> Iterator[DeclaredDependency]:
@@ -45,7 +50,7 @@ def parse_requirements_contents(
     for line in text.splitlines():
         if not line or line.lstrip().startswith(("-", "#")):
             continue
-        yield DeclaredDependency(name=Requirement.parse(line).key, source=source)
+        yield parse_one_req(line, source)
 
 
 def parse_setup_contents(text: str, source: Location) -> Iterator[DeclaredDependency]:
@@ -62,9 +67,7 @@ def parse_setup_contents(text: str, source: Location) -> Iterator[DeclaredDepend
             for element in deps.elts:
                 # Python v3.8 changed from ast.Str to ast.Constant
                 if isinstance(element, (ast.Constant, ast.Str)):
-                    yield DeclaredDependency(
-                        Requirement.parse(ast.literal_eval(element)).key, source
-                    )
+                    yield parse_one_req(ast.literal_eval(element), source)
         else:
             raise DependencyParsingError(deps)
 
@@ -173,7 +176,7 @@ def parse_poetry_pyproject_dependencies(
     ) -> Iterator[DeclaredDependency]:
         for requirement in poetry_config["dependencies"].keys():
             if requirement != "python":
-                yield DeclaredDependency(name=requirement, source=source)
+                yield parse_one_req(requirement, source)
 
     def parse_group_dependencies(
         poetry_config: TomlData, source: Location
@@ -181,7 +184,7 @@ def parse_poetry_pyproject_dependencies(
         for group in poetry_config["group"].values():
             for requirement in group["dependencies"].keys():
                 if requirement != "python":
-                    yield DeclaredDependency(name=requirement, source=source)
+                    yield parse_one_req(requirement, source)
 
     def parse_extra_dependencies(
         poetry_config: TomlData, source: Location
@@ -189,7 +192,7 @@ def parse_poetry_pyproject_dependencies(
         for group in poetry_config["extras"].values():
             if isinstance(group, list):
                 for requirement in group:
-                    yield DeclaredDependency(Requirement.parse(requirement).key, source)
+                    yield parse_one_req(requirement, source)
             else:
                 raise TypeError(f"{group!r} is of type {type(group)}. Expected a list.")
 
@@ -233,7 +236,7 @@ def parse_pep621_pyproject_contents(
         dependencies = parsed_contents["project"]["dependencies"]
         if isinstance(dependencies, list):
             for requirement in dependencies:
-                yield DeclaredDependency(Requirement.parse(requirement).key, source)
+                yield parse_one_req(requirement, source)
         else:
             raise TypeError(
                 f"{dependencies!r} of type {type(dependencies)}. Expected list."
@@ -244,7 +247,7 @@ def parse_pep621_pyproject_contents(
     ) -> Iterator[DeclaredDependency]:
         for group in parsed_contents["project"]["optional-dependencies"].values():
             for requirement in group:
-                yield DeclaredDependency(Requirement.parse(requirement).key, source)
+                yield parse_one_req(requirement, source)
 
     fields_parsers = {
         "main": parse_main_dependencies,
