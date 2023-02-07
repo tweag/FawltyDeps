@@ -4,6 +4,8 @@ import logging
 from textwrap import dedent
 from typing import List, Tuple, Union
 
+import sys
+
 import pytest
 
 from fawltydeps.extract_imports import (
@@ -461,11 +463,19 @@ def test_parse_dir__imports__are_extracted_in_order_of_encounter(write_tmp_files
         ),
         pytest.param(
             {
-                "classifier/train_effnet.py": "from train_resnet import make_weights_for_balanced_classes",
-                "classifier/train_resnet.py": "make_weights_for_balanced_classes = lambda x:x",
+                "classifier/effnet.py": "from resnet import make_weights_for_balanced_classes",
+                "classifier/resnet.py": "make_weights_for_balanced_classes = lambda x:x",
             },
             None,
             id="__ignore_imports_from_the_same_child_dir",
+        ),
+        pytest.param(
+            {
+                "dir/classifier/effnet.py": "from resnet import make_weights_for_balanced_classes",
+                "dir/classifier/resnet.py": "make_weights_for_balanced_classes = lambda x:x",
+            },
+            None,
+            id="__ignore_imports_from_the_same_nested_dir",
         ),
         pytest.param(
             {
@@ -491,6 +501,7 @@ def test_parse_dir__ignore_first_party_imports(code, expect_data, write_tmp_file
         else set()
     )
 
+    print(sys.path)
     assert set(parse_dir(tmp_path)) == expect
 
 
