@@ -45,8 +45,8 @@ one of these can be used at a time:
 - `--check`: Report both undeclared and unused dependencies
 - `--check-undeclared`: Report only undeclared dependencies
 - `--check-unused`: Report only unused dependencies
-- `--list-imports`: List imports extracted from code and exit
-- `--list-deps`: List declared dependencies and exit
+- `--list-imports`: List third-party imports extracted from the project
+- `--list-deps`: List declared dependencies extracted from the project
 
 When none of these are specified, the default action is `--check`.
 
@@ -68,11 +68,12 @@ current directory, i.e. same as `--code=.`
 The `--deps` option tells FawltyDeps where to look for your project's declared
 dependencies. A number of file formats are supported:
 
-- `requirements.txt`
+- `requirements.txt`, including the variants `requirements-all.txt` and `requirements.in`
 - `pyproject.toml` (following PEP 621 or Poetry conventions)
 - `setup.py` (only limited support for simple files with a single `setup()`
-  call and literals passed directly to the `install_requires` and
+  call and no computation involved for setting the `install_requires` and
   `extras_require` arguments)
+- `setup.cfg`
 
 The `--deps` option accepts either a directory, in which case FawltyDeps will go
 looking for the above files under that directory. or a file, in case you want to
