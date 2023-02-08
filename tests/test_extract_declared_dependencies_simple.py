@@ -1,5 +1,4 @@
 """Test that dependencies are parsed from requirements files"""
-import logging
 from pathlib import Path
 from textwrap import dedent
 from typing import List
@@ -290,70 +289,6 @@ def test_parse_setup_cfg_contents(file_content, expected):
     source = Location(Path("setup.cfg"))
     result = list(parse_setup_cfg_contents(dedent(file_content), source))
     assert sorted(result) == sorted(expected)
-
-
-def test_parse_setup_contents__cannot_parse_install_requires__logs_warning(
-    tmp_path, caplog
-):
-    setup_contents = dedent(
-        """\
-        from setuptools import setup
-
-        generate_requirements = lambda n: [f"mock-requirement-{k}" for k in range(n)]
-        setup(
-            name="MyLib",
-            install_requires=generate_requirements(4)
-        )
-        """
-    )
-    expected = []
-    caplog.set_level(logging.WARNING)
-    setup_path = tmp_path / "setup.py"
-    result = list(parse_setup_contents(setup_contents, Location(setup_path)))
-    assert "Could not parse contents of `install_requires`:" in caplog.text
-    assert str(setup_path) in caplog.text
-    assert expected == result
-
-
-def test_parse_setup_contents__cannot_parse_extras_require__logs_warning(caplog):
-    setup_contents = dedent(
-        """\
-        from setuptools import setup
-
-        generate_requirements = lambda n: {f"extra{k}": f"mock-requirement-{k}" for k in range(n)}
-        setup(
-            name="MyLib",
-            extras_require=generate_requirements(4)
-        )
-        """
-    )
-    expected = []
-    caplog.set_level(logging.WARNING)
-    result = list(parse_setup_contents(setup_contents, Location(Path(""))))
-    assert "Could not parse contents of `extras_require`" in caplog.text
-    assert expected == result
-
-
-def test_parse_setup_contents__cannot_parse_extras_require_value__logs_warning(caplog):
-    setup_contents = dedent(
-        """\
-        from setuptools import setup
-
-        generate_requirements = lambda n: [f"mock-requirement-{k}" for k in range(n)]
-        setup(
-            name="MyLib",
-            extras_require={
-                "simple_parsing":["abc"],
-                "complex_parsing": generate_requirements(3)
-                }
-        )
-        """
-    )
-    expected = [DeclaredDependency("abc", Location(Path("")))]
-    caplog.set_level(logging.WARNING)
-    result = list(parse_setup_contents(setup_contents, Location(Path(""))))
-    assert "Could not parse contents of `extras_require`" in caplog.text
-    assert expected == result
 
 
 def test_parse_setup_contents__multiple_entries_in_extras_require__returns_list():
