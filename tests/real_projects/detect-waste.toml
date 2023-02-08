@@ -1,0 +1,136 @@
+[project]
+# General information about the 3rd-party project: Its name, why we test it,
+# and where to find the relevant tarball, along with its expected checksum.
+name = "detect-waste"
+description = "A data science project for detecting waste in the environment."
+url = "https://github.com/wimlds-trojmiasto/detect-waste/archive/0a4367b121e4bfabdfb148b323090573ac2dadc2.tar.gz"
+sha256 = "b7c34d528bba97a4ace1aa6efee90d31ae1419581577d6ee13c3cf6718357e36"
+# The SHA256 checksum above can be found by running `sha256sum` on the
+# downloaded tarball. It is used to ensure that we run tests against the
+# expected revision of the 3rd-party project.
+
+# Below are our expectations for running FawltyDeps on the above (unpacked)
+# tarball. Each table represents the expectations of a corresponding test case
+# inside ../test_real_projects.py. All tables are optional: Removing a table
+# will disable the corresponding test case. An empty table means that we expect
+# FawltyDeps to produce zero results/empty output for that test.
+#
+# Inside each table, we map filenames to lists of relevant packages (imports or
+# dependencies) that we expect FawltyDeps to return for that test. This is
+# described in more detail under each table:
+
+[imports]
+# What we expect `fawltydeps --list-imports` to return for this project.
+# Key: filename containing import statements
+# Value: list (set) of external packages imported
+"<unused>" = [
+  "PIL",
+  "albumentations",
+  "apex",
+  "cv2",
+  "demo",
+  "efficientnet_pytorch",
+  "funcy",
+  "iterstrat",
+  "matplotlib",
+  "models",
+  "neptune",
+  "numpy",
+  "omegaconf",
+  "pandas",
+  "panopticapi",
+  "pycocotools",
+  "pylab",
+  "pytorch_lightning",
+  "requests",
+  "scikitplot",
+  "scipy",
+  "seaborn",
+  "setuptools",
+  "skimage",
+  "sklearn",
+  "sotabencheval",
+  "timm",
+  "torch",
+  "torchvision",
+  "tqdm",
+  "yaml"
+]
+
+[declared_deps]
+# What we expect `fawltydeps --list-deps` to return for this project.
+# Key: filename containing declared dependencies
+# Value: list (set) of packages names that are declared
+"<unused>" =  [
+  "albumentations",
+  "cython",
+  "funcy",
+  "iterative-stratification",
+  "matplotlib",
+  "numpy",
+  "oauthlib",
+  "olefile",
+  "omegaconf",
+  "opencv-contrib-python",
+  "pillow",
+  "pycocotools",
+  "pyyaml",
+  "scikit-image",
+  "scikit-learn",
+  "scipy",
+  "seaborn",
+  "timm",
+  "torch",
+  "torchvision"
+]
+
+[undeclared_deps]
+# What we expect `fawltydeps --check-undeclared` to return for this project.
+# Key: filename containing import statements
+# Value: list (set) of external packages imported without being declared
+"<unused>" = [
+  # found internally in the project
+  "demo", # undeclared comes from `make_predictions.py` and 
+          # `detr/notebooks/Detect_Waste_finetuning_detr.ipynb` 
+          # They extend `sys.path` to include modules from children directories
+  "models", # undeclared comes from `make_predictions.py` which is imported by extending `sys.path`
+  # actually undeclared
+  "apex", # wrapped in `ImportError`
+  "efficientnet_pytorch",
+  "neptune",
+  "pandas",
+  "panopticapi",
+  "pylab", # part of matplotlib
+  "pytorch_lightning",
+  "requests",
+  "setuptools",
+  "sotabencheval", # looks like it is an artifact of some refactor
+  "scikitplot", 
+  "tqdm", 
+  # unmatched due to identity mapping
+  "cv2",
+  "iterstrat",
+  "PIL",
+  "yaml",
+  "sklearn",
+  "skimage",
+
+]
+
+[unused_deps]
+# What we expect `fawltydeps --check-unused` to return for this project.
+# Key: filename containing declared dependencies
+# Value: list (set) of external packages imported
+"<unused>" =  [
+  "cython" , # needed to install scipy via conda
+  # actually unused
+  "oauthlib",
+  "olefile",
+  # unmatched due to identity mapping
+  "opencv-contrib-python",
+  "iterative-stratification",
+  "pillow",
+  "pyyaml",
+  "scikit-learn",
+  "scikit-image",
+  ]
