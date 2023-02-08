@@ -5,7 +5,7 @@ from dataclasses import dataclass, field, replace
 from functools import total_ordering
 from operator import attrgetter
 from pathlib import Path
-from typing import List, NamedTuple, Optional, Tuple, Union
+from typing import Dict, List, NamedTuple, Optional, Tuple, Union
 
 if sys.version_info >= (3, 8):
     from typing import Literal  # pylint: disable=E1101
@@ -96,6 +96,10 @@ class Location:
             ret += f":{self.lineno}"
         return ret
 
+    def json(self) -> str:
+        """Return a JSON-serializable representation of this object"""
+        return str(self)
+
     def supply(self, **changes: int) -> "Location":
         """Create a new Location that contains additional information."""
         return replace(self, **changes)
@@ -108,12 +112,26 @@ class ParsedImport:
     name: str
     source: Location
 
+    def json(self) -> Dict[str, str]:
+        """Return a JSON-serializable representation of this object"""
+        return {
+            "name": self.name,
+            "source": self.source.json(),
+        }
+
 
 class DeclaredDependency(NamedTuple):
     """Declared dependencies parsed from configuration-containing files"""
 
     name: str
     source: Location
+
+    def json(self) -> Dict[str, str]:
+        """Return a JSON-serializable representation of this object"""
+        return {
+            "name": self.name,
+            "source": self.source.json(),
+        }
 
 
 @dataclass
@@ -136,6 +154,13 @@ class UndeclaredDependency:
             )
         return ret
 
+    def json(self) -> Dict[str, Union[str, List[Dict[str, str]]]]:
+        """Return a JSON-serializable representation of this object"""
+        return {
+            "name": self.name,
+            "references": [item.json() for item in self.references],
+        }
+
 
 @dataclass
 class UnusedDependency:
@@ -156,3 +181,10 @@ class UnusedDependency:
                 for ref in sorted(self.references, key=attrgetter("source"))
             )
         return ret
+
+    def json(self) -> Dict[str, Union[str, List[Dict[str, str]]]]:
+        """Return a JSON-serializable representation of this object"""
+        return {
+            "name": self.name,
+            "references": [item.json() for item in self.references],
+        }

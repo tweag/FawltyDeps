@@ -5,6 +5,7 @@ overall behavior of the command line interface, rather than testing our
 core exhaustively (which is what the other unit tests are for.
 """
 
+import json
 import subprocess
 from pathlib import Path
 from textwrap import dedent
@@ -123,6 +124,37 @@ def test_list_imports__from_py_file__prints_imports_from_file(write_tmp_files):
     assert returncode == 0
 
 
+def test_list_imports_json__from_py_file__prints_imports_from_file(write_tmp_files):
+    tmp_path = write_tmp_files(
+        {
+            "myfile.py": """\
+                from pathlib import Path
+                import platform, sys
+
+                import requests
+                from foo import bar, baz
+                import numpy as np
+                """,
+        }
+    )
+
+    expect = {
+        "imports": [
+            {"name": "requests", "source": f"{tmp_path}/myfile.py:4"},
+            {"name": "foo", "source": f"{tmp_path}/myfile.py:5"},
+            {"name": "numpy", "source": f"{tmp_path}/myfile.py:6"},
+        ],
+        "declared_deps": None,
+        "undeclared_deps": None,
+        "unused_deps": None,
+    }
+    output, _errors, returncode = run_fawltydeps(
+        "--list-imports", "--json", f"--code={tmp_path}/myfile.py"
+    )
+    assert json.loads(output) == expect
+    assert returncode == 0
+
+
 def test_list_imports__from_ipynb_file__prints_imports_from_file(write_tmp_files):
     tmp_path = write_tmp_files(
         {
@@ -221,6 +253,30 @@ def test_list_deps__dir__prints_deps_from_requirements_txt(
     )
     assert output.splitlines() == expect
     assert errors == ""
+    assert returncode == 0
+
+
+def test_list_deps_json__dir__prints_deps_from_requirements_txt(
+    project_with_code_and_requirements_txt,
+):
+    tmp_path = project_with_code_and_requirements_txt(
+        imports=["requests", "pandas"],
+        declares=["requests", "pandas"],
+    )
+
+    expect = {
+        "imports": None,
+        "declared_deps": [
+            {"name": "requests", "source": f"{tmp_path}/requirements.txt"},
+            {"name": "pandas", "source": f"{tmp_path}/requirements.txt"},
+        ],
+        "undeclared_deps": None,
+        "unused_deps": None,
+    }
+    output, _errors, returncode = run_fawltydeps(
+        "--list-deps", "--json", f"--deps={tmp_path}"
+    )
+    assert json.loads(output) == expect
     assert returncode == 0
 
 
@@ -347,6 +403,45 @@ def test_check__simple_project__can_report_both_undeclared_and_unused(
     assert output.splitlines() == expect
     assert errors == expect_logs
     assert returncode == 3  # undeclared is more important than unused
+
+
+def test_check_json__simple_project__can_report_both_undeclared_and_unused(
+    project_with_code_and_requirements_txt,
+):
+    tmp_path = project_with_code_and_requirements_txt(
+        imports=["requests"],
+        declares=["pandas"],
+    )
+
+    expect = {
+        "imports": [
+            {"name": "requests", "source": f"{tmp_path}/code.py:1"},
+        ],
+        "declared_deps": [
+            {"name": "pandas", "source": f"{tmp_path}/requirements.txt"},
+        ],
+        "undeclared_deps": [
+            {
+                "name": "requests",
+                "references": [
+                    {"name": "requests", "source": f"{tmp_path}/code.py:1"},
+                ],
+            },
+        ],
+        "unused_deps": [
+            {
+                "name": "pandas",
+                "references": [
+                    {"name": "pandas", "source": f"{tmp_path}/requirements.txt"},
+                ],
+            },
+        ],
+    }
+    output, _errors, returncode = run_fawltydeps(
+        "--check", "--json", f"--code={tmp_path}", f"--deps={tmp_path}"
+    )
+    assert json.loads(output) == expect
+    assert returncode == 3  # --json does not affect exit code
 
 
 def test_check_undeclared__simple_project__reports_only_undeclared(
