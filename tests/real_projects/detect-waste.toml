@@ -2,7 +2,7 @@
 # General information about the 3rd-party project: Its name, why we test it,
 # and where to find the relevant tarball, along with its expected checksum.
 name = "detect-waste"
-description = "A data science project for detecting waste in the invironment."
+description = "A data science project for detecting waste in the environment."
 url = "https://github.com/wimlds-trojmiasto/detect-waste/archive/0a4367b121e4bfabdfb148b323090573ac2dadc2.tar.gz"
 sha256 = "b7c34d528bba97a4ace1aa6efee90d31ae1419581577d6ee13c3cf6718357e36"
 # The SHA256 checksum above can be found by running `sha256sum` on the
@@ -95,7 +95,7 @@ sha256 = "b7c34d528bba97a4ace1aa6efee90d31ae1419581577d6ee13c3cf6718357e36"
           # They extend `sys.path` to include modules from children directories
   "models", # undeclared comes from `make_predictions.py` which is imported by extending `sys.path`
   # actually undeclared
-  "apex", # controversial - wrapped in `ImportError`
+  "apex", # wrapped in `ImportError`
   "efficientnet_pytorch",
   "neptune",
   "pandas",
@@ -105,8 +105,8 @@ sha256 = "b7c34d528bba97a4ace1aa6efee90d31ae1419581577d6ee13c3cf6718357e36"
   "requests",
   "setuptools",
   "sotabencheval", # looks like it is an artifact of some refactor
-  "scikitplot", # scikit-plot
-  "tqdm", #tqdm
+  "scikitplot", 
+  "tqdm", 
   # unmatched due to identity mapping
   "cv2",
   "iterstrat",
