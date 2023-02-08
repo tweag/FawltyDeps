@@ -1,4 +1,17 @@
-"""Find undeclared and/or unused 3rd-party dependencies in your Python project."""
+"""Find undeclared and/or unused 3rd-party dependencies in your Python project.
+
+* Supported files for Python code containing third-party imports:
+  * Python scripts with filenames that end in `.py`
+  * Jupyter notebooks with filenames that end in `.ipynb`
+
+* Supported files/formats for dependency declarations:
+  * `*requirements*.txt` and `*requirements*.in`
+  * `pyproject.toml` (following PEP 621 or Poetry conventions)
+  * `setup.py` (only limited support for simple files with a single `setup()`
+    call and no computation involved for setting the `install_requires` and
+    `extras_require` arguments)
+  * `setup.cfg`
+"""
 
 import argparse
 import json
@@ -137,7 +150,10 @@ def parse_path_or_stdin(arg: str) -> PathOrSpecial:
 
 def main() -> int:
     """Command-line entry point."""
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
 
     select_action = parser.add_mutually_exclusive_group()
     select_action.add_argument(
@@ -191,8 +207,7 @@ def main() -> int:
         default=Path("."),
         help=(
             "Where to find dependency declarations (file or directory, defaults"
-            " to looking for requirements.txt/requirements.in/setup.py/setup.cfg/pyproject.toml"
-            " in the current directory)"
+            " to looking for supported files in the current directory)"
         ),
     )
     parser.add_argument(
