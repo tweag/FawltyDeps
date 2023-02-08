@@ -151,11 +151,14 @@ def parse_path_or_stdin(arg: str) -> PathOrSpecial:
 def main() -> int:
     """Command-line entry point."""
     parser = argparse.ArgumentParser(
+        add_help=False,
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 
-    select_action = parser.add_mutually_exclusive_group()
+    select_action = parser.add_argument_group(
+        title="Actions"
+    ).add_mutually_exclusive_group()
     select_action.add_argument(
         "--check",
         dest="actions",
@@ -192,7 +195,8 @@ def main() -> int:
         help="List declared dependencies and exit",
     )
 
-    parser.add_argument(
+    options = parser.add_argument_group(title="Options")
+    options.add_argument(
         "--code",
         type=parse_path_or_stdin,
         default=Path("."),
@@ -201,7 +205,7 @@ def main() -> int:
             "to read code from stdin; defaults to the current directory)"
         ),
     )
-    parser.add_argument(
+    options.add_argument(
         "--deps",
         type=Path,
         default=Path("."),
@@ -210,12 +214,12 @@ def main() -> int:
             " to looking for supported files in the current directory)"
         ),
     )
-    parser.add_argument(
+    options.add_argument(
         "--json",
         action="store_true",
         help="Generate JSON output instead of a human-readable report",
     )
-    parser.add_argument(
+    options.add_argument(
         "-v",
         "--verbose",
         action="count",
@@ -226,12 +230,19 @@ def main() -> int:
             " -v, -vv: with location details)"
         ),
     )
-    parser.add_argument(
+    options.add_argument(
         "-q",
         "--quiet",
         action="count",
         default=0,
         help="Decrease log level (WARNING by default, -q: ERROR, -qq: FATAL)",
+    )
+    options.add_argument(
+        "-h",
+        "--help",
+        action="help",
+        default=argparse.SUPPRESS,
+        help="Show this help message and exit",
     )
 
     args = parser.parse_args()
