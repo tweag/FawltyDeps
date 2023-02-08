@@ -1,13 +1,14 @@
 """Find undeclared and/or unused 3rd-party dependencies in your Python project."""
 
 import argparse
+import json
 import logging
 import sys
 from dataclasses import dataclass
 from enum import Enum, auto
 from operator import attrgetter
 from pathlib import Path
-from typing import List, Optional, Set, TextIO
+from typing import Dict, List, Optional, Set, TextIO, Union
 
 from fawltydeps import extract_imports
 from fawltydeps.check import compare_imports_to_dependencies
@@ -78,8 +79,21 @@ class Analysis:
 
         return ret
 
+    def json(self) -> Dict[str, Optional[List[Union[str, List[Dict[str, str]]]]]]:
+        """Return a JSON-serializable representation of this analysis."""
+        return {
+            field: None
+            if self.__dict__[field] is None
+            else [item.json() for item in self.__dict__[field]]
+            for field in ["imports", "declared_deps", "undeclared_deps", "unused_deps"]
+        }
+
+    def print_json(self, out: TextIO) -> None:
+        """Print the JSON representation of this analysis to 'out'."""
+        json.dump(self.json(), out, indent=2, sort_keys=True)
+
     def print_human_readable(self, out: TextIO, details: bool = True) -> None:
-        """Print a human-readable rendering of the given report to stdout."""
+        """Print a human-readable rendering of this analysis to 'out'."""
         if self.is_enabled(Action.LIST_IMPORTS):
             assert self.imports is not None  # sanity-check / convince Mypy
             if details:
@@ -181,6 +195,11 @@ def main() -> int:
         ),
     )
     parser.add_argument(
+        "--json",
+        action="store_true",
+        help="Generate JSON output instead of a human-readable report",
+    )
+    parser.add_argument(
         "-v",
         "--verbose",
         action="count",
@@ -212,9 +231,12 @@ def main() -> int:
     except ArgParseError as exc:
         return parser.error(exc.msg)  # exit code 2
 
-    analysis.print_human_readable(sys.stdout, details=verbose_report)
-    if not verbose_report:
-        print("\nFor a more verbose report re-run with the `-v` option.\n")
+    if args.json:
+        analysis.print_json(sys.stdout)
+    else:
+        analysis.print_human_readable(sys.stdout, details=verbose_report)
+        if not verbose_report:
+            print("\nFor a more verbose report re-run with the `-v` option.\n")
 
     # Exit codes:
     # 0 - success, no problems found
