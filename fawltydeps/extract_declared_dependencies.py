@@ -48,7 +48,11 @@ def parse_requirements_contents(
     https://pip.pypa.io/en/stable/reference/requirements-file-format/.
     """
     for line in text.splitlines():
-        if not line or line.lstrip().startswith(("-", "#")):
+        if (
+            not line.lstrip()  # skip empty lines
+            or line.lstrip().startswith(("-", "#"))  # skip options and comments
+            or ("://" in line.split()[0])  # skip bare URLs at the start of line
+        ):
             continue
         yield parse_one_req(line, source)
 
