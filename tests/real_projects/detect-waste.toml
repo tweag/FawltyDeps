@@ -63,7 +63,7 @@ sha256 = "b7c34d528bba97a4ace1aa6efee90d31ae1419581577d6ee13c3cf6718357e36"
 # Value: list (set) of packages names that are declared
 "<unused>" =  [
   "albumentations",
-  "cython",
+  "Cython",
   "funcy",
   "iterative-stratification",
   "matplotlib",
@@ -72,7 +72,7 @@ sha256 = "b7c34d528bba97a4ace1aa6efee90d31ae1419581577d6ee13c3cf6718357e36"
   "olefile",
   "omegaconf",
   "opencv-contrib-python",
-  "pillow",
+  "Pillow",
   "pycocotools",
   "pyyaml",
   "scikit-image",
@@ -122,14 +122,14 @@ sha256 = "b7c34d528bba97a4ace1aa6efee90d31ae1419581577d6ee13c3cf6718357e36"
 # Key: filename containing declared dependencies
 # Value: list (set) of external packages imported
 "<unused>" =  [
-  "cython" , # needed to install scipy via conda
+  "Cython" , # needed to install scipy via conda
   # actually unused
   "oauthlib",
   "olefile",
   # unmatched due to identity mapping
   "opencv-contrib-python",
   "iterative-stratification",
-  "pillow",
+  "Pillow",
   "pyyaml",
   "scikit-learn",
   "scikit-image",
