@@ -10,12 +10,12 @@ from typing import Iterable, Iterator, Optional, Tuple
 import isort
 
 from fawltydeps.types import ArgParseError, Location, ParsedImport, PathOrSpecial
-from fawltydeps.utils import walk_dir
+from fawltydeps.utils import dirs_between, walk_dir
 
 logger = logging.getLogger(__name__)
 
 
-def make_isort_config(path: Path, src_paths: Tuple[Path] = ()) -> isort.Config:
+def make_isort_config(path: Path, src_paths: Tuple[Path, ...] = ()) -> isort.Config:
     """Configure isort to correctly classify import statements.
 
     In order for isort to correctly differentiate between first- and third-party
@@ -158,7 +158,9 @@ def parse_dir(path: Path) -> Iterator[ParsedImport]:
     across several files) will be yielded multiple times.
     """
     for file in walk_dir(path):
-        local_context = make_isort_config(path=path, src_paths=file.parents)
+        local_context = make_isort_config(
+            path=path, src_paths=tuple(dirs_between(path, file.parent))
+        )
         if file.suffix == ".py":
             yield from parse_python_file(file, local_context=local_context)
         elif file.suffix == ".ipynb":
