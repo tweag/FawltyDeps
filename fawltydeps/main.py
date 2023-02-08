@@ -177,7 +177,7 @@ def main() -> int:
         help=(
             "Where to find dependency declarations (file or directory, defaults"
             " to looking for requirements.txt/.in/setup.py/setup.cfg/pyproject.toml"
-            "in the current directory)"
+            " in the current directory)"
         ),
     )
     parser.add_argument(
