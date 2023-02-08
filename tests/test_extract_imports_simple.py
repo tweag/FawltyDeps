@@ -4,8 +4,6 @@ import logging
 from textwrap import dedent
 from typing import List, Tuple, Union
 
-import sys
-
 import pytest
 
 from fawltydeps.extract_imports import (
@@ -495,6 +493,11 @@ def test_parse_dir__imports__are_extracted_in_order_of_encounter(write_tmp_files
             },
             [],
             id="__ignore_imports_from_uncle",
+        ),
+        pytest.param(
+            {"tests/test_my_application.py": "import pytest", "pytest.ini": "[pytest]"},
+            [("pytest", "tests/test_my_application.py", 1)],
+            id="__ignore_imports_from_non_python_files",
         ),
     ],
 )

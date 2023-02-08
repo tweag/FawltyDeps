@@ -16,3 +16,10 @@ def walk_dir(path: Path) -> Iterator[Path]:
         dirs[:] = [d for d in dirs if not d.startswith(".")]
         for filename in files:
             yield Path(root, filename)
+
+
+def dirs_between(parent: Path, child: Path) -> Iterator[Path]:
+    """Yield directories between 'parent' and 'child', inclusive."""
+    yield child
+    if child != parent:
+        yield from dirs_between(parent, child.parent)
