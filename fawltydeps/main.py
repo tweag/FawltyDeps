@@ -151,7 +151,7 @@ def main() -> int:
         dest="actions",
         action="store_const",
         const={Action.LIST_IMPORTS},
-        help="List imports extracted from code and exit",
+        help="List third-party imports extracted from code and exit",
     )
     select_action.add_argument(
         "--list-deps",
@@ -176,8 +176,8 @@ def main() -> int:
         default=Path("."),
         help=(
             "Where to find dependency declarations (file or directory, defaults"
-            " to looking for requirements.txt/.in/setup.py/pyproject.toml in "
-            "the current directory)"
+            " to looking for requirements.txt/.in/setup.py/setup.cfg/pyproject.toml"
+            "in the current directory)"
         ),
     )
     parser.add_argument(
