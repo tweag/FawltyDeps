@@ -176,7 +176,7 @@ def main() -> int:
         default=Path("."),
         help=(
             "Where to find dependency declarations (file or directory, defaults"
-            " to looking for requirements.txt/.in/setup.py/setup.cfg/pyproject.toml"
+            " to looking for requirements.txt/requirements.in/setup.py/setup.cfg/pyproject.toml"
             " in the current directory)"
         ),
     )
