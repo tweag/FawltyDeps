@@ -140,9 +140,12 @@ def test_list_imports_json__from_py_file__prints_imports_from_file(write_tmp_fil
 
     expect = {
         "imports": [
-            {"name": "requests", "source": f"{tmp_path}/myfile.py:4"},
-            {"name": "foo", "source": f"{tmp_path}/myfile.py:5"},
-            {"name": "numpy", "source": f"{tmp_path}/myfile.py:6"},
+            {
+                "name": "requests",
+                "source": {"path": f"{tmp_path}/myfile.py", "lineno": 4},
+            },
+            {"name": "foo", "source": {"path": f"{tmp_path}/myfile.py", "lineno": 5}},
+            {"name": "numpy", "source": {"path": f"{tmp_path}/myfile.py", "lineno": 6}},
         ],
         "declared_deps": None,
         "undeclared_deps": None,
@@ -267,8 +270,8 @@ def test_list_deps_json__dir__prints_deps_from_requirements_txt(
     expect = {
         "imports": None,
         "declared_deps": [
-            {"name": "requests", "source": f"{tmp_path}/requirements.txt"},
-            {"name": "pandas", "source": f"{tmp_path}/requirements.txt"},
+            {"name": "requests", "source": {"path": f"{tmp_path}/requirements.txt"}},
+            {"name": "pandas", "source": {"path": f"{tmp_path}/requirements.txt"}},
         ],
         "undeclared_deps": None,
         "unused_deps": None,
@@ -415,16 +418,22 @@ def test_check_json__simple_project__can_report_both_undeclared_and_unused(
 
     expect = {
         "imports": [
-            {"name": "requests", "source": f"{tmp_path}/code.py:1"},
+            {
+                "name": "requests",
+                "source": {"path": f"{tmp_path}/code.py", "lineno": 1},
+            },
         ],
         "declared_deps": [
-            {"name": "pandas", "source": f"{tmp_path}/requirements.txt"},
+            {"name": "pandas", "source": {"path": f"{tmp_path}/requirements.txt"}},
         ],
         "undeclared_deps": [
             {
                 "name": "requests",
                 "references": [
-                    {"name": "requests", "source": f"{tmp_path}/code.py:1"},
+                    {
+                        "name": "requests",
+                        "source": {"path": f"{tmp_path}/code.py", "lineno": 1},
+                    },
                 ],
             },
         ],
@@ -432,7 +441,10 @@ def test_check_json__simple_project__can_report_both_undeclared_and_unused(
             {
                 "name": "pandas",
                 "references": [
-                    {"name": "pandas", "source": f"{tmp_path}/requirements.txt"},
+                    {
+                        "name": "pandas",
+                        "source": {"path": f"{tmp_path}/requirements.txt"},
+                    },
                 ],
             },
         ],

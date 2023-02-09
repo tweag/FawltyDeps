@@ -96,9 +96,18 @@ class Location:
             ret += f":{self.lineno}"
         return ret
 
-    def json(self) -> str:
-        """Return a JSON-serializable representation of this object"""
-        return str(self)
+    def json(self) -> Dict[str, Union[str, int]]:
+        """Return a JSON-serializable representation of this object.
+
+        We return a simple dict containing the object members. Unset (None)
+        members are elided from the dict, for brevity.
+        """
+        ret = {
+            "path": str(self.path),
+            "cellno": self.cellno,
+            "lineno": self.lineno,
+        }
+        return {k: v for k, v in ret.items() if v is not None}
 
     def supply(self, **changes: int) -> "Location":
         """Create a new Location that contains additional information."""
