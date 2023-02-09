@@ -9,6 +9,8 @@ from operator import attrgetter
 from pathlib import Path
 from typing import List, Optional, Set, TextIO
 
+import pkg_resources
+
 from fawltydeps import extract_imports
 from fawltydeps.check import compare_imports_to_dependencies
 from fawltydeps.extract_declared_dependencies import extract_declared_dependencies
@@ -131,6 +133,13 @@ def main() -> int:
         action="store_const",
         const={Action.REPORT_UNDECLARED, Action.REPORT_UNUSED},
         help="Report both undeclared and unused dependencies",
+    )
+    parser.add_argument(
+        "-V",
+        "--version",
+        action="version",
+        version=f"Fawltydeps {pkg_resources.get_distribution('fawltydeps').version}",
+        help=("Print the version number of fawltydeps"),
     )
     select_action.add_argument(
         "--check-undeclared",
