@@ -16,6 +16,24 @@ SpecialPath = Literal["<stdin>"]
 PathOrSpecial = Union[Path, SpecialPath]
 
 
+# Type declarations for data returned from .json() methods.
+LocationJson = Dict[str, Union[str, int]]
+ParsedImportJson = Dict[str, Union[str, LocationJson]]
+DeclaredDependencyJson = Dict[str, Union[str, LocationJson]]
+UndeclaredDependencyJson = Dict[str, Union[str, List[ParsedImportJson]]]
+UnusedDependencyJson = Dict[str, Union[str, List[DeclaredDependencyJson]]]
+AnalysisJson = Dict[
+    str,
+    Union[
+        None,
+        List[ParsedImportJson],
+        List[DeclaredDependencyJson],
+        List[UndeclaredDependencyJson],
+        List[UnusedDependencyJson],
+    ],
+]
+
+
 class ArgParseError(Exception):
     """Indicate errors while parsing command-line arguments"""
 
@@ -96,7 +114,7 @@ class Location:
             ret += f":{self.lineno}"
         return ret
 
-    def json(self) -> Dict[str, Union[str, int]]:
+    def json(self) -> LocationJson:
         """Return a JSON-serializable representation of this object.
 
         We return a simple dict containing the object members. Unset (None)
@@ -121,7 +139,7 @@ class ParsedImport:
     name: str
     source: Location
 
-    def json(self) -> Dict[str, str]:
+    def json(self) -> ParsedImportJson:
         """Return a JSON-serializable representation of this object"""
         return {
             "name": self.name,
@@ -135,7 +153,7 @@ class DeclaredDependency(NamedTuple):
     name: str
     source: Location
 
-    def json(self) -> Dict[str, str]:
+    def json(self) -> DeclaredDependencyJson:
         """Return a JSON-serializable representation of this object"""
         return {
             "name": self.name,
@@ -163,7 +181,7 @@ class UndeclaredDependency:
             )
         return ret
 
-    def json(self) -> Dict[str, Union[str, List[Dict[str, str]]]]:
+    def json(self) -> UndeclaredDependencyJson:
         """Return a JSON-serializable representation of this object"""
         return {
             "name": self.name,
@@ -191,7 +209,7 @@ class UnusedDependency:
             )
         return ret
 
-    def json(self) -> Dict[str, Union[str, List[Dict[str, str]]]]:
+    def json(self) -> UnusedDependencyJson:
         """Return a JSON-serializable representation of this object"""
         return {
             "name": self.name,
