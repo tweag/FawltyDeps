@@ -1,11 +1,13 @@
 """Common types used across FawltyDeps."""
 
 import sys
-from dataclasses import dataclass, field, replace
+from dataclasses import asdict, dataclass, field, replace
 from functools import total_ordering
 from operator import attrgetter
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Union
+
+from fawltydeps.utils import hide_dataclass_fields
 
 if sys.version_info >= (3, 8):
     from typing import Literal  # pylint: disable=no-member
@@ -92,6 +94,10 @@ class Location:
             -1 if self.lineno is None else self.lineno,
         )
         object.__setattr__(self, "_sort_key", sortable_tuple)
+
+        # Do magic to hide unset/None members from JSON representation
+        unset = [attr for attr, value in asdict(self).items() if value is None]
+        hide_dataclass_fields(self, "_sort_key", *unset)
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Location):

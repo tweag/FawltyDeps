@@ -35,6 +35,7 @@ from fawltydeps.types import (
     UndeclaredDependency,
     UnusedDependency,
 )
+from fawltydeps.utils import hide_dataclass_fields
 
 if sys.version_info >= (3, 8):
     import importlib.metadata as importlib_metadata
@@ -109,6 +110,10 @@ class Analysis:
             )
 
         return ret
+
+    def __post_init__(self) -> None:
+        """Do init-time magic to hide .request from JSON representation."""
+        hide_dataclass_fields(self, "request")
 
     def json(self) -> AnalysisJson:
         """Return a JSON-serializable representation of this analysis."""
