@@ -1,10 +1,11 @@
 """Verify behavior of our basic types."""
 
+from dataclasses import FrozenInstanceError
 from pathlib import Path
 
 import pytest
 
-from fawltydeps.types import Location
+from fawltydeps.types import DeclaredDependency, Location, ParsedImport
 
 testdata = {  # Test ID -> (Location args, expected string representation, sort order)
     # First arg must be a Path, or "<stdin>"
@@ -72,7 +73,7 @@ def test_location__hashable_and_unique():
 
 
 def test_location__supply_to_add_additional_info():
-    loc = Location("foo.py")
+    loc = Location(Path("foo.py"))
     assert str(loc) == "foo.py"
     loc2 = loc.supply(lineno=17)
     assert str(loc2) == "foo.py:17"
@@ -82,3 +83,30 @@ def test_location__supply_to_add_additional_info():
     # Order of supply calls does not matter as long as result is the same.
     loc4 = loc.supply(cellno=3).supply(lineno=17)
     assert loc3 == loc4
+
+
+def test_location_is_immutable():
+    loc = Location(Path("foo.py"))
+    with pytest.raises(FrozenInstanceError):
+        loc.cellno = 3
+    loc2 = Location("<stdin>", 12, 34)
+    with pytest.raises(FrozenInstanceError):
+        loc2.path += "foo"
+    with pytest.raises(FrozenInstanceError):
+        loc2.lineno += 5
+
+
+def test_parsedimport_is_immutable():
+    pi = ParsedImport("foo_module", Location(Path("foo.py")))
+    with pytest.raises(FrozenInstanceError):
+        pi.name = "bar_module"
+    with pytest.raises(FrozenInstanceError):
+        pi.source = pi.source.supply(lineno=123)
+
+
+def test_declareddependency_is_immutable():
+    dd = DeclaredDependency("foo_package", Location(Path("requirements.txt")))
+    with pytest.raises(FrozenInstanceError):
+        dd.name = "bar_package"
+    with pytest.raises(FrozenInstanceError):
+        dd.source = dd.source.supply(lineno=123)
