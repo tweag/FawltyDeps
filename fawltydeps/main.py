@@ -8,12 +8,13 @@ from dataclasses import dataclass
 from enum import Enum, auto
 from operator import attrgetter
 from pathlib import Path
-from typing import Dict, List, Optional, Set, TextIO, Union
+from typing import List, Optional, Set, TextIO
 
 from fawltydeps import extract_imports
 from fawltydeps.check import compare_imports_to_dependencies
 from fawltydeps.extract_declared_dependencies import extract_declared_dependencies
 from fawltydeps.types import (
+    AnalysisJson,
     ArgParseError,
     DeclaredDependency,
     ParsedImport,
@@ -79,7 +80,7 @@ class Analysis:
 
         return ret
 
-    def json(self) -> Dict[str, Optional[List[Union[str, List[Dict[str, str]]]]]]:
+    def json(self) -> AnalysisJson:
         """Return a JSON-serializable representation of this analysis."""
         return {
             field: None
