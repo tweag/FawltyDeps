@@ -5,7 +5,7 @@ from dataclasses import asdict, dataclass, field, replace
 from functools import total_ordering
 from operator import attrgetter
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 from fawltydeps.utils import hide_dataclass_fields
 
@@ -16,24 +16,6 @@ else:
 
 SpecialPath = Literal["<stdin>"]
 PathOrSpecial = Union[Path, SpecialPath]
-
-
-# Type declarations for data returned from .json() methods.
-LocationJson = Dict[str, Union[str, int]]
-ParsedImportJson = Dict[str, Union[str, LocationJson]]
-DeclaredDependencyJson = Dict[str, Union[str, LocationJson]]
-UndeclaredDependencyJson = Dict[str, Union[str, List[ParsedImportJson]]]
-UnusedDependencyJson = Dict[str, Union[str, List[DeclaredDependencyJson]]]
-AnalysisJson = Dict[
-    str,
-    Union[
-        None,
-        List[ParsedImportJson],
-        List[DeclaredDependencyJson],
-        List[UndeclaredDependencyJson],
-        List[UnusedDependencyJson],
-    ],
-]
 
 
 class ArgParseError(Exception):
@@ -120,19 +102,6 @@ class Location:
             ret += f":{self.lineno}"
         return ret
 
-    def json(self) -> LocationJson:
-        """Return a JSON-serializable representation of this object.
-
-        We return a simple dict containing the object members. Unset (None)
-        members are elided from the dict, for brevity.
-        """
-        ret = {
-            "path": str(self.path),
-            "cellno": self.cellno,
-            "lineno": self.lineno,
-        }
-        return {k: v for k, v in ret.items() if v is not None}
-
     def supply(self, **changes: int) -> "Location":
         """Create a new Location that contains additional information."""
         return replace(self, **changes)
@@ -145,13 +114,6 @@ class ParsedImport:
     name: str
     source: Location
 
-    def json(self) -> ParsedImportJson:
-        """Return a JSON-serializable representation of this object"""
-        return {
-            "name": self.name,
-            "source": self.source.json(),
-        }
-
 
 @dataclass(eq=True, frozen=True, order=True)
 class DeclaredDependency:
@@ -159,13 +121,6 @@ class DeclaredDependency:
 
     name: str
     source: Location
-
-    def json(self) -> DeclaredDependencyJson:
-        """Return a JSON-serializable representation of this object"""
-        return {
-            "name": self.name,
-            "source": self.source.json(),
-        }
 
 
 @dataclass
@@ -188,13 +143,6 @@ class UndeclaredDependency:
             )
         return ret
 
-    def json(self) -> UndeclaredDependencyJson:
-        """Return a JSON-serializable representation of this object"""
-        return {
-            "name": self.name,
-            "references": [item.json() for item in self.references],
-        }
-
 
 @dataclass
 class UnusedDependency:
@@ -215,10 +163,3 @@ class UnusedDependency:
                 for ref in sorted(self.references, key=attrgetter("source"))
             )
         return ret
-
-    def json(self) -> UnusedDependencyJson:
-        """Return a JSON-serializable representation of this object"""
-        return {
-            "name": self.name,
-            "references": [item.json() for item in self.references],
-        }
