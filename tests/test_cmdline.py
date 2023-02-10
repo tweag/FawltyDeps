@@ -6,6 +6,7 @@ core exhaustively (which is what the other unit tests are for.
 """
 
 import json
+import logging
 import subprocess
 from pathlib import Path
 from textwrap import dedent
@@ -14,6 +15,8 @@ from typing import Iterable, Optional, Tuple
 import pytest
 
 from .test_extract_imports_simple import generate_notebook
+
+logger = logging.getLogger(__name__)
 
 
 @pytest.fixture
@@ -44,6 +47,12 @@ def run_fawltydeps(
         universal_newlines=True,
         check=False,
         cwd=cwd,
+    )
+    logger.debug(
+        f"Run `fawltydeps {' '.join(args)}` returned exit code {proc.returncode}\n"
+        f"    ---- STDOUT ----\n{proc.stdout}"
+        f"    ---- STDERR ----\n{proc.stderr}"
+        "    ----------------"
     )
     return proc.stdout.strip(), proc.stderr.strip(), proc.returncode
 
