@@ -7,9 +7,7 @@ from dataclasses import dataclass
 from enum import Enum, auto
 from operator import attrgetter
 from pathlib import Path
-from typing import List, Optional, Set, TextIO
-
-import pkg_resources
+from typing import List, Optional, Set, TextIO, no_type_check
 
 from fawltydeps import extract_imports
 from fawltydeps.check import compare_imports_to_dependencies
@@ -23,6 +21,12 @@ from fawltydeps.types import (
     UnusedDependency,
 )
 
+if sys.version_info >= (3, 8):
+    import importlib.metadata as importlib_metadata
+else:
+    import importlib_metadata
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -33,6 +37,18 @@ class Action(Enum):
     LIST_DEPS = auto()
     REPORT_UNDECLARED = auto()
     REPORT_UNUSED = auto()
+
+
+@no_type_check
+def package_version() -> str:
+    """
+    Returns the version of fawltydeps.
+
+    This function is extracted to allow annotation with `@no_type_check`.
+    Using `#type: ignore` on the line below leads to an "unused type ignore comment"
+    MyPy error in python's version 3.8 and higher.
+    """
+    return f"FawltyDeps {importlib_metadata.version('fawltydeps')}"
 
 
 @dataclass
@@ -138,7 +154,7 @@ def main() -> int:
         "-V",
         "--version",
         action="version",
-        version=f"Fawltydeps {pkg_resources.get_distribution('fawltydeps').version}",
+        version=package_version(),
         help=("Print the version number of fawltydeps"),
     )
     select_action.add_argument(
