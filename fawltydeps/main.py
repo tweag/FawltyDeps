@@ -189,7 +189,7 @@ def main() -> int:
         "--version",
         action="version",
         version=package_version(),
-        help=("Print the version number of fawltydeps"),
+        help=("Print the version number of FawltyDeps"),
     )
     select_action.add_argument(
         "--check-undeclared",
