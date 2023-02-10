@@ -3,7 +3,7 @@ name: Publish on PyPI
 on: [workflow_dispatch, release]
 
 jobs:
-  publish-test:
+  publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
