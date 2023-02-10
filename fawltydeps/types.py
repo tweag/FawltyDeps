@@ -5,7 +5,7 @@ from dataclasses import dataclass, field, replace
 from functools import total_ordering
 from operator import attrgetter
 from pathlib import Path
-from typing import Dict, List, NamedTuple, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 if sys.version_info >= (3, 8):
     from typing import Literal  # pylint: disable=E1101
@@ -132,7 +132,7 @@ class Location:
         return replace(self, **changes)
 
 
-@dataclass(eq=True, frozen=True)
+@dataclass(eq=True, frozen=True, order=True)
 class ParsedImport:
     """Import parsed from the source code."""
 
@@ -147,7 +147,8 @@ class ParsedImport:
         }
 
 
-class DeclaredDependency(NamedTuple):
+@dataclass(eq=True, frozen=True, order=True)
+class DeclaredDependency:
     """Declared dependencies parsed from configuration-containing files"""
 
     name: str
