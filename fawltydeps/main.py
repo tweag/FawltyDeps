@@ -23,6 +23,8 @@ from operator import attrgetter
 from pathlib import Path
 from typing import List, Optional, Set, TextIO, no_type_check
 
+from pydantic.json import pydantic_encoder  # pylint: disable=no-name-in-module
+
 from fawltydeps import extract_imports
 from fawltydeps.check import compare_imports_to_dependencies
 from fawltydeps.extract_declared_dependencies import extract_declared_dependencies
@@ -126,7 +128,7 @@ class Analysis:
 
     def print_json(self, out: TextIO) -> None:
         """Print the JSON representation of this analysis to 'out'."""
-        json.dump(self.json(), out, indent=2, sort_keys=True)
+        json.dump(self, out, indent=2, default=pydantic_encoder)
 
     def print_human_readable(self, out: TextIO, details: bool = True) -> None:
         """Print a human-readable rendering of this analysis to 'out'."""
