@@ -55,15 +55,14 @@ class Action(Enum):
 
 
 @no_type_check
-def package_version() -> str:
-    """
-    Returns the version of fawltydeps.
+def version() -> str:
+    """Returns the version of fawltydeps."""
 
-    This function is extracted to allow annotation with `@no_type_check`.
-    Using `#type: ignore` on the line below leads to an "unused type ignore comment"
-    MyPy error in python's version 3.8 and higher.
-    """
-    return f"FawltyDeps {importlib_metadata.version('fawltydeps')}"
+    # This function is extracted to allow annotation with `@no_type_check`.
+    # Using `#type: ignore` on the line below leads to an
+    # "unused type ignore comment" MyPy error in python's version 3.8 and
+    # higher.
+    return str(importlib_metadata.version("fawltydeps"))
 
 
 @dataclass
@@ -188,7 +187,7 @@ def main() -> int:
         "-V",
         "--version",
         action="version",
-        version=package_version(),
+        version=f"FawltyDeps v{version()}",
         help=("Print the version number of FawltyDeps"),
     )
     select_action.add_argument(
