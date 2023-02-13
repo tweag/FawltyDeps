@@ -53,7 +53,6 @@ pytest = "^7.1.0"
 optional = true
 
 [tool.poetry.group.lint.dependencies]
-isort = "^5.10"
 mypy = "^0.991"
 nox = "^2022.11.21"
 pylint = "^2.15.8"
