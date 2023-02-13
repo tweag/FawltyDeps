@@ -23,6 +23,6 @@ jobs:
           path: ~/.cache/pypoetry/virtualenvs
           key: ${{ runner.os }}-poetry-lint-${{ hashFiles('poetry.lock') }}
       - name: Install project
-        run: poetry install --no-interaction --sync --no-root --only=nox,lint
+        run: poetry install --no-interaction --sync --with=nox,lint
       - name: Run linters on Python ${{ matrix.python-version }}
         run: poetry run nox --no-venv --no-install --non-interactive -s lint
