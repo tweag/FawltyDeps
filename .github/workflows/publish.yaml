@@ -1,4 +1,4 @@
-name: Publish on PyPI
+name: Publish to PyPI
 
 on: [workflow_dispatch, release]
 
