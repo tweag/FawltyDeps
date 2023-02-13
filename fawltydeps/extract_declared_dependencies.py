@@ -240,16 +240,9 @@ def parse_pep621_pyproject_contents(
                 f"{dependencies!r} of type {type(dependencies)}. Expected list."
             )
 
-    def parse_optional_dependencies(
-        parsed_contents: TomlData, source: Location
-    ) -> Iterator[DeclaredDependency]:
-        for group in parsed_contents["project"]["optional-dependencies"].values():
-            for requirement in group:
-                yield parse_one_req(requirement, source)
-
     fields_parsers = [
         ("main", parse_main_dependencies),
-        ("optional", parse_optional_dependencies),
+        ("optional", (parse_one_req(req, source) for group in parsed_contents["project"]["optional-dependencies"].values() for req in group))
     ]
     for field_type, parser in fields_parsers:
         try:
