@@ -5,56 +5,7 @@ on: [push, pull_request]
 jobs:
   tests:
     uses: ./.github/workflows/tests.yaml
-
   lint:
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
-        os: [ubuntu-22.04]
-    runs-on: ${{ matrix.os }}
-
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-      - uses: Gr1N/setup-poetry@v7
-      - uses: actions/cache@v2
-        with:
-          path: ~/.cache/pypoetry/virtualenvs
-          key: ${{ runner.os }}-poetry-lint-${{ hashFiles('poetry.lock') }}
-      - name: Install project
-        run: poetry install --no-interaction --sync --no-root --only=nox,lint
-      - name: Run linters on Python ${{ matrix.python-version }}
-        run: poetry run nox --no-venv --no-install --non-interactive -s lint
-
+    uses: ./.github/workflows/lint.yaml
   format:
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.10"]
-        os: [ubuntu-22.04]
-    runs-on: ${{ matrix.os }}
-
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-      - uses: Gr1N/setup-poetry@v7
-      - uses: actions/cache@v2
-        with:
-          path: ~/.cache/pypoetry/virtualenvs
-          key: ${{ runner.os }}-poetry-format-${{ hashFiles('poetry.lock') }}
-      - name: Install project
-        run: poetry install --no-interaction --sync --no-root --only=nox,format
-      - name: Run formatting checks
-        run: poetry run nox --no-venv --no-install --non-interactive -s format
-
-# Inspiration for the CI setup:
-# https://github.com/marketplace/actions/python-poetry-action
-# https://github.com/snok/install-poetry
-# https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+    uses: ./.github/workflows/format.yaml
