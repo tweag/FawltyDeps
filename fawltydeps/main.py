@@ -48,10 +48,10 @@ logger = logging.getLogger(__name__)
 class Action(Enum):
     """Actions available to the command-line interface."""
 
-    LIST_IMPORTS = auto()
-    LIST_DEPS = auto()
-    REPORT_UNDECLARED = auto()
-    REPORT_UNUSED = auto()
+    LIST_IMPORTS = "LIST_IMPORTS"
+    LIST_DEPS = "LIST_DEPS"
+    REPORT_UNDECLARED = "REPORT_UNDECLARED"
+    REPORT_UNUSED = "REPORT_UNUSED"
 
 
 @no_type_check
