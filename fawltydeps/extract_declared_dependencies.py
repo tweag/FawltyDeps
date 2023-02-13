@@ -194,7 +194,7 @@ def parse_poetry_pyproject_dependencies(
         (
             "extra",
             (
-                parse_one_req(req, course)
+                parse_one_req(req, source)
                 for group in poetry_config["extras"].values()
                 if isinstance(group, list)
                 for req in group
