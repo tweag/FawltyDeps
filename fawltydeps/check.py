@@ -1,7 +1,9 @@
 "Compare imports and dependencies"
 
+import logging
+import sys
 from itertools import groupby
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 from fawltydeps.types import (
     DeclaredDependency,
@@ -9,6 +11,39 @@ from fawltydeps.types import (
     UndeclaredDependency,
     UnusedDependency,
 )
+
+# importlib.metadata.packages_distributions() was introduced in v3.10, but it
+# is not able to infer import names for modules lacking a top_level.txt until
+# v3.11. Hence we prefer importlib_metadata in v3.10 as well as pre-v3.10.
+if sys.version_info >= (3, 11):
+    from importlib.metadata import packages_distributions
+else:
+    from importlib_metadata import packages_distributions
+
+logger = logging.getLogger(__name__)
+
+
+def find_import_names_from_package_name(package: str) -> Optional[List[str]]:
+    """Convert a package name to provided import names.
+
+    (Although this function generally works with _all_ packages, we will apply
+    it only to the subset that is the dependencies of the current project.)
+
+    Use importlib.metadata to look up the mapping between packages and their
+    provided import names, and return the import names associated with the given
+    package/distribution name in the current Python environment. This obviously
+    depends on which Python environment (e.g. virtualenv) we're calling from.
+
+    Return None if we're unable to find any import names for the given package.
+    This is typically because the package is missing from the current
+    environment, or because it fails to declare its importable modules.
+    """
+    ret = [
+        import_name
+        for import_name, packages in packages_distributions().items()
+        if package in packages
+    ]
+    return ret or None
 
 
 def compare_imports_to_dependencies(
