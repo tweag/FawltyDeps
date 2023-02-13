@@ -272,7 +272,7 @@ def parse_pyproject_contents(
             parsed_contents["tool"]["poetry"], source
         )
     else:
-        logger.debug("%s does not contain [tool.poetry].")
+        logger.debug("%s does not contain [tool.poetry].", source)
 
 
 def extract_declared_dependencies(path: Path) -> Iterator[DeclaredDependency]:
