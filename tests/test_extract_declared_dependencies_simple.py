@@ -416,9 +416,10 @@ def test_extract_declared_dependencies__simple_project__returns_list(
     project_with_requirements,
 ):
     expect = ["pandas", "click", "pandas", "tensorflow"]
-    assert sorted(
-        [a for (a, _) in extract_declared_dependencies(project_with_requirements)]
-    ) == sorted(expect)
+    actual = _safe_collect_first_elements_sorted(
+        extract_declared_dependencies(project_with_requirements)
+    )
+    _assert_equivalence_upto_order(actual, expect)
 
 
 def test_extract_declared_dependencies__project_with_requirements_and_setup__returns_list(
@@ -434,14 +435,10 @@ def test_extract_declared_dependencies__project_with_requirements_and_setup__ret
         "pandas",
         "tensorflow",
     ]
-    assert sorted(
-        [
-            a
-            for (a, _) in extract_declared_dependencies(
-                project_with_setup_and_requirements
-            )
-        ]
-    ) == sorted(expect)
+    actual = _safe_collect_first_elements_sorted(
+        extract_declared_dependencies(project_with_setup_and_requirements)
+    )
+    _assert_equivalence_upto_order(actual, expect)
 
 
 def test_extract_declared_dependencies__parse_only_requirements_from_subdir__returns_list(
@@ -453,8 +450,8 @@ def test_extract_declared_dependencies__parse_only_requirements_from_subdir__ret
         "tensorflow",
     ]
     path = project_with_setup_and_requirements / "subdir/requirements.txt"
-    actual = [dep for (dep, _) in extract_declared_dependencies(path)]
-    assert sorted(actual) == sorted(expect)
+    actual = _safe_collect_first_elements_sorted(extract_declared_dependencies(path))
+    _assert_equivalence_upto_order(actual, expect)
 
 
 def test_extract_declared_dependencies__project_with_pyproject_setup_and_requirements__returns_list(
@@ -477,14 +474,10 @@ def test_extract_declared_dependencies__project_with_pyproject_setup_and_require
         "pydantic",
         "pylint",
     ]
-    assert sorted(
-        [
-            a
-            for (a, _) in extract_declared_dependencies(
-                project_with_setup_pyproject_and_requirements
-            )
-        ]
-    ) == sorted(expect)
+    actual = _safe_collect_first_elements_sorted(
+        extract_declared_dependencies(project_with_setup_pyproject_and_requirements)
+    )
+    _assert_equivalence_upto_order(actual, expect)
 
 
 def test_extract_declared_dependencies__project_with_pyproject__returns_list(
@@ -495,9 +488,10 @@ def test_extract_declared_dependencies__project_with_pyproject__returns_list(
         "pydantic",
         "pylint",
     ]
-    assert sorted(
-        [a for (a, _) in extract_declared_dependencies(project_with_pyproject)]
-    ) == sorted(expect)
+    actual = _safe_collect_first_elements_sorted(
+        extract_declared_dependencies(project_with_pyproject)
+    )
+    _assert_equivalence_upto_order(actual, expect)
 
 
 def test_extract_declared_dependencies__project_with_setup_cfg__returns_list(
@@ -507,9 +501,10 @@ def test_extract_declared_dependencies__project_with_setup_cfg__returns_list(
         "pandas",
         "django",
     ]
-    assert sorted(
-        [a for (a, _) in extract_declared_dependencies(project_with_setup_cfg)]
-    ) == sorted(expect)
+    actual = _safe_collect_first_elements_sorted(
+        extract_declared_dependencies(project_with_setup_cfg)
+    )
+    _assert_equivalence_upto_order(actual, expect)
 
 
 def test_extract_declared_dependencies__project_with_setup_cfg_pyproject_requirements__returns_list(
@@ -540,4 +535,13 @@ def test_extract_declared_dependencies__project_with_setup_cfg_pyproject_require
             project_with_setup_with_cfg_pyproject_and_requirements
         )
     )
-    assert sorted([a for (a, _) in actual]) == sorted(expect)
+    observed = _safe_collect_first_elements_sorted(actual)
+    _assert_equivalence_upto_order(observed, expect)
+
+
+def _assert_equivalence_upto_order(actual, expected):
+    assert sorted(actual) == sorted(expected)
+
+
+def _safe_collect_first_elements_sorted(pairs):
+    return sorted([x for (x, _) in pairs])
