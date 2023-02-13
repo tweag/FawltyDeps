@@ -173,38 +173,13 @@ def parse_poetry_pyproject_dependencies(
 ) -> Iterator[DeclaredDependency]:
     """Extract dependencies from `tool.poetry` fields in a pyproject.toml."""
 
-    def parse_main_dependencies(
-        poetry_config: TomlData, source: Location
-    ) -> Iterator[DeclaredDependency]:
-        for requirement in poetry_config["dependencies"].keys():
-            if requirement != "python":
-                yield parse_one_req(requirement, source)
+    fields_parsers = [
+        ("main", (parse_one_req(req, source) for req in poetry_config["dependencies"].keys() if req != "python")),
+        ("group", (parse_one_req(req, source) for group in poetry_config["group"].values() for req in group["dependencies"].values() if req != "python")),
+        ("extra", (parse_one_req(req, course) for group in poetry_config["extras"].values() if isinstance(group, list) for req in group))
+    ]
 
-    def parse_group_dependencies(
-        poetry_config: TomlData, source: Location
-    ) -> Iterator[DeclaredDependency]:
-        for group in poetry_config["group"].values():
-            for requirement in group["dependencies"].keys():
-                if requirement != "python":
-                    yield parse_one_req(requirement, source)
-
-    def parse_extra_dependencies(
-        poetry_config: TomlData, source: Location
-    ) -> Iterator[DeclaredDependency]:
-        for group in poetry_config["extras"].values():
-            if isinstance(group, list):
-                for requirement in group:
-                    yield parse_one_req(requirement, source)
-            else:
-                raise TypeError(f"{group!r} is of type {type(group)}. Expected a list.")
-
-    fields_parsers = {
-        "main": parse_main_dependencies,
-        "group": parse_group_dependencies,
-        "extra": parse_extra_dependencies,
-    }
-
-    for field_type, parser in fields_parsers.items():
+    for (field_type, parser) in fields_parsers:
         try:
             yield from parser(poetry_config, source)
         except KeyError:  # missing fields:
@@ -249,11 +224,11 @@ def parse_pep621_pyproject_contents(
             for requirement in group:
                 yield parse_one_req(requirement, source)
 
-    fields_parsers = {
-        "main": parse_main_dependencies,
-        "optional": parse_optional_dependencies,
-    }
-    for field_type, parser in fields_parsers.items():
+    fields_parsers = [
+        ("main", parse_main_dependencies),
+        ("optional", parse_optional_dependencies)
+    ]
+    for field_type, parser in fields_parsers:
         try:
             yield from parser(parsed_contents, source)
         except KeyError:
