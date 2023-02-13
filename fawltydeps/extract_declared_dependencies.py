@@ -23,7 +23,7 @@ TomlData = Dict[str, Any]  # type: ignore
 
 logger = logging.getLogger(__name__)
 
-ERROR_MESSAGE_TEMPLATE = "Failed to %s %s %s dependencies in %s."
+ERROR_MESSAGE_TEMPLATE = "Failed to %s %s %s dependencies in %s: %s"
 
 
 class DependencyParsingError(Exception):
@@ -205,21 +205,13 @@ def parse_poetry_pyproject_dependencies(
     for (field_type, parser) in fields_parsers:
         try:
             yield from parser(poetry_config, source)
-        except KeyError:  # missing fields:
+        except KeyError as exc:  # missing fields:
             logger.debug(
-                ERROR_MESSAGE_TEMPLATE,
-                "find",
-                "Poetry",
-                field_type,
-                source,
+                ERROR_MESSAGE_TEMPLATE, "find", "Poetry", field_type, source, exc
             )
-        except (AttributeError, TypeError):  # invalid config
+        except (AttributeError, TypeError) as exc:  # invalid config
             logger.error(
-                ERROR_MESSAGE_TEMPLATE,
-                "parse",
-                "Poetry",
-                field_type,
-                source,
+                ERROR_MESSAGE_TEMPLATE, "parse", "Poetry", field_type, source, exc
             )
 
 
@@ -228,29 +220,36 @@ def parse_pep621_pyproject_contents(
 ) -> Iterator[DeclaredDependency]:
     """Extract dependencies from a pyproject.toml using the PEP 621 fields."""
 
-    def parse_main_dependencies(
-        parsed_contents: TomlData, source: Location
-    ) -> Iterator[DeclaredDependency]:
-        dependencies = parsed_contents["project"]["dependencies"]
-        if isinstance(dependencies, list):
-            for requirement in dependencies:
-                yield parse_one_req(requirement, source)
-        else:
-            raise TypeError(
-                f"{dependencies!r} of type {type(dependencies)}. Expected list."
-            )
-
     fields_parsers = [
-        ("main", parse_main_dependencies),
-        ("optional", (parse_one_req(req, source) for group in parsed_contents["project"]["optional-dependencies"].values() for req in group))
+        (
+            "main",
+            (
+                parse_one_req(req, source)
+                for req in parsed_contents["project"]["dependencies"]
+            ),
+        ),
+        (
+            "optional",
+            (
+                parse_one_req(req, source)
+                for group in parsed_contents["project"][
+                    "optional-dependencies"
+                ].values()
+                for req in group
+            ),
+        ),
     ]
     for field_type, parser in fields_parsers:
         try:
-            yield from parser(parsed_contents, source)
-        except KeyError:
-            logger.debug(ERROR_MESSAGE_TEMPLATE, "find", "PEP621", field_type, source)
-        except (AttributeError, TypeError):
-            logger.error(ERROR_MESSAGE_TEMPLATE, "parse", "PEP621", field_type, source)
+            yield from parser
+        except KeyError as exc:
+            logger.debug(
+                ERROR_MESSAGE_TEMPLATE, "find", "PEP621", field_type, source, exc
+            )
+        except (AttributeError, TypeError) as exc:
+            logger.error(
+                ERROR_MESSAGE_TEMPLATE, "parse", "PEP621", field_type, source, exc
+            )
 
 
 def parse_pyproject_contents(
