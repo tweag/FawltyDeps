@@ -174,9 +174,32 @@ def parse_poetry_pyproject_dependencies(
     """Extract dependencies from `tool.poetry` fields in a pyproject.toml."""
 
     fields_parsers = [
-        ("main", (parse_one_req(req, source) for req in poetry_config["dependencies"].keys() if req != "python")),
-        ("group", (parse_one_req(req, source) for group in poetry_config["group"].values() for req in group["dependencies"].values() if req != "python")),
-        ("extra", (parse_one_req(req, course) for group in poetry_config["extras"].values() if isinstance(group, list) for req in group))
+        (
+            "main",
+            (
+                parse_one_req(req, source)
+                for req in poetry_config["dependencies"].keys()
+                if req != "python"
+            ),
+        ),
+        (
+            "group",
+            (
+                parse_one_req(req, source)
+                for group in poetry_config["group"].values()
+                for req in group["dependencies"].values()
+                if req != "python"
+            ),
+        ),
+        (
+            "extra",
+            (
+                parse_one_req(req, course)
+                for group in poetry_config["extras"].values()
+                if isinstance(group, list)
+                for req in group
+            ),
+        ),
     ]
 
     for (field_type, parser) in fields_parsers:
@@ -226,7 +249,7 @@ def parse_pep621_pyproject_contents(
 
     fields_parsers = [
         ("main", parse_main_dependencies),
-        ("optional", parse_optional_dependencies)
+        ("optional", parse_optional_dependencies),
     ]
     for field_type, parser in fields_parsers:
         try:
