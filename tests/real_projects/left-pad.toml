@@ -9,19 +9,20 @@ sha256 = "b842b81fcf157ca09b1e0036c5876295fdfd097640aa85d37f988857eec64654"
 # downloaded tarball. It is used to ensure that we run tests against the
 # expected revision of the 3rd-party project.
 
-# Below are our expectations for running FawltyDeps on the above (unpacked)
-# tarball. Each table represents the expectations of a corresponding test case
-# inside ../test_real_projects.py. All tables are optional: Removing a table
-# will disable the corresponding test case. An empty table means that we expect
-# FawltyDeps to produce zero results/empty output for that test.
-#
-# Inside each table, we map filenames to lists of relevant packages (imports or
-# dependencies) that we expect FawltyDeps to return for that test. This is
-# described in more detail under each table:
+# Below are our experiments that run FawltyDeps with various options on the
+# above (unpacked) tarball. Each table represents an experiment with the
+# command-line arguments we pass to FawltyDeps (in `args`, --json is implicitly
+# added by test_real_projects), as well as our expectations for what FawltyDeps
+# should return in that scenario. These expectations are encoded as lists of
+# import/dependency names that we expect to be present in the corresponding
+# parts of the JSON: imports, declared_deps, undeclared_deps, and unused_deps.
+# All these fields are optional, and the verrification will be skipped for
+# missing fields.
 
 [experiments.all]
-description = "Run with all FawltyDeps options"
+description = "Running FD on the entire left-pad project"
 args = []
+# When we run FawltyDeps with the above arguments, we expect these results:
 imports = ["setuptools"]
 declared_deps = []
 undeclared_deps = ["setuptools"]
