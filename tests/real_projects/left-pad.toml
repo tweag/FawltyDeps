@@ -19,28 +19,10 @@ sha256 = "b842b81fcf157ca09b1e0036c5876295fdfd097640aa85d37f988857eec64654"
 # dependencies) that we expect FawltyDeps to return for that test. This is
 # described in more detail under each table:
 
-[imports]
-# What we expect `fawltydeps --list-imports` to return for this project.
-# Key: filename containing import statements
-# Value: list (set) of external packages imported
-"setup.py" = [
-    "setuptools",
-]
-
-[declared_deps]
-# What we expect `fawltydeps --list-deps` to return for this project.
-# Key: filename containing declared dependencies
-# Value: list (set) of packages names that are declared
-
-[undeclared_deps]
-# What we expect `fawltydeps --check-undeclared` to return for this project.
-# Key: filename containing import statements
-# Value: list (set) of external packages imported without being declared
-"setup.py" = [
-    "setuptools",
-]
-
-[unused_deps]
-# What we expect `fawltydeps --check-unused` to return for this project.
-# Key: filename containing declared dependencies
-# Value: list (set) of external packages imported
+[experiments.all]
+description = "Run with all FawltyDeps options"
+args = []
+imports = ["setuptools"]
+declared_deps = []
+undeclared_deps = ["setuptools"]
+unused_deps = []
