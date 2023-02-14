@@ -13,7 +13,7 @@ from fawltydeps.extract_declared_dependencies import (
 )
 from fawltydeps.types import DeclaredDependency, Location
 
-from .utils import assert_unordered_equivalence, collect_dep_names_sorted
+from .utils import assert_unordered_equivalence, collect_dep_names
 
 
 def dependency_factory(data: List[str], path: str) -> List[DeclaredDependency]:
@@ -418,9 +418,7 @@ def test_extract_declared_dependencies__simple_project__returns_list(
     project_with_requirements,
 ):
     expect = ["pandas", "click", "pandas", "tensorflow"]
-    actual = collect_dep_names_sorted(
-        extract_declared_dependencies(project_with_requirements)
-    )
+    actual = collect_dep_names(extract_declared_dependencies(project_with_requirements))
     assert_unordered_equivalence(actual, expect)
 
 
@@ -437,7 +435,7 @@ def test_extract_declared_dependencies__project_with_requirements_and_setup__ret
         "pandas",
         "tensorflow",
     ]
-    actual = collect_dep_names_sorted(
+    actual = collect_dep_names(
         extract_declared_dependencies(project_with_setup_and_requirements)
     )
     assert_unordered_equivalence(actual, expect)
@@ -452,7 +450,7 @@ def test_extract_declared_dependencies__parse_only_requirements_from_subdir__ret
         "tensorflow",
     ]
     path = project_with_setup_and_requirements / "subdir/requirements.txt"
-    actual = collect_dep_names_sorted(extract_declared_dependencies(path))
+    actual = collect_dep_names(extract_declared_dependencies(path))
     assert_unordered_equivalence(actual, expect)
 
 
@@ -476,7 +474,7 @@ def test_extract_declared_dependencies__project_with_pyproject_setup_and_require
         "pydantic",
         "pylint",
     ]
-    actual = collect_dep_names_sorted(
+    actual = collect_dep_names(
         extract_declared_dependencies(project_with_setup_pyproject_and_requirements)
     )
     assert_unordered_equivalence(actual, expect)
@@ -490,9 +488,7 @@ def test_extract_declared_dependencies__project_with_pyproject__returns_list(
         "pydantic",
         "pylint",
     ]
-    actual = collect_dep_names_sorted(
-        extract_declared_dependencies(project_with_pyproject)
-    )
+    actual = collect_dep_names(extract_declared_dependencies(project_with_pyproject))
     assert_unordered_equivalence(actual, expect)
 
 
@@ -503,9 +499,7 @@ def test_extract_declared_dependencies__project_with_setup_cfg__returns_list(
         "pandas",
         "django",
     ]
-    actual = collect_dep_names_sorted(
-        extract_declared_dependencies(project_with_setup_cfg)
-    )
+    actual = collect_dep_names(extract_declared_dependencies(project_with_setup_cfg))
     assert_unordered_equivalence(actual, expect)
 
 
@@ -532,9 +526,9 @@ def test_extract_declared_dependencies__project_with_setup_cfg_pyproject_require
         "pydantic",
         "pylint",
     ]
-    actual = list(
+    actual = collect_dep_names(
         extract_declared_dependencies(
             project_with_setup_with_cfg_pyproject_and_requirements
         )
     )
-    assert sorted([a for (a, _) in actual]) == sorted(expect)
+    assert_unordered_equivalence(actual, expect)
