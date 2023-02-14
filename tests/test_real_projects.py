@@ -18,7 +18,6 @@ from urllib.request import urlretrieve
 
 import pytest
 
-from fawltydeps.main import Action, Analysis
 from fawltydeps.extract_declared_dependencies import TomlData
 
 if sys.version_info >= (3, 11):
@@ -40,7 +39,7 @@ REAL_PROJECTS_DIR = Path(__file__).with_name("real_projects")
 def run_fawltydeps(
     *args: str,
     cwd: Optional[Path] = None,
-) -> Tuple[str, str, int]:
+) -> Dict[str, Any]:
     proc = subprocess.run(
         ["fawltydeps"] + list(args) + ["--json"],
         stdout=subprocess.PIPE,
@@ -48,7 +47,7 @@ def run_fawltydeps(
         cwd=cwd,
     )
     assert proc.returncode in {0, 3, 4}
-    return json.loads(proc.stdout)
+    return json.loads(proc.stdout)  # type: ignore
 
 
 def sha256sum(path: Path):
@@ -66,11 +65,17 @@ def sha256sum(path: Path):
 
 
 class Experiment(NamedTuple):
-    """A single experiment on a real world project"""
+    """A single experiment on a real world project
+
+    Input to the experiment(`args`) is the set of
+    command line options to run `fawltydeps` command line tool.
+
+    The expected results of the experiment are `Analysis` results, namely:
+    `imports`, `declared_deps`, `undeclared_deps`, `unused_deps`
+    """
 
     name: str
     args: List[str]
-
     description: Optional[str] = None
     imports: Optional[List[str]] = None
     declared_deps: Optional[List[str]] = None
@@ -90,19 +95,25 @@ class Experiment(NamedTuple):
         )
 
     def verify_analysis_json(self, analysis: Dict[str, Any]) -> None:
-        print(analysis)
-        assert sorted(self.imports) == sorted(
-            {imp["name"] for imp in analysis["imports"]}
-        )
-        assert sorted(self.declared_deps) == sorted(
-            {dep["name"] for dep in analysis["declared_deps"]}
-        )
-        assert sorted(self.undeclared_deps) == sorted(
-            {imp["name"] for imp in analysis["undeclared_deps"]}
-        )
-        assert sorted(self.unused_deps) == sorted(
-            {dep["name"] for dep in analysis["unused_deps"]}
-        )
+        """Compare Experiment with json results of `Analysis`."""
+        if self.imports:
+            print(f"Checking imports for experiment: {self.name}")
+            assert set(self.imports) == {imp["name"] for imp in analysis["imports"]}
+        if self.declared_deps:
+            print(f"Checking declared dependencies for experiment: {self.name}")
+            assert set(self.declared_deps) == {
+                dep["name"] for dep in analysis["declared_deps"]
+            }
+        if self.undeclared_deps:
+            print(f"Checking undeclared dependencies for experiment: {self.name}")
+            assert set(self.undeclared_deps) == {
+                imp["name"] for imp in analysis["undeclared_deps"]
+            }
+        if self.unused_deps:
+            print(f"Checking unused dependencies for experiment: {self.name}")
+            assert set(self.unused_deps) == {
+                dep["name"] for dep in analysis["unused_deps"]
+            }
 
 
 class ThirdPartyProject(NamedTuple):
@@ -265,41 +276,8 @@ class ThirdPartyProject(NamedTuple):
 )
 def test_real_project(request, project, experiment):
     project_dir = project.get_project_dir(request.config.cache)
-    # analysis = Analysis.create(all_actions, code=project_dir, deps=project_dir)
-
     analysis = run_fawltydeps(*experiment.args, cwd=project_dir)
 
     print(f"Checking project: {project.name} for experiment: {experiment.name}")
 
     experiment.verify_analysis_json(analysis)
-
-    # if project.imports is not None:
-    #     actual = {i.name for i in analysis.imports}
-    #     expect = {name for names in project.imports.values() for name in names}
-    #     assert actual == expect
-    # else:
-    #     print(f"No imports to check: {prj_name}")
-
-    # if project.declared_deps is not None:
-    #     print(f"Checking declared dependencies: {prj_name}")
-    #     actual = {d.name for d in analysis.declared_deps}
-    #     expect = {name for names in project.declared_deps.values() for name in names}
-    #     assert actual == expect
-    # else:
-    #     print(f"No declared dependencies to check: {prj_name}")
-
-    # if project.undeclared_deps is not None:
-    #     print(f"Checking undeclared dependencies: {prj_name}")
-    #     actual = {u.name for u in analysis.undeclared_deps}
-    #     expect = {name for names in project.undeclared_deps.values() for name in names}
-    #     assert actual == expect
-    # else:
-    #     print(f"No undeclared dependencies to check: {prj_name}")
-
-    # if project.unused_deps is not None:
-    #     print(f"Checking unused dependencies: {prj_name}")
-    #     actual = {u.name for u in analysis.unused_deps}
-    #     expect = {name for names in project.unused_deps.values() for name in names}
-    #     assert actual == expect
-    # else:
-    #     print(f"No unused dependencies to check: {prj_name}")
