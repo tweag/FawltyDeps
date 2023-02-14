@@ -5,14 +5,14 @@ We download/extract pinned releases several 3rd-party Python projects, and run
 FawltyDeps on them, with hardcoded expectations per project on what FawltyDeps
 should find/report.
 """
-import json
 import hashlib
+import json
 import logging
 import subprocess
 import sys
 import tarfile
 from pathlib import Path
-from typing import Any, Dict, Iterator, List, NamedTuple, Optional, Tuple
+from typing import Any, Dict, Iterator, List, NamedTuple, Optional, Set, Tuple
 from urllib.parse import urlparse
 from urllib.request import urlretrieve
 
@@ -25,6 +25,7 @@ if sys.version_info >= (3, 11):
 else:
     import tomli as tomllib
 
+JsonData = Dict[str, Any]
 logger = logging.getLogger(__name__)
 
 # Each of these tests will download and unpack a 3rd-party project before analyzing it;
@@ -36,10 +37,7 @@ pytestmark = pytest.mark.integration
 REAL_PROJECTS_DIR = Path(__file__).with_name("real_projects")
 
 
-def run_fawltydeps(
-    *args: str,
-    cwd: Optional[Path] = None,
-) -> Dict[str, Any]:
+def run_fawltydeps(*args: str, cwd: Optional[Path] = None) -> JsonData:
     proc = subprocess.run(
         ["fawltydeps"] + list(args) + ["--json"],
         stdout=subprocess.PIPE,
@@ -94,35 +92,33 @@ class Experiment(NamedTuple):
             unused_deps=data.get("unused_deps"),
         )
 
-    def verify_analysis_json(self, analysis: Dict[str, Any]) -> None:
-        """Compare Experiment with json results of `Analysis`."""
+    def verify_analysis_json(self, analysis: JsonData) -> None:
+        """Assert that the given JSON analysis matches our expectations."""
+
+        def json_names(data: List[JsonData]) -> Set[str]:
+            return {d["name"] for d in data}
+
         if self.imports is not None:
             print(f"{self.name}: Checking imports")
-            assert set(self.imports) == {imp["name"] for imp in analysis["imports"]}
+            assert set(self.imports) == json_names(analysis["imports"])
         else:
             print(f"{self.name}: No imports to check")
 
         if self.declared_deps is not None:
             print(f"{self.name}: Checking declared dependencies")
-            assert set(self.declared_deps) == {
-                dep["name"] for dep in analysis["declared_deps"]
-            }
+            assert set(self.declared_deps) == json_names(analysis["declared_deps"])
         else:
             print(f"{self.name}: No declared dependencies")
 
         if self.undeclared_deps is not None:
             print(f"{self.name}: Checking undeclared dependencies")
-            assert set(self.undeclared_deps) == {
-                imp["name"] for imp in analysis["undeclared_deps"]
-            }
+            assert set(self.undeclared_deps) == json_names(analysis["undeclared_deps"])
         else:
             print(f"{self.name}: No undeclared dependencies to check")
 
         if self.unused_deps is not None:
             print(f"{self.name}: Checking unused dependencies")
-            assert set(self.unused_deps) == {
-                dep["name"] for dep in analysis["unused_deps"]
-            }
+            assert set(self.unused_deps) == json_names(analysis["unused_deps"])
         else:
             print(f"{self.name}: No unused dependencies to check")
 
