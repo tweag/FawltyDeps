@@ -9,22 +9,19 @@ sha256 = "375d6bb6b73af27c69487dcf1df51659a8ee7428420caff21253825fb338ce10"
 # downloaded tarball. It is used to ensure that we run tests against the
 # expected revision of the 3rd-party project.
 
-# Below are our expectations for running FawltyDeps on the above (unpacked)
-# tarball. Each table represents the expectations of a corresponding test case
-# inside ../test_real_projects.py. All tables are optional: Removing a table
-# will disable the corresponding test case. An empty table means that we expect
-# FawltyDeps to produce zero results/empty output for that test.
+# Below are our experiments that run FawltyDeps with various options on the
+# above (unpacked) tarball. Each table represents an experiment with our
+# expectations for what FawltyDeps should return in that scenario.
 #
-# Inside each table, we map filenames to lists of relevant packages (imports or
-# dependencies) that we expect FawltyDeps to return for that test. This is
-# described in more detail under each table:
+# Inside each table, we list out expectations of imports, declared_deps,
+# undeclared_deps, and unused_deps inside the JSON produced by FawltyDeps.
+# All these fields are optinal, and the comparison will be skipped for missing
+# fields.
 
-[imports]
-# What we expect `fawltydeps --list-imports` to return for this project.
-# Key: filename containing import statements
-# Value: list (set) of external packages imported
-# TODO: Analyze requests properly
-"<unused>" = [
+[experiments.all]
+description = "Running FD on the entire requests project"
+args = []
+imports = [
     "certifi",
     "chardet",
     "charset_normalizer",
@@ -38,13 +35,7 @@ sha256 = "375d6bb6b73af27c69487dcf1df51659a8ee7428420caff21253825fb338ce10"
     "trustme",
     "urllib3",
 ]
-
-[declared_deps]
-# What we expect `fawltydeps --list-deps` to return for this project.
-# Key: filename containing declared dependencies
-# Value: list (set) of packages names that are declared
-# TODO: Analyze requests properly
-"<unused>" =  [
+declared_deps = [
     "Flask",
     "PySocks",
     "Sphinx",
@@ -62,26 +53,14 @@ sha256 = "375d6bb6b73af27c69487dcf1df51659a8ee7428420caff21253825fb338ce10"
     "urllib3",
     "wheel",
 ]
-
-[undeclared_deps]
-# What we expect `fawltydeps --check-undeclared` to return for this project.
-# Key: filename containing import statements
-# Value: list (set) of external packages imported without being declared
-# TODO: Analyze requests properly
-"<unused>" = [
+undeclared_deps = [
     "cryptography",
     "OpenSSL",
     "pygments",
     "setuptools",
     "simplejson",
 ]
-
-[unused_deps]
-# What we expect `fawltydeps --check-unused` to return for this project.
-# Key: filename containing declared dependencies
-# Value: list (set) of external packages imported
-# TODO: Analyze requests properly
-"<unused>" =  [
+unused_deps =  [
     "Flask",
     "PySocks",
     "Sphinx",
