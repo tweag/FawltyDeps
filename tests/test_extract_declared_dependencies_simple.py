@@ -419,7 +419,7 @@ def test_extract_declared_dependencies__simple_project__returns_list(
     actual = _safe_collect_first_elements_sorted(
         extract_declared_dependencies(project_with_requirements)
     )
-    _assert_equivalence_upto_order(actual, expect)
+    _assert_unordered_equivalence(actual, expect)
 
 
 def test_extract_declared_dependencies__project_with_requirements_and_setup__returns_list(
@@ -438,7 +438,7 @@ def test_extract_declared_dependencies__project_with_requirements_and_setup__ret
     actual = _safe_collect_first_elements_sorted(
         extract_declared_dependencies(project_with_setup_and_requirements)
     )
-    _assert_equivalence_upto_order(actual, expect)
+    _assert_unordered_equivalence(actual, expect)
 
 
 def test_extract_declared_dependencies__parse_only_requirements_from_subdir__returns_list(
@@ -451,7 +451,7 @@ def test_extract_declared_dependencies__parse_only_requirements_from_subdir__ret
     ]
     path = project_with_setup_and_requirements / "subdir/requirements.txt"
     actual = _safe_collect_first_elements_sorted(extract_declared_dependencies(path))
-    _assert_equivalence_upto_order(actual, expect)
+    _assert_unordered_equivalence(actual, expect)
 
 
 def test_extract_declared_dependencies__project_with_pyproject_setup_and_requirements__returns_list(
@@ -477,7 +477,7 @@ def test_extract_declared_dependencies__project_with_pyproject_setup_and_require
     actual = _safe_collect_first_elements_sorted(
         extract_declared_dependencies(project_with_setup_pyproject_and_requirements)
     )
-    _assert_equivalence_upto_order(actual, expect)
+    _assert_unordered_equivalence(actual, expect)
 
 
 def test_extract_declared_dependencies__project_with_pyproject__returns_list(
@@ -491,7 +491,7 @@ def test_extract_declared_dependencies__project_with_pyproject__returns_list(
     actual = _safe_collect_first_elements_sorted(
         extract_declared_dependencies(project_with_pyproject)
     )
-    _assert_equivalence_upto_order(actual, expect)
+    _assert_unordered_equivalence(actual, expect)
 
 
 def test_extract_declared_dependencies__project_with_setup_cfg__returns_list(
@@ -504,7 +504,7 @@ def test_extract_declared_dependencies__project_with_setup_cfg__returns_list(
     actual = _safe_collect_first_elements_sorted(
         extract_declared_dependencies(project_with_setup_cfg)
     )
-    _assert_equivalence_upto_order(actual, expect)
+    _assert_unordered_equivalence(actual, expect)
 
 
 def test_extract_declared_dependencies__project_with_setup_cfg_pyproject_requirements__returns_list(
@@ -536,10 +536,10 @@ def test_extract_declared_dependencies__project_with_setup_cfg_pyproject_require
         )
     )
     observed = _safe_collect_first_elements_sorted(actual)
-    _assert_equivalence_upto_order(observed, expect)
+    _assert_unordered_equivalence(observed, expect)
 
 
-def _assert_equivalence_upto_order(actual, expected):
+def _assert_unordered_equivalence(actual, expected):
     assert sorted(actual) == sorted(expected)
 
 
