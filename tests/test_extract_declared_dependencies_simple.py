@@ -416,7 +416,7 @@ def test_extract_declared_dependencies__simple_project__returns_list(
     project_with_requirements,
 ):
     expect = ["pandas", "click", "pandas", "tensorflow"]
-    actual = _safe_collect_first_elements_sorted(
+    actual = _collect_dep_names_sorted(
         extract_declared_dependencies(project_with_requirements)
     )
     _assert_unordered_equivalence(actual, expect)
@@ -435,7 +435,7 @@ def test_extract_declared_dependencies__project_with_requirements_and_setup__ret
         "pandas",
         "tensorflow",
     ]
-    actual = _safe_collect_first_elements_sorted(
+    actual = _collect_dep_names_sorted(
         extract_declared_dependencies(project_with_setup_and_requirements)
     )
     _assert_unordered_equivalence(actual, expect)
@@ -450,7 +450,7 @@ def test_extract_declared_dependencies__parse_only_requirements_from_subdir__ret
         "tensorflow",
     ]
     path = project_with_setup_and_requirements / "subdir/requirements.txt"
-    actual = _safe_collect_first_elements_sorted(extract_declared_dependencies(path))
+    actual = _collect_dep_names_sorted(extract_declared_dependencies(path))
     _assert_unordered_equivalence(actual, expect)
 
 
@@ -474,7 +474,7 @@ def test_extract_declared_dependencies__project_with_pyproject_setup_and_require
         "pydantic",
         "pylint",
     ]
-    actual = _safe_collect_first_elements_sorted(
+    actual = _collect_dep_names_sorted(
         extract_declared_dependencies(project_with_setup_pyproject_and_requirements)
     )
     _assert_unordered_equivalence(actual, expect)
@@ -488,7 +488,7 @@ def test_extract_declared_dependencies__project_with_pyproject__returns_list(
         "pydantic",
         "pylint",
     ]
-    actual = _safe_collect_first_elements_sorted(
+    actual = _collect_dep_names_sorted(
         extract_declared_dependencies(project_with_pyproject)
     )
     _assert_unordered_equivalence(actual, expect)
@@ -501,7 +501,7 @@ def test_extract_declared_dependencies__project_with_setup_cfg__returns_list(
         "pandas",
         "django",
     ]
-    actual = _safe_collect_first_elements_sorted(
+    actual = _collect_dep_names_sorted(
         extract_declared_dependencies(project_with_setup_cfg)
     )
     _assert_unordered_equivalence(actual, expect)
@@ -535,7 +535,7 @@ def test_extract_declared_dependencies__project_with_setup_cfg_pyproject_require
             project_with_setup_with_cfg_pyproject_and_requirements
         )
     )
-    observed = _safe_collect_first_elements_sorted(actual)
+    observed = _collect_dep_names_sorted(actual)
     _assert_unordered_equivalence(observed, expect)
 
 
@@ -543,5 +543,5 @@ def _assert_unordered_equivalence(actual, expected):
     assert sorted(actual) == sorted(expected)
 
 
-def _safe_collect_first_elements_sorted(pairs):
-    return sorted([x for (x, _) in pairs])
+def _collect_dep_names_sorted(deps):
+    return sorted(dep.name for dep in deps)
