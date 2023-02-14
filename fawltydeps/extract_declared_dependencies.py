@@ -204,7 +204,7 @@ def parse_poetry_pyproject_dependencies(
 
     for (field_type, parser) in fields_parsers:
         try:
-            yield from parser(poetry_config, source)
+            yield from parser
         except KeyError as exc:  # missing fields:
             logger.debug(
                 ERROR_MESSAGE_TEMPLATE, "find", "Poetry", field_type, source, exc
