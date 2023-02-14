@@ -214,8 +214,8 @@ def parse_pep621_pyproject_contents(
     def parse_main(contents: TomlData, src: Location) -> Iterator[Tuple[str, Location]]:
         deps = contents["project"]["dependencies"]
         if isinstance(deps, list):
-            for requirement in deps:
-                yield parse_one_req(requirement, src)
+            for req in deps:
+                yield req, src
         else:
             raise TypeError(f"{deps!r} of type {type(deps)}. Expected list.")
 
