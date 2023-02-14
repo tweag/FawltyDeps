@@ -135,15 +135,6 @@ class ThirdPartyProject(NamedTuple):
     by the cached_tarball() fixture above.
     """
 
-    # TODO: Use TOML array of tables (https://toml.io/en/v1.0.0#array-of-tables)
-    # to allow the definition of more than one sets of tests per .toml file.
-    # The idea is to allow multiple runs of fawltydeps on the project (with
-    # different --code and --deps options, as well as other options in the
-    # future). This would split this class into two parts, one with the
-    # project metadata, and then a list tests, each of which define the
-    # necessary fawltydeps options to use, along with the expected
-    # .imports, .declared_deps, .undeclared_deps, and .unused_deps.
-
     toml_path: Path
     name: str
     url: str
