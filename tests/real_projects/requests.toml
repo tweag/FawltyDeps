@@ -10,17 +10,19 @@ sha256 = "375d6bb6b73af27c69487dcf1df51659a8ee7428420caff21253825fb338ce10"
 # expected revision of the 3rd-party project.
 
 # Below are our experiments that run FawltyDeps with various options on the
-# above (unpacked) tarball. Each table represents an experiment with our
-# expectations for what FawltyDeps should return in that scenario.
-#
-# Inside each table, we list out expectations of imports, declared_deps,
-# undeclared_deps, and unused_deps inside the JSON produced by FawltyDeps.
-# All these fields are optinal, and the comparison will be skipped for missing
-# fields.
+# above (unpacked) tarball. Each table represents an experiment with the
+# command-line arguments we pass to FawltyDeps (in `args`, --json is implicitly
+# added by test_real_projects), as well as our expectations for what FawltyDeps
+# should return in that scenario. These expectations are encoded as lists of
+# import/dependency names that we expect to be present in the corresponding
+# parts of the JSON: imports, declared_deps, undeclared_deps, and unused_deps.
+# All these fields are optional, and the verrification will be skipped for
+# missing fields.
 
 [experiments.all]
 description = "Running FD on the entire requests project"
 args = []
+# When we run FawltyDeps with the above arguments, we expect these results:
 imports = [
     "certifi",
     "chardet",
