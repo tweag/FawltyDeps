@@ -23,11 +23,12 @@ from operator import attrgetter
 from pathlib import Path
 from typing import List, Optional, Set, TextIO, no_type_check
 
+from pydantic.json import pydantic_encoder  # pylint: disable=no-name-in-module
+
 from fawltydeps import extract_imports
 from fawltydeps.check import compare_imports_to_dependencies
 from fawltydeps.extract_declared_dependencies import extract_declared_dependencies
 from fawltydeps.types import (
-    AnalysisJson,
     ArgParseError,
     DeclaredDependency,
     ParsedImport,
@@ -35,6 +36,7 @@ from fawltydeps.types import (
     UndeclaredDependency,
     UnusedDependency,
 )
+from fawltydeps.utils import hide_dataclass_fields
 
 if sys.version_info >= (3, 8):
     import importlib.metadata as importlib_metadata
@@ -110,18 +112,13 @@ class Analysis:
 
         return ret
 
-    def json(self) -> AnalysisJson:
-        """Return a JSON-serializable representation of this analysis."""
-        return {
-            field: None
-            if self.__dict__[field] is None
-            else [item.json() for item in self.__dict__[field]]
-            for field in ["imports", "declared_deps", "undeclared_deps", "unused_deps"]
-        }
+    def __post_init__(self) -> None:
+        """Do init-time magic to hide .request from JSON representation."""
+        hide_dataclass_fields(self, "request")
 
     def print_json(self, out: TextIO) -> None:
         """Print the JSON representation of this analysis to 'out'."""
-        json.dump(self.json(), out, indent=2, sort_keys=True)
+        json.dump(self, out, indent=2, default=pydantic_encoder)
 
     def print_human_readable(self, out: TextIO, details: bool = True) -> None:
         """Print a human-readable rendering of this analysis to 'out'."""

@@ -320,9 +320,14 @@ def extract_declared_dependencies(path: Path) -> Iterator[DeclaredDependency]:
             raise ArgParseError(f"Parsing file {path.name} is not supported")
         logger.debug(f"Extracting dependencies from {path}.")
         yield from parser(path.read_text(), Location(path))
-    else:
+    elif path.is_dir():
+        logger.debug("Extracting dependencies from files under %s", path)
         for file in walk_dir(path):
             parser = get_parser(file)
             if parser:
                 logger.debug(f"Extracting dependencies from {file}.")
                 yield from parser(file.read_text(), Location(file))
+    else:
+        raise ArgParseError(
+            f"Cannot parse dependencies from {path}: Not a dir or file!"
+        )

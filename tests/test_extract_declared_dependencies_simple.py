@@ -537,5 +537,4 @@ def test_extract_declared_dependencies__project_with_setup_cfg_pyproject_require
             project_with_setup_with_cfg_pyproject_and_requirements
         )
     )
-    observed = collect_dep_names_sorted(actual)
-    assert_unordered_equivalence(observed, expect)
+    assert sorted([a for (a, _) in actual]) == sorted(expect)
