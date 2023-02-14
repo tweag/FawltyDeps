@@ -25,6 +25,8 @@ logger = logging.getLogger(__name__)
 
 ERROR_MESSAGE_TEMPLATE = "Failed to %s %s %s dependencies in %s: %s"
 
+NamedLocations = Iterator[Tuple[str, Location]]
+
 
 class DependencyParsingError(Exception):
     """Error raised when parsing of dependency fails"""
@@ -173,14 +175,12 @@ def parse_poetry_pyproject_dependencies(
 ) -> Iterator[DeclaredDependency]:
     """Extract dependencies from `tool.poetry` fields in a pyproject.toml."""
 
-    def parse_main(contents: TomlData, src: Location) -> Iterator[Tuple[str, Location]]:
+    def parse_main(contents: TomlData, src: Location) -> NamedLocations:
         return (
             (req, src) for req in contents["dependencies"].keys() if req != "python"
         )
 
-    def parse_group(
-        contents: TomlData, src: Location
-    ) -> Iterator[Tuple[str, Location]]:
+    def parse_group(contents: TomlData, src: Location) -> NamedLocations:
         yield from (
             (req, src)
             for group in contents["group"].values()
@@ -188,9 +188,7 @@ def parse_poetry_pyproject_dependencies(
             if req != "python"
         )
 
-    def parse_extra(
-        contents: TomlData, src: Location
-    ) -> Iterator[Tuple[str, Location]]:
+    def parse_extra(contents: TomlData, src: Location) -> NamedLocations:
         return (
             (req, src)
             for group in contents["extras"].values()
@@ -211,7 +209,7 @@ def parse_pep621_pyproject_contents(
 ) -> Iterator[DeclaredDependency]:
     """Extract dependencies from a pyproject.toml using the PEP 621 fields."""
 
-    def parse_main(contents: TomlData, src: Location) -> Iterator[Tuple[str, Location]]:
+    def parse_main(contents: TomlData, src: Location) -> NamedLocations:
         deps = contents["project"]["dependencies"]
         if isinstance(deps, list):
             for req in deps:
@@ -219,9 +217,7 @@ def parse_pep621_pyproject_contents(
         else:
             raise TypeError(f"{deps!r} of type {type(deps)}. Expected list.")
 
-    def parse_optional(
-        contents: TomlData, src: Location
-    ) -> Iterator[Tuple[str, Location]]:
+    def parse_optional(contents: TomlData, src: Location) -> NamedLocations:
         for group in contents["project"]["optional-dependencies"].values():
             for req in group:
                 yield req, src
@@ -234,9 +230,7 @@ def parse_pyproject_elements(
     parsed_contents: TomlData,
     source: Location,
     context_name: str,
-    named_parsers: Iterable[
-        Tuple[str, Callable[[TomlData, Location], Iterator[Tuple[str, Location]]]]
-    ],
+    named_parsers: Iterable[Tuple[str, Callable[[TomlData, Location], NamedLocations]]],
 ) -> Iterator[DeclaredDependency]:
     """Use the given data, source, and parsers to step through sections and collect dependencies."""
     for name_field_type, parser in named_parsers:
