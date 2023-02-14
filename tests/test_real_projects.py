@@ -96,24 +96,35 @@ class Experiment(NamedTuple):
 
     def verify_analysis_json(self, analysis: Dict[str, Any]) -> None:
         """Compare Experiment with json results of `Analysis`."""
-        if self.imports:
-            print(f"Checking imports for experiment: {self.name}")
+        if self.imports is not None:
+            print(f"{self.name}: Checking imports")
             assert set(self.imports) == {imp["name"] for imp in analysis["imports"]}
-        if self.declared_deps:
-            print(f"Checking declared dependencies for experiment: {self.name}")
+        else:
+            print(f"{self.name}: No imports to check")
+
+        if self.declared_deps is not None:
+            print(f"{self.name}: Checking declared dependencies")
             assert set(self.declared_deps) == {
                 dep["name"] for dep in analysis["declared_deps"]
             }
-        if self.undeclared_deps:
-            print(f"Checking undeclared dependencies for experiment: {self.name}")
+        else:
+            print(f"{self.name}: No declared dependencies")
+
+        if self.undeclared_deps is not None:
+            print(f"{self.name}: Checking undeclared dependencies")
             assert set(self.undeclared_deps) == {
                 imp["name"] for imp in analysis["undeclared_deps"]
             }
-        if self.unused_deps:
-            print(f"Checking unused dependencies for experiment: {self.name}")
+        else:
+            print(f"{self.name}: No undeclared dependencies to check")
+
+        if self.unused_deps is not None:
+            print(f"{self.name}: Checking unused dependencies")
             assert set(self.unused_deps) == {
                 dep["name"] for dep in analysis["unused_deps"]
             }
+        else:
+            print(f"{self.name}: No unused dependencies to check")
 
 
 class ThirdPartyProject(NamedTuple):
@@ -155,14 +166,15 @@ class ThirdPartyProject(NamedTuple):
 
         # We ultimately _trust_ the .toml files read here, so we can skip all
         # the usual error checking associated with validating external data.
+        project_name = data["project"]["name"]
         return cls(
             toml_path=path,
-            name=data["project"]["name"],
+            name=project_name,
             description=data["project"].get("description"),
             url=data["project"]["url"],
             sha256=data["project"]["sha256"],
             experiments=[
-                Experiment.parse_from_toml(name, values)
+                Experiment.parse_from_toml(f"{project_name}:{name}", values)
                 for name, values in data["experiments"].items()
             ],
         )
@@ -270,7 +282,7 @@ class ThirdPartyProject(NamedTuple):
 @pytest.mark.parametrize(
     "project, experiment",
     [
-        pytest.param(proj, experiment, id=f"{proj.name}_{experiment.name}")
+        pytest.param(proj, experiment, id=experiment.name)
         for proj, experiment in ThirdPartyProject.collect()
     ],
 )
@@ -278,6 +290,5 @@ def test_real_project(request, project, experiment):
     project_dir = project.get_project_dir(request.config.cache)
     analysis = run_fawltydeps(*experiment.args, cwd=project_dir)
 
-    print(f"Checking project: {project.name} for experiment: {experiment.name}")
-
+    print(f"Checking project:experiment {experiment.name} under {project_dir}...")
     experiment.verify_analysis_json(analysis)
