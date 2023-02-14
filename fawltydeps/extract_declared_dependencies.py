@@ -184,7 +184,7 @@ def parse_poetry_pyproject_dependencies(
         return (
             (req, src)
             for group in contents["group"].values()
-            for req in group["dependencies"].values()
+            for req in group["dependencies"].keys()
             if req != "python"
         )
 
