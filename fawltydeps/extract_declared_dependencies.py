@@ -212,8 +212,12 @@ def parse_pep621_pyproject_contents(
     """Extract dependencies from a pyproject.toml using the PEP 621 fields."""
 
     def parse_main(contents: TomlData, src: Location) -> Iterator[Tuple[str, Location]]:
-        for req in contents["project"]["dependencies"]:
-            yield req, src
+        deps = contents["project"]["dependencies"]
+        if isinstance(deps, list):
+            for requirement in deps:
+                yield parse_one_req(requirement, src)
+        else:
+            raise TypeError(f"{deps!r} of type {type(deps)}. Expected list.")
 
     def parse_optional(
         contents: TomlData, src: Location
