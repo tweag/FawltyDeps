@@ -181,7 +181,7 @@ def parse_poetry_pyproject_dependencies(
     def parse_group(
         contents: TomlData, src: Location
     ) -> Iterator[Tuple[str, Location]]:
-        return (
+        yield from (
             (req, src)
             for group in contents["group"].values()
             for req in group["dependencies"].keys()
@@ -203,7 +203,7 @@ def parse_poetry_pyproject_dependencies(
         ("group", parse_group),
         ("extra", parse_extra),
     ]
-    return parse_pyproject_elements(poetry_config, source, "Poetry", fields_parsers)
+    yield from parse_pyproject_elements(poetry_config, source, "Poetry", fields_parsers)
 
 
 def parse_pep621_pyproject_contents(
