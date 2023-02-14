@@ -9,21 +9,19 @@ sha256 = "04338a1b53852c1b30d84d9d333185485725b0097462045397f84c721bab59cd"
 # downloaded tarball. It is used to ensure that we run tests against the
 # expected revision of the 3rd-party project.
 
-# Below are our expectations for running FawltyDeps on the above (unpacked)
-# tarball. Each table represents the expectations of a corresponding test case
-# inside ../test_real_projects.py. All tables are optional: Removing a table
-# will disable the corresponding test case. An empty table means that we expect
-# FawltyDeps to produce zero results/empty output for that test.
+# Below are our experiments that run FawltyDeps with various options on the
+# above (unpacked) tarball. Each table represents an experiment with our
+# expectations for what FawltyDeps should return in that scenario.
 #
-# Inside each table, we map filenames to lists of relevant packages (imports or
-# dependencies) that we expect FawltyDeps to return for that test. This is
-# described in more detail under each table:
+# Inside each table, we list out expectations of imports, declared_deps,
+# undeclared_deps, and unused_deps inside the JSON produced by FawltyDeps.
+# All these fields are optinal, and the comparison will be skipped for missing
+# fields.
 
-[imports]
-# What we expect `fawltydeps --list-imports` to return for this project.
-# Key: filename containing import statements
-# Value: list (set) of external packages imported
-"<unused>" = [
+[experiments.all]
+description = "Running FD on the entire peppy project"
+args = []
+imports = [
     "attmap",
     "numpy",
     "pandas",
@@ -34,11 +32,7 @@ sha256 = "04338a1b53852c1b30d84d9d333185485725b0097462045397f84c721bab59cd"
     "yaml"
 ]
 
-[declared_deps]
-# What we expect `fawltydeps --list-deps` to return for this project.
-# Key: filename containing declared dependencies
-# Value: list (set) of packages names that are declared
-"<unused>" = [
+declared_deps = [
     "attmap",
     "logmuse",
     "markdown-include",
@@ -55,21 +49,13 @@ sha256 = "04338a1b53852c1b30d84d9d333185485725b0097462045397f84c721bab59cd"
     "pyyaml"
 ]
 
-[undeclared_deps]
-# What we expect `fawltydeps --check-undeclared` to return for this project.
-# Key: filename containing import statements
-# Value: list (set) of external packages imported without being declared
-"<unused>" = [
+undeclared_deps = [
     "numpy", 
     "yaml",
     "setuptools"
 ]
 
-[unused_deps]
-# What we expect `fawltydeps --check-unused` to return for this project.
-# Key: filename containing declared dependencies
-# Value: list (set) of external packages imported
-"requirements-all.txt" = [
+unused_deps = [
     "logmuse", 
     "markdown-include",
     "mkdocs",
@@ -80,4 +66,3 @@ sha256 = "04338a1b53852c1b30d84d9d333185485725b0097462045397f84c721bab59cd"
     "pytest-remotedata",
     "pyyaml"
 ]
-

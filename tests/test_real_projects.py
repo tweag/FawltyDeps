@@ -92,16 +92,16 @@ class Experiment(NamedTuple):
     def verify_analysis_json(self, analysis: Dict[str, Any]) -> None:
         print(analysis)
         assert sorted(self.imports) == sorted(
-            [imp["name"] for imp in analysis["imports"]]
+            {imp["name"] for imp in analysis["imports"]}
         )
         assert sorted(self.declared_deps) == sorted(
-            [dep["name"] for dep in analysis["declared_deps"]]
+            {dep["name"] for dep in analysis["declared_deps"]}
         )
         assert sorted(self.undeclared_deps) == sorted(
-            [imp["name"] for imp in analysis["undeclared_deps"]]
+            {imp["name"] for imp in analysis["undeclared_deps"]}
         )
         assert sorted(self.unused_deps) == sorted(
-            [dep["name"] for dep in analysis["unused_deps"]]
+            {dep["name"] for dep in analysis["unused_deps"]}
         )
 
 
