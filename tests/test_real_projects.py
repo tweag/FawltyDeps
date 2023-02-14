@@ -5,19 +5,21 @@ We download/extract pinned releases several 3rd-party Python projects, and run
 FawltyDeps on them, with hardcoded expectations per project on what FawltyDeps
 should find/report.
 """
-
+import json
 import hashlib
 import logging
+import subprocess
 import sys
 import tarfile
 from pathlib import Path
-from typing import Dict, Iterator, NamedTuple, Optional
+from typing import Any, Dict, Iterator, List, NamedTuple, Optional, Tuple
 from urllib.parse import urlparse
 from urllib.request import urlretrieve
 
 import pytest
 
 from fawltydeps.main import Action, Analysis
+from fawltydeps.extract_declared_dependencies import TomlData
 
 if sys.version_info >= (3, 11):
     import tomllib  # pylint: disable=E1101
@@ -35,6 +37,20 @@ pytestmark = pytest.mark.integration
 REAL_PROJECTS_DIR = Path(__file__).with_name("real_projects")
 
 
+def run_fawltydeps(
+    *args: str,
+    cwd: Optional[Path] = None,
+) -> Tuple[str, str, int]:
+    proc = subprocess.run(
+        ["fawltydeps"] + list(args) + ["--json"],
+        stdout=subprocess.PIPE,
+        check=False,
+        cwd=cwd,
+    )
+    assert proc.returncode in {0, 3, 4}
+    return json.loads(proc.stdout)
+
+
 def sha256sum(path: Path):
     """Calculate the SHA256 checksum of the given file.
 
@@ -47,6 +63,46 @@ def sha256sum(path: Path):
         for block in iter(lambda: f.read(BLOCK_SIZE), b""):
             sha256.update(block)
     return sha256.hexdigest()
+
+
+class Experiment(NamedTuple):
+    """A single experiment on a real world project"""
+
+    name: str
+    args: List[str]
+
+    description: Optional[str] = None
+    imports: Optional[List[str]] = None
+    declared_deps: Optional[List[str]] = None
+    undeclared_deps: Optional[List[str]] = None
+    unused_deps: Optional[List[str]] = None
+
+    @classmethod
+    def parse_from_toml(cls, name: str, data: TomlData) -> "Experiment":
+        return cls(
+            name=name,
+            args=data["args"],
+            description=data.get("description"),
+            imports=data.get("imports"),
+            declared_deps=data.get("declared_deps"),
+            undeclared_deps=data.get("undeclared_deps"),
+            unused_deps=data.get("unused_deps"),
+        )
+
+    def verify_analysis_json(self, analysis: Dict[str, Any]) -> None:
+        print(analysis)
+        assert sorted(self.imports) == sorted(
+            [imp["name"] for imp in analysis["imports"]]
+        )
+        assert sorted(self.declared_deps) == sorted(
+            [dep["name"] for dep in analysis["declared_deps"]]
+        )
+        assert sorted(self.undeclared_deps) == sorted(
+            [imp["name"] for imp in analysis["undeclared_deps"]]
+        )
+        assert sorted(self.unused_deps) == sorted(
+            [dep["name"] for dep in analysis["unused_deps"]]
+        )
 
 
 class ThirdPartyProject(NamedTuple):
@@ -74,11 +130,8 @@ class ThirdPartyProject(NamedTuple):
     name: str
     url: str
     sha256: str
+    experiments: List[Experiment]
     description: Optional[str] = None
-    imports: Optional[Dict[Path, str]] = None
-    declared_deps: Optional[Dict[Path, str]] = None
-    undeclared_deps: Optional[Dict[Path, str]] = None
-    unused_deps: Optional[Dict[Path, str]] = None
 
     @classmethod
     def parse_from_toml(cls, path: Path) -> "ThirdPartyProject":
@@ -88,6 +141,7 @@ class ThirdPartyProject(NamedTuple):
         except tomllib.TOMLDecodeError:
             print(f"Error occurred while parsing file: {path}")
             raise
+
         # We ultimately _trust_ the .toml files read here, so we can skip all
         # the usual error checking associated with validating external data.
         return cls(
@@ -96,17 +150,19 @@ class ThirdPartyProject(NamedTuple):
             description=data["project"].get("description"),
             url=data["project"]["url"],
             sha256=data["project"]["sha256"],
-            imports=data.get("imports"),
-            declared_deps=data.get("declared_deps"),
-            undeclared_deps=data.get("undeclared_deps"),
-            unused_deps=data.get("unused_deps"),
+            experiments=[
+                Experiment.parse_from_toml(name, values)
+                for name, values in data["experiments"].items()
+            ],
         )
 
     @classmethod
-    def collect(cls) -> Iterator["ThirdPartyProject"]:
+    def collect(cls) -> Iterator[Tuple["ThirdPartyProject", Experiment]]:
         for path in REAL_PROJECTS_DIR.iterdir():
             if path.suffix == ".toml":
-                yield cls.parse_from_toml(path)
+                project = cls.parse_from_toml(path)
+                for experiment in project.experiments:
+                    yield (project, experiment)
 
     def tarball_name(self) -> str:
         """The filename used for the tarball in the local cache."""
@@ -201,48 +257,49 @@ class ThirdPartyProject(NamedTuple):
 
 
 @pytest.mark.parametrize(
-    "project",
-    [pytest.param(proj, id=proj.name) for proj in ThirdPartyProject.collect()],
+    "project, experiment",
+    [
+        pytest.param(proj, experiment, id=f"{proj.name}_{experiment.name}")
+        for proj, experiment in ThirdPartyProject.collect()
+    ],
 )
-def test_real_project(request, project):
+def test_real_project(request, project, experiment):
     project_dir = project.get_project_dir(request.config.cache)
-    all_actions = {
-        Action.LIST_IMPORTS,
-        Action.LIST_DEPS,
-        Action.REPORT_UNDECLARED,
-        Action.REPORT_UNUSED,
-    }
-    analysis = Analysis.create(all_actions, code=project_dir, deps=project_dir)
-    prj_name = project.name
+    # analysis = Analysis.create(all_actions, code=project_dir, deps=project_dir)
 
-    if project.imports is not None:
-        print(f"Checking imports: {prj_name}")
-        actual = {i.name for i in analysis.imports}
-        expect = {name for names in project.imports.values() for name in names}
-        assert actual == expect
-    else:
-        print(f"No imports to check: {prj_name}")
+    analysis = run_fawltydeps(*experiment.args, cwd=project_dir)
 
-    if project.declared_deps is not None:
-        print(f"Checking declared dependencies: {prj_name}")
-        actual = {d.name for d in analysis.declared_deps}
-        expect = {name for names in project.declared_deps.values() for name in names}
-        assert actual == expect
-    else:
-        print(f"No declared dependencies to check: {prj_name}")
+    print(f"Checking project: {project.name} for experiment: {experiment.name}")
 
-    if project.undeclared_deps is not None:
-        print(f"Checking undeclared dependencies: {prj_name}")
-        actual = {u.name for u in analysis.undeclared_deps}
-        expect = {name for names in project.undeclared_deps.values() for name in names}
-        assert actual == expect
-    else:
-        print(f"No undeclared dependencies to check: {prj_name}")
+    experiment.verify_analysis_json(analysis)
 
-    if project.unused_deps is not None:
-        print(f"Checking unused dependencies: {prj_name}")
-        actual = {u.name for u in analysis.unused_deps}
-        expect = {name for names in project.unused_deps.values() for name in names}
-        assert actual == expect
-    else:
-        print(f"No unused dependencies to check: {prj_name}")
+    # if project.imports is not None:
+    #     actual = {i.name for i in analysis.imports}
+    #     expect = {name for names in project.imports.values() for name in names}
+    #     assert actual == expect
+    # else:
+    #     print(f"No imports to check: {prj_name}")
+
+    # if project.declared_deps is not None:
+    #     print(f"Checking declared dependencies: {prj_name}")
+    #     actual = {d.name for d in analysis.declared_deps}
+    #     expect = {name for names in project.declared_deps.values() for name in names}
+    #     assert actual == expect
+    # else:
+    #     print(f"No declared dependencies to check: {prj_name}")
+
+    # if project.undeclared_deps is not None:
+    #     print(f"Checking undeclared dependencies: {prj_name}")
+    #     actual = {u.name for u in analysis.undeclared_deps}
+    #     expect = {name for names in project.undeclared_deps.values() for name in names}
+    #     assert actual == expect
+    # else:
+    #     print(f"No undeclared dependencies to check: {prj_name}")
+
+    # if project.unused_deps is not None:
+    #     print(f"Checking unused dependencies: {prj_name}")
+    #     actual = {u.name for u in analysis.unused_deps}
+    #     expect = {name for names in project.unused_deps.values() for name in names}
+    #     assert actual == expect
+    # else:
+    #     print(f"No unused dependencies to check: {prj_name}")
