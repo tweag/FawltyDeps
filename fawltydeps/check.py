@@ -3,7 +3,7 @@
 import logging
 import sys
 from itertools import groupby
-from typing import Iterable, List, Optional, Tuple
+from typing import Iterable, List, Mapping, Optional, Tuple
 
 from fawltydeps.types import (
     DeclaredDependency,
@@ -46,6 +46,15 @@ def find_import_names_from_package_name(package: str) -> Optional[List[str]]:
     return ret or None
 
 
+def dependency_to_imports_mapping(dependency: DeclaredDependency) -> DeclaredDependency:
+    import_names = find_import_names_from_package_name(dependency.name)
+    if import_names:
+        return dependency.supply_mapping(
+            [(Mapping.DEPENDENCY_TO_IMPORT, i) for i in import_names]
+        )
+    return dependency
+
+
 def compare_imports_to_dependencies(
     imports: List[ParsedImport],
     dependencies: List[DeclaredDependency],
@@ -59,11 +68,17 @@ def compare_imports_to_dependencies(
     For undeclared dependencies returns files and line numbers
     where they were imported in the code.
     """
-    imported_names = {i.name for i in imports}
-    declared_names = {d.name for d in dependencies}
+    mapped_dependencies = [dependency_to_imports_mapping(d) for d in dependencies]
+
+    names_from_imports = {i.name for i in imports}
+    names_from_dependencies = {
+        d[1] for dep in mapped_dependencies for d in dep.mapped_imports
+    }
 
     undeclared = [
-        i for i in imports if i.name not in declared_names.union(ignored_undeclared)
+        i
+        for i in imports
+        if i.name not in names_from_dependencies.union(ignored_undeclared)
     ]
     undeclared.sort(key=lambda i: i.name)  # groupby requires pre-sorting
     undeclared_grouped = [
@@ -72,7 +87,10 @@ def compare_imports_to_dependencies(
     ]
 
     unused = [
-        d for d in dependencies if d.name not in imported_names.union(ignored_unused)
+        dep
+        for dep in mapped_dependencies
+        if (dep.name not in ignored_unused)
+        and len(set(dep.import_names) & names_from_imports) == 0
     ]
     unused.sort(key=lambda d: d.name)  # groupby requires pre-sorting
     unused_grouped = [

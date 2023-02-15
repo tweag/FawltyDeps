@@ -1,5 +1,6 @@
 """Common types used across FawltyDeps."""
 
+from enum import Enum
 import sys
 from dataclasses import asdict, dataclass, field, replace
 from functools import total_ordering
@@ -23,6 +24,13 @@ class ArgParseError(Exception):
 
     def __init__(self, msg: str):
         self.msg = msg
+
+
+class Mapping(Enum):
+    """Types of dependency and imports mapping"""
+
+    IDENTITY = "IDENTITY"
+    DEPENDENCY_TO_IMPORT = "DEPENDENCY_TO_IMPORT"
 
 
 @total_ordering
@@ -121,6 +129,16 @@ class DeclaredDependency:
 
     name: str
     source: Location
+
+    def __post_init__(self) -> None:
+        """Set an identity mapping by default"""
+        object.__setattr__(self, "mapped_imports", [(Mapping.IDENTITY, self.name)])
+
+    def supply_mapping(
+        self, mapped_imports: List[Tuple[Mapping, str]]
+    ) -> "DeclaredDependency":
+        """Supply a custom mapping of dependency to imports"""
+        return replace(self, mapped_imports=mapped_imports)
 
 
 @dataclass
