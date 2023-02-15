@@ -181,7 +181,7 @@ def parse_poetry_pyproject_dependencies(
         )
 
     def parse_group(contents: TomlData, src: Location) -> NamedLocations:
-        yield from (
+        return (
             (req, src)
             for group in contents["group"].values()
             for req in group["dependencies"].keys()
