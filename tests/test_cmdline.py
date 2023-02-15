@@ -596,7 +596,7 @@ def test__quiet_check__writes_only_names_of_unused_and_undeclared(
     assert returncode == 3
 
 
-def test___check_unused_action_on_ignored_unused_dep__outputs_nothing(
+def test_check_unused_action_on_ignored_unused_dep__outputs_nothing(
     project_with_code_and_requirements_txt,
 ):
     deps = ["black", "mypy"]
@@ -611,7 +611,7 @@ def test___check_unused_action_on_ignored_unused_dep__outputs_nothing(
     assert returncode == 0
 
 
-def test___list_deps_action_on_ignored_dep__reports_dep(
+def test_list_deps_action_on_ignored_dep__reports_dep(
     project_with_code_and_requirements_txt,
 ):
     deps = ["black"]
@@ -627,7 +627,7 @@ def test___list_deps_action_on_ignored_dep__reports_dep(
     assert returncode == 0
 
 
-def test___check_undeclared_action_on_ignored_declared_dep__does_not_report_dep_as_undeclared(
+def test_check_undeclared_action_on_ignored_declared_dep__does_not_report_dep_as_undeclared(
     project_with_code_and_requirements_txt,
 ):
     deps = ["isort"]
