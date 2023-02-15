@@ -6,7 +6,7 @@ import logging
 import re
 import sys
 from pathlib import Path
-from typing import Any, Callable, Dict, Iterator, Optional
+from typing import Any, Callable, Dict, Iterable, Iterator, Optional, Tuple
 
 from pkg_resources import Requirement
 
@@ -23,7 +23,9 @@ TomlData = Dict[str, Any]  # type: ignore
 
 logger = logging.getLogger(__name__)
 
-ERROR_MESSAGE_TEMPLATE = "Failed to %s %s %s dependencies in %s."
+ERROR_MESSAGE_TEMPLATE = "Failed to %s %s %s dependencies in %s: %s"
+
+NamedLocations = Iterator[Tuple[str, Location]]
 
 
 class DependencyParsingError(Exception):
@@ -173,56 +175,33 @@ def parse_poetry_pyproject_dependencies(
 ) -> Iterator[DeclaredDependency]:
     """Extract dependencies from `tool.poetry` fields in a pyproject.toml."""
 
-    def parse_main_dependencies(
-        poetry_config: TomlData, source: Location
-    ) -> Iterator[DeclaredDependency]:
-        for requirement in poetry_config["dependencies"].keys():
-            if requirement != "python":
-                yield parse_one_req(requirement, source)
+    def parse_main(contents: TomlData, src: Location) -> NamedLocations:
+        return (
+            (req, src) for req in contents["dependencies"].keys() if req != "python"
+        )
 
-    def parse_group_dependencies(
-        poetry_config: TomlData, source: Location
-    ) -> Iterator[DeclaredDependency]:
-        for group in poetry_config["group"].values():
-            for requirement in group["dependencies"].keys():
-                if requirement != "python":
-                    yield parse_one_req(requirement, source)
+    def parse_group(contents: TomlData, src: Location) -> NamedLocations:
+        return (
+            (req, src)
+            for group in contents["group"].values()
+            for req in group["dependencies"].keys()
+            if req != "python"
+        )
 
-    def parse_extra_dependencies(
-        poetry_config: TomlData, source: Location
-    ) -> Iterator[DeclaredDependency]:
-        for group in poetry_config["extras"].values():
-            if isinstance(group, list):
-                for requirement in group:
-                    yield parse_one_req(requirement, source)
-            else:
-                raise TypeError(f"{group!r} is of type {type(group)}. Expected a list.")
+    def parse_extra(contents: TomlData, src: Location) -> NamedLocations:
+        return (
+            (req, src)
+            for group in contents["extras"].values()
+            if isinstance(group, list)
+            for req in group
+        )
 
-    fields_parsers = {
-        "main": parse_main_dependencies,
-        "group": parse_group_dependencies,
-        "extra": parse_extra_dependencies,
-    }
-
-    for field_type, parser in fields_parsers.items():
-        try:
-            yield from parser(poetry_config, source)
-        except KeyError:  # missing fields:
-            logger.debug(
-                ERROR_MESSAGE_TEMPLATE,
-                "find",
-                "Poetry",
-                field_type,
-                source,
-            )
-        except (AttributeError, TypeError):  # invalid config
-            logger.error(
-                ERROR_MESSAGE_TEMPLATE,
-                "parse",
-                "Poetry",
-                field_type,
-                source,
-            )
+    fields_parsers = [
+        ("main", parse_main),
+        ("group", parse_group),
+        ("extra", parse_extra),
+    ]
+    yield from parse_pyproject_elements(poetry_config, source, "Poetry", fields_parsers)
 
 
 def parse_pep621_pyproject_contents(
@@ -230,36 +209,52 @@ def parse_pep621_pyproject_contents(
 ) -> Iterator[DeclaredDependency]:
     """Extract dependencies from a pyproject.toml using the PEP 621 fields."""
 
-    def parse_main_dependencies(
-        parsed_contents: TomlData, source: Location
-    ) -> Iterator[DeclaredDependency]:
-        dependencies = parsed_contents["project"]["dependencies"]
-        if isinstance(dependencies, list):
-            for requirement in dependencies:
-                yield parse_one_req(requirement, source)
+    def parse_main(contents: TomlData, src: Location) -> NamedLocations:
+        deps = contents["project"]["dependencies"]
+        if isinstance(deps, list):
+            for req in deps:
+                yield req, src
         else:
-            raise TypeError(
-                f"{dependencies!r} of type {type(dependencies)}. Expected list."
-            )
+            raise TypeError(f"{deps!r} of type {type(deps)}. Expected list.")
 
-    def parse_optional_dependencies(
-        parsed_contents: TomlData, source: Location
-    ) -> Iterator[DeclaredDependency]:
-        for group in parsed_contents["project"]["optional-dependencies"].values():
-            for requirement in group:
-                yield parse_one_req(requirement, source)
+    def parse_optional(contents: TomlData, src: Location) -> NamedLocations:
+        for group in contents["project"]["optional-dependencies"].values():
+            for req in group:
+                yield req, src
 
-    fields_parsers = {
-        "main": parse_main_dependencies,
-        "optional": parse_optional_dependencies,
-    }
-    for field_type, parser in fields_parsers.items():
+    fields_parsers = [("main", parse_main), ("optional", parse_optional)]
+    return parse_pyproject_elements(parsed_contents, source, "PEP621", fields_parsers)
+
+
+def parse_pyproject_elements(
+    parsed_contents: TomlData,
+    source: Location,
+    context_name: str,
+    named_parsers: Iterable[Tuple[str, Callable[[TomlData, Location], NamedLocations]]],
+) -> Iterator[DeclaredDependency]:
+    """Use the given data, source, and parsers to step through sections and collect dependencies."""
+    for name_field_type, parser in named_parsers:
         try:
-            yield from parser(parsed_contents, source)
-        except KeyError:
-            logger.debug(ERROR_MESSAGE_TEMPLATE, "find", "PEP621", field_type, source)
-        except (AttributeError, TypeError):
-            logger.error(ERROR_MESSAGE_TEMPLATE, "parse", "PEP621", field_type, source)
+            for req, src in parser(parsed_contents, source):
+                yield parse_one_req(req, src)
+        except KeyError as exc:
+            logger.debug(
+                ERROR_MESSAGE_TEMPLATE,
+                "find",
+                context_name,
+                name_field_type,
+                source,
+                exc,
+            )
+        except (AttributeError, TypeError) as exc:
+            logger.error(
+                ERROR_MESSAGE_TEMPLATE,
+                "parse",
+                context_name,
+                name_field_type,
+                source,
+                exc,
+            )
 
 
 def parse_pyproject_contents(
@@ -281,7 +276,7 @@ def parse_pyproject_contents(
             parsed_contents["tool"]["poetry"], source
         )
     else:
-        logger.debug("%s does not contain [tool.poetry].")
+        logger.debug("%s does not contain [tool.poetry].", source)
 
 
 def extract_declared_dependencies(path: Path) -> Iterator[DeclaredDependency]:
