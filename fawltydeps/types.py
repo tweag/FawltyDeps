@@ -1,8 +1,8 @@
 """Common types used across FawltyDeps."""
 
-from enum import Enum
 import sys
 from dataclasses import asdict, dataclass, field, replace
+from enum import Enum
 from functools import total_ordering
 from operator import attrgetter
 from pathlib import Path
@@ -137,7 +137,7 @@ class DeclaredDependency:
         object.__setattr__(self, "import_names", (self.name,))
 
     def replace_mapping(
-        self, import_names: Tuple[str], mapping: DependenciesMapping
+        self, import_names: Tuple[str, ...], mapping: DependenciesMapping
     ) -> "DeclaredDependency":
         """Supply a custom mapping of dependency to imports"""
         return replace(self, import_names=import_names, mapping=mapping)
