@@ -611,7 +611,7 @@ def test___check_unused_action_on_ignored_unusued_dep__outputs_nothing(
     assert returncode == 0
 
 
-def test___list_deps_action_on_ignored_dep__outputs_dep(
+def test___list_deps_action_on_ignored_dep__reports_dep(
     project_with_code_and_requirements_txt,
 ):
     tmp_path = project_with_code_and_requirements_txt(
