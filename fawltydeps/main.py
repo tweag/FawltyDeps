@@ -21,7 +21,7 @@ from dataclasses import dataclass
 from enum import Enum, auto
 from operator import attrgetter
 from pathlib import Path
-from typing import List, Optional, Set, TextIO, no_type_check
+from typing import Iterable, List, Optional, Set, TextIO, no_type_check
 
 from pydantic.json import pydantic_encoder  # pylint: disable=no-name-in-module
 
@@ -87,7 +87,7 @@ class Analysis:
         request: Set[Action],
         code: PathOrSpecial,
         deps: Path,
-        ignored_unused_deps: Optional[List[str]] = None,
+        ignored_unused_deps: Iterable[str] = (),
     ) -> "Analysis":
         """Perform the requested actions of FawltyDeps core logic.
 
@@ -113,7 +113,7 @@ class Analysis:
             ret.undeclared_deps, ret.unused_deps = compare_imports_to_dependencies(
                 imports=ret.imports,
                 dependencies=ret.declared_deps,
-                ignored_unused_dependencies=ignored_unused_deps,
+                ignored_unused_deps=ignored_unused_deps,
             )
 
         return ret
@@ -249,6 +249,7 @@ def main() -> int:
     options.add_argument(
         "--ignore-unused-deps",
         nargs="+",
+        default=[],
         help=(
             "Dependencies to ignore when looking for unused"
             " dependencies, e.g. --ignore-unused-deps pylint black"
