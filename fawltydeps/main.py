@@ -87,7 +87,7 @@ class Analysis:
         request: Set[Action],
         code: PathOrSpecial,
         deps: Path,
-        ignored_deps: Optional[List[str]] = None,
+        ignored_unused_deps: Optional[List[str]] = None,
     ) -> "Analysis":
         """Perform the requested actions of FawltyDeps core logic.
 
@@ -113,7 +113,7 @@ class Analysis:
             ret.undeclared_deps, ret.unused_deps = compare_imports_to_dependencies(
                 imports=ret.imports,
                 dependencies=ret.declared_deps,
-                ignored_dependencies=ignored_deps,
+                ignored_unused_dependencies=ignored_unused_deps,
             )
 
         return ret

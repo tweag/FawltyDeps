@@ -31,7 +31,7 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
 
 
 @pytest.mark.parametrize(
-    "imports,dependencies,ignored_deps,expected",
+    "imports,dependencies,ignored_unused_deps,expected",
     [
         pytest.param([], [], [], ([], []), id="no_import_no_dependencies"),
         pytest.param(
@@ -108,7 +108,11 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
         ),
     ],
 )
-def test_compare_imports_to_dependencies(imports, dependencies, ignored_deps, expected):
+def test_compare_imports_to_dependencies(
+    imports, dependencies, ignored_unused_deps, expected
+):
     """Ensures the comparison method returns the expected unused and undeclared dependencies"""
-    obtained = compare_imports_to_dependencies(imports, dependencies, ignored_deps)
+    obtained = compare_imports_to_dependencies(
+        imports, dependencies, ignored_unused_deps
+    )
     assert obtained == expected
