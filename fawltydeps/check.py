@@ -47,7 +47,9 @@ def find_import_names_from_package_name(package: str) -> Optional[List[str]]:
 
 
 def compare_imports_to_dependencies(
-    imports: List[ParsedImport], dependencies: List[DeclaredDependency]
+    imports: List[ParsedImport],
+    dependencies: List[DeclaredDependency],
+    ignored_dependencies: Optional[List[str]] = None,
 ) -> Tuple[List[UndeclaredDependency], List[UnusedDependency]]:
     """
     Compares imports to dependencies
@@ -56,6 +58,7 @@ def compare_imports_to_dependencies(
     For undeclared dependencies returns files and line numbers
     where they were imported in the code.
     """
+    ignored_deps = set() if not ignored_dependencies else set(ignored_dependencies)
     imported_names = {i.name for i in imports}
     declared_names = {d.name for d in dependencies}
 
@@ -66,7 +69,9 @@ def compare_imports_to_dependencies(
         for name, imports in groupby(undeclared, key=lambda i: i.name)
     ]
 
-    unused = [d for d in dependencies if d.name not in imported_names]
+    unused = [
+        d for d in dependencies if d.name not in imported_names.union(ignored_deps)
+    ]
     unused.sort(key=lambda d: d.name)  # groupby requires pre-sorting
     unused_grouped = [
         UnusedDependency(name, list(deps))
