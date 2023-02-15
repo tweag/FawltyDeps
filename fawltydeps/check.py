@@ -3,7 +3,7 @@
 import logging
 import sys
 from itertools import groupby
-from typing import List, Optional, Tuple
+from typing import Iterable, List, Optional, Tuple
 
 from fawltydeps.types import (
     DeclaredDependency,
@@ -49,7 +49,7 @@ def find_import_names_from_package_name(package: str) -> Optional[List[str]]:
 def compare_imports_to_dependencies(
     imports: List[ParsedImport],
     dependencies: List[DeclaredDependency],
-    ignored_unused_dependencies: Optional[List[str]] = None,
+    ignored_unused_deps: Iterable[str] = (),
 ) -> Tuple[List[UndeclaredDependency], List[UnusedDependency]]:
     """
     Compares imports to dependencies
@@ -58,9 +58,6 @@ def compare_imports_to_dependencies(
     For undeclared dependencies returns files and line numbers
     where they were imported in the code.
     """
-    ignored_unused_deps = (
-        set() if not ignored_unused_dependencies else set(ignored_unused_dependencies)
-    )
     imported_names = {i.name for i in imports}
     declared_names = {d.name for d in dependencies}
 
