@@ -89,7 +89,7 @@ def dependency_factory(data: List[str], path: str) -> List[DeclaredDependency]:
 def test_parse_requirements_contents(file_content, expected):
     source = Location(Path("requirements.txt"))
     result = list(parse_requirements_contents(dedent(file_content), source))
-    assert sorted(result) == sorted(expected)
+    assert_unordered_equivalence(result, expected)
 
 
 @pytest.mark.parametrize(
@@ -291,7 +291,7 @@ def test_parse_requirements_contents(file_content, expected):
 def test_parse_setup_contents(file_content, expected):
     source = Location(Path("setup.py"))
     result = list(parse_setup_contents(dedent(file_content), source))
-    assert sorted(result) == sorted(expected)
+    assert_unordered_equivalence(result, expected)
 
 
 @pytest.mark.parametrize(
@@ -378,7 +378,7 @@ def test_parse_setup_contents(file_content, expected):
 def test_parse_setup_cfg_contents(file_content, expected):
     source = Location(Path("setup.cfg"))
     result = list(parse_setup_cfg_contents(dedent(file_content), source))
-    assert sorted(result) == sorted(expected)
+    assert_unordered_equivalence(result, expected)
 
 
 def test_parse_setup_contents__multiple_entries_in_extras_require__returns_list():
@@ -411,7 +411,7 @@ def test_parse_setup_contents__multiple_entries_in_extras_require__returns_list(
         Path(""),
     )
     result = list(parse_setup_contents(setup_contents, Location(Path(""))))
-    assert sorted(expected) == sorted(result)
+    assert_unordered_equivalence(result, expected)
 
 
 def test_extract_declared_dependencies__simple_project__returns_list(

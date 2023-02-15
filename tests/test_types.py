@@ -41,8 +41,7 @@ def test_location__sorting():
     ]
     # Create Location objects (unordered), and then sort the objects themselves
     actual = sorted([Location(*args) for args, *_ in testdata.values()])
-
-    assert actual == expect
+    assert expect == actual
 
 
 def test_location__numbers_are_sorted_numerically():
