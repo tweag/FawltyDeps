@@ -299,6 +299,7 @@ def test_parse_pyproject_content__malformatted_poetry_dependencies__yields_no_de
     caplog, pyproject_toml, expected, metadata_standard, field_types
 ):
     source = Location(Path("pyproject.toml"))
+    caplog.set_level(logging.ERROR)
     result = list(parse_pyproject_contents(pyproject_toml, source))
     assert result == expected
     for field_type in field_types:

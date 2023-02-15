@@ -307,6 +307,7 @@ def test_parse_notebook_file__with_magic_commands__ignores_magic_commands(
 
     expect = imports_w_linenos_cellnos([("pandas", 3, 1)], script)
 
+    caplog.set_level(logging.INFO)
     assert set(parse_notebook_file(script)) == set(expect)
     for lineno, line in enumerate([exclamation_line, percent_line], start=1):
         source = Location(script, 1, lineno)
@@ -335,6 +336,7 @@ def test_parse_notebook_file__with_magic_commands__ignores__multilines_magic_com
 
     expect = imports_w_linenos_cellnos([("pandas", 4, 1)], script)
 
+    caplog.set_level(logging.INFO)
     assert set(parse_notebook_file(script)) == set(expect)
     for lineno, line in [(1, exclamation_line), (3, percent_line)]:
         source = Location(script, 1, lineno)
@@ -361,6 +363,7 @@ def test_parse_notebook_file__with_magic_commands__ignores__shell_magic_commands
 
     expect = imports_w_linenos_cellnos([("pandas", 3, 1)], script)
 
+    caplog.set_level(logging.INFO)
     assert set(parse_notebook_file(script)) == set(expect)
     source = Location(script, 1, 1)
     assert f"Found magic command {exclamation_line!r} at {source}" in caplog.text
