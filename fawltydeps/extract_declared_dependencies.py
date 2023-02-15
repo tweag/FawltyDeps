@@ -6,7 +6,7 @@ import logging
 import re
 import sys
 from pathlib import Path
-from typing import Any, Callable, Dict, Iterator, Optional, Tuple
+from typing import Any, Callable, Dict, Iterable, Iterator, Optional, Tuple
 
 from pkg_resources import Requirement
 
@@ -230,7 +230,7 @@ def parse_pyproject_elements(
     parsed_contents: TomlData,
     source: Location,
     context_name: str,
-    named_parsers: Iterator[Tuple[str, Callable[[TomlData, Location], NamedLocations]]],
+    named_parsers: Iterable[Tuple[str, Callable[[TomlData, Location], NamedLocations]]],
 ) -> Iterator[DeclaredDependency]:
     """Use the given data, source, and parsers to step through sections and collect dependencies."""
     for name_field_type, parser in named_parsers:
