@@ -250,7 +250,7 @@ def main() -> int:
         "--ignore-unused-deps",
         nargs="+",
         help=(
-            "List of dependencies to ignore when looking for unused"
+            "Dependencies to ignore when looking for unused"
             " dependencies, e.g. --ignore-unused-deps pylint black"
         ),
     )
