@@ -1,0 +1,116 @@
+[project]
+# General information about the 3rd-party project: Its name, why we test it,
+# and where to find the relevant tarball, along with its expected checksum.
+name = "The Algorithms - Python"
+description = """
+  All algorithms implemented in Python - for education. 
+  One of the most popular (stars count) Python packages on GitHub.
+  """
+url = "https://github.com/TheAlgorithms/Python/archive/77b4fa8b3f2070ff708405cca1381b7860e316ab.tar.gz"
+sha256 = "f46e3afeef27bb09d66fda69f50f562289fcfb5993c2e799e5765862b9f6c9f2"
+# The SHA256 checksum above can be found by running `sha256sum` on the
+# downloaded tarball. It is used to ensure that we run tests against the
+# expected revision of the 3rd-party project.
+
+# Below are our expectations for running FawltyDeps on the above (unpacked)
+# tarball. Each table represents the expectations of a corresponding test case
+# inside ../test_real_projects.py. All tables are optional: Removing a table
+# will disable the corresponding test case. An empty table means that we expect
+# FawltyDeps to produce zero results/empty output for that test.
+#
+# Inside each table, we map filenames to lists of relevant packages (imports or
+# dependencies) that we expect FawltyDeps to return for that test. This is
+# described in more detail under each table:
+
+[imports]
+# What we expect `fawltydeps --list-imports` to return for this project.
+# Key: filename containing import statements
+# Value: list (set) of external packages imported
+"<unused>" = [
+  "PIL",
+  "bs4",
+  "cv2",
+  "django",
+  "fake_useragent",
+  "lxml",
+  "matplotlib",
+  "mpmath",
+  "numpy",
+  "pandas",
+  "pytest",
+  "qiskit",
+  "requests",
+  "rich",
+  "scipy",
+  "seaborn",
+  "skfuzzy",
+  "sklearn",
+  "statsmodels",
+  "sympy",
+  "tensorflow",
+  "tweepy",
+  "xgboost"
+]
+
+[declared_deps]
+# What we expect `fawltydeps --list-deps` to return for this project.
+# Key: filename containing declared dependencies
+# Value: list (set) of packages names that are declared
+"<unused>" = [
+  "beautifulsoup4",
+  "fake_useragent",
+  "keras",
+  "lxml",
+  "matplotlib",
+  "numpy",
+  "opencv-python",
+  "pandas",
+  "pillow",
+  "projectq",
+  "qiskit",
+  "requests",
+  "rich",
+  "scikit-fuzzy",
+  "scikit-learn",
+  "statsmodels",
+  "sympy",
+  "tensorflow",
+  "texttable",
+  "tweepy",
+  "xgboost",
+  "yulewalker",
+]
+
+[undeclared_deps]
+# What we expect `fawltydeps --check-undeclared` to return for this project.
+# Key: filename containing import statements
+# Value: list (set) of external packages imported without being declared
+"<unused>" = [
+  "PIL",
+  "bs4",
+  "cv2",
+  "django",
+  "mpmath",
+  "pytest",
+  "scipy",
+  "seaborn",
+  "skfuzzy",
+  "sklearn"
+]
+
+[unused_deps]
+# What we expect `fawltydeps --check-unused` to return for this project.
+# Key: filename containing declared dependencies
+# Value: list (set) of external packages imported
+"requirements-all.txt" = [
+  "beautifulsoup4",
+  "keras",
+  "opencv-python",
+  "pillow",
+  "projectq",
+  "scikit-fuzzy",
+  "scikit-learn",
+  "texttable",
+  "yulewalker"
+]
+
