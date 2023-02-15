@@ -7,10 +7,10 @@ from typing import Iterable, List, Mapping, Optional, Tuple
 
 from fawltydeps.types import (
     DeclaredDependency,
+    DependenciesMapping,
     ParsedImport,
     UndeclaredDependency,
     UnusedDependency,
-    DependenciesMapping,
 )
 
 # importlib.metadata.packages_distributions() was introduced in v3.10, but it
@@ -24,8 +24,10 @@ else:
 logger = logging.getLogger(__name__)
 
 
-def find_import_names_from_package_name(package: str) -> Optional[List[str]]:
-    """Convert a package name to provided import names.
+def find_import_names_from_package_name(
+    package: str, pkgs_distributions: Mapping[str, List[str]]
+) -> Optional[Tuple[str, ...]]:
+    """Convert a package name to installed import names.
 
     (Although this function generally works with _all_ packages, we will apply
     it only to the subset that is the dependencies of the current project.)
@@ -39,33 +41,39 @@ def find_import_names_from_package_name(package: str) -> Optional[List[str]]:
     This is typically because the package is missing from the current
     environment, or because it fails to declare its importable modules.
     """
+
     ret = [
         import_name
-        for import_name, packages in packages_distributions().items()
+        for import_name, packages in pkgs_distributions.items()
         if package in packages
     ]
-    return ret or None
+    return tuple(ret) or None
 
 
 def dependencies_to_imports_mapping(
     dependencies: List[DeclaredDependency],
 ) -> List[DeclaredDependency]:
-    packages_distributions = packages_distributions()
+    """Map dependencies names to list of imports names exposed by a package
+
+    For performance sake, `packages_distribution` function is called once
+    and packages found in dependencies use resulting mapping to
+    look for matching import names.
+    """
+
+    pkgs_dist = packages_distributions()
 
     def _dependency_to_imports_mapping(
         dependency: DeclaredDependency,
     ) -> DeclaredDependency:
-        import_names = [
-            import_name
-            for import_name, packages in packages_distributions.items()
-            if dependency in packages
-        ]
-        if import_names:
-            return dependency.replace_mapping(
+        import_names = find_import_names_from_package_name(dependency.name, pkgs_dist)
+        return (
+            dependency.replace_mapping(
                 import_names, DependenciesMapping.DEPENDENCY_TO_IMPORT
             )
-        # Fallback to IDENTITY mapping
-        return dependency
+            if import_names
+            # Fallback to IDENTITY mapping
+            else dependency
+        )
 
     return [_dependency_to_imports_mapping(d) for d in dependencies]
 
@@ -85,7 +93,7 @@ def compare_imports_to_dependencies(
     """
 
     # TODO consider empty list of dependency to import
-    mapped_dependencies = [dependency_to_imports_mapping(d) for d in dependencies]
+    mapped_dependencies = dependencies_to_imports_mapping(dependencies)
 
     names_from_imports = {i.name for i in imports}
     names_from_dependencies = {
