@@ -26,7 +26,7 @@ class ArgParseError(Exception):
         self.msg = msg
 
 
-class Mapping(Enum):
+class DependenciesMapping(Enum):
     """Types of dependency and imports mapping"""
 
     IDENTITY = "IDENTITY"
@@ -129,16 +129,18 @@ class DeclaredDependency:
 
     name: str
     source: Location
+    import_names: Tuple[str, ...] = ()
+    mapping: DependenciesMapping = DependenciesMapping.IDENTITY
 
     def __post_init__(self) -> None:
         """Set an identity mapping by default"""
-        object.__setattr__(self, "mapped_imports", [(Mapping.IDENTITY, self.name)])
+        object.__setattr__(self, "import_names", (self.name,))
 
-    def supply_mapping(
-        self, mapped_imports: List[Tuple[Mapping, str]]
+    def replace_mapping(
+        self, import_names: Tuple[str], mapping: DependenciesMapping
     ) -> "DeclaredDependency":
         """Supply a custom mapping of dependency to imports"""
-        return replace(self, mapped_imports=mapped_imports)
+        return replace(self, import_names=import_names, mapping=mapping)
 
 
 @dataclass
