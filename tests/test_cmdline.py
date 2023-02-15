@@ -596,7 +596,7 @@ def test__quiet_check__writes_only_names_of_unused_and_undeclared(
     assert returncode == 3
 
 
-def test___check_unused_action_on_ignored_unusued_dep__outputs_nothing(
+def test___check_unused_action_on_ignored_unused_dep__outputs_nothing(
     project_with_code_and_requirements_txt,
 ):
     tmp_path = project_with_code_and_requirements_txt(
