@@ -614,13 +614,13 @@ def test___check_unused_action_on_ignored_unused_dep__outputs_nothing(
 def test___list_deps_action_on_ignored_dep__reports_dep(
     project_with_code_and_requirements_txt,
 ):
+    deps = ["black"]
     tmp_path = project_with_code_and_requirements_txt(
         imports=[],
-        declares=["black"],
+        declares=deps,
     )
-    output, errors, returncode = run_fawltydeps(
-        "--list-deps", "--ignore-unused-deps", "black", cwd=tmp_path
-    )
+    args = ["--list-deps", "--ignore-unused-deps"] + deps
+    output, errors, returncode = run_fawltydeps(*args, cwd=tmp_path)
     expected = ["black", "", "For a more verbose report re-run with the `-v` option."]
     assert output.splitlines() == expected
     assert errors == ""
@@ -630,13 +630,13 @@ def test___list_deps_action_on_ignored_dep__reports_dep(
 def test___check_undeclared_action_on_ignored_declared_dep__does_not_report_dep_as_undeclared(
     project_with_code_and_requirements_txt,
 ):
+    deps = ["isort"]
     tmp_path = project_with_code_and_requirements_txt(
-        imports=["isort"],
-        declares=["isort"],
+        imports=deps,
+        declares=deps,
     )
-    output, errors, returncode = run_fawltydeps(
-        "--check-undeclared", "--ignore-unused-deps", "isort", cwd=tmp_path
-    )
+    args = ["--check-undeclared", "--ignore-unused-deps"] + deps
+    output, errors, returncode = run_fawltydeps(*args, cwd=tmp_path)
     expected = ["For a more verbose report re-run with the `-v` option."]
     assert output.splitlines() == expected
     assert errors == ""
