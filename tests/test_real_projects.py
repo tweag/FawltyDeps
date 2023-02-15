@@ -162,8 +162,8 @@ class ThirdPartyProject(NamedTuple):
             url=data["project"]["url"],
             sha256=data["project"]["sha256"],
             experiments=[
-                Experiment.parse_from_toml(f"{project_name}:{name}", values)
-                for name, values in data["experiments"].items()
+                Experiment.parse_from_toml(f"{project_name}:{name}", experiment_data)
+                for name, experiment_data in data["experiments"].items()
             ],
         )
 
@@ -277,5 +277,6 @@ def test_real_project(request, project, experiment):
     project_dir = project.get_project_dir(request.config.cache)
     analysis = run_fawltydeps_json(*experiment.args, cwd=project_dir)
 
-    print(f"Checking project:experiment {experiment.name} under {project_dir}...")
+    print(f"Checking experiment {experiment.name} for project under {project_dir}...")
+
     experiment.verify_analysis_json(analysis)
