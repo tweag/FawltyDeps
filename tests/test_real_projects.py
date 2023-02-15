@@ -37,13 +37,14 @@ pytestmark = pytest.mark.integration
 REAL_PROJECTS_DIR = Path(__file__).with_name("real_projects")
 
 
-def run_fawltydeps(*args: str, cwd: Optional[Path] = None) -> JsonData:
+def run_fawltydeps_json(*args: str, cwd: Optional[Path] = None) -> JsonData:
     proc = subprocess.run(
         ["fawltydeps"] + list(args) + ["--json"],
         stdout=subprocess.PIPE,
         check=False,
         cwd=cwd,
     )
+    # Check if return code does not indicate error (see main.main for the full list)
     assert proc.returncode in {0, 3, 4}
     return json.loads(proc.stdout)  # type: ignore
 
@@ -168,11 +169,10 @@ class ThirdPartyProject(NamedTuple):
 
     @classmethod
     def collect(cls) -> Iterator[Tuple["ThirdPartyProject", Experiment]]:
-        for path in REAL_PROJECTS_DIR.iterdir():
-            if path.suffix == ".toml":
-                project = cls.parse_from_toml(path)
-                for experiment in project.experiments:
-                    yield (project, experiment)
+        for path in filter(lambda p: p.suffix == ".toml", REAL_PROJECTS_DIR.iterdir()):
+            project = cls.parse_from_toml(path)
+            for experiment in project.experiments:
+                yield (project, experiment)
 
     def tarball_name(self) -> str:
         """The filename used for the tarball in the local cache."""
@@ -275,7 +275,7 @@ class ThirdPartyProject(NamedTuple):
 )
 def test_real_project(request, project, experiment):
     project_dir = project.get_project_dir(request.config.cache)
-    analysis = run_fawltydeps(*experiment.args, cwd=project_dir)
+    analysis = run_fawltydeps_json(*experiment.args, cwd=project_dir)
 
     print(f"Checking project:experiment {experiment.name} under {project_dir}...")
     experiment.verify_analysis_json(analysis)
