@@ -599,13 +599,13 @@ def test__quiet_check__writes_only_names_of_unused_and_undeclared(
 def test___check_unused_action_on_ignored_unused_dep__outputs_nothing(
     project_with_code_and_requirements_txt,
 ):
+    deps = ["black", "mypy"]
     tmp_path = project_with_code_and_requirements_txt(
         imports=["requests"],
-        declares=["black", "mypy"],
+        declares=deps,
     )
-    output, errors, returncode = run_fawltydeps(
-        "--check-unused", "--ignore-unused-deps", "black", "mypy", cwd=tmp_path
-    )
+    args = ["--check-unused", "--ignore-unused-deps"] + deps
+    output, errors, returncode = run_fawltydeps(*args, cwd=tmp_path)
     assert output == "For a more verbose report re-run with the `-v` option."
     assert errors == ""
     assert returncode == 0
