@@ -10,6 +10,7 @@ from fawltydeps.types import (
     ParsedImport,
     UndeclaredDependency,
     UnusedDependency,
+    DependenciesMapping,
 )
 
 # importlib.metadata.packages_distributions() was introduced in v3.10, but it
@@ -46,13 +47,27 @@ def find_import_names_from_package_name(package: str) -> Optional[List[str]]:
     return ret or None
 
 
-def dependency_to_imports_mapping(dependency: DeclaredDependency) -> DeclaredDependency:
-    import_names = find_import_names_from_package_name(dependency.name)
-    if import_names:
-        return dependency.supply_mapping(
-            [(Mapping.DEPENDENCY_TO_IMPORT, i) for i in import_names]
-        )
-    return dependency
+def dependencies_to_imports_mapping(
+    dependencies: List[DeclaredDependency],
+) -> List[DeclaredDependency]:
+    packages_distributions = packages_distributions()
+
+    def _dependency_to_imports_mapping(
+        dependency: DeclaredDependency,
+    ) -> DeclaredDependency:
+        import_names = [
+            import_name
+            for import_name, packages in packages_distributions.items()
+            if dependency in packages
+        ]
+        if import_names:
+            return dependency.replace_mapping(
+                import_names, DependenciesMapping.DEPENDENCY_TO_IMPORT
+            )
+        # Fallback to IDENTITY mapping
+        return dependency
+
+    return [_dependency_to_imports_mapping(d) for d in dependencies]
 
 
 def compare_imports_to_dependencies(
@@ -68,11 +83,13 @@ def compare_imports_to_dependencies(
     For undeclared dependencies returns files and line numbers
     where they were imported in the code.
     """
+
+    # TODO consider empty list of dependency to import
     mapped_dependencies = [dependency_to_imports_mapping(d) for d in dependencies]
 
     names_from_imports = {i.name for i in imports}
     names_from_dependencies = {
-        d[1] for dep in mapped_dependencies for d in dep.mapped_imports
+        d for dep in mapped_dependencies for d in dep.import_names
     }
 
     undeclared = [
