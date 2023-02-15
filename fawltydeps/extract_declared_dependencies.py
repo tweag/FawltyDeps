@@ -189,12 +189,12 @@ def parse_poetry_pyproject_dependencies(
         )
 
     def parse_extra(contents: TomlData, src: Location) -> NamedLocations:
-        return (
-            (req, src)
-            for group in contents["extras"].values()
-            if isinstance(group, list)
-            for req in group
-        )
+        for group in contents["extras"].values():
+            if isinstance(group, list):
+                for req in group:
+                    yield req, src
+            else:
+                raise TypeError(f"{group!r} is of type {type(group)}. Expected a list.")
 
     fields_parsers = [
         ("main", parse_main),
