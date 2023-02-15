@@ -594,3 +594,50 @@ def test__quiet_check__writes_only_names_of_unused_and_undeclared(
     assert output.splitlines() == expect
     assert errors == ""
     assert returncode == 3
+
+
+def test___check_unused_action_on_ignored_unusued_dep__outputs_nothing(
+    project_with_code_and_requirements_txt,
+):
+    tmp_path = project_with_code_and_requirements_txt(
+        imports=["requests"],
+        declares=["black", "mypy"],
+    )
+    output, errors, returncode = run_fawltydeps(
+        "--check-unused", "--ignore-unused-deps", "black", "mypy", cwd=tmp_path
+    )
+    assert output == "For a more verbose report re-run with the `-v` option."
+    assert errors == ""
+    assert returncode == 0
+
+
+def test___list_deps_action_on_ignored_dep__outputs_dep(
+    project_with_code_and_requirements_txt,
+):
+    tmp_path = project_with_code_and_requirements_txt(
+        imports=[],
+        declares=["black"],
+    )
+    output, errors, returncode = run_fawltydeps(
+        "--list-deps", "--ignore-unused-deps", "black", cwd=tmp_path
+    )
+    expected = ["black", "", "For a more verbose report re-run with the `-v` option."]
+    assert output.splitlines() == expected
+    assert errors == ""
+    assert returncode == 0
+
+
+def test___check_undeclared_action_on_ignored_declared_dep__does_not_report_dep_as_undeclared(
+    project_with_code_and_requirements_txt,
+):
+    tmp_path = project_with_code_and_requirements_txt(
+        imports=["isort"],
+        declares=["isort"],
+    )
+    output, errors, returncode = run_fawltydeps(
+        "--check-undeclared", "--ignore-unused-deps", "isort", cwd=tmp_path
+    )
+    expected = ["For a more verbose report re-run with the `-v` option."]
+    assert output.splitlines() == expected
+    assert errors == ""
+    assert returncode == 0

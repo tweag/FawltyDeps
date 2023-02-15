@@ -83,7 +83,11 @@ class Analysis:
 
     @classmethod
     def create(
-        cls, request: Set[Action], code: PathOrSpecial, deps: Path
+        cls,
+        request: Set[Action],
+        code: PathOrSpecial,
+        deps: Path,
+        ignored_deps: Optional[List[str]] = None,
     ) -> "Analysis":
         """Perform the requested actions of FawltyDeps core logic.
 
@@ -107,7 +111,9 @@ class Analysis:
             assert ret.imports is not None  # convince Mypy that these cannot
             assert ret.declared_deps is not None  # be None at this time.
             ret.undeclared_deps, ret.unused_deps = compare_imports_to_dependencies(
-                imports=ret.imports, dependencies=ret.declared_deps
+                imports=ret.imports,
+                dependencies=ret.declared_deps,
+                ignored_dependencies=ignored_deps,
             )
 
         return ret
@@ -241,6 +247,14 @@ def main() -> int:
         help="Generate JSON output instead of a human-readable report",
     )
     options.add_argument(
+        "--ignore-unused-deps",
+        nargs="+",
+        help=(
+            "List of dependencies to ignore when looking for unused"
+            " dependencies, e.g. --ignore-unused-deps pylint black"
+        ),
+    )
+    options.add_argument(
         "-v",
         "--verbose",
         action="count",
@@ -275,7 +289,9 @@ def main() -> int:
     actions = args.actions or {Action.REPORT_UNDECLARED, Action.REPORT_UNUSED}
 
     try:
-        analysis = Analysis.create(actions, args.code, args.deps)
+        analysis = Analysis.create(
+            actions, args.code, args.deps, args.ignore_unused_deps
+        )
     except ArgParseError as exc:
         return parser.error(exc.msg)  # exit code 2
 
