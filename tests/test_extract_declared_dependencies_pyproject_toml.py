@@ -6,6 +6,7 @@ from textwrap import dedent
 import pytest
 
 from fawltydeps.extract_declared_dependencies import parse_pyproject_contents
+from fawltydeps.types import DeclaredDependency, Location
 
 
 @pytest.mark.parametrize(
@@ -178,9 +179,9 @@ from fawltydeps.extract_declared_dependencies import parse_pyproject_contents
 def test_parse_pyproject_content__pep621_or_poetry_dependencies__yields_dependencies(
     pyproject_toml, expected_deps
 ):
-    filename = Path("pyproject.toml")
-    result = list(parse_pyproject_contents(pyproject_toml, filename))
-    expected = [(dep, filename) for dep in expected_deps]
+    source = Location(Path("pyproject.toml"))
+    result = list(parse_pyproject_contents(pyproject_toml, source))
+    expected = [DeclaredDependency(dep, source) for dep in expected_deps]
     assert result == expected
 
 
@@ -197,7 +198,7 @@ def test_parse_pyproject_content__pep621_or_poetry_dependencies__yields_dependen
             [],
             "Poetry",
             ["main"],
-            id="poetry_dependencies_as_list",
+            id="poetry_dependencies_as_one_element_list",
         ),
         pytest.param(
             dedent(
@@ -297,12 +298,12 @@ def test_parse_pyproject_content__pep621_or_poetry_dependencies__yields_dependen
 def test_parse_pyproject_content__malformatted_poetry_dependencies__yields_no_dependencies(
     caplog, pyproject_toml, expected, metadata_standard, field_types
 ):
-    path_hint = Path("pyproject.toml")
-    result = list(parse_pyproject_contents(pyproject_toml, path_hint))
+    source = Location(Path("pyproject.toml"))
+    result = list(parse_pyproject_contents(pyproject_toml, source))
     assert result == expected
     for field_type in field_types:
         assert (
-            f"Failed to parse {metadata_standard} {field_type} dependencies in {path_hint}."
+            f"Failed to parse {metadata_standard} {field_type} dependencies in {source.path}"
             in caplog.text
         )
 
