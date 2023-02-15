@@ -180,13 +180,6 @@ def main() -> int:
         const={Action.REPORT_UNDECLARED, Action.REPORT_UNUSED},
         help="Report both undeclared and unused dependencies",
     )
-    parser.add_argument(
-        "-V",
-        "--version",
-        action="version",
-        version=f"FawltyDeps v{version()}",
-        help=("Print the version number of FawltyDeps"),
-    )
     select_action.add_argument(
         "--check-undeclared",
         dest="actions",
@@ -217,6 +210,13 @@ def main() -> int:
     )
 
     options = parser.add_argument_group(title="Options")
+    options.add_argument(
+        "-V",
+        "--version",
+        action="version",
+        version=f"FawltyDeps v{version()}",
+        help=("Print the version number of FawltyDeps"),
+    )
     options.add_argument(
         "--code",
         type=parse_path_or_stdin,
