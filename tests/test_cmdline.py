@@ -596,112 +596,93 @@ def test__quiet_check__writes_only_names_of_unused_and_undeclared(
     assert returncode == 3
 
 
-def test_check_unused_action_on_ignored_unused_dep__outputs_nothing(
+@pytest.mark.parametrize(
+    "action,imports,dependencies,ignored_undeclared_imports,ignored_unused_deps,expected",
+    [
+        pytest.param(
+            "--check-unused",
+            ["requests"],
+            ["black", "mypy"],
+            [],
+            ["black", "mypy"],
+            ["For a more verbose report re-run with the `-v` option."],
+            id="check_unused_action_on_ignored_unused_dep__outputs_nothing",
+        ),
+        pytest.param(
+            "--list-deps",
+            [],
+            ["black"],
+            [],
+            ["black"],
+            ["black", "", "For a more verbose report re-run with the `-v` option."],
+            id="list_deps_action_on_ignored_dep__reports_dep",
+        ),
+        pytest.param(
+            "--check-undeclared",
+            ["isort"],
+            ["isort"],
+            [],
+            ["isort"],
+            ["For a more verbose report re-run with the `-v` option."],
+            id="check_undeclared_action_on_ignored_declared_dep__does_not_report_dep_as_undeclared",
+        ),
+        pytest.param(
+            "--check-undeclared",
+            ["black", "mypy"],
+            ["numpy"],
+            ["black", "mypy"],
+            [],
+            ["For a more verbose report re-run with the `-v` option."],
+            id="check_undeclared_action_on_ignored_undeclared_import__outputs_nothing",
+        ),
+        pytest.param(
+            "--list-imports",
+            ["isort"],
+            [],
+            ["isort"],
+            [],
+            ["isort", "", "For a more verbose report re-run with the `-v` option."],
+            id="list_imports_action_on_ignored_imports__reports_imports",
+        ),
+        pytest.param(
+            "--check-unused",
+            ["isort"],
+            ["isort"],
+            ["isort"],
+            [],
+            ["For a more verbose report re-run with the `-v` option."],
+            id="check_unused_action_on_ignored_but_used_import__does_not_report_dep_as_unused",
+        ),
+        pytest.param(
+            "--check",
+            ["isort", "numpy"],
+            ["pylint", "black"],
+            ["isort", "numpy"],
+            ["pylint", "black"],
+            ["For a more verbose report re-run with the `-v` option."],
+            id="check_action_on_ignored__does_not_report_ignored",
+        ),
+    ],
+)
+def test_cmdline_on_ignored_undeclared_option(
+    action,
+    imports,
+    dependencies,
+    ignored_undeclared_imports,
+    ignored_unused_deps,
+    expected,
     project_with_code_and_requirements_txt,
 ):
-    deps = ["black", "mypy"]
-    tmp_path = project_with_code_and_requirements_txt(
-        imports=["requests"],
-        declares=deps,
-    )
-    args = ["--check-unused", "--ignore-unused-deps"] + deps
-    output, errors, returncode = run_fawltydeps(*args, cwd=tmp_path)
-    assert output == "For a more verbose report re-run with the `-v` option."
-    assert errors == ""
-    assert returncode == 0
-
-
-def test_list_deps_action_on_ignored_dep__reports_dep(
-    project_with_code_and_requirements_txt,
-):
-    deps = ["black"]
-    tmp_path = project_with_code_and_requirements_txt(
-        imports=[],
-        declares=deps,
-    )
-    args = ["--list-deps", "--ignore-unused-deps"] + deps
-    output, errors, returncode = run_fawltydeps(*args, cwd=tmp_path)
-    expected = ["black", "", "For a more verbose report re-run with the `-v` option."]
-    assert output.splitlines() == expected
-    assert errors == ""
-    assert returncode == 0
-
-
-def test_check_undeclared_action_on_ignored_declared_dep__does_not_report_dep_as_undeclared(
-    project_with_code_and_requirements_txt,
-):
-    deps = ["isort"]
-    tmp_path = project_with_code_and_requirements_txt(
-        imports=deps,
-        declares=deps,
-    )
-    args = ["--check-undeclared", "--ignore-unused-deps"] + deps
-    output, errors, returncode = run_fawltydeps(*args, cwd=tmp_path)
-    expected = ["For a more verbose report re-run with the `-v` option."]
-    assert output.splitlines() == expected
-    assert errors == ""
-    assert returncode == 0
-
-
-def test_check_undeclared_action_on_ignored_undeclared_import__outputs_nothing(
-    project_with_code_and_requirements_txt,
-):
-    imports = ["black", "mypy"]
-    tmp_path = project_with_code_and_requirements_txt(
-        imports=imports,
-        declares=["numpy"],
-    )
-    args = ["--check-undeclared", "--ignore-undeclared"] + imports
-    output, errors, returncode = run_fawltydeps(*args, cwd=tmp_path)
-    assert output == "For a more verbose report re-run with the `-v` option."
-    assert errors == ""
-    assert returncode == 0
-
-
-def test_list_imports_action_on_ignored_imports__reports_imports(
-    project_with_code_and_requirements_txt,
-):
-    imports = ["isort"]
-    tmp_path = project_with_code_and_requirements_txt(
-        imports=imports,
-        declares=[],
-    )
-    args = ["--list-imports", "--ignore-undeclared"] + imports
-    output, errors, returncode = run_fawltydeps(*args, cwd=tmp_path)
-    expected = imports + ["", "For a more verbose report re-run with the `-v` option."]
-    assert output.splitlines() == expected
-    assert errors == ""
-    assert returncode == 0
-
-
-def test_check_unused_action_on_ignored_but_used_import__does_not_report_dep_as_unused(
-    project_with_code_and_requirements_txt,
-):
-    imports = ["isort"]
     tmp_path = project_with_code_and_requirements_txt(
         imports=imports,
-        declares=imports,
+        declares=dependencies,
     )
-    args = ["--check-unused", "--ignore-undeclared"] + imports
+    args = [action]
+    if ignored_undeclared_imports:
+        args.extend(["--ignore-undeclared"] + ignored_undeclared_imports)
+    if ignored_unused_deps:
+        args.extend(["--ignore-unused-deps"] + ignored_unused_deps)
     output, errors, returncode = run_fawltydeps(*args, cwd=tmp_path)
-    expected = ["For a more verbose report re-run with the `-v` option."]
-    assert output.splitlines() == expected
-    assert errors == ""
-    assert returncode == 0
-
-
-def test_check_action_on_ignored__does_not_report_ignored(
-    project_with_code_and_requirements_txt,
-):
-    imports = ["isort", "numpy"]
-    deps = ["pylint", "black"]
-    tmp_path = project_with_code_and_requirements_txt(
-        imports=imports,
-        declares=deps,
-    )
-    args = ["--check", "--ignore-undeclared"] + imports + ['--ignore-unused-deps'] + deps
-    output, errors, returncode = run_fawltydeps(*args, cwd=tmp_path)
-    expected = ["For a more verbose report re-run with the `-v` option."]
     assert output.splitlines() == expected
     assert errors == ""
     assert returncode == 0
