@@ -1,16 +1,9 @@
 """Test the mapping of dependency names to import names."""
 
-import sys
 
 import pytest
 
-from fawltydeps.check import find_import_names_from_package_name
-
-if sys.version_info >= (3, 11):
-    from importlib.metadata import packages_distributions
-else:
-    from importlib_metadata import packages_distributions
-
+from fawltydeps.check import LocalPackageLookup
 
 # TODO: These tests are not fully isolated, i.e. they do not control the
 # virtualenv in which they run. For now, we assume that we are running in an
@@ -46,7 +39,5 @@ else:
     ],
 )
 def test_find_import_names_from_package_name(dep_name, expect_import_names):
-    pkgs_dist = packages_distributions()
-    assert (
-        find_import_names_from_package_name(dep_name, pkgs_dist) == expect_import_names
-    )
+    lpl = LocalPackageLookup()
+    assert lpl.lookup_package(dep_name) == expect_import_names

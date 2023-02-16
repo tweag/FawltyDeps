@@ -24,30 +24,35 @@ else:
 logger = logging.getLogger(__name__)
 
 
-def find_import_names_from_package_name(
-    package: str, pkgs_distributions: Mapping[str, List[str]]
-) -> Optional[Tuple[str, ...]]:
-    """Convert a package name to installed import names.
+class LocalPackageLookup:
+    """Lookup of import names exposed by local packages."""
 
-    (Although this function generally works with _all_ packages, we will apply
-    it only to the subset that is the dependencies of the current project.)
+    def __init__(self) -> None:
+        self.import_name_to_package_mapping = (
+            packages_distributions()
+        )  # Called only _once_
 
-    Use importlib.metadata to look up the mapping between packages and their
-    provided import names, and return the import names associated with the given
-    package/distribution name in the current Python environment. This obviously
-    depends on which Python environment (e.g. virtualenv) we're calling from.
+    def lookup_package(self, package: str) -> Optional[Tuple[str, ...]]:
+        """Convert a package name to installed import names.
 
-    Return None if we're unable to find any import names for the given package.
-    This is typically because the package is missing from the current
-    environment, or because it fails to declare its importable modules.
-    """
+        (Although this function generally works with _all_ packages, we will apply
+        it only to the subset that is the dependencies of the current project.)
 
-    ret = [
-        import_name
-        for import_name, packages in pkgs_distributions.items()
-        if package in packages
-    ]
-    return tuple(ret) or None
+        Use importlib.metadata to look up the mapping between packages and their
+        provided import names, and return the import names associated with the given
+        package/distribution name in the current Python environment. This obviously
+        depends on which Python environment (e.g. virtualenv) we're calling from.
+
+        Return None if we're unable to find any import names for the given package.
+        This is typically because the package is missing from the current
+        environment, or because it fails to declare its importable modules.
+        """
+        ret = [
+            import_name
+            for import_name, packages in self.import_name_to_package_mapping.items()
+            if package in packages
+        ]
+        return tuple(ret) or None
 
 
 def dependencies_to_imports_mapping(
@@ -60,12 +65,12 @@ def dependencies_to_imports_mapping(
     look for matching import names.
     """
 
-    pkgs_dist = packages_distributions()
+    local_package_lookup = LocalPackageLookup()
 
     def _dependency_to_imports_mapping(
         dependency: DeclaredDependency,
     ) -> DeclaredDependency:
-        import_names = find_import_names_from_package_name(dependency.name, pkgs_dist)
+        import_names = local_package_lookup.lookup_package(dependency.name)
         return (
             dependency.replace_mapping(
                 import_names, DependenciesMapping.DEPENDENCY_TO_IMPORT
