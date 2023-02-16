@@ -88,6 +88,7 @@ class Analysis:
         code: PathOrSpecial,
         deps: Path,
         ignored_unused_deps: Iterable[str] = (),
+        ignored_undeclared_imports: Iterable[str] = (),
     ) -> "Analysis":
         """Perform the requested actions of FawltyDeps core logic.
 
@@ -114,6 +115,7 @@ class Analysis:
                 imports=ret.imports,
                 dependencies=ret.declared_deps,
                 ignored_unused_deps=ignored_unused_deps,
+                ignored_undeclared_imports=ignored_undeclared_imports
             )
 
         return ret
@@ -256,6 +258,15 @@ def main() -> int:
         ),
     )
     options.add_argument(
+        "--ignore-undeclared",
+        nargs="+",
+        default=[],
+        help=(
+            "Imports to ignore when looking for undeclared"
+            " dependencies, e.g. --ignore-undeclared isort"
+        ),
+    )
+    options.add_argument(
         "-v",
         "--verbose",
         action="count",
@@ -291,7 +302,11 @@ def main() -> int:
 
     try:
         analysis = Analysis.create(
-            actions, args.code, args.deps, args.ignore_unused_deps
+            actions,
+            args.code,
+            args.deps,
+            args.ignore_unused_deps,
+            args.ignore_undeclared,
         )
     except ArgParseError as exc:
         return parser.error(exc.msg)  # exit code 2
