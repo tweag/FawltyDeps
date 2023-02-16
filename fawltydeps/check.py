@@ -50,6 +50,7 @@ def compare_imports_to_dependencies(
     imports: List[ParsedImport],
     dependencies: List[DeclaredDependency],
     ignored_unused_deps: Iterable[str] = (),
+    ignored_undeclared_imports: Iterable[str] = (),
 ) -> Tuple[List[UndeclaredDependency], List[UnusedDependency]]:
     """
     Compares imports to dependencies
@@ -61,7 +62,11 @@ def compare_imports_to_dependencies(
     imported_names = {i.name for i in imports}
     declared_names = {d.name for d in dependencies}
 
-    undeclared = [i for i in imports if i.name not in declared_names]
+    undeclared = [
+        i
+        for i in imports
+        if i.name not in declared_names.union(ignored_undeclared_imports)
+    ]
     undeclared.sort(key=lambda i: i.name)  # groupby requires pre-sorting
     undeclared_grouped = [
         UndeclaredDependency(name, list(imports))
