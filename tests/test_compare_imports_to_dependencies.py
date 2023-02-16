@@ -31,11 +31,12 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
 
 
 @pytest.mark.parametrize(
-    "imports,dependencies,ignored_unused_deps,expected",
+    "imports,dependencies,ignored_unused_deps,ignored_undeclared_imports,expected",
     [
-        pytest.param([], [], [], ([], []), id="no_import_no_dependencies"),
+        pytest.param([], [], [], [], ([], []), id="no_import_no_dependencies"),
         pytest.param(
             imports_factory("pandas"),
+            [],
             [],
             [],
             (undeclared_factory("pandas"), []),
@@ -45,12 +46,14 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
             [],
             deps_factory("pandas"),
             [],
+            [],
             ([], unused_factory("pandas")),
             id="no_imports_one_dependency",
         ),
         pytest.param(
             imports_factory("pandas"),
             deps_factory("pandas"),
+            [],
             [],
             ([], []),
             id="matched_import_with_dependency",
@@ -59,6 +62,7 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
             imports_factory("pandas", "numpy"),
             deps_factory("pandas", "scipy"),
             [],
+            [],
             (undeclared_factory("numpy"), unused_factory("scipy")),
             id="mixed_imports_with_unused_and_undeclared_dependencies",
         ),
@@ -66,6 +70,7 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
             imports_factory("pandas")
             + [ParsedImport("numpy", Location(Path("my_file.py"), lineno=3))],
             deps_factory("pandas", "scipy"),
+            [],
             [],
             (
                 [
@@ -82,6 +87,7 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
             [],
             deps_factory("black"),
             ["black"],
+            [],
             ([], []),
             id="one_ignored_and_unused_dep__not_reported_as_unused",
         ),
@@ -89,6 +95,7 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
             imports_factory("isort"),
             deps_factory("isort"),
             ["isort"],
+            [],
             ([], []),
             id="one_ignored_and_used_dep__not_reported_as_unused",
         ),
@@ -96,6 +103,7 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
             imports_factory("isort"),
             deps_factory(),
             ["isort"],
+            [],
             (undeclared_factory("isort"), []),
             id="one_ignored_and_undeclared_dep__reported_as_undeclared",
         ),
@@ -103,16 +111,57 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
             imports_factory("pandas", "numpy"),
             deps_factory("pandas", "isort", "black"),
             ["isort"],
+            [],
             (undeclared_factory("numpy"), unused_factory("black")),
             id="mixed_dependencies__report_undeclared_and_non_ignored_unused",
+        ),
+        pytest.param(
+            imports_factory("invalid_import"),
+            [],
+            [],
+            ["invalid_import"],
+            ([], []),
+            id="one_ignored_undeclared_dep__not_reported_as_undeclared",
+        ),
+        pytest.param(
+            imports_factory("isort"),
+            deps_factory("isort"),
+            [],
+            ["isort"],
+            ([], []),
+            id="one_ignored_and_declared_dep__not_reported_as_undeclared",
+        ),
+        pytest.param(
+            [],
+            deps_factory("isort"),
+            [],
+            ["isort"],
+            ([], unused_factory("isort")),
+            id="one_ignored_import_declared_as_dep__reported_as_unused",
+        ),
+        pytest.param(
+            imports_factory("pandas", "numpy", "not_valid"),
+            deps_factory("pandas", "black"),
+            [],
+            ["not_valid"],
+            (undeclared_factory("numpy"), unused_factory("black")),
+            id="mixed_dependencies__report_unused_and_only_non_ignored_undeclared",
+        ),
+        pytest.param(
+            imports_factory("pandas", "numpy", "not_valid"),
+            deps_factory("pandas", "black", "isort"),
+            ["isort"],
+            ["not_valid"],
+            (undeclared_factory("numpy"), unused_factory("black")),
+            id="mixed_dependencies__report_only_non_ignored_unused_and_non_ignored_undeclared",
         ),
     ],
 )
 def test_compare_imports_to_dependencies(
-    imports, dependencies, ignored_unused_deps, expected
+    imports, dependencies, ignored_unused_deps, ignored_undeclared_imports, expected
 ):
     """Ensures the comparison method returns the expected unused and undeclared dependencies"""
     obtained = compare_imports_to_dependencies(
-        imports, dependencies, ignored_unused_deps
+        imports, dependencies, ignored_unused_deps, ignored_undeclared_imports
     )
     assert obtained == expected
