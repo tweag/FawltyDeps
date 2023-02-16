@@ -6,20 +6,17 @@ import pytest
 
 from fawltydeps.check import compare_imports_to_dependencies
 from fawltydeps.types import (
-    DeclaredDependency,
     Location,
     ParsedImport,
     UndeclaredDependency,
     UnusedDependency,
 )
 
+from .utils import deps_factory
+
 
 def imports_factory(*imports: str) -> List[ParsedImport]:
     return [ParsedImport(imp, Location("<stdin>")) for imp in imports]
-
-
-def deps_factory(*deps: str) -> List[DeclaredDependency]:
-    return [DeclaredDependency(dep, Location(Path("foo"))) for dep in deps]
 
 
 def undeclared_factory(*deps: str) -> List[UndeclaredDependency]:
