@@ -1,9 +1,14 @@
 """Test the mapping of dependency names to import names."""
 
 
+from pathlib import Path
+
 import pytest
 
-from fawltydeps.check import LocalPackageLookup
+from fawltydeps.check import LocalPackageLookup, dependencies_to_imports_mapping
+from fawltydeps.types import DeclaredDependency, DependenciesMapping, Location
+
+from .utils import deps_factory
 
 # TODO: These tests are not fully isolated, i.e. they do not control the
 # virtualenv in which they run. For now, we assume that we are running in an
@@ -41,3 +46,45 @@ from fawltydeps.check import LocalPackageLookup
 def test_find_import_names_from_package_name(dep_name, expect_import_names):
     lpl = LocalPackageLookup()
     assert lpl.lookup_package(dep_name) == expect_import_names
+
+
+@pytest.mark.parametrize(
+    "dep_names,expected_declared_dependencies",
+    [
+        pytest.param(
+            ["pip"],
+            [
+                DeclaredDependency(
+                    name="pip",
+                    source=Location(Path("foo")),
+                    import_names=("pip",),
+                    mapping=DependenciesMapping.DEPENDENCY_TO_IMPORT,
+                )
+            ],
+            id="dependency_present_in_local_env__uses_d2i_mapping",
+        ),
+        pytest.param(
+            ["pandas"],
+            deps_factory("pandas"),
+            id="dependency_not_present_in_local_env__uses_id_mapping",
+        ),
+        pytest.param(
+            ["pandas", "pip"],
+            deps_factory("pandas")
+            + [
+                DeclaredDependency(
+                    name="pip",
+                    source=Location(Path("foo")),
+                    import_names=("pip",),
+                    mapping=DependenciesMapping.DEPENDENCY_TO_IMPORT,
+                )
+            ],
+            id="mixed_dependencies_in_local_env__uses_id_and_d2i_mapping",
+        ),
+    ],
+)
+def test_dependencies_to_imports_mapping(dep_names, expected_declared_dependencies):
+    collected_dependencies = deps_factory(*dep_names)
+    mapped_dependencies = dependencies_to_imports_mapping(collected_dependencies)
+
+    assert mapped_dependencies == expected_declared_dependencies
