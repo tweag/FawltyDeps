@@ -46,6 +46,8 @@ else:
 
 logger = logging.getLogger(__name__)
 
+VERBOSE_PROMPT = "For a more verbose report re-run with the `-v` option."
+
 
 class Action(Enum):
     """Actions available to the command-line interface."""
@@ -115,7 +117,7 @@ class Analysis:
                 imports=ret.imports,
                 dependencies=ret.declared_deps,
                 ignored_unused_deps=ignored_unused_deps,
-                ignored_undeclared_imports=ignored_undeclared_imports
+                ignored_undeclared_imports=ignored_undeclared_imports,
             )
 
         return ret
@@ -316,7 +318,7 @@ def main() -> int:
     else:
         analysis.print_human_readable(sys.stdout, details=verbose_report)
         if not verbose_report:
-            print("\nFor a more verbose report re-run with the `-v` option.\n")
+            print(f"\n{VERBOSE_PROMPT}\n")
 
     # Exit codes:
     # 0 - success, no problems found
