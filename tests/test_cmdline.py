@@ -14,6 +14,8 @@ from typing import Iterable, Optional, Tuple
 
 import pytest
 
+from fawltydeps.main import VERBOSE_PROMPT
+
 from .test_extract_imports_simple import generate_notebook
 
 logger = logging.getLogger(__name__)
@@ -344,7 +346,7 @@ def test_check__simple_project_imports_match_dependencies__prints_verbose_option
         declares=["requests", "pandas"],
     )
 
-    expect = ["For a more verbose report re-run with the `-v` option."]
+    expect = [VERBOSE_PROMPT]
     output, errors, returncode = run_fawltydeps(
         "--check", f"--code={tmp_path}", f"--deps={tmp_path}"
     )
@@ -588,7 +590,7 @@ def test__quiet_check__writes_only_names_of_unused_and_undeclared(
         "These dependencies appear to be unused (i.e. not imported):",
         "- 'pandas'",
         "",
-        "For a more verbose report re-run with the `-v` option.",
+        VERBOSE_PROMPT,
     ]
     output, errors, returncode = run_fawltydeps("--check", cwd=tmp_path)
     assert output.splitlines() == expect
@@ -605,7 +607,7 @@ def test__quiet_check__writes_only_names_of_unused_and_undeclared(
             ["black", "mypy"],
             [],
             ["black", "mypy"],
-            ["For a more verbose report re-run with the `-v` option."],
+            [VERBOSE_PROMPT],
             id="check_unused_action_on_ignored_unused_dep__outputs_nothing",
         ),
         pytest.param(
@@ -614,7 +616,7 @@ def test__quiet_check__writes_only_names_of_unused_and_undeclared(
             ["black"],
             [],
             ["black"],
-            ["black", "", "For a more verbose report re-run with the `-v` option."],
+            ["black", "", VERBOSE_PROMPT],
             id="list_deps_action_on_ignored_dep__reports_dep",
         ),
         pytest.param(
@@ -623,7 +625,7 @@ def test__quiet_check__writes_only_names_of_unused_and_undeclared(
             ["isort"],
             [],
             ["isort"],
-            ["For a more verbose report re-run with the `-v` option."],
+            [VERBOSE_PROMPT],
             id="check_undeclared_action_on_ignored_declared_dep__does_not_report_dep_as_undeclared",
         ),
         pytest.param(
@@ -632,7 +634,7 @@ def test__quiet_check__writes_only_names_of_unused_and_undeclared(
             ["numpy"],
             ["black", "mypy"],
             [],
-            ["For a more verbose report re-run with the `-v` option."],
+            [VERBOSE_PROMPT],
             id="check_undeclared_action_on_ignored_undeclared_import__outputs_nothing",
         ),
         pytest.param(
@@ -641,7 +643,7 @@ def test__quiet_check__writes_only_names_of_unused_and_undeclared(
             [],
             ["isort"],
             [],
-            ["isort", "", "For a more verbose report re-run with the `-v` option."],
+            ["isort", "", VERBOSE_PROMPT],
             id="list_imports_action_on_ignored_imports__reports_imports",
         ),
         pytest.param(
@@ -650,7 +652,7 @@ def test__quiet_check__writes_only_names_of_unused_and_undeclared(
             ["isort"],
             ["isort"],
             [],
-            ["For a more verbose report re-run with the `-v` option."],
+            [VERBOSE_PROMPT],
             id="check_unused_action_on_ignored_but_used_import__does_not_report_dep_as_unused",
         ),
         pytest.param(
@@ -659,7 +661,7 @@ def test__quiet_check__writes_only_names_of_unused_and_undeclared(
             ["pylint", "black"],
             ["isort", "numpy"],
             ["pylint", "black"],
-            ["For a more verbose report re-run with the `-v` option."],
+            [VERBOSE_PROMPT],
             id="check_action_on_ignored__does_not_report_ignored",
         ),
     ],
