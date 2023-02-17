@@ -59,7 +59,7 @@ def run_fawltydeps(
     return proc.stdout.strip(), proc.stderr.strip(), proc.returncode
 
 
-def test_list_imports__verbose_from_dash__prints_imports_from_stdin():
+def test_list_imports_verbose__from_dash__prints_imports_from_stdin():
     code = dedent(
         """\
         from pathlib import Path
