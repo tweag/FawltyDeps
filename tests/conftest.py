@@ -70,7 +70,7 @@ def project_with_setup_and_requirements(write_tmp_files):
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def project_with_setup_pyproject_and_requirements(write_tmp_files):
     return write_tmp_files(
         {
@@ -108,7 +108,7 @@ def project_with_setup_pyproject_and_requirements(write_tmp_files):
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def project_with_pyproject(write_tmp_files):
     return write_tmp_files(
         {
@@ -126,7 +126,7 @@ def project_with_pyproject(write_tmp_files):
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def project_with_setup_cfg(write_tmp_files):
     return write_tmp_files(
         {
@@ -151,7 +151,7 @@ def project_with_setup_cfg(write_tmp_files):
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def project_with_setup_with_cfg_pyproject_and_requirements(write_tmp_files):
     return write_tmp_files(
         {
