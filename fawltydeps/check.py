@@ -58,12 +58,7 @@ class LocalPackageLookup:
 def dependencies_to_imports_mapping(
     dependencies: List[DeclaredDependency],
 ) -> List[DeclaredDependency]:
-    """Map dependencies names to list of imports names exposed by a package
-
-    For performance sake, `packages_distribution` function is called once
-    and packages found in dependencies use resulting mapping to
-    look for matching import names.
-    """
+    """Map dependencies names to list of imports names exposed by a package"""
 
     local_package_lookup = LocalPackageLookup()
 
