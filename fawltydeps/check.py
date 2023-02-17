@@ -49,8 +49,8 @@ def find_import_names_from_package_name(package: str) -> Optional[List[str]]:
 def compare_imports_to_dependencies(
     imports: List[ParsedImport],
     dependencies: List[DeclaredDependency],
-    ignored_unused_deps: Iterable[str] = (),
-    ignored_undeclared_imports: Iterable[str] = (),
+    ignored_unused: Iterable[str] = (),
+    ignored_undeclared: Iterable[str] = (),
 ) -> Tuple[List[UndeclaredDependency], List[UnusedDependency]]:
     """
     Compares imports to dependencies
@@ -63,9 +63,7 @@ def compare_imports_to_dependencies(
     declared_names = {d.name for d in dependencies}
 
     undeclared = [
-        i
-        for i in imports
-        if i.name not in declared_names.union(ignored_undeclared_imports)
+        i for i in imports if i.name not in declared_names.union(ignored_undeclared)
     ]
     undeclared.sort(key=lambda i: i.name)  # groupby requires pre-sorting
     undeclared_grouped = [
@@ -74,9 +72,7 @@ def compare_imports_to_dependencies(
     ]
 
     unused = [
-        d
-        for d in dependencies
-        if d.name not in imported_names.union(ignored_unused_deps)
+        d for d in dependencies if d.name not in imported_names.union(ignored_unused)
     ]
     unused.sort(key=lambda d: d.name)  # groupby requires pre-sorting
     unused_grouped = [
