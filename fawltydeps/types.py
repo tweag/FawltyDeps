@@ -18,11 +18,11 @@ SpecialPath = Literal["<stdin>"]
 PathOrSpecial = Union[Path, SpecialPath]
 
 
-class ArgParseError(Exception):
-    """Indicate errors while parsing command-line arguments"""
+class UnparseablePathException(Exception):
+    """Exception type when alleged path (deps or code) can't be parsed"""
 
-    def __init__(self, msg: str):
-        self.msg = msg
+    def __init__(self, ctx: str, path: Path):
+        self.msg = f"{ctx}: {path}"
 
 
 @total_ordering

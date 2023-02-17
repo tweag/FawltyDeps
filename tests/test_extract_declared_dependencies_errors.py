@@ -11,13 +11,13 @@ from fawltydeps.extract_declared_dependencies import (
     parse_setup_cfg_contents,
     parse_setup_contents,
 )
-from fawltydeps.types import ArgParseError, Location
+from fawltydeps.types import Location, UnparseablePathException
 
 
 def test_extract_declared_dependencies__unsupported_file__raises_error(
     project_with_setup_and_requirements,
 ):
-    with pytest.raises(ArgParseError):
+    with pytest.raises(UnparseablePathException):
         list(
             extract_declared_dependencies(
                 project_with_setup_and_requirements / "python_file.py"

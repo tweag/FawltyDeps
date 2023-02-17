@@ -9,7 +9,12 @@ from typing import Iterable, Iterator, Optional, Tuple
 
 import isort
 
-from fawltydeps.types import ArgParseError, Location, ParsedImport, PathOrSpecial
+from fawltydeps.types import (
+    Location,
+    ParsedImport,
+    PathOrSpecial,
+    UnparseablePathException,
+)
 from fawltydeps.utils import dirs_between, walk_dir
 
 logger = logging.getLogger(__name__)
@@ -175,7 +180,7 @@ def parse_any_arg(arg: PathOrSpecial) -> Iterator[ParsedImport]:
       - arg refers to a file: Call parse_python_file() or parse_notebook_file()
       - arg refers to a dir: Call parse_dir()
 
-    Otherwise raise ArgParseError with a suitable error message.
+    Otherwise raise UnparseablePathException with a suitable error message.
     """
     if arg == "<stdin>":
         logger.info("Parsing Python code from standard input")
@@ -188,10 +193,13 @@ def parse_any_arg(arg: PathOrSpecial) -> Iterator[ParsedImport]:
         if arg.suffix == ".ipynb":
             logger.info("Parsing Notebook file %s", arg)
             return parse_notebook_file(arg)
-        raise ArgParseError(
-            f"Cannot parse code from {arg}: supported formats are .py and .ipynb."
+        raise UnparseablePathException(
+            ctx="Parseable code comes from .py and .ipynb. Cannot parse given path",
+            path=arg,
         )
     if arg.is_dir():
         logger.info("Parsing Python files under %s", arg)
         return parse_dir(arg)
-    raise ArgParseError(f"Cannot parse code from {arg}: Not a dir or file!")
+    raise UnparseablePathException(
+        ctx="Code path to parse is neither dir nor file", path=arg
+    )

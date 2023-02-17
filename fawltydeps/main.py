@@ -27,13 +27,16 @@ from pydantic.json import pydantic_encoder  # pylint: disable=no-name-in-module
 
 from fawltydeps import extract_imports
 from fawltydeps.check import compare_imports_to_dependencies
-from fawltydeps.extract_declared_dependencies import extract_declared_dependencies
+from fawltydeps.extract_declared_dependencies import (
+    ParserChoice,
+    extract_declared_dependencies,
+)
 from fawltydeps.types import (
-    ArgParseError,
     DeclaredDependency,
     ParsedImport,
     PathOrSpecial,
     UndeclaredDependency,
+    UnparseablePathException,
     UnusedDependency,
 )
 from fawltydeps.utils import hide_dataclass_fields
@@ -91,6 +94,7 @@ class Analysis:
         deps: Path,
         ignored_unused: Iterable[str] = (),
         ignored_undeclared: Iterable[str] = (),
+        deps_parse_choice: Optional[ParserChoice] = None,
     ) -> "Analysis":
         """Perform the requested actions of FawltyDeps core logic.
 
@@ -108,7 +112,9 @@ class Analysis:
         if ret.is_enabled(
             Action.LIST_DEPS, Action.REPORT_UNDECLARED, Action.REPORT_UNUSED
         ):
-            ret.declared_deps = list(extract_declared_dependencies(deps))
+            ret.declared_deps = list(
+                extract_declared_dependencies(deps, deps_parse_choice)
+            )
 
         if ret.is_enabled(Action.REPORT_UNDECLARED, Action.REPORT_UNUSED):
             assert ret.imports is not None  # convince Mypy that these cannot
@@ -269,6 +275,14 @@ def main() -> int:
         ),
     )
     options.add_argument(
+        "--deps-declaration-parsing-strategy",
+        choices=[pc.to_cmdl() for pc in ParserChoice],
+        help=(
+            "Name of the parsing strategy to use for dependency declarations, "
+            "useful for when the file(s) to parse have an atypical extension"
+        ),
+    )
+    options.add_argument(
         "-v",
         "--verbose",
         action="count",
@@ -302,6 +316,21 @@ def main() -> int:
 
     actions = args.actions or {Action.REPORT_UNDECLARED, Action.REPORT_UNUSED}
 
+    if args.deps_declaration_parsing_strategy is not None:
+        deps_parser_choice = ParserChoice.from_cmdl(
+            args.deps_declaration_parsing_strategy
+        )
+        if deps_parser_choice is None:
+            # This is guarded with choices= in the CLI definition and therefore is exceptional.
+            parser.error(
+                f"Illegal choice for deps parser strategy: {args.deps_declaration_parsing_strategy}"
+            )  # exit code 2
+    else:
+        logger.debug(
+            "No explicit declarations parser choice was made, so it will be inferred."
+        )
+        deps_parser_choice = None
+
     try:
         analysis = Analysis.create(
             actions,
@@ -309,8 +338,10 @@ def main() -> int:
             args.deps,
             args.ignore_unused,
             args.ignore_undeclared,
+            deps_parse_choice=deps_parser_choice
         )
-    except ArgParseError as exc:
+    except UnparseablePathException as exc:
+        # TODO: consider changing this to denote diff w/ argparse.
         return parser.error(exc.msg)  # exit code 2
 
     if args.json:
