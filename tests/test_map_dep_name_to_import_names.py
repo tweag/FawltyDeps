@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from fawltydeps.check import LocalPackageLookup, dependencies_to_imports_mapping
+from fawltydeps.check import LocalPackageLookup, map_dependencies_to_imports
 from fawltydeps.types import DeclaredDependency, DependenciesMapping, Location
 
 from .utils import deps_factory
@@ -99,8 +99,8 @@ def test_LocalPackageLookup_lookup_package(dep_name, expect_import_names):
         ),
     ],
 )
-def test_dependencies_to_imports_mapping(dep_names, expected_declared_dependencies):
+def test_map_dependencies_to_imports(dep_names, expected_declared_dependencies):
     collected_dependencies = deps_factory(*dep_names)
-    mapped_dependencies = dependencies_to_imports_mapping(collected_dependencies)
+    mapped_dependencies = map_dependencies_to_imports(collected_dependencies)
 
     assert mapped_dependencies == expected_declared_dependencies
