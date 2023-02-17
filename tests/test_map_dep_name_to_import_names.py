@@ -43,7 +43,7 @@ from .utils import deps_factory
         ),
     ],
 )
-def test_find_import_names_from_package_name(dep_name, expect_import_names):
+def test_LocalPackageLookup_lookup_package(dep_name, expect_import_names):
     lpl = LocalPackageLookup()
     assert lpl.lookup_package(dep_name) == expect_import_names
 
