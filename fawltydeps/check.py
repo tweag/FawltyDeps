@@ -55,27 +55,31 @@ class LocalPackageLookup:
         return tuple(ret) or None
 
 
-def dependencies_to_imports_mapping(
+def dependency_to_imports_mapping(
+    dependency: DeclaredDependency, local_package_lookup: LocalPackageLookup
+) -> DeclaredDependency:
+    """Map imports names exposed by a dependency."""
+    import_names = local_package_lookup.lookup_package(dependency.name)
+    return (
+        dependency.replace_mapping(
+            import_names, DependenciesMapping.DEPENDENCY_TO_IMPORT
+        )
+        if import_names
+        # Fallback to IDENTITY mapping
+        else dependency
+    )
+
+
+def map_dependencies_to_imports(
     dependencies: List[DeclaredDependency],
 ) -> List[DeclaredDependency]:
     """Map dependencies names to list of imports names exposed by a package"""
 
     local_package_lookup = LocalPackageLookup()
 
-    def _dependency_to_imports_mapping(
-        dependency: DeclaredDependency,
-    ) -> DeclaredDependency:
-        import_names = local_package_lookup.lookup_package(dependency.name)
-        return (
-            dependency.replace_mapping(
-                import_names, DependenciesMapping.DEPENDENCY_TO_IMPORT
-            )
-            if import_names
-            # Fallback to IDENTITY mapping
-            else dependency
-        )
-
-    return [_dependency_to_imports_mapping(d) for d in dependencies]
+    return [
+        dependency_to_imports_mapping(d, local_package_lookup) for d in dependencies
+    ]
 
 
 def compare_imports_to_dependencies(
@@ -93,7 +97,7 @@ def compare_imports_to_dependencies(
     """
 
     # TODO consider empty list of dependency to import
-    mapped_dependencies = dependencies_to_imports_mapping(dependencies)
+    mapped_dependencies = map_dependencies_to_imports(dependencies)
 
     names_from_imports = {i.name for i in imports}
     names_from_dependencies = {
