@@ -6,6 +6,7 @@ import logging
 import re
 import sys
 from enum import Enum
+from functools import partial
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, Iterator, NamedTuple, Optional, Tuple
 
@@ -310,9 +311,30 @@ class ParserChoice(Enum):
         """Attempt to parse a value from a command-line argument."""
         query = arg.upper().replace(".", "_")
         try:
-            return next(choice for choice in cls if choice == query)
+            return next(choice for choice in cls if choice.name == query)
         except StopIteration:
             return None
+
+
+def finalize_parse_strategy(
+    path: Path, parser_choice: Optional[ParserChoice] = None
+) -> Optional[Parse]:
+    """Use the given parser choice and path to parse to determine how to do the parse."""
+    if parser_choice is None:
+        try:
+            strategy = next(
+                pc.value for pc in ParserChoice if pc.value.applies_to_path(path)
+            )
+        except StopIteration:
+            return None
+    else:
+        strategy = parser_choice.value
+        if not strategy.applies_to_path(path):
+            logger.info(
+                f"Manually applying parsing strategy {parser_choice.name}, "
+                f"which doesn't automatically apply to given path: {path}"
+            )
+    return strategy.execute
 
 
 def extract_declared_dependencies(
@@ -328,27 +350,12 @@ def extract_declared_dependencies(
     There is no guaranteed ordering on the generated dependencies.
     """
 
-    def get_parse(path: Path) -> Optional[Parse]:
-        if parser_choice is None:
-            try:
-                strategy = next(
-                    pc.value for pc in ParserChoice if pc.value.applies_to_path(path)
-                )
-            except StopIteration:
-                return None
-        else:
-            strategy = parser_choice.value
-            if not strategy.applies_to_path(path):
-                logger.info(
-                    f"Manually applying parsing strategy {parser_choice.name}, "
-                    f"which doesn't automatically apply to given path: {path}"
-                )
-        return strategy.execute
-
     logger.debug(f"Entered extract_declared_dependencies given path: {path}")
 
+    get_parser = partial(finalize_parse_strategy, parser_choice=parser_choice)
+
     if path.is_file():
-        parse = get_parse(path)
+        parse = get_parser(path)
         if parse is None:
             raise UnparseablePathException(
                 ctx="Parsing given deps path isn't supported", path=path
@@ -358,7 +365,7 @@ def extract_declared_dependencies(
     elif path.is_dir():
         logger.debug("Extracting dependencies from files under %s", path)
         for file in walk_dir(path):
-            parse = get_parse(file)
+            parse = get_parser(file)
             if parse:
                 logger.debug(f"Extracting dependencies from {file}.")
                 yield from parse(file.read_text(), Location(file))

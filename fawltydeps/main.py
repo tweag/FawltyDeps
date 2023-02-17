@@ -338,7 +338,7 @@ def main() -> int:
             args.deps,
             args.ignore_unused,
             args.ignore_undeclared,
-            deps_parse_choice=deps_parser_choice
+            deps_parse_choice=deps_parser_choice,
         )
     except UnparseablePathException as exc:
         # TODO: consider changing this to denote diff w/ argparse.
