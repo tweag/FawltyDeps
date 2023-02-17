@@ -89,8 +89,8 @@ class Analysis:
         request: Set[Action],
         code: PathOrSpecial,
         deps: Path,
-        ignored_unused_deps: Iterable[str] = (),
-        ignored_undeclared_imports: Iterable[str] = (),
+        ignored_unused: Iterable[str] = (),
+        ignored_undeclared: Iterable[str] = (),
     ) -> "Analysis":
         """Perform the requested actions of FawltyDeps core logic.
 
@@ -116,8 +116,8 @@ class Analysis:
             ret.undeclared_deps, ret.unused_deps = compare_imports_to_dependencies(
                 imports=ret.imports,
                 dependencies=ret.declared_deps,
-                ignored_unused_deps=ignored_unused_deps,
-                ignored_undeclared_imports=ignored_undeclared_imports,
+                ignored_unused=ignored_unused,
+                ignored_undeclared=ignored_undeclared,
             )
 
         return ret
@@ -251,12 +251,12 @@ def main() -> int:
         help="Generate JSON output instead of a human-readable report",
     )
     options.add_argument(
-        "--ignore-unused-deps",
+        "--ignore-unused",
         nargs="+",
         default=[],
         help=(
             "Dependencies to ignore when looking for unused"
-            " dependencies, e.g. --ignore-unused-deps pylint black"
+            " dependencies, e.g. --ignore-unused pylint black"
         ),
     )
     options.add_argument(
@@ -307,7 +307,7 @@ def main() -> int:
             actions,
             args.code,
             args.deps,
-            args.ignore_unused_deps,
+            args.ignore_unused,
             args.ignore_undeclared,
         )
     except ArgParseError as exc:

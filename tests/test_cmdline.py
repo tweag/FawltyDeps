@@ -599,7 +599,7 @@ def test__quiet_check__writes_only_names_of_unused_and_undeclared(
 
 
 @pytest.mark.parametrize(
-    "action,imports,dependencies,ignored_undeclared_imports,ignored_unused_deps,expected",
+    "action,imports,dependencies,ignored_undeclared,ignored_unused,expected",
     [
         pytest.param(
             "--check-unused",
@@ -670,8 +670,8 @@ def test_cmdline_on_ignored_undeclared_option(
     action,
     imports,
     dependencies,
-    ignored_undeclared_imports,
-    ignored_unused_deps,
+    ignored_undeclared,
+    ignored_unused,
     expected,
     project_with_code_and_requirements_txt,
 ):
@@ -680,10 +680,10 @@ def test_cmdline_on_ignored_undeclared_option(
         declares=dependencies,
     )
     args = [action]
-    if ignored_undeclared_imports:
-        args.extend(["--ignore-undeclared"] + ignored_undeclared_imports)
-    if ignored_unused_deps:
-        args.extend(["--ignore-unused-deps"] + ignored_unused_deps)
+    if ignored_undeclared:
+        args.extend(["--ignore-undeclared"] + ignored_undeclared)
+    if ignored_unused:
+        args.extend(["--ignore-unused"] + ignored_unused)
     output, errors, returncode = run_fawltydeps(*args, cwd=tmp_path)
     assert output.splitlines() == expected
     assert errors == ""
