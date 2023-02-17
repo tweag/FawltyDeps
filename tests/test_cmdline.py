@@ -599,66 +599,60 @@ def test__quiet_check__writes_only_names_of_unused_and_undeclared(
 
 
 @pytest.mark.parametrize(
-    "action,imports,dependencies,ignored_undeclared,ignored_unused,expected",
+    "args,imports,dependencies,expected",
     [
         pytest.param(
-            "--check-unused",
+            ["--check-unused", "--ignore-unused", "black", "mypy"],
             ["requests"],
-            ["black", "mypy"],
-            [],
             ["black", "mypy"],
             [VERBOSE_PROMPT],
             id="check_unused_action_on_ignored_unused_dep__outputs_nothing",
         ),
         pytest.param(
-            "--list-deps",
-            [],
-            ["black"],
+            ["--list-deps", "--ignore-unused", "black"],
             [],
             ["black"],
             ["black", "", VERBOSE_PROMPT],
             id="list_deps_action_on_ignored_dep__reports_dep",
         ),
         pytest.param(
-            "--check-undeclared",
+            ["--check-undeclared", "--ignore-unused", "isort"],
             ["isort"],
-            ["isort"],
-            [],
             ["isort"],
             [VERBOSE_PROMPT],
             id="check_undeclared_action_on_ignored_declared_dep__does_not_report_dep_as_undeclared",
         ),
         pytest.param(
-            "--check-undeclared",
+            ["--check-undeclared", "--ignore-undeclared", "black", "mypy"],
             ["black", "mypy"],
             ["numpy"],
-            ["black", "mypy"],
-            [],
             [VERBOSE_PROMPT],
             id="check_undeclared_action_on_ignored_undeclared_import__outputs_nothing",
         ),
         pytest.param(
-            "--list-imports",
-            ["isort"],
-            [],
+            ["--list-imports", "--ignore-undeclared", "isort"],
             ["isort"],
             [],
             ["isort", "", VERBOSE_PROMPT],
             id="list_imports_action_on_ignored_imports__reports_imports",
         ),
         pytest.param(
-            "--check-unused",
+            ["--check-unused", "--ignore-undeclared", "isort"],
             ["isort"],
             ["isort"],
-            ["isort"],
-            [],
             [VERBOSE_PROMPT],
             id="check_unused_action_on_ignored_but_used_import__does_not_report_dep_as_unused",
         ),
         pytest.param(
-            "--check",
-            ["isort", "numpy"],
-            ["pylint", "black"],
+            [
+                "--check",
+                "--ignore-undeclared",
+                "isort",
+                "numpy",
+                "--ignore-unused",
+                "pylint",
+                "black",
+            ],
             ["isort", "numpy"],
             ["pylint", "black"],
             [VERBOSE_PROMPT],
@@ -667,11 +661,9 @@ def test__quiet_check__writes_only_names_of_unused_and_undeclared(
     ],
 )
 def test_cmdline_on_ignored_undeclared_option(
-    action,
+    args,
     imports,
     dependencies,
-    ignored_undeclared,
-    ignored_unused,
     expected,
     project_with_code_and_requirements_txt,
 ):
@@ -679,11 +671,6 @@ def test_cmdline_on_ignored_undeclared_option(
         imports=imports,
         declares=dependencies,
     )
-    args = [action]
-    if ignored_undeclared:
-        args.extend(["--ignore-undeclared"] + ignored_undeclared)
-    if ignored_unused:
-        args.extend(["--ignore-unused"] + ignored_unused)
     output, errors, returncode = run_fawltydeps(*args, cwd=tmp_path)
     assert output.splitlines() == expected
     assert errors == ""
