@@ -7,20 +7,23 @@ import re
 import sys
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Dict, Iterable, Iterator, NamedTuple, Optional, Tuple
+from typing import Callable, Iterable, Iterator, NamedTuple, Optional, Tuple
 
 from pkg_resources import Requirement
 
 from fawltydeps.limited_eval import CannotResolve, VariableTracker
-from fawltydeps.types import DeclaredDependency, Location, UnparseablePathException
+from fawltydeps.types import (
+    DeclaredDependency,
+    Location,
+    TomlData,
+    UnparseablePathException,
+)
 from fawltydeps.utils import walk_dir
 
 if sys.version_info >= (3, 11):
     import tomllib  # pylint: disable=E1101
 else:
     import tomli as tomllib
-
-TomlData = Dict[str, Any]  # type: ignore
 
 logger = logging.getLogger(__name__)
 
