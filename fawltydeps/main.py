@@ -265,7 +265,7 @@ def main() -> int:
         default=[],
         help=(
             "Imports to ignore when looking for undeclared"
-            " dependencies, e.g. --ignore-undeclared isort"
+            " dependencies, e.g. --ignore-undeclared isort pkg_resources"
         ),
     )
     options.add_argument(
