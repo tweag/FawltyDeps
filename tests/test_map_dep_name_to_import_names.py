@@ -81,6 +81,22 @@ def test_LocalPackageLookup_lookup_package(dep_name, expect_import_names):
             ],
             id="mixed_dependencies_in_local_env__uses_id_and_d2i_mapping",
         ),
+        pytest.param(
+            ["setuptools"],
+            [
+                DeclaredDependency(
+                    name="setuptools",
+                    source=Location(Path("foo")),
+                    import_names=(
+                        "_distutils_hack",
+                        "pkg_resources",
+                        "setuptools",
+                    ),
+                    mapping=DependenciesMapping.DEPENDENCY_TO_IMPORT,
+                )
+            ],
+            id="dependency_present_in_local_env__uses_d2i_mapping_and_has_correct_imports",
+        ),
     ],
 )
 def test_dependencies_to_imports_mapping(dep_names, expected_declared_dependencies):
