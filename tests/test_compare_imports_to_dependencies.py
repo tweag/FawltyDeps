@@ -12,7 +12,7 @@ from fawltydeps.types import (
     UnusedDependency,
 )
 
-from .utils import deps_factory
+from .utils import deps_factory, deps_factory_dep_to_imports_mapping
 
 
 def imports_factory(*imports: str) -> List[ParsedImport]:
@@ -106,10 +106,18 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
         ),
         pytest.param(
             imports_factory("pandas", "numpy"),
-            deps_factory("pandas", "isort", "black"),
+            deps_factory("pandas", "isort", "flake8"),
             ["isort"],
             [],
-            (undeclared_factory("numpy"), unused_factory("black")),
+            (
+                undeclared_factory("numpy"),
+                [
+                    UnusedDependency(
+                        name="flake8",
+                        references=deps_factory("flake8"),
+                    )
+                ],
+            ),
             id="mixed_dependencies__report_undeclared_and_non_ignored_unused",
         ),
         pytest.param(
@@ -133,23 +141,49 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
             deps_factory("isort"),
             [],
             ["isort"],
-            ([], unused_factory("isort")),
+            (
+                [],
+                [
+                    UnusedDependency(
+                        name="isort",
+                        references=deps_factory_dep_to_imports_mapping(
+                            ("isort", ["isort"])
+                        ),
+                    )
+                ],
+            ),
             id="one_ignored_import_declared_as_dep__reported_as_unused",
         ),
         pytest.param(
             imports_factory("pandas", "numpy", "not_valid"),
-            deps_factory("pandas", "black"),
+            deps_factory("pandas", "flake8"),
             [],
             ["not_valid"],
-            (undeclared_factory("numpy"), unused_factory("black")),
+            (
+                undeclared_factory("numpy"),
+                [
+                    UnusedDependency(
+                        name="flake8",
+                        references=deps_factory("flake8"),
+                    )
+                ],
+            ),
             id="mixed_dependencies__report_unused_and_only_non_ignored_undeclared",
         ),
         pytest.param(
             imports_factory("pandas", "numpy", "not_valid"),
-            deps_factory("pandas", "black", "isort"),
+            deps_factory("pandas", "flake8", "isort"),
             ["isort"],
             ["not_valid"],
-            (undeclared_factory("numpy"), unused_factory("black")),
+            (
+                undeclared_factory("numpy"),
+                [
+                    UnusedDependency(
+                        name="flake8",
+                        references=deps_factory("flake8"),
+                    )
+                ],
+            ),
             id="mixed_dependencies__report_only_non_ignored_unused_and_non_ignored_undeclared",
         ),
     ],
