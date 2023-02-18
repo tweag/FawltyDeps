@@ -1,7 +1,7 @@
 """ Utilities to share among test modules """
 
 from pathlib import Path
-from typing import Any, Iterable, List, Tuple
+from typing import Any, Iterable, List
 
 from fawltydeps.types import DeclaredDependency, DependenciesMapping, Location
 
@@ -23,19 +23,4 @@ def deps_factory(*deps: str) -> List[DeclaredDependency]:
             mapping=DependenciesMapping.IDENTITY,
         )
         for dep in deps
-    ]
-
-
-def deps_factory_dep_to_imports_mapping(
-    *deps: Tuple[str, Tuple[str, ...]]
-) -> List[DeclaredDependency]:
-    """Factory for dependencies that have non-trivial list of exposed modules"""
-    return [
-        DeclaredDependency(
-            name=dep,
-            source=Location(Path("foo")),
-            import_names=imports,
-            mapping=DependenciesMapping.DEPENDENCY_TO_IMPORT,
-        )
-        for dep, imports in deps
     ]

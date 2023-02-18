@@ -3,7 +3,7 @@
 import logging
 import sys
 from itertools import groupby
-from typing import Iterable, List, Mapping, Optional, Tuple
+from typing import Iterable, List, Optional, Tuple
 
 from fawltydeps.types import (
     DeclaredDependency,
@@ -58,7 +58,12 @@ class LocalPackageLookup:
 def dependency_to_imports_mapping(
     dependency: DeclaredDependency, local_package_lookup: LocalPackageLookup
 ) -> DeclaredDependency:
-    """Map imports names exposed by a dependency."""
+    """For a single `DeclaredDependency` map the dependency name
+
+    to imports names exposed by a dependency.
+    Create a new `DeclaredDependency` object and with updated
+    names of imports and mapping type used.
+    """
     import_names = local_package_lookup.lookup_package(dependency.name)
     return (
         dependency.replace_mapping(

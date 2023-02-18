@@ -6,13 +6,15 @@ import pytest
 
 from fawltydeps.check import compare_imports_to_dependencies
 from fawltydeps.types import (
+    DeclaredDependency,
+    DependenciesMapping,
     Location,
     ParsedImport,
     UndeclaredDependency,
     UnusedDependency,
 )
 
-from .utils import deps_factory, deps_factory_dep_to_imports_mapping
+from .utils import deps_factory
 
 
 def imports_factory(*imports: str) -> List[ParsedImport]:
@@ -146,10 +148,15 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
                 [
                     UnusedDependency(
                         name="isort",
-                        references=deps_factory_dep_to_imports_mapping(
-                            ("isort", ["isort"])
-                        ),
-                    )
+                        references=[
+                            DeclaredDependency(
+                                name="isort",
+                                source=Location(Path("foo")),
+                                import_names=("isort",),
+                                mapping=DependenciesMapping.DEPENDENCY_TO_IMPORT,
+                            )
+                        ],
+                    ),
                 ],
             ),
             id="one_ignored_import_declared_as_dep__reported_as_unused",
