@@ -5,6 +5,7 @@ from typing import List
 import pytest
 
 from fawltydeps.check import compare_imports_to_dependencies
+from fawltydeps.settings import Settings
 from fawltydeps.types import (
     DeclaredDependency,
     DependenciesMapping,
@@ -30,7 +31,7 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
 
 
 @pytest.mark.parametrize(
-    "imports,dependencies,ignored_unused,ignored_undeclared,expected",
+    "imports,dependencies,ignore_unused,ignore_undeclared,expected",
     [
         pytest.param([], [], [], [], ([], []), id="no_import_no_dependencies"),
         pytest.param(
@@ -196,10 +197,11 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
     ],
 )
 def test_compare_imports_to_dependencies(
-    imports, dependencies, ignored_unused, ignored_undeclared, expected
+    imports, dependencies, ignore_unused, ignore_undeclared, expected
 ):
     """Ensures the comparison method returns the expected unused and undeclared dependencies"""
-    obtained = compare_imports_to_dependencies(
-        imports, dependencies, ignored_unused, ignored_undeclared
+    settings = Settings(
+        ignore_unused=ignore_unused, ignore_undeclared=ignore_undeclared
     )
+    obtained = compare_imports_to_dependencies(imports, dependencies, settings)
     assert obtained == expected
