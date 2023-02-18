@@ -1,4 +1,5 @@
 """Test how settings cascade/combine across command-line, config file, etc."""
+import argparse
 import logging
 import sys
 from pathlib import Path
@@ -151,8 +152,8 @@ def setup_env(monkeypatch):
             None,
             {},
             dict(unsupported=123),  # unsupported Settings field
-            ValidationError,
-            id="cmd_line_unsupported_field__raises_ValidationError",
+            EXPECT_DEFAULTS,
+            id="cmd_line_unsupported_field__is_ignored",
         ),
         pytest.param(
             None,
@@ -189,18 +190,40 @@ def setup_env(monkeypatch):
             id="cmd_line__overrides_config_file",
         ),
         pytest.param(
+            None,
+            {},
+            dict(verbose=3, quiet=5),
+            make_settings_dict(verbosity=-2),
+            id="cmd_line__verbose_minus_quiet__determines_verbosity",
+        ),
+        pytest.param(
+            None,
+            dict(verbosity="1"),
+            dict(verbose=2),
+            make_settings_dict(verbosity=2),
+            id="cmd_line__verbose__overrides_env_verbosity",
+        ),
+        pytest.param(
+            dict(verbosity=-1),
+            {},
+            {},
+            make_settings_dict(verbosity=-1),
+            id="cmd_line__no_verbose_no_quiet__uses_underlying_verbosity",
+        ),
+        pytest.param(
             dict(
                 actions='["list_imports"]',
                 code="my_code_dir",
                 deps="my_requirements.txt",
+                verbosity=1,
             ),
             dict(actions='["list_deps"]', code="<stdin>"),
-            dict(code="my_notebook.ipynb", verbosity=2),
+            dict(code="my_notebook.ipynb", verbose=2, quiet=4),
             make_settings_dict(
                 actions={Action.LIST_DEPS},  # env overrides config file
                 code=Path("my_notebook.ipynb"),  # cmd line overrides env + config file
                 deps=Path("my_requirements.txt"),  # from config file
-                verbosity=2,  # from cmd line
+                verbosity=-2,  # calculated from cmd line, overrides config file
             ),
             id="cmd_line_env_var_and_config_file__cascades",
         ),
@@ -219,12 +242,13 @@ def test_settings(
     else:
         config_file = setup_fawltydeps_config(config_settings)
     setup_env(**env_settings)
+    cmdline_args = argparse.Namespace(**cmdline_settings)
     if isinstance(expect, dict):
-        settings = Settings.config(config_file=config_file)(**cmdline_settings)
+        settings = Settings.config(config_file=config_file).create(cmdline_args)
         assert settings.dict() == expect
     else:  # Assume we expect an exception
         with pytest.raises(expect):
-            Settings.config(config_file=config_file)(**cmdline_settings)
+            Settings.config(config_file=config_file).create(cmdline_args)
 
 
 def test_settings__instance__is_immutable():
