@@ -18,6 +18,7 @@ import logging
 import sys
 from dataclasses import dataclass
 from operator import attrgetter
+from pathlib import Path
 from typing import List, Optional, Set, TextIO, no_type_check
 
 from pydantic.json import pydantic_encoder  # pylint: disable=no-name-in-module
@@ -159,9 +160,15 @@ def main() -> int:
         version=f"FawltyDeps v{version()}",
         help="Print the version number of FawltyDeps",
     )
+    option_group.add_argument(
+        "--config-file",
+        type=Path,
+        default=Path("./pyproject.toml"),
+        help="Where to find FawltyDeps config (default: ./pyproject.toml)",
+    )
 
     args = parser.parse_args()
-    settings = Settings.create(args)
+    settings = Settings.config(config_file=args.config_file).create(args)
 
     logging.basicConfig(level=logging.WARNING - 10 * settings.verbosity)
 
