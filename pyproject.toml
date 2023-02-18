@@ -34,6 +34,7 @@ fawltydeps = "fawltydeps.main:main"
 python = "^3.7.2"
 importlib_metadata = {version = "^5.0.0", python = "<3.11"}
 isort = "^5.10"
+more-itertools = "^9.0.0"
 pydantic = "^1.10.4"
 tomli = {version = "^2.0.1", python = "<3.11"}
 typing-extensions = {version = "^4.4.0", python = "<3.8"}

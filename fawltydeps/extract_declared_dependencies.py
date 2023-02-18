@@ -10,6 +10,7 @@ from functools import partial
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, Iterator, NamedTuple, Optional, Tuple
 
+from more_itertools import split_at
 from pkg_resources import Requirement
 
 from fawltydeps.limited_eval import CannotResolve, VariableTracker
@@ -26,6 +27,12 @@ TomlData = Dict[str, Any]  # type: ignore
 logger = logging.getLogger(__name__)
 
 ERROR_MESSAGE_TEMPLATE = "Failed to %s %s %s dependencies in %s: %s"
+PER_REQUIREMENT_OPTIONS = [
+    "--install-option",
+    "--global-option",
+    "config-setting",
+    "--hash",
+]
 
 NamedLocations = Iterator[Tuple[str, Location]]
 IterDeps = Iterator[DeclaredDependency]
@@ -41,7 +48,9 @@ class DependencyParsingError(Exception):
 
 def parse_one_req(req_text: str, source: Location) -> DeclaredDependency:
     """Returns the name of a dependency declared in a requirement specifier."""
-    return DeclaredDependency(Requirement.parse(req_text).unsafe_name, source)
+    req = Requirement.parse(req_text)
+    req_name = req.unsafe_name
+    return DeclaredDependency(req_name, source)
 
 
 def parse_requirements_contents(text: str, source: Location) -> IterDeps:
@@ -51,14 +60,43 @@ def parse_requirements_contents(text: str, source: Location) -> IterDeps:
     Requirements File Format as documented here:
     https://pip.pypa.io/en/stable/reference/requirements-file-format/.
     """
+    parse_one = partial(parse_one_req, source=source)
     for line in text.splitlines():
+        cleaned = line.lstrip()
         if (
-            not line.lstrip()  # skip empty lines
-            or line.lstrip().startswith(("-", "#"))  # skip options and comments
+            not cleaned  # skip empty lines
+            or cleaned.startswith(("-", "#"))  # skip options and comments
             or ("://" in line.split()[0])  # skip bare URLs at the start of line
         ):
             continue
-        yield parse_one_req(line, source)
+        try:
+            yield parse_one(line)
+        except ValueError:
+            sep = " "
+            fields = line.split(sep)
+            splits = list(
+                split_at(
+                    fields,
+                    lambda s: s.startswith("--"),
+                    maxsplit=1,
+                    keep_separator=True,
+                )
+            )
+            if len(splits) == 3:  # pre, sep, post
+                pre_break, breakpoints, _ = splits
+                assert 1 == len(breakpoints)
+                if [
+                    per_req_opt
+                    for per_req_opt in PER_REQUIREMENT_OPTIONS
+                    if breakpoints[0].startswith(per_req_opt)
+                ]:
+                    # https://pip.pypa.io/en/stable/reference/requirements-file-format/#per-requirement-options
+                    new_req_try = sep.join(pre_break)
+                    yield parse_one(new_req_try)
+                else:
+                    raise
+            else:
+                raise  # can't rescue the parse
 
 
 def parse_setup_contents(text: str, source: Location) -> IterDeps:
