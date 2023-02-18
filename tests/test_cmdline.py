@@ -38,11 +38,12 @@ def project_with_code_and_requirements_txt(write_tmp_files):
 
 def run_fawltydeps(
     *args: str,
+    config_file: Path = Path("/dev/null"),
     to_stdin: Optional[str] = None,
     cwd: Optional[Path] = None,
 ) -> Tuple[str, str, int]:
     proc = subprocess.run(
-        ["fawltydeps"] + list(args),
+        ["fawltydeps", f"--config-file={config_file}"] + list(args),
         input=to_stdin,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
@@ -694,3 +695,71 @@ def test_cmdline_on_ignored_undeclared_option(
     assert output.splitlines() == expected
     assert errors == ""
     assert returncode == 0
+
+
+@pytest.mark.parametrize(
+    "config,args,expect",
+    [
+        pytest.param(
+            {},
+            [],
+            [
+                "These imports appear to be undeclared dependencies:",
+                "- 'requests'",
+                "These dependencies appear to be unused (i.e. not imported):",
+                "- 'pandas'",
+                "",
+                VERBOSE_PROMPT,
+            ],
+            id="no_config_no_args__show_summary_of_undeclared_and_unused",
+        ),
+        pytest.param(
+            {"actions": ["list_imports"]},
+            [],
+            [
+                "requests",
+                "",
+                VERBOSE_PROMPT,
+            ],
+            id="setting_actions_in_config__changes_default_action",
+        ),
+        pytest.param(
+            {"actions": ["list_imports"]},
+            ["--verbose"],
+            ["code.py:1: requests"],
+            id="combine_actions_in_config_with_verbose_on_command_line",
+        ),
+        pytest.param(
+            {"actions": ["list_imports"], "verbosity": 3},
+            ["--list-deps"],
+            ["requirements.txt: pandas"],
+            id="override_some_config_directives_on_command_line",
+        ),
+        pytest.param(
+            {"actions": ["list_imports"], "verbosity": 3},
+            ["--quiet"],
+            [
+                "requests",
+                "",
+                VERBOSE_PROMPT,
+            ],
+            id="override_verbosity_from_config_with_quiet_on_command_line",
+        ),
+    ],
+)
+def test_cmdline_args_in_combination_with_config_file(
+    config,
+    args,
+    expect,
+    project_with_code_and_requirements_txt,
+    setup_fawltydeps_config,
+):
+    # We keep the project itself constant (one undeclared + one unused dep),
+    # but we vary the FD configuration directives and command line args
+    tmp_path = project_with_code_and_requirements_txt(
+        imports=["requests"],
+        declares=["pandas"],
+    )
+    setup_fawltydeps_config(config)
+    output, *_ = run_fawltydeps("--config-file=pyproject.toml", *args, cwd=tmp_path)
+    assert output.splitlines() == expect

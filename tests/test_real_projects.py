@@ -39,7 +39,7 @@ REAL_PROJECTS_DIR = Path(__file__).with_name("real_projects")
 
 def run_fawltydeps_json(*args: str, cwd: Optional[Path] = None) -> JsonData:
     proc = subprocess.run(
-        ["fawltydeps"] + list(args) + ["--json"],
+        ["fawltydeps", "--config-file=/dev/null"] + list(args) + ["--json"],
         stdout=subprocess.PIPE,
         check=False,
         cwd=cwd,
