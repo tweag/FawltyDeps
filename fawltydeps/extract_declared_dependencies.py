@@ -5,13 +5,13 @@ import configparser
 import logging
 import re
 import sys
-from enum import Enum
 from pathlib import Path
 from typing import Callable, Iterable, Iterator, NamedTuple, Optional, Tuple
 
 from pkg_resources import Requirement
 
 from fawltydeps.limited_eval import CannotResolve, VariableTracker
+from fawltydeps.settings import ParserChoice
 from fawltydeps.types import (
     DeclaredDependency,
     Location,
@@ -288,18 +288,6 @@ class ParsingStrategy(NamedTuple):
 
     applies_to_path: Callable[[Path], bool]
     execute: Callable[[str, Location], Iterator[DeclaredDependency]]
-
-
-class ParserChoice(Enum):
-    """Enumerate the choices of dependency declaration parsers."""
-
-    REQUIREMENTS_TXT = "requirements.txt"
-    SETUP_PY = "setup.py"
-    SETUP_CFG = "setup.cfg"
-    PYPROJECT_TOML = "pyproject.toml"
-
-    def __str__(self) -> str:
-        return self.value
 
 
 def first_applicable_parser(
