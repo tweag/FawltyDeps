@@ -1,4 +1,5 @@
 """FawltyDeps configuration and command-line options."""
+import argparse
 import logging
 import sys
 from enum import Enum
@@ -64,6 +65,21 @@ class ParserChoice(Enum):
 
     def __str__(self) -> str:
         return self.value
+
+
+def read_parser_choice(filename: str) -> ParserChoice:
+    """Read the command-line argument for manual parser choice."""
+    for choice in ParserChoice:
+        if choice.value == filename:
+            return choice
+    raise ValueError(f"Unrecognized dependency parser choice: {filename}")
+
+
+def parse_path_or_stdin(arg: str) -> PathOrSpecial:
+    """Convert --code argument into Path or "<stdin>"."""
+    if arg == "-":
+        return "<stdin>"
+    return Path(arg)
 
 
 class Settings(BaseSettings):  # type: ignore
@@ -134,3 +150,151 @@ class Settings(BaseSettings):  # type: ignore
             assert key in cls.__class_vars__
             setattr(cls, key, value)
         return cls
+
+    @classmethod
+    def populate_parser_actions(cls, parser: argparse._ActionsContainer) -> None:
+        """Add the Actions-related arguments to the command-line parser."""
+        parser.add_argument(
+            "--check",
+            dest="actions",
+            action="store_const",
+            const={Action.REPORT_UNDECLARED, Action.REPORT_UNUSED},
+            help="Report both undeclared and unused dependencies (default)",
+        )
+        parser.add_argument(
+            "--check-undeclared",
+            dest="actions",
+            action="store_const",
+            const={Action.REPORT_UNDECLARED},
+            help="Report only undeclared dependencies",
+        )
+        parser.add_argument(
+            "--check-unused",
+            dest="actions",
+            action="store_const",
+            const={Action.REPORT_UNUSED},
+            help="Report only unused dependencies",
+        )
+        parser.add_argument(
+            "--list-imports",
+            dest="actions",
+            action="store_const",
+            const={Action.LIST_IMPORTS},
+            help="List third-party imports extracted from code and exit",
+        )
+        parser.add_argument(
+            "--list-deps",
+            dest="actions",
+            action="store_const",
+            const={Action.LIST_DEPS},
+            help="List declared dependencies and exit",
+        )
+
+    @classmethod
+    def populate_parser_options(cls, parser: argparse._ActionsContainer) -> None:
+        """Add the other Settings members to the command-line parser."""
+        parser.add_argument(
+            "--code",
+            type=parse_path_or_stdin,
+            default=Path("."),
+            help=(
+                "Code to parse for import statements (file or directory, use '-' "
+                "to read code from stdin; defaults to the current directory)"
+            ),
+        )
+        parser.add_argument(
+            "--deps",
+            type=Path,
+            default=Path("."),
+            help=(
+                "Where to find dependency declarations (file or directory, defaults"
+                " to looking for supported files in the current directory)"
+            ),
+        )
+        parser.add_argument(
+            "--json",
+            action="store_true",
+            help="Generate JSON output instead of a human-readable report",
+        )
+        parser.add_argument(
+            "--ignore-undeclared",
+            nargs="+",
+            default=[],
+            metavar="IMPORT_NAME",
+            help=(
+                "Imports to ignore when looking for undeclared"
+                " dependencies, e.g. --ignore-undeclared isort pkg_resources"
+            ),
+        )
+        parser.add_argument(
+            "--ignore-unused",
+            nargs="+",
+            default=[],
+            metavar="DEP_NAME",
+            help=(
+                "Dependencies to ignore when looking for unused"
+                " dependencies, e.g. --ignore-unused pylint black"
+            ),
+        )
+        parser.add_argument(
+            "--deps-parser-choice",
+            type=read_parser_choice,
+            choices=list(ParserChoice),
+            help=(
+                "Name of the parsing strategy to use for dependency declarations, "
+                "useful for when the file to parse doesn't match a standard name"
+            ),
+        )
+        parser.add_argument(
+            "-v",
+            "--verbose",
+            action="count",
+            default=0,
+            help=(
+                "Increase log level (WARNING by default, -v: INFO, -vv: DEBUG)"
+                " and verbosity of the output (without location details by default,"
+                " -v, -vv: with location details)"
+            ),
+        )
+        parser.add_argument(
+            "-q",
+            "--quiet",
+            action="count",
+            default=0,
+            help="Decrease log level (WARNING by default, -q: ERROR, -qq: FATAL)",
+        )
+
+    @classmethod
+    def setup_cmdline_parser(
+        cls, description: str
+    ) -> Tuple[argparse.ArgumentParser, argparse._ArgumentGroup]:
+        """Create command-line parser object and populate it with arguments.
+
+        Return the parser itself (which the caller will use to parse/collect
+        command-line arguments), as well as a suitable argument group where the
+        caller can add its own additional command-line arguments.
+        """
+        parser = argparse.ArgumentParser(
+            description=description,
+            formatter_class=argparse.RawDescriptionHelpFormatter,
+            add_help=False,  # instead, add --help in the "Options" group below
+        )
+
+        # A mutually exclusive group for arguments specifying .actions
+        action_group = parser.add_argument_group(
+            title="Actions (choose one)"
+        ).add_mutually_exclusive_group()
+        cls.populate_parser_actions(action_group)
+
+        # A different group for the other options.
+        option_group = parser.add_argument_group(title="Other options")
+        cls.populate_parser_options(option_group)
+        option_group.add_argument(
+            "-h",
+            "--help",
+            action="help",
+            default=argparse.SUPPRESS,
+            help="Show this help message and exit",
+        )
+
+        return parser, option_group
