@@ -89,6 +89,11 @@ class Settings(BaseSettings):  # type: ignore
     - By setting directives in the [tool.fawltydeps] section in pyproject.toml.
     - By setting fawltydeps_* environment variables
     - By passing command-line arguments
+
+    TODO? Currently overrides happen _completely_, for example specifying
+    --ignore-undeclared on the command-line will _replace_ an ignore_undeclared
+    directive in pyproject.toml. We may want to consider allowing some
+    directives to _combine_ (although that will carry further complications).
     """
 
     actions: Set[Action] = {Action.REPORT_UNDECLARED, Action.REPORT_UNUSED}
@@ -153,7 +158,12 @@ class Settings(BaseSettings):  # type: ignore
 
     @classmethod
     def populate_parser_actions(cls, parser: argparse._ActionsContainer) -> None:
-        """Add the Actions-related arguments to the command-line parser."""
+        """Add the Actions-related arguments to the command-line parser.
+
+        These are mutually exclusive options that each will set the .actions
+        member to a set of 'Action's. If not given, the .actions member will
+        remain unset, to allow the underlying default to come through.
+        """
         parser.add_argument(
             "--check",
             dest="actions",
@@ -192,11 +202,19 @@ class Settings(BaseSettings):  # type: ignore
 
     @classmethod
     def populate_parser_options(cls, parser: argparse._ActionsContainer) -> None:
-        """Add the other Settings members to the command-line parser."""
+        """Add the other Settings members to the command-line parser.
+
+        Except where otherwise noted, these map directly onto a corresponding
+        Settings member. None of these options should specify default values
+        (and the parser-wide default value should be argparse.SUPPRESS). This
+        ensures that unspecified options are _omitted_ from the resulting
+        argparse.Namespace object, which will allow the underlying defaults
+        from Settings to come through when we create the Settings object in
+        .create() below.
+        """
         parser.add_argument(
             "--code",
             type=parse_path_or_stdin,
-            default=Path("."),
             help=(
                 "Code to parse for import statements (file or directory, use '-' "
                 "to read code from stdin; defaults to the current directory)"
@@ -205,7 +223,6 @@ class Settings(BaseSettings):  # type: ignore
         parser.add_argument(
             "--deps",
             type=Path,
-            default=Path("."),
             help=(
                 "Where to find dependency declarations (file or directory, defaults"
                 " to looking for supported files in the current directory)"
@@ -213,13 +230,13 @@ class Settings(BaseSettings):  # type: ignore
         )
         parser.add_argument(
             "--json",
+            dest="json_output",
             action="store_true",
             help="Generate JSON output instead of a human-readable report",
         )
         parser.add_argument(
             "--ignore-undeclared",
             nargs="+",
-            default=[],
             metavar="IMPORT_NAME",
             help=(
                 "Imports to ignore when looking for undeclared"
@@ -229,13 +246,14 @@ class Settings(BaseSettings):  # type: ignore
         parser.add_argument(
             "--ignore-unused",
             nargs="+",
-            default=[],
             metavar="DEP_NAME",
             help=(
                 "Dependencies to ignore when looking for unused"
                 " dependencies, e.g. --ignore-unused pylint black"
             ),
         )
+        # The following two do not correspond directly to a Settings member,
+        # but the latter is subtracted from the former to make .verbosity.
         parser.add_argument(
             "--deps-parser-choice",
             type=read_parser_choice,
@@ -249,7 +267,6 @@ class Settings(BaseSettings):  # type: ignore
             "-v",
             "--verbose",
             action="count",
-            default=0,
             help=(
                 "Increase log level (WARNING by default, -v: INFO, -vv: DEBUG)"
                 " and verbosity of the output (without location details by default,"
@@ -260,7 +277,6 @@ class Settings(BaseSettings):  # type: ignore
             "-q",
             "--quiet",
             action="count",
-            default=0,
             help="Decrease log level (WARNING by default, -q: ERROR, -qq: FATAL)",
         )
 
@@ -278,6 +294,7 @@ class Settings(BaseSettings):  # type: ignore
             description=description,
             formatter_class=argparse.RawDescriptionHelpFormatter,
             add_help=False,  # instead, add --help in the "Options" group below
+            argument_default=argparse.SUPPRESS,
         )
 
         # A mutually exclusive group for arguments specifying .actions
@@ -293,8 +310,31 @@ class Settings(BaseSettings):  # type: ignore
             "-h",
             "--help",
             action="help",
-            default=argparse.SUPPRESS,
             help="Show this help message and exit",
         )
 
         return parser, option_group
+
+    @classmethod
+    def create(cls, cmdline_args: argparse.Namespace) -> "Settings":
+        """Convert the parsed command-line args into a Settings object.
+
+        Extract the relevant parts of the given argparse.Namespace object into
+        a dict of keyword args that we can pass to the Settings constructor.
+        This dict must _only_ contain the Settings members that we want to
+        _override_ from the command-line. Any Settings members that should
+        retain their underlying values (from environment, config file, or -
+        ultimately - from the hardcoded defaults above) must NOT appear in
+        these keyword args (cf. use of argparse.SUPPRESS above).
+        """
+        args_dict = cmdline_args.__dict__
+
+        # Use subset of args_dict that directly correspond to fields in Settings
+        ret = {arg: value for arg, value in args_dict.items() if arg in cls.__fields__}
+
+        # If user gives --verbose or --quiet on the command line, we _override_
+        # any pre-configured verbosity value
+        if {"verbose", "quiet"}.intersection(args_dict.keys()):
+            ret["verbosity"] = args_dict.get("verbose", 0) - args_dict.get("quiet", 0)
+
+        return cls(**ret)

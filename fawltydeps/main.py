@@ -161,16 +161,7 @@ def main() -> int:
     )
 
     args = parser.parse_args()
-    settings = Settings(
-        actions=args.actions or {Action.REPORT_UNDECLARED, Action.REPORT_UNUSED},
-        code=args.code,
-        deps=args.deps,
-        json_output=args.json,
-        ignore_undeclared=args.ignore_undeclared,
-        ignore_unused=args.ignore_unused,
-        deps_parser_choice=args.deps_parser_choice,
-        verbosity=args.verbose - args.quiet,
-    )
+    settings = Settings.create(args)
 
     logging.basicConfig(level=logging.WARNING - 10 * settings.verbosity)
 
