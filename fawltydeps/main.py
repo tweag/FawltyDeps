@@ -104,8 +104,7 @@ class Analysis:
             ret.undeclared_deps, ret.unused_deps = compare_imports_to_dependencies(
                 imports=ret.imports,
                 dependencies=ret.declared_deps,
-                ignored_unused=settings.ignore_unused,
-                ignored_undeclared=settings.ignore_undeclared,
+                settings=settings,
             )
 
         return ret
