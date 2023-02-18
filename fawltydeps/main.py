@@ -18,19 +18,16 @@ import json
 import logging
 import sys
 from dataclasses import dataclass
-from enum import Enum, auto
 from operator import attrgetter
 from pathlib import Path
-from typing import Iterable, List, Optional, Set, TextIO, no_type_check
+from typing import List, Optional, Set, TextIO, no_type_check
 
 from pydantic.json import pydantic_encoder  # pylint: disable=no-name-in-module
 
 from fawltydeps import extract_imports
 from fawltydeps.check import compare_imports_to_dependencies
-from fawltydeps.extract_declared_dependencies import (
-    ParserChoice,
-    extract_declared_dependencies,
-)
+from fawltydeps.extract_declared_dependencies import extract_declared_dependencies
+from fawltydeps.settings import Action, ParserChoice, Settings
 from fawltydeps.types import (
     DeclaredDependency,
     ParsedImport,
@@ -50,15 +47,6 @@ else:
 logger = logging.getLogger(__name__)
 
 VERBOSE_PROMPT = "For a more verbose report re-run with the `-v` option."
-
-
-class Action(Enum):
-    """Actions available to the command-line interface."""
-
-    LIST_IMPORTS = auto()
-    LIST_DEPS = auto()
-    REPORT_UNDECLARED = auto()
-    REPORT_UNUSED = auto()
 
 
 @no_type_check
@@ -87,15 +75,7 @@ class Analysis:
         return len(self.request.intersection(args)) > 0
 
     @classmethod
-    def create(
-        cls,
-        request: Set[Action],
-        code: PathOrSpecial,
-        deps: Path,
-        ignored_unused: Iterable[str] = (),
-        ignored_undeclared: Iterable[str] = (),
-        deps_parse_choice: Optional[ParserChoice] = None,
-    ) -> "Analysis":
+    def create(cls, settings: Settings) -> "Analysis":
         """Perform the requested actions of FawltyDeps core logic.
 
         This is a high-level interface to the services offered by FawltyDeps.
@@ -103,17 +83,19 @@ class Analysis:
         this can also be called from other Python contexts without having to go
         via the command-line.
         """
-        ret = cls(request)
+        ret = cls(settings.actions)
         if ret.is_enabled(
             Action.LIST_IMPORTS, Action.REPORT_UNDECLARED, Action.REPORT_UNUSED
         ):
-            ret.imports = list(extract_imports.parse_any_arg(code))
+            ret.imports = list(extract_imports.parse_any_arg(settings.code))
 
         if ret.is_enabled(
             Action.LIST_DEPS, Action.REPORT_UNDECLARED, Action.REPORT_UNUSED
         ):
             ret.declared_deps = list(
-                extract_declared_dependencies(deps, deps_parse_choice)
+                extract_declared_dependencies(
+                    settings.deps, settings.deps_parser_choice
+                )
             )
 
         if ret.is_enabled(Action.REPORT_UNDECLARED, Action.REPORT_UNUSED):
@@ -122,8 +104,8 @@ class Analysis:
             ret.undeclared_deps, ret.unused_deps = compare_imports_to_dependencies(
                 imports=ret.imports,
                 dependencies=ret.declared_deps,
-                ignored_unused=ignored_unused,
-                ignored_undeclared=ignored_undeclared,
+                ignored_unused=settings.ignore_unused,
+                ignored_undeclared=settings.ignore_undeclared,
             )
 
         return ret
@@ -318,30 +300,29 @@ def main() -> int:
     )
 
     args = parser.parse_args()
+    settings = Settings(
+        actions=args.actions or {Action.REPORT_UNDECLARED, Action.REPORT_UNUSED},
+        code=args.code,
+        deps=args.deps,
+        json_output=args.json,
+        ignore_undeclared=args.ignore_undeclared,
+        ignore_unused=args.ignore_unused,
+        deps_parser_choice=args.deps_parser_choice,
+        verbosity=args.verbose - args.quiet,
+    )
 
-    verbosity = args.verbose - args.quiet
-    verbose_report = verbosity > 0
-    logging.basicConfig(level=logging.WARNING - 10 * verbosity)
-
-    actions = args.actions or {Action.REPORT_UNDECLARED, Action.REPORT_UNUSED}
+    logging.basicConfig(level=logging.WARNING - 10 * settings.verbosity)
 
     try:
-        analysis = Analysis.create(
-            actions,
-            args.code,
-            args.deps,
-            args.ignore_unused,
-            args.ignore_undeclared,
-            deps_parse_choice=args.deps_parser_choice,
-        )
+        analysis = Analysis.create(settings)
     except UnparseablePathException as exc:
         return parser.error(exc.msg)  # exit code 2
 
-    if args.json:
+    if settings.json_output:
         analysis.print_json(sys.stdout)
     else:
-        analysis.print_human_readable(sys.stdout, details=verbose_report)
-        if not verbose_report:
+        analysis.print_human_readable(sys.stdout, details=settings.verbosity > 0)
+        if settings.verbosity <= 0:
             print(f"\n{VERBOSE_PROMPT}\n")
 
     # Exit codes:

@@ -25,7 +25,8 @@ from pathlib import Path
 
 import pytest
 
-from fawltydeps.main import Action, Analysis
+from fawltydeps.main import Analysis
+from fawltydeps.settings import Action, Settings
 
 if sys.version_info >= (3, 11):
     import tomllib  # pylint: disable=E1101
@@ -46,9 +47,12 @@ sample_projects_params = [
 
 @pytest.mark.parametrize("project_path", sample_projects_params)
 def test_integration_analysis_on_sample_projects__(project_path):
-
-    actions = {Action.REPORT_UNDECLARED, Action.REPORT_UNUSED}
-    analysis = Analysis.create(actions, code=project_path, deps=project_path)
+    settings = Settings(
+        actions={Action.REPORT_UNDECLARED, Action.REPORT_UNUSED},
+        code=project_path,
+        deps=project_path,
+    )
+    analysis = Analysis.create(settings)
 
     with (project_path / "expected.toml").open("rb") as f:
         expected = tomllib.load(f)
