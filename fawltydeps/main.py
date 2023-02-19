@@ -17,11 +17,12 @@ import json
 import logging
 import sys
 from dataclasses import dataclass
+from functools import partial
 from operator import attrgetter
 from pathlib import Path
-from typing import List, Optional, Set, TextIO, no_type_check
+from typing import List, Optional, TextIO, no_type_check
 
-from pydantic.json import pydantic_encoder  # pylint: disable=no-name-in-module
+from pydantic.json import custom_pydantic_encoder  # pylint: disable=no-name-in-module
 
 from fawltydeps import extract_imports
 from fawltydeps.check import compare_imports_to_dependencies
@@ -34,7 +35,6 @@ from fawltydeps.types import (
     UnparseablePathException,
     UnusedDependency,
 )
-from fawltydeps.utils import hide_dataclass_fields
 
 if sys.version_info >= (3, 8):
     import importlib.metadata as importlib_metadata
@@ -62,26 +62,30 @@ def version() -> str:
 class Analysis:
     """Result from FawltyDeps analysis, to be presented to the user."""
 
-    request: Set[Action]
+    settings: Settings
     imports: Optional[List[ParsedImport]] = None
     declared_deps: Optional[List[DeclaredDependency]] = None
     undeclared_deps: Optional[List[UndeclaredDependency]] = None
     unused_deps: Optional[List[UnusedDependency]] = None
 
     def is_enabled(self, *args: Action) -> bool:
-        """Return True if any of the given actions are in self.request."""
-        return len(self.request.intersection(args)) > 0
+        """Return True if any of the given actions are in self.settings."""
+        return len(self.settings.actions.intersection(args)) > 0
 
     @classmethod
     def create(cls, settings: Settings) -> "Analysis":
-        """Perform the requested actions of FawltyDeps core logic.
+        """Exercise FawltyDeps' core logic according to the given settings.
+
+        Perform the actions specified in 'settings.actions' and apply the other
+        options in the 'settings' object.
 
         This is a high-level interface to the services offered by FawltyDeps.
         Although the main caller is the command-line interface defined below,
         this can also be called from other Python contexts without having to go
         via the command-line.
+
         """
-        ret = cls(settings.actions)
+        ret = cls(settings)
         if ret.is_enabled(
             Action.LIST_IMPORTS, Action.REPORT_UNDECLARED, Action.REPORT_UNUSED
         ):
@@ -107,13 +111,13 @@ class Analysis:
 
         return ret
 
-    def __post_init__(self) -> None:
-        """Do init-time magic to hide .request from JSON representation."""
-        hide_dataclass_fields(self, "request")
-
     def print_json(self, out: TextIO) -> None:
         """Print the JSON representation of this analysis to 'out'."""
-        json.dump(self, out, indent=2, default=pydantic_encoder)
+        # The default pydantic_encoder uses list() to serialize set objects.
+        # Use sorted() instead, to ensure stable serialization to JSON.
+        # This requires that all our sets contain orderable elements!
+        encoder = partial(custom_pydantic_encoder, {frozenset: sorted, set: sorted})
+        json.dump(self, out, indent=2, default=encoder)
 
     def print_human_readable(self, out: TextIO, details: bool = True) -> None:
         """Print a human-readable rendering of this analysis to 'out'."""

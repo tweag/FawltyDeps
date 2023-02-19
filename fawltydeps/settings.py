@@ -3,8 +3,9 @@ import argparse
 import logging
 import sys
 from enum import Enum
+from functools import total_ordering
 from pathlib import Path
-from typing import ClassVar, Optional, Set, Tuple, Type, Union
+from typing import ClassVar, List, Optional, Set, Tuple, Type, Union
 
 from pydantic import BaseSettings
 from pydantic.env_settings import SettingsSourceCallable  # pylint: disable=E0611
@@ -46,7 +47,18 @@ class PyprojectTomlSettingsSource:
         return {}
 
 
-class Action(Enum):
+@total_ordering
+class OrderedEnum(Enum):
+    """Encapsulate an orderable (aka. sortable) enum."""
+
+    def __lt__(self, other: object) -> bool:
+        if not isinstance(other, OrderedEnum):
+            return NotImplemented
+        values: List["OrderedEnum"] = list(self.__class__)
+        return values.index(self) < values.index(other)
+
+
+class Action(OrderedEnum):
     """Actions provided by the FawltyDeps application."""
 
     LIST_IMPORTS = "list_imports"
