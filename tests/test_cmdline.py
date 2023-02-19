@@ -151,6 +151,16 @@ def test_list_imports_json__from_py_file__prints_imports_from_file(write_tmp_fil
     )
 
     expect = {
+        "settings": {
+            "actions": ["list_imports"],
+            "code": f"{tmp_path}/myfile.py",
+            "deps": ".",
+            "json_output": True,
+            "ignore_undeclared": [],
+            "ignore_unused": [],
+            "deps_parser_choice": None,
+            "verbosity": 0,
+        },
         "imports": [
             {
                 "name": "requests",
@@ -281,6 +291,16 @@ def test_list_deps_json__dir__prints_deps_from_requirements_txt(
     )
 
     expect = {
+        "settings": {
+            "actions": ["list_deps"],
+            "code": ".",
+            "deps": f"{tmp_path}",
+            "json_output": True,
+            "ignore_undeclared": [],
+            "ignore_unused": [],
+            "deps_parser_choice": None,
+            "verbosity": 0,
+        },
         "imports": None,
         "declared_deps": [
             {
@@ -452,6 +472,16 @@ def test_check_json__simple_project__can_report_both_undeclared_and_unused(
     )
 
     expect = {
+        "settings": {
+            "actions": ["check_undeclared", "check_unused"],
+            "code": f"{tmp_path}",
+            "deps": f"{tmp_path}",
+            "json_output": True,
+            "ignore_undeclared": [],
+            "ignore_unused": [],
+            "deps_parser_choice": None,
+            "verbosity": 0,
+        },
         "imports": [
             {
                 "name": "requests",
