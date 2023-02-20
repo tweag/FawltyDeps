@@ -65,6 +65,8 @@ def dependency_to_imports_mapping(
     names of imports and mapping type used.
     """
     import_names = local_package_lookup.lookup_package(dependency.name)
+    if dependency.name == "scikit-learn":
+        print("IMPORT NAMES: ", import_names)
     return (
         dependency.replace_mapping(
             import_names, DependenciesMapping.DEPENDENCY_TO_IMPORT
@@ -81,6 +83,7 @@ def map_dependencies_to_imports(
     """Map dependencies names to list of imports names exposed by a package"""
 
     local_package_lookup = LocalPackageLookup()
+    print(local_package_lookup.import_name_to_package_mapping["sklearn"])
 
     return [
         dependency_to_imports_mapping(d, local_package_lookup) for d in dependencies
@@ -103,6 +106,14 @@ def compare_imports_to_dependencies(
 
     # TODO consider empty list of dependency to import
     mapped_dependencies = map_dependencies_to_imports(dependencies)
+    print(
+        "DEPENDENCIES: ",
+        "\n".join([str(d) for d in dependencies if d.name.startswith("sci")]),
+    )
+    print(
+        "MAPPED_DEPENDENCIES: ",
+        "\n".join([str(d) for d in mapped_dependencies if d.name.startswith("sci")]),
+    )
 
     names_from_imports = {i.name for i in imports}
     names_from_dependencies = {

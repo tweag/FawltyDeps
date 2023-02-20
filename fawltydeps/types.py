@@ -140,7 +140,12 @@ class DeclaredDependency:
         self, import_names: Tuple[str, ...], mapping: DependenciesMapping
     ) -> "DeclaredDependency":
         """Supply a custom mapping of dependency to imports"""
-        return replace(self, import_names=import_names, mapping=mapping)
+        nnn = replace(self, **{"import_names": ("dupa"), "mapping": mapping})
+        if self.name == "scikit-learn":
+            print("IMPORT NAMES: ", import_names)
+            print(nnn)
+
+        return nnn
 
 
 @dataclass
