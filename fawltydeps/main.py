@@ -44,7 +44,7 @@ else:
 
 logger = logging.getLogger(__name__)
 
-VERBOSE_PROMPT = "For a more verbose report re-run with the `-v` option."
+VERBOSE_PROMPT = "For a more verbose report re-run with the `--detailed` option."
 
 
 @no_type_check
@@ -183,10 +183,13 @@ def main() -> int:
 
     if settings.output_format == OutputFormat.JSON:
         analysis.print_json(sys.stdout)
+    elif settings.output_format == OutputFormat.HUMAN_DETAILED:
+        analysis.print_human_readable(sys.stdout, details=True)
+    elif settings.output_format == OutputFormat.HUMAN_SUMMARY:
+        analysis.print_human_readable(sys.stdout, details=False)
+        print(f"\n{VERBOSE_PROMPT}")
     else:
-        analysis.print_human_readable(sys.stdout, details=settings.verbosity > 0)
-        if settings.verbosity <= 0:
-            print(f"\n{VERBOSE_PROMPT}\n")
+        raise NotImplementedError
 
     # Exit codes:
     # 0 - success, no problems found

@@ -70,7 +70,8 @@ class Action(OrderedEnum):
 class OutputFormat(OrderedEnum):
     """Output formats provided by the FawltyDeps application."""
 
-    HUMAN_READABLE = "human_readable"
+    HUMAN_SUMMARY = "human_summary"
+    HUMAN_DETAILED = "human_detailed"
     JSON = "json"
 
 
@@ -118,7 +119,7 @@ class Settings(BaseSettings):  # type: ignore
     actions: Set[Action] = {Action.REPORT_UNDECLARED, Action.REPORT_UNUSED}
     code: PathOrSpecial = Path(".")
     deps: Path = Path(".")
-    output_format: OutputFormat = OutputFormat.HUMAN_READABLE
+    output_format: OutputFormat = OutputFormat.HUMAN_SUMMARY
     ignore_undeclared: Set[str] = set()
     ignore_unused: Set[str] = set()
     deps_parser_choice: Optional[ParserChoice] = None
@@ -220,6 +221,38 @@ class Settings(BaseSettings):  # type: ignore
         )
 
     @classmethod
+    def populate_output_formats(cls, parser: argparse._ActionsContainer) -> None:
+        """Add arguments related to output format to the command-line parser.
+
+        These are mutually exclusive options that each will set the
+        .output_format member to a one of the available OutputFormat values.
+        If not given, the .output_format member will remain unset, to allow the
+        underlying default to come through.
+        """
+        output_format = parser.add_mutually_exclusive_group()
+        output_format.add_argument(
+            "--summary",
+            dest="output_format",
+            action="store_const",
+            const="human_summary",
+            help="Generate human-readable summary report (default)",
+        )
+        output_format.add_argument(
+            "--detailed",
+            dest="output_format",
+            action="store_const",
+            const="human_detailed",
+            help="Generate human-readable detailed report",
+        )
+        output_format.add_argument(
+            "--json",
+            dest="output_format",
+            action="store_const",
+            const="json",
+            help="Generate JSON output instead of a human-readable report",
+        )
+
+    @classmethod
     def populate_parser_options(cls, parser: argparse._ActionsContainer) -> None:
         """Add the other Settings members to the command-line parser.
 
@@ -248,13 +281,6 @@ class Settings(BaseSettings):  # type: ignore
             ),
         )
         parser.add_argument(
-            "--json",
-            dest="output_format",
-            action="store_const",
-            const="json",
-            help="Generate JSON output instead of a human-readable report",
-        )
-        parser.add_argument(
             "--ignore-undeclared",
             nargs="+",
             metavar="IMPORT_NAME",
@@ -272,6 +298,7 @@ class Settings(BaseSettings):  # type: ignore
                 " dependencies, e.g. --ignore-unused pylint black"
             ),
         )
+
         # The following two do not correspond directly to a Settings member,
         # but the latter is subtracted from the former to make .verbosity.
         parser.add_argument(
@@ -287,11 +314,7 @@ class Settings(BaseSettings):  # type: ignore
             "-v",
             "--verbose",
             action="count",
-            help=(
-                "Increase log level (WARNING by default, -v: INFO, -vv: DEBUG)"
-                " and verbosity of the output (without location details by default,"
-                " -v, -vv: with location details)"
-            ),
+            help="Increase log level (WARNING by default, -v: INFO, -vv: DEBUG)",
         )
         parser.add_argument(
             "-q",
@@ -322,6 +345,12 @@ class Settings(BaseSettings):  # type: ignore
             title="Actions (choose one)"
         ).add_mutually_exclusive_group()
         cls.populate_parser_actions(action_group)
+
+        # A mutually exclusive group for arguments specifying .output_format
+        output_format_group = parser.add_argument_group(
+            title="Output format (choose one)"
+        ).add_mutually_exclusive_group()
+        cls.populate_output_formats(output_format_group)
 
         # A different group for the other options.
         option_group = parser.add_argument_group(title="Other options")
