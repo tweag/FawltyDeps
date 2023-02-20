@@ -14,7 +14,7 @@ from typing import Iterable, Optional, Tuple
 
 import pytest
 
-from fawltydeps.main import VERBOSE_PROMPT
+from fawltydeps.main import VERBOSE_PROMPT, version
 
 from .test_extract_imports_simple import generate_notebook
 
@@ -172,6 +172,7 @@ def test_list_imports_json__from_py_file__prints_imports_from_file(write_tmp_fil
         "declared_deps": None,
         "undeclared_deps": None,
         "unused_deps": None,
+        "version": version(),
     }
     output, _errors, returncode = run_fawltydeps(
         "--list-imports", "--json", f"--code={tmp_path}/myfile.py"
@@ -318,6 +319,7 @@ def test_list_deps_json__dir__prints_deps_from_requirements_txt(
         ],
         "undeclared_deps": None,
         "unused_deps": None,
+        "version": version(),
     }
     output, _errors, returncode = run_fawltydeps(
         "--list-deps", "--json", f"--deps={tmp_path}"
@@ -572,6 +574,7 @@ def test_check_json__simple_project__can_report_both_undeclared_and_unused(
                 ],
             },
         ],
+        "version": version(),
     }
     output, _errors, returncode = run_fawltydeps(
         "--check", "--json", f"--code={tmp_path}", f"--deps={tmp_path}"
