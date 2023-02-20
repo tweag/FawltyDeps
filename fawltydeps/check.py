@@ -28,9 +28,14 @@ class LocalPackageLookup:
     """Lookup of import names exposed by local packages."""
 
     def __init__(self) -> None:
-        self.import_name_to_package_mapping = (
-            packages_distributions()
-        )  # Called only _once_
+        """Collect packages distribution mapping
+
+        Packages names are changed to lower case for
+        coherent comparison with declared dependencies."""
+
+        self.import_name_to_package_mapping = {
+            k: [vv.lower() for vv in v] for k, v in packages_distributions().items()
+        }  # Called only _once_
 
     def lookup_package(self, package: str) -> Optional[Tuple[str, ...]]:
         """Convert a package name to installed import names.
@@ -50,8 +55,9 @@ class LocalPackageLookup:
         ret = [
             import_name
             for import_name, packages in self.import_name_to_package_mapping.items()
-            if package in packages
+            if package.lower() in packages
         ]
+
         return tuple(ret) or None
 
 
