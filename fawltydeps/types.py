@@ -134,7 +134,8 @@ class DeclaredDependency:
 
     def __post_init__(self) -> None:
         """Set an identity mapping by default"""
-        object.__setattr__(self, "import_names", (self.name,))
+        if self.mapping == DependenciesMapping.IDENTITY:
+            object.__setattr__(self, "import_names", (self.name,))
 
     def replace_mapping(
         self, import_names: Tuple[str, ...], mapping: DependenciesMapping
