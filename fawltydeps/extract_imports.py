@@ -194,7 +194,7 @@ def parse_any_arg(arg: PathOrSpecial) -> Iterator[ParsedImport]:
             logger.info("Parsing Notebook file %s", arg)
             return parse_notebook_file(arg)
         raise UnparseablePathException(
-            ctx="Parseable code comes from .py and .ipynb. Cannot parse given path",
+            ctx="Supported formats are .py and .ipynb; Cannot parse code",
             path=arg,
         )
     if arg.is_dir():

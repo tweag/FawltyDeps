@@ -23,7 +23,7 @@ PARSER_CHOICE_FILE_NAME_MISMATCH_GRID = {
 
 
 def mkfile(folder: Path, filename: str) -> Path:
-    """'tocuh' the file at the location defined by given folder and name."""
+    """'touch' the file at the location defined by given folder and name."""
     fp = folder / filename
     with open(fp, "w"):
         return fp
@@ -43,7 +43,7 @@ def test__to_cmdl_from_cmdl__are_inverses(parser_choice):
         for fn in [fn_match] + PARSER_CHOICE_FILE_NAME_MISMATCH_GRID[pc]
     ],
 )
-def test_explicit_parse_strategy_is_always_chosen(
+def test_parse_strategy__explicit_is_always_chosen(
     tmp_path, parser_choice, deps_file_name
 ):
     """Even when filename doesn't match, explicit parser choice is respected."""

@@ -358,7 +358,7 @@ def extract_declared_dependencies(
         parse = get_parser(path)
         if parse is None:
             raise UnparseablePathException(
-                ctx="Parsing given deps path isn't supported", path=path
+                ctx="Parsing given dependencies path isn't supported", path=path
             )
         logger.debug(f"Extracting dependencies from {path}.")
         yield from parse(path.read_text(), Location(path))
