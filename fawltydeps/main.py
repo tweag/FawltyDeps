@@ -67,6 +67,7 @@ class Analysis:
     declared_deps: Optional[List[DeclaredDependency]] = None
     undeclared_deps: Optional[List[UndeclaredDependency]] = None
     unused_deps: Optional[List[UnusedDependency]] = None
+    version: str = version()
 
     def is_enabled(self, *args: Action) -> bool:
         """Return True if any of the given actions are in self.settings."""
