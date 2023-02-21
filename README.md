@@ -82,6 +82,24 @@ be explicit about where to find the declared dependencies.
 If no `--deps` option is passed, FawltyDeps will look for the above files under
 the current directory, i.e. same as `--deps=.`
 
+### Ignoring irrelevant results
+
+There may be `import` statements in your code that should not be considered an
+undeclared dependency. This might happen if you for example do a conditional
+`import` with a `try: ... except ImportError: ...` block (or similar).
+FawltyDeps is not able to recognize whether these dependencies should have been
+declared or not, but you can ask for them to be ignored with the
+`--ignore-undeclared` option, for example:
+`--ignore-undeclared some_module some_other_module`
+
+Conversely, there may be dependencies that you have declared without intending
+to `import` them. This is often the case for developer tools like Black or Mypy
+that are part of your project's development environment.
+FawltyDeps cannot automatically tell which of your declared dependencies are
+meant to be `import`ed or not, but you ask for specific deps to be ignored with
+the `--ignore-unused` option, for example:
+`--ignore-unused black mypy`
+
 ### Output formats
 
 The default output from FawltyDeps is a summary outlining the relevant
