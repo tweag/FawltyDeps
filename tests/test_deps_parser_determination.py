@@ -77,8 +77,7 @@ def test_explicit_parse_strategy_mismatch_yields_appropriate_logging(
     )  # Execute here just for effect (log).
     if has_log:
         exp_msg = (
-            f"Manually applying parsing strategy {parser_choice.name}, "
-            f"which doesn't automatically apply to given path: {deps_path}"
+            f"Applying parsing strategy {parser_choice.name} to given path: {deps_path}"
         )
         assert exp_msg in caplog.text
     else:

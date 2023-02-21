@@ -276,7 +276,8 @@ def main() -> int:
     )
     options.add_argument(
         "--deps-parser-choice",
-        choices=[pc.to_cmdl() for pc in ParserChoice],
+        type=ParserChoice.from_cmdl_unsafe,
+        choices=list(ParserChoice),
         help=(
             "Name of the parsing strategy to use for dependency declarations, "
             "useful for when the file to parse doesn't match a standard name"

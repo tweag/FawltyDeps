@@ -314,31 +314,29 @@ class ParserChoice(Enum):
     def from_cmdl(cls, arg: str) -> Optional["ParserChoice"]:
         """Attempt to parse a value from a command-line argument."""
         query = arg.upper().replace(".", "_")
-        try:
-            return next(choice for choice in cls if choice.name == query)
-        except StopIteration:
-            return None
+        return next((choice for choice in cls if choice.name == query), None)
+
+    @classmethod
+    def from_cmdl_unsafe(cls, arg: str) -> "ParserChoice":
+        """Parse CLI arg as parser choice, raising exception if unparsable."""
+        result = cls.from_cmdl(arg)
+        if result is None:
+            raise ValueError(f"Cannot interpret parser choice: {arg}")
+        return result
 
 
 def finalize_parse_strategy(
     path: Path, parser_choice: Optional[ParserChoice] = None
 ) -> Optional[Callable[[str, Location], Iterator[DeclaredDependency]]]:
     """Use the given parser choice and path to parse to determine how to do the parse."""
+    parser_choice = parser_choice or next(
+        (choice for choice in ParserChoice if choice.value.applies_to_path(path)), None
+    )
     if parser_choice is None:
-        for choice in ParserChoice:
-            if choice.value.applies_to_path(path):
-                strategy = choice.value
-                break
-        else:
-            return None
-    else:
-        strategy = parser_choice.value
-        if not strategy.applies_to_path(path):
-            logger.info(
-                f"Manually applying parsing strategy {parser_choice.name}, "
-                f"which doesn't automatically apply to given path: {path}"
-            )
-    return strategy.execute
+        return None
+    log = logger.debug if parser_choice.value.applies_to_path(path) else logger.info
+    log(f"Applying parsing strategy {parser_choice.name} to given path: {path}")
+    return parser_choice.value.execute
 
 
 def extract_declared_dependencies(
@@ -354,10 +352,10 @@ def extract_declared_dependencies(
     There is no guaranteed ordering on the generated dependencies.
     """
 
-    get_parser = partial(finalize_parse_strategy, parser_choice=parser_choice)
+    get_parse = partial(finalize_parse_strategy, parser_choice=parser_choice)
 
     if path.is_file():
-        parse = get_parser(path)
+        parse = get_parse(path)
         if parse is None:
             raise UnparseablePathException(
                 ctx="Parsing given dependencies path isn't supported", path=path
@@ -367,7 +365,7 @@ def extract_declared_dependencies(
     elif path.is_dir():
         logger.debug("Extracting dependencies from files under %s", path)
         for file in walk_dir(path):
-            parse = get_parser(file)
+            parse = get_parse(file)
             if parse:
                 logger.debug(f"Extracting dependencies from {file}.")
                 yield from parse(file.read_text(), Location(file))
