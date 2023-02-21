@@ -82,6 +82,20 @@ be explicit about where to find the declared dependencies.
 If no `--deps` option is passed, FawltyDeps will look for the above files under
 the current directory, i.e. same as `--deps=.`
 
+### Output formats
+
+The default output from FawltyDeps is a summary outlining the relevant
+dependencies found (according to the selected actions).
+However you can also ask for more information from FawltyDeps:
+
+- `--summary`: Default (human-readable) summary output
+- `--detailed`: Longer (human-readable) output that includes the location of
+  the relevant dependencies.
+- `--json`: Verbose JSON-formatted output for other tools to consume and
+  process further.
+
+Only one of these options can be used at a time.
+
 ### More help
 
 Run `fawltydeps --help` to get the full list of available options.
