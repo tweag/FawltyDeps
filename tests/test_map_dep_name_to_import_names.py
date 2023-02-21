@@ -41,6 +41,11 @@ from .utils import deps_factory
             ("_distutils_hack", "pkg_resources", "setuptools"),
             id="package_exposes_many_entries__returns_all_entries",
         ),
+        pytest.param(
+            "SETUPTOOLS",
+            ("_distutils_hack", "pkg_resources", "setuptools"),
+            id="package_declared_in_capital_letters__is_successfully_mapped_with_d2i",
+        ),
     ],
 )
 def test_LocalPackageLookup_lookup_package(dep_name, expect_import_names):
