@@ -38,7 +38,7 @@ def test__to_cmdl_from_cmdl__are_inverses(parser_choice):
 @pytest.mark.parametrize(
     ["parser_choice", "deps_file_name"],
     [
-        (pc, fn)
+        pytest.param(pc, fn, id=f"{fn_match}_{fn}")
         for pc, fn_match in PARSER_CHOICE_FILE_NAME_MATCH_GRID.items()
         for fn in [fn_match] + PARSER_CHOICE_FILE_NAME_MISMATCH_GRID[pc]
     ],
@@ -57,11 +57,14 @@ def test_parse_strategy__explicit_is_always_chosen(
 @pytest.mark.parametrize(
     ["parser_choice", "deps_file_name", "has_log"],
     [
-        (pc, fn, True)
-        for pc, filenames in PARSER_CHOICE_FILE_NAME_MISMATCH_GRID.items()
-        for fn in filenames
-    ]
-    + [(pc, fn, False) for pc, fn in PARSER_CHOICE_FILE_NAME_MATCH_GRID.items()],
+        pytest.param(pc, fn, has_log, id=f"{pc}__{fn}__{has_log}")
+        for pc, fn, has_log in [
+            (pc, fn, True)
+            for pc, filenames in PARSER_CHOICE_FILE_NAME_MISMATCH_GRID.items()
+            for fn in filenames
+        ]
+        + [(pc, fn, False) for pc, fn in PARSER_CHOICE_FILE_NAME_MATCH_GRID.items()]
+    ],
 )
 def test_explicit_parse_strategy_mismatch_yields_appropriate_logging(
     tmp_path, caplog, parser_choice, deps_file_name, has_log

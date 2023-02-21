@@ -279,7 +279,7 @@ def main() -> int:
         choices=[pc.to_cmdl() for pc in ParserChoice],
         help=(
             "Name of the parsing strategy to use for dependency declarations, "
-            "useful for when the file(s) to parse have an atypical extension"
+            "useful for when the file to parse doesn't match a standard name"
         ),
     )
     options.add_argument(

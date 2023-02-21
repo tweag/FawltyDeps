@@ -28,7 +28,6 @@ logger = logging.getLogger(__name__)
 ERROR_MESSAGE_TEMPLATE = "Failed to %s %s %s dependencies in %s: %s"
 
 NamedLocations = Iterator[Tuple[str, Location]]
-IterDeps = Iterator[DeclaredDependency]
 
 
 class DependencyParsingError(Exception):
@@ -44,7 +43,9 @@ def parse_one_req(req_text: str, source: Location) -> DeclaredDependency:
     return DeclaredDependency(Requirement.parse(req_text).unsafe_name, source)
 
 
-def parse_requirements_contents(text: str, source: Location) -> IterDeps:
+def parse_requirements_contents(
+    text: str, source: Location
+) -> Iterator[DeclaredDependency]:
     """Extract dependencies (packages names) from a requirements file.
 
     This is usually a requirements.txt file or any other file following the
@@ -61,7 +62,7 @@ def parse_requirements_contents(text: str, source: Location) -> IterDeps:
         yield parse_one_req(line, source)
 
 
-def parse_setup_contents(text: str, source: Location) -> IterDeps:
+def parse_setup_contents(text: str, source: Location) -> Iterator[DeclaredDependency]:
     """Extract dependencies (package names) from setup.py.
 
     This file can contain arbitrary Python code, and simply executing it has
@@ -76,7 +77,7 @@ def parse_setup_contents(text: str, source: Location) -> IterDeps:
     # resolve any variable references in the arguments to the setup() call.
     tracked_vars = VariableTracker(source)
 
-    def _extract_deps_from_setup_call(node: ast.Call) -> IterDeps:
+    def _extract_deps_from_setup_call(node: ast.Call) -> Iterator[DeclaredDependency]:
         for keyword in node.keywords:
             try:
                 if keyword.arg == "install_requires":
@@ -119,7 +120,9 @@ def parse_setup_contents(text: str, source: Location) -> IterDeps:
             break
 
 
-def parse_setup_cfg_contents(text: str, source: Location) -> IterDeps:
+def parse_setup_cfg_contents(
+    text: str, source: Location
+) -> Iterator[DeclaredDependency]:
     """Extract dependencies (package names) from setup.cfg.
 
     `ConfigParser` basic building blocks are "sections"
@@ -139,17 +142,19 @@ def parse_setup_cfg_contents(text: str, source: Location) -> IterDeps:
         logger.error("Could not parse contents of `%s`", source)
         return
 
-    def parse_value(value: str) -> IterDeps:
+    def parse_value(value: str) -> Iterator[DeclaredDependency]:
         yield from parse_requirements_contents(value, source=source)
 
-    def extract_section(section: str) -> IterDeps:
+    def extract_section(section: str) -> Iterator[DeclaredDependency]:
         if section in parser:
             for option in parser.options(section):
                 value = parser.get(section, option)
                 logger.debug("Dependencies found in [%s]: %s", section, value)
                 yield from parse_value(value)
 
-    def extract_option_from_section(section: str, option: str) -> IterDeps:
+    def extract_option_from_section(
+        section: str, option: str
+    ) -> Iterator[DeclaredDependency]:
         if section in parser and option in parser.options(section):
             value = parser.get(section, option)
             logger.debug("Dependencies found in [%s] / %s: %s", section, option, value)
@@ -169,7 +174,7 @@ def parse_setup_cfg_contents(text: str, source: Location) -> IterDeps:
 
 def parse_poetry_pyproject_dependencies(
     poetry_config: TomlData, source: Location
-) -> IterDeps:
+) -> Iterator[DeclaredDependency]:
     """Extract dependencies from `tool.poetry` fields in a pyproject.toml."""
 
     def parse_main(contents: TomlData, src: Location) -> NamedLocations:
@@ -203,7 +208,7 @@ def parse_poetry_pyproject_dependencies(
 
 def parse_pep621_pyproject_contents(
     parsed_contents: TomlData, source: Location
-) -> IterDeps:
+) -> Iterator[DeclaredDependency]:
     """Extract dependencies from a pyproject.toml using the PEP 621 fields."""
 
     def parse_main(contents: TomlData, src: Location) -> NamedLocations:
@@ -228,7 +233,7 @@ def parse_pyproject_elements(
     source: Location,
     context_name: str,
     named_parsers: Iterable[Tuple[str, Callable[[TomlData, Location], NamedLocations]]],
-) -> IterDeps:
+) -> Iterator[DeclaredDependency]:
     """Use the given data, source, and parsers to step through sections and collect dependencies."""
     for name_field_type, parser in named_parsers:
         try:
@@ -254,7 +259,9 @@ def parse_pyproject_elements(
             )
 
 
-def parse_pyproject_contents(text: str, source: Location) -> IterDeps:
+def parse_pyproject_contents(
+    text: str, source: Location
+) -> Iterator[DeclaredDependency]:
     """Extract dependencies (package names) from pyproject.toml.
 
     There are multiple ways to declare dependencies inside a pyproject.toml.
@@ -274,14 +281,11 @@ def parse_pyproject_contents(text: str, source: Location) -> IterDeps:
         logger.debug("%s does not contain [tool.poetry].", source)
 
 
-Parse = Callable[[str, Location], IterDeps]
-
-
 class ParsingStrategy(NamedTuple):
     """Named pairing of an applicability criterion and a dependency parser"""
 
     applies_to_path: Callable[[Path], bool]
-    execute: Parse
+    execute: Callable[[str, Location], Iterator[DeclaredDependency]]
 
 
 class ParserChoice(Enum):
@@ -318,14 +322,14 @@ class ParserChoice(Enum):
 
 def finalize_parse_strategy(
     path: Path, parser_choice: Optional[ParserChoice] = None
-) -> Optional[Parse]:
+) -> Optional[Callable[[str, Location], Iterator[DeclaredDependency]]]:
     """Use the given parser choice and path to parse to determine how to do the parse."""
     if parser_choice is None:
-        try:
-            strategy = next(
-                pc.value for pc in ParserChoice if pc.value.applies_to_path(path)
-            )
-        except StopIteration:
+        for choice in ParserChoice:
+            if choice.value.applies_to_path(path):
+                strategy = choice.value
+                break
+        else:
             return None
     else:
         strategy = parser_choice.value
@@ -339,7 +343,7 @@ def finalize_parse_strategy(
 
 def extract_declared_dependencies(
     path: Path, parser_choice: Optional[ParserChoice] = None
-) -> IterDeps:
+) -> Iterator[DeclaredDependency]:
     """Extract dependencies (package names) from supported file types.
 
     Pass a path from which to discover and parse dependency declarations. Pass
@@ -349,8 +353,6 @@ def extract_declared_dependencies(
     Generate (i.e. yield) a DeclaredDependency object for each dependency found.
     There is no guaranteed ordering on the generated dependencies.
     """
-
-    logger.debug(f"Entered extract_declared_dependencies given path: {path}")
 
     get_parser = partial(finalize_parse_strategy, parser_choice=parser_choice)
 
