@@ -272,5 +272,3 @@ The resulting updates are introduced to `fawltydeps` and reflected in our expect
 If you find a project where FawltyDeps is not doing a good job, we would appreciate
 if you add that project under [`tests/real_projects`](./tests/real_projects).
 To see how these tests work, look at the existing files in that directory.
-
-
