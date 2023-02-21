@@ -66,7 +66,7 @@ def test_parse_strategy__explicit_is_always_chosen(
         + [(pc, fn, False) for pc, fn in PARSER_CHOICE_FILE_NAME_MATCH_GRID.items()]
     ],
 )
-def test_explicit_parse_strategy_mismatch_yields_appropriate_logging(
+def test_explicit_parse_strategy__mismatch__yields_appropriate_logging(
     tmp_path, caplog, parser_choice, deps_file_name, has_log
 ):
     """Logging message should be conditional on mismatch between strategy and filename."""
