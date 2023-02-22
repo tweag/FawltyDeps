@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fawltydeps"
-version = "0.2.0"
+version = "0.3.1"
 description = "Find undeclared 3rd-party dependencies in your Python project."
 authors = [
     "Maria Knorps <maria.knorps@tweag.io>",
@@ -97,7 +97,7 @@ profile = "black"
 main.jobs = 4
 main.py-version = "3.7"
 reports.output-format = "colorized"
-"messages control".disable = "fixme,logging-fstring-interpolation,unspecified-encoding"
+"messages control".disable = "fixme,logging-fstring-interpolation,unspecified-encoding,too-few-public-methods"
 
 [tool.mypy]
 files = ['*.py', 'fawltydeps/*.py', 'tests/*.py']

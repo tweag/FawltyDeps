@@ -7,6 +7,7 @@ from typing import Iterable, List, Optional, Tuple
 
 from fawltydeps.types import (
     DeclaredDependency,
+    DependenciesMapping,
     ParsedImport,
     UndeclaredDependency,
     UnusedDependency,
@@ -23,27 +24,73 @@ else:
 logger = logging.getLogger(__name__)
 
 
-def find_import_names_from_package_name(package: str) -> Optional[List[str]]:
-    """Convert a package name to provided import names.
+class LocalPackageLookup:
+    """Lookup of import names exposed by local packages."""
 
-    (Although this function generally works with _all_ packages, we will apply
-    it only to the subset that is the dependencies of the current project.)
+    def __init__(self) -> None:
+        """Collect packages distribution mapping
 
-    Use importlib.metadata to look up the mapping between packages and their
-    provided import names, and return the import names associated with the given
-    package/distribution name in the current Python environment. This obviously
-    depends on which Python environment (e.g. virtualenv) we're calling from.
+        Packages names are changed to lower case for
+        coherent comparison with declared dependencies."""
 
-    Return None if we're unable to find any import names for the given package.
-    This is typically because the package is missing from the current
-    environment, or because it fails to declare its importable modules.
+        self.import_name_to_package_mapping = {
+            k: [vv.lower() for vv in v] for k, v in packages_distributions().items()
+        }  # Called only _once_
+
+    def lookup_package(self, package: str) -> Optional[Tuple[str, ...]]:
+        """Convert a package name to installed import names.
+
+        (Although this function generally works with _all_ packages, we will apply
+        it only to the subset that is the dependencies of the current project.)
+
+        Use importlib.metadata to look up the mapping between packages and their
+        provided import names, and return the import names associated with the given
+        package/distribution name in the current Python environment. This obviously
+        depends on which Python environment (e.g. virtualenv) we're calling from.
+
+        Return None if we're unable to find any import names for the given package.
+        This is typically because the package is missing from the current
+        environment, or because it fails to declare its importable modules.
+        """
+        ret = [
+            import_name
+            for import_name, packages in self.import_name_to_package_mapping.items()
+            if package.lower() in packages
+        ]
+
+        return tuple(ret) or None
+
+
+def dependency_to_imports_mapping(
+    dependency: DeclaredDependency, local_package_lookup: LocalPackageLookup
+) -> DeclaredDependency:
+    """For a single `DeclaredDependency` map the dependency name
+
+    to imports names exposed by a dependency.
+    Create a new `DeclaredDependency` object and with updated
+    names of imports and mapping type used.
     """
-    ret = [
-        import_name
-        for import_name, packages in packages_distributions().items()
-        if package in packages
+    import_names = local_package_lookup.lookup_package(dependency.name)
+    return (
+        dependency.replace_mapping(
+            import_names, DependenciesMapping.DEPENDENCY_TO_IMPORT
+        )
+        if import_names
+        # Fallback to IDENTITY mapping
+        else dependency
+    )
+
+
+def map_dependencies_to_imports(
+    dependencies: List[DeclaredDependency],
+) -> List[DeclaredDependency]:
+    """Map dependencies names to list of imports names exposed by a package"""
+
+    local_package_lookup = LocalPackageLookup()
+
+    return [
+        dependency_to_imports_mapping(d, local_package_lookup) for d in dependencies
     ]
-    return ret or None
 
 
 def compare_imports_to_dependencies(
@@ -59,11 +106,19 @@ def compare_imports_to_dependencies(
     For undeclared dependencies returns files and line numbers
     where they were imported in the code.
     """
-    imported_names = {i.name for i in imports}
-    declared_names = {d.name for d in dependencies}
+
+    # TODO consider empty list of dependency to import
+    mapped_dependencies = map_dependencies_to_imports(dependencies)
+
+    names_from_imports = {i.name for i in imports}
+    names_from_dependencies = {
+        d for dep in mapped_dependencies for d in dep.import_names
+    }
 
     undeclared = [
-        i for i in imports if i.name not in declared_names.union(ignored_undeclared)
+        i
+        for i in imports
+        if i.name not in names_from_dependencies.union(ignored_undeclared)
     ]
     undeclared.sort(key=lambda i: i.name)  # groupby requires pre-sorting
     undeclared_grouped = [
@@ -72,7 +127,10 @@ def compare_imports_to_dependencies(
     ]
 
     unused = [
-        d for d in dependencies if d.name not in imported_names.union(ignored_unused)
+        dep
+        for dep in mapped_dependencies
+        if (dep.name not in ignored_unused)
+        and len(set(dep.import_names) & names_from_imports) == 0
     ]
     unused.sort(key=lambda d: d.name)  # groupby requires pre-sorting
     unused_grouped = [

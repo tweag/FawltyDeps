@@ -2,6 +2,7 @@
 
 import sys
 from dataclasses import asdict, dataclass, field, replace
+from enum import Enum
 from functools import total_ordering
 from operator import attrgetter
 from pathlib import Path
@@ -23,6 +24,13 @@ class UnparseablePathException(Exception):
 
     def __init__(self, ctx: str, path: Path):
         self.msg = f"{ctx}: {path}"
+
+
+class DependenciesMapping(Enum):
+    """Types of dependency and imports mapping"""
+
+    IDENTITY = "IDENTITY"
+    DEPENDENCY_TO_IMPORT = "DEPENDENCY_TO_IMPORT"
 
 
 @total_ordering
@@ -121,6 +129,23 @@ class DeclaredDependency:
 
     name: str
     source: Location
+    import_names: Tuple[str, ...] = ()
+    mapping: DependenciesMapping = DependenciesMapping.IDENTITY
+
+    def __post_init__(self) -> None:
+        """Set an identity mapping by default"""
+        if self.mapping == DependenciesMapping.IDENTITY:
+            if self.import_names not in {(), (self.name,)}:
+                raise ValueError(
+                    "Don't pass custom import_names with IDENTITY mapping!"
+                )
+            object.__setattr__(self, "import_names", (self.name,))
+
+    def replace_mapping(
+        self, import_names: Tuple[str, ...], mapping: DependenciesMapping
+    ) -> "DeclaredDependency":
+        """Supply a custom mapping of dependency to imports"""
+        return replace(self, import_names=import_names, mapping=mapping)
 
 
 @dataclass

@@ -282,8 +282,18 @@ def test_list_deps_json__dir__prints_deps_from_requirements_txt(
     expect = {
         "imports": None,
         "declared_deps": [
-            {"name": "requests", "source": {"path": f"{tmp_path}/requirements.txt"}},
-            {"name": "pandas", "source": {"path": f"{tmp_path}/requirements.txt"}},
+            {
+                "name": "requests",
+                "source": {"path": f"{tmp_path}/requirements.txt"},
+                "import_names": ["requests"],
+                "mapping": "IDENTITY",
+            },
+            {
+                "name": "pandas",
+                "source": {"path": f"{tmp_path}/requirements.txt"},
+                "import_names": ["pandas"],
+                "mapping": "IDENTITY",
+            },
         ],
         "undeclared_deps": None,
         "unused_deps": None,
@@ -448,7 +458,12 @@ def test_check_json__simple_project__can_report_both_undeclared_and_unused(
             },
         ],
         "declared_deps": [
-            {"name": "pandas", "source": {"path": f"{tmp_path}/requirements.txt"}},
+            {
+                "name": "pandas",
+                "source": {"path": f"{tmp_path}/requirements.txt"},
+                "import_names": ["pandas"],
+                "mapping": "IDENTITY",
+            },
         ],
         "undeclared_deps": [
             {
@@ -468,6 +483,8 @@ def test_check_json__simple_project__can_report_both_undeclared_and_unused(
                     {
                         "name": "pandas",
                         "source": {"path": f"{tmp_path}/requirements.txt"},
+                        "import_names": ["pandas"],
+                        "mapping": "IDENTITY",
                     },
                 ],
             },
