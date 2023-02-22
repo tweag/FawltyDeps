@@ -290,55 +290,45 @@ class ParsingStrategy(NamedTuple):
 class ParserChoice(Enum):
     """Enumerate the choices of dependency declaration parsers."""
 
-    REQUIREMENTS_TXT = ParsingStrategy(
+    REQUIREMENTS_TXT = "requirements.txt"
+    SETUP_PY = "setup.py"
+    SETUP_CFG = "setup.cfg"
+    PYPROJECT_TOML = "pyproject.toml"
+
+    def __str__(self) -> str:
+        return self.name
+
+
+def first_applicable_parser(
+    path: Path,
+) -> Optional[Tuple[ParserChoice, ParsingStrategy]]:
+    """Find the first applicable parser choice for given path."""
+    return next(
+        (
+            (choice, parser)
+            for choice, parser in PARSER_CHOICES.items()
+            if parser.applies_to_path(path)
+        ),
+        None,
+    )
+
+
+PARSER_CHOICES = {
+    ParserChoice.PYPROJECT_TOML: ParsingStrategy(
+        lambda path: path.name == "pyproject.toml", parse_pyproject_contents
+    ),
+    ParserChoice.REQUIREMENTS_TXT: ParsingStrategy(
         lambda path: re.compile(r".*\brequirements\b.*\.(txt|in)").match(path.name)
         is not None,
         parse_requirements_contents,
-    )
-    SETUP_PY = ParsingStrategy(
-        lambda path: path.name == "setup.py", parse_setup_contents
-    )
-    SETUP_CFG = ParsingStrategy(
+    ),
+    ParserChoice.SETUP_CFG: ParsingStrategy(
         lambda path: path.name == "setup.cfg", parse_setup_cfg_contents
-    )
-    PYPROJECT_TOML = ParsingStrategy(
-        lambda path: path.name == "pyproject.toml", parse_pyproject_contents
-    )
-
-    def to_cmdl(self) -> str:
-        """Represent this value as a command-line arg choice."""
-        return self.name.lower().replace("_", ".")
-
-    @classmethod
-    def from_cmdl(cls, arg: str) -> Optional["ParserChoice"]:
-        """Attempt to parse a value from a command-line argument."""
-        query = arg.upper().replace(".", "_")
-        return next((choice for choice in cls if choice.name == query), None)
-
-    @classmethod
-    def from_cmdl_unsafe(cls, arg: str) -> "ParserChoice":
-        """Parse CLI arg as parser choice, raising exception if unparsable."""
-        result = cls.from_cmdl(arg)
-        if result is None:
-            raise ValueError(f"Cannot interpret parser choice: {arg}")
-        return result
-
-    @classmethod
-    def first_applicable(cls, path: Path) -> Optional["ParserChoice"]:
-        """Return the first member which applies to the given path."""
-        return next(
-            (choice for choice in cls if choice.value.applies_to_path(path)), None
-        )
-
-
-def finalize_parse_strategy(
-    path: Path, parser_choice: Optional[ParserChoice] = None
-) -> Optional[Callable[[str, Location], Iterator[DeclaredDependency]]]:
-    """Use the given parser choice and path to parse to determine how to do the parse."""
-    parser_choice = parser_choice or ParserChoice.first_applicable(path)
-    if parser_choice is None:
-        return None
-    return parser_choice.value.execute
+    ),
+    ParserChoice.SETUP_PY: ParsingStrategy(
+        lambda path: path.name == "setup.py", parse_setup_contents
+    ),
+}
 
 
 def extract_declared_dependencies(
@@ -353,34 +343,33 @@ def extract_declared_dependencies(
     Generate (i.e. yield) a DeclaredDependency object for each dependency found.
     There is no guaranteed ordering on the generated dependencies.
     """
+
     if path.is_file():
         if parser_choice is not None:
-            if not parser_choice.value.applies_to_path(path):
+            parser = PARSER_CHOICES[parser_choice]
+            if not parser.applies_to_path(path):
                 logger.warning(
-                    f"Manually applying parser {parser_choice.name} to dependencies: {path}"
+                    f"Manually applying parser {parser_choice} to dependencies: {path}"
                 )
         else:
-            parser_choice = ParserChoice.first_applicable(path)
-            if parser_choice is None:
+            choice_and_parser = first_applicable_parser(path)
+            if choice_and_parser is None:  # nothing found
                 raise UnparseablePathException(
                     ctx="Parsing given dependencies path isn't supported", path=path
                 )
-        yield from parser_choice.value.execute(path.read_text(), Location(path))
+            parser = choice_and_parser[1]
+        yield from parser.execute(path.read_text(), Location(path))
     elif path.is_dir():
         logger.debug("Extracting dependencies from files under %s", path)
         for file in walk_dir(path):
-            parser_found = ParserChoice.first_applicable(file)
-            if parser_found is not None:
-                if parser_choice is None or parser_found == parser_choice:
-                    logger.debug(f"Extracting dependencies: {file}")
-                    yield from parser_found.value.execute(
-                        file.read_text(), Location(file)
-                    )
-                else:
-                    logger.warning(
-                        f"Strategy {parser_found.name}, not {parser_choice.name}, "
-                        f"applies; skipping: {file}"
-                    )
+            choice_and_parser = first_applicable_parser(file)
+            if choice_and_parser is None:  # nothing found
+                continue
+            if parser_choice is None or choice_and_parser[0] == parser_choice:
+                logger.debug(f"Extracting dependencies: {file}")
+                yield from choice_and_parser[1].execute(
+                    file.read_text(), Location(file)
+                )
     else:
         raise UnparseablePathException(
             ctx="Dependencies declaration path is neither dir nor file", path=path

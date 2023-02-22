@@ -178,6 +178,14 @@ def parse_path_or_stdin(arg: str) -> PathOrSpecial:
     return Path(arg)
 
 
+def read_parser_choice(filename: str) -> ParserChoice:
+    """Read the command-line argument for manual parser choice."""
+    for choice in ParserChoice:
+        if choice.value == filename:
+            return choice
+    raise ValueError(f"Unrecognized dependency parser choice: {filename}")
+
+
 def main() -> int:
     """Command-line entry point."""
     parser = argparse.ArgumentParser(
@@ -276,7 +284,7 @@ def main() -> int:
     )
     options.add_argument(
         "--deps-parser-choice",
-        type=ParserChoice.from_cmdl_unsafe,
+        type=read_parser_choice,
         choices=list(ParserChoice),
         help=(
             "Name of the parsing strategy to use for dependency declarations, "
@@ -317,19 +325,6 @@ def main() -> int:
 
     actions = args.actions or {Action.REPORT_UNDECLARED, Action.REPORT_UNUSED}
 
-    if args.deps_parser_choice is not None:
-        deps_parser_choice = ParserChoice.from_cmdl(args.deps_parser_choice)
-        if deps_parser_choice is None:
-            # This is guarded with choices= in the CLI definition and therefore is exceptional.
-            parser.error(
-                f"Illegal choice for deps parser strategy: {args.deps_parser_choice}"
-            )  # exit code 2
-    else:
-        logger.debug(
-            "No explicit declarations parser choice was made, so it will be inferred."
-        )
-        deps_parser_choice = None
-
     try:
         analysis = Analysis.create(
             actions,
@@ -337,7 +332,7 @@ def main() -> int:
             args.deps,
             args.ignore_unused,
             args.ignore_undeclared,
-            deps_parse_choice=deps_parser_choice,
+            deps_parse_choice=args.deps_parser_choice,
         )
     except UnparseablePathException as exc:
         return parser.error(exc.msg)  # exit code 2
