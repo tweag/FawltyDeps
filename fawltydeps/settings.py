@@ -1,11 +1,12 @@
 """FawltyDeps configuration and command-line options."""
 import argparse
+import json
 import logging
 import sys
 from enum import Enum
 from functools import total_ordering
 from pathlib import Path
-from typing import ClassVar, List, Optional, Set, Tuple, Type, Union
+from typing import ClassVar, List, Optional, Set, TextIO, Tuple, Type, Union
 
 from pydantic import BaseSettings
 from pydantic.env_settings import SettingsSourceCallable  # pylint: disable=E0611
@@ -387,3 +388,31 @@ def setup_cmdline_parser(
     )
 
     return parser, option_group
+
+
+def print_toml_config(settings: Settings, out: TextIO) -> None:
+    """Serialize the given Settings object into a TOML config section."""
+    # Use JSON serialization as a basis for TOML output. Load that back into
+    # Python and then use Python's repr() representation below
+    simple_settings = json.loads(settings.json())
+    defaults = {
+        name: field.default for name, field in settings.__class__.__fields__.items()
+    }
+    try:
+        has_default_value = {
+            name: getattr(settings, name) == default
+            for name, default in defaults.items()
+        }
+    except AttributeError:
+        logger.critical(f"Sanity check failed: {settings!r} is missing a field!")
+        raise
+
+    lines = [
+        "# Copy this TOML section into your pyproject.toml to configure FawltyDeps",
+        "# (default values are commented)",
+        "[tool.fawltydeps]",
+    ] + [
+        f"{'# ' if has_default_value[name] else ''}{name} = {value!r}"
+        for name, value in simple_settings.items()
+    ]
+    print("\n".join(lines), file=out)
