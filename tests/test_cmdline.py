@@ -834,6 +834,26 @@ def test_cmdline_on_ignored_undeclared_option(
             ],
             id="override_output_format_from_config_with_command_line_option",
         ),
+        pytest.param(
+            {"actions": ["list_imports"], "output_format": "json"},
+            ["--detailed", "--deps=foobar", "--generate-toml-config"],
+            dedent(
+                """\
+                # Copy this TOML section into your pyproject.toml to configure FawltyDeps
+                # (default values are commented)
+                [tool.fawltydeps]
+                actions = ['list_imports']
+                # code = '.'
+                deps = 'foobar'
+                output_format = 'human_detailed'
+                # ignore_undeclared = []
+                # ignore_unused = []
+                # deps_parser_choice = None
+                # verbosity = 0
+                """
+            ).splitlines(),
+            id="generate_toml_config_with_combo_of_config_and_cmdline_options",
+        ),
     ],
 )
 def test_cmdline_args_in_combination_with_config_file(
