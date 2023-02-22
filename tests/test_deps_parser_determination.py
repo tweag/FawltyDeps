@@ -165,9 +165,9 @@ def test_extract_from_file_applies_manual_choice_even_if_mismatched(
     new_path = tmp_path / fn2
     shutil.move(old_path, new_path)
     caplog.set_level(logging.WARNING)
-    obs_deps = list(collect_dep_names(
+    obs_deps = collect_dep_names(
         extract_declared_dependencies(new_path, parser_choice=parser_choice)
-    ))
+    )
     assert_unordered_equivalence(obs_deps, exp_deps)
     exp_msg = (
         f"Manually applying parser {parser_choice.name} to dependencies: {new_path}"
