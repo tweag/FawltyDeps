@@ -1,14 +1,18 @@
 """ Test the determination of strategy to parse dependency declarations. """
 
 import logging
+import shutil
 from pathlib import Path
 
 import pytest
 
 from fawltydeps.extract_declared_dependencies import (
     ParserChoice,
+    extract_declared_dependencies,
     finalize_parse_strategy,
 )
+
+from .utils import assert_unordered_equivalence, collect_dep_names
 
 PARSER_CHOICE_FILE_NAME_MATCH_GRID = {
     ParserChoice.REQUIREMENTS_TXT: "requirements.txt",
@@ -66,22 +70,21 @@ def test_parse_strategy__explicit_is_always_chosen(
         + [(pc, fn, False) for pc, fn in PARSER_CHOICE_FILE_NAME_MATCH_GRID.items()]
     ],
 )
-def test_explicit_parse_strategy__mismatch__yields_appropriate_logging(
+def test_explicit_parse_strategy__mismatch_yields_appropriate_logging(
     tmp_path, caplog, parser_choice, deps_file_name, has_log
 ):
     """Logging message should be conditional on mismatch between strategy and filename."""
     deps_path = mkfile(tmp_path, deps_file_name)
-    caplog.set_level(logging.INFO)
-    finalize_parse_strategy(
-        deps_path, parser_choice
+    caplog.set_level(logging.WARNING)
+    list(
+        extract_declared_dependencies(deps_path, parser_choice)
     )  # Execute here just for effect (log).
     if has_log:
-        exp_msg = (
-            f"Applying parsing strategy {parser_choice.name} to given path: {deps_path}"
-        )
-        assert exp_msg in caplog.text
+        assert (
+            f"Manually applying parser {parser_choice.name} to dependencies: {deps_path}"
+        ) in caplog.text
     else:
-        assert "" == caplog.text
+        assert caplog.text == ""
 
 
 @pytest.mark.parametrize(
@@ -93,3 +96,80 @@ def test_filepath_inference(tmp_path, deps_file_name, exp_parse_choice):
     deps_path = mkfile(tmp_path, deps_file_name)
     obs_parse_choice = finalize_parse_strategy(deps_path)
     assert obs_parse_choice == exp_parse_choice
+
+
+@pytest.mark.parametrize(
+    ["parser_choice", "exp_deps"],
+    [
+        pytest.param(choice, exp, id=f"{choice.name}")
+        for choice, exp in [
+            (
+                ParserChoice.REQUIREMENTS_TXT,
+                ["pandas", "click", "black", "sphinx", "pandas", "tensorflow"],
+            ),
+            (ParserChoice.SETUP_PY, []),
+            (ParserChoice.SETUP_CFG, ["dependencyA", "dependencyB"]),
+            (ParserChoice.PYPROJECT_TOML, ["pandas", "pydantic", "pylint"]),
+        ]
+    ],
+)
+def test_extract_from_directory_applies_manual_parser_choice_iff_choice_applies(
+    tmp_path,
+    project_with_setup_with_cfg_pyproject_and_requirements,
+    parser_choice,
+    exp_deps,
+):
+    obs_deps = collect_dep_names(
+        extract_declared_dependencies(tmp_path, parser_choice=parser_choice)
+    )
+    assert_unordered_equivalence(obs_deps, exp_deps)
+
+
+@pytest.mark.parametrize(
+    ["parser_choice", "fn1", "fn2", "exp_deps"],
+    [
+        pytest.param(choice, fn1, fn2, exp, id=f"{choice.name}__{fn1}__{fn2}")
+        for choice, fn1, fn2, exp in [
+            (
+                ParserChoice.REQUIREMENTS_TXT,
+                "requirements.txt",
+                "setup.py",
+                ["pandas", "click"],
+            ),
+            (ParserChoice.SETUP_PY, "setup.py", "requirements.txt", []),
+            (
+                ParserChoice.SETUP_CFG,
+                "setup.cfg",
+                "pyproject.toml",
+                ["dependencyA", "dependencyB"],
+            ),
+            (
+                ParserChoice.PYPROJECT_TOML,
+                "pyproject.toml",
+                "setup.cfg",
+                ["pandas", "pydantic", "pylint"],
+            ),
+        ]
+    ],
+)
+def test_extract_from_file_applies_manual_choice_even_if_mismatched(
+    caplog,
+    tmp_path,
+    project_with_setup_with_cfg_pyproject_and_requirements,
+    parser_choice,
+    fn1,
+    fn2,
+    exp_deps,
+):
+    old_path = tmp_path / fn1
+    new_path = tmp_path / fn2
+    shutil.move(old_path, new_path)
+    caplog.set_level(logging.WARNING)
+    obs_deps = list(collect_dep_names(
+        extract_declared_dependencies(new_path, parser_choice=parser_choice)
+    ))
+    assert_unordered_equivalence(obs_deps, exp_deps)
+    exp_msg = (
+        f"Manually applying parser {parser_choice.name} to dependencies: {new_path}"
+    )
+    assert exp_msg in caplog.text

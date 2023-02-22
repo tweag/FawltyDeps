@@ -6,7 +6,6 @@ import logging
 import re
 import sys
 from enum import Enum
-from functools import partial
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, Iterator, NamedTuple, Optional, Tuple
 
@@ -324,18 +323,21 @@ class ParserChoice(Enum):
             raise ValueError(f"Cannot interpret parser choice: {arg}")
         return result
 
+    @classmethod
+    def first_applicable(cls, path: Path) -> Optional["ParserChoice"]:
+        """Return the first member which applies to the given path."""
+        return next(
+            (choice for choice in cls if choice.value.applies_to_path(path)), None
+        )
+
 
 def finalize_parse_strategy(
     path: Path, parser_choice: Optional[ParserChoice] = None
 ) -> Optional[Callable[[str, Location], Iterator[DeclaredDependency]]]:
     """Use the given parser choice and path to parse to determine how to do the parse."""
-    parser_choice = parser_choice or next(
-        (choice for choice in ParserChoice if choice.value.applies_to_path(path)), None
-    )
+    parser_choice = parser_choice or ParserChoice.first_applicable(path)
     if parser_choice is None:
         return None
-    log = logger.debug if parser_choice.value.applies_to_path(path) else logger.info
-    log(f"Applying parsing strategy {parser_choice.name} to given path: {path}")
     return parser_choice.value.execute
 
 
@@ -351,24 +353,34 @@ def extract_declared_dependencies(
     Generate (i.e. yield) a DeclaredDependency object for each dependency found.
     There is no guaranteed ordering on the generated dependencies.
     """
-
-    get_parse = partial(finalize_parse_strategy, parser_choice=parser_choice)
-
     if path.is_file():
-        parse = get_parse(path)
-        if parse is None:
-            raise UnparseablePathException(
-                ctx="Parsing given dependencies path isn't supported", path=path
-            )
-        logger.debug(f"Extracting dependencies from {path}.")
-        yield from parse(path.read_text(), Location(path))
+        if parser_choice is not None:
+            if not parser_choice.value.applies_to_path(path):
+                logger.warning(
+                    f"Manually applying parser {parser_choice.name} to dependencies: {path}"
+                )
+        else:
+            parser_choice = ParserChoice.first_applicable(path)
+            if parser_choice is None:
+                raise UnparseablePathException(
+                    ctx="Parsing given dependencies path isn't supported", path=path
+                )
+        yield from parser_choice.value.execute(path.read_text(), Location(path))
     elif path.is_dir():
         logger.debug("Extracting dependencies from files under %s", path)
         for file in walk_dir(path):
-            parse = get_parse(file)
-            if parse:
-                logger.debug(f"Extracting dependencies from {file}.")
-                yield from parse(file.read_text(), Location(file))
+            parser_found = ParserChoice.first_applicable(file)
+            if parser_found is not None:
+                if parser_choice is None or parser_found == parser_choice:
+                    logger.debug(f"Extracting dependencies: {file}")
+                    yield from parser_found.value.execute(
+                        file.read_text(), Location(file)
+                    )
+                else:
+                    logger.warning(
+                        f"Strategy {parser_found.name}, not {parser_choice.name}, "
+                        f"applies; skipping: {file}"
+                    )
     else:
         raise UnparseablePathException(
             ctx="Dependencies declaration path is neither dir nor file", path=path
