@@ -275,11 +275,12 @@ def main() -> int:
         ),
     )
     options.add_argument(
-        "--deps-declaration-parsing-strategy",
-        choices=[pc.to_cmdl() for pc in ParserChoice],
+        "--deps-parser-choice",
+        type=ParserChoice.from_cmdl_unsafe,
+        choices=list(ParserChoice),
         help=(
             "Name of the parsing strategy to use for dependency declarations, "
-            "useful for when the file(s) to parse have an atypical extension"
+            "useful for when the file to parse doesn't match a standard name"
         ),
     )
     options.add_argument(
@@ -316,14 +317,12 @@ def main() -> int:
 
     actions = args.actions or {Action.REPORT_UNDECLARED, Action.REPORT_UNUSED}
 
-    if args.deps_declaration_parsing_strategy is not None:
-        deps_parser_choice = ParserChoice.from_cmdl(
-            args.deps_declaration_parsing_strategy
-        )
+    if args.deps_parser_choice is not None:
+        deps_parser_choice = ParserChoice.from_cmdl(args.deps_parser_choice)
         if deps_parser_choice is None:
             # This is guarded with choices= in the CLI definition and therefore is exceptional.
             parser.error(
-                f"Illegal choice for deps parser strategy: {args.deps_declaration_parsing_strategy}"
+                f"Illegal choice for deps parser strategy: {args.deps_parser_choice}"
             )  # exit code 2
     else:
         logger.debug(
@@ -341,7 +340,6 @@ def main() -> int:
             deps_parse_choice=deps_parser_choice,
         )
     except UnparseablePathException as exc:
-        # TODO: consider changing this to denote diff w/ argparse.
         return parser.error(exc.msg)  # exit code 2
 
     if args.json:

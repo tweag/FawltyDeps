@@ -7,19 +7,18 @@ import pytest
 from fawltydeps.check import compare_imports_to_dependencies
 from fawltydeps.types import (
     DeclaredDependency,
+    DependenciesMapping,
     Location,
     ParsedImport,
     UndeclaredDependency,
     UnusedDependency,
 )
 
+from .utils import deps_factory
+
 
 def imports_factory(*imports: str) -> List[ParsedImport]:
     return [ParsedImport(imp, Location("<stdin>")) for imp in imports]
-
-
-def deps_factory(*deps: str) -> List[DeclaredDependency]:
-    return [DeclaredDependency(dep, Location(Path("foo"))) for dep in deps]
 
 
 def undeclared_factory(*deps: str) -> List[UndeclaredDependency]:
@@ -109,10 +108,18 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
         ),
         pytest.param(
             imports_factory("pandas", "numpy"),
-            deps_factory("pandas", "isort", "black"),
+            deps_factory("pandas", "isort", "flake8"),
             ["isort"],
             [],
-            (undeclared_factory("numpy"), unused_factory("black")),
+            (
+                undeclared_factory("numpy"),
+                [
+                    UnusedDependency(
+                        name="flake8",
+                        references=deps_factory("flake8"),
+                    )
+                ],
+            ),
             id="mixed_dependencies__report_undeclared_and_non_ignored_unused",
         ),
         pytest.param(
@@ -136,23 +143,54 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
             deps_factory("isort"),
             [],
             ["isort"],
-            ([], unused_factory("isort")),
+            (
+                [],
+                [
+                    UnusedDependency(
+                        name="isort",
+                        references=[
+                            DeclaredDependency(
+                                name="isort",
+                                source=Location(Path("foo")),
+                                import_names=("isort",),
+                                mapping=DependenciesMapping.DEPENDENCY_TO_IMPORT,
+                            )
+                        ],
+                    ),
+                ],
+            ),
             id="one_ignored_import_declared_as_dep__reported_as_unused",
         ),
         pytest.param(
             imports_factory("pandas", "numpy", "not_valid"),
-            deps_factory("pandas", "black"),
+            deps_factory("pandas", "flake8"),
             [],
             ["not_valid"],
-            (undeclared_factory("numpy"), unused_factory("black")),
+            (
+                undeclared_factory("numpy"),
+                [
+                    UnusedDependency(
+                        name="flake8",
+                        references=deps_factory("flake8"),
+                    )
+                ],
+            ),
             id="mixed_dependencies__report_unused_and_only_non_ignored_undeclared",
         ),
         pytest.param(
             imports_factory("pandas", "numpy", "not_valid"),
-            deps_factory("pandas", "black", "isort"),
+            deps_factory("pandas", "flake8", "isort"),
             ["isort"],
             ["not_valid"],
-            (undeclared_factory("numpy"), unused_factory("black")),
+            (
+                undeclared_factory("numpy"),
+                [
+                    UnusedDependency(
+                        name="flake8",
+                        references=deps_factory("flake8"),
+                    )
+                ],
+            ),
             id="mixed_dependencies__report_only_non_ignored_unused_and_non_ignored_undeclared",
         ),
     ],

@@ -227,8 +227,7 @@ def test_list_imports__from_unsupported_file__fails_with_exit_code_2(tmp_path):
     filepath.write_text("import pandas")
     _output, errors, returncode = run_fawltydeps("--list-imports", f"--code={filepath}")
     assert (
-        f"Parseable code comes from .py and .ipynb. Cannot parse given path: {filepath}"
-        in errors
+        f"Supported formats are .py and .ipynb; Cannot parse code: {filepath}" in errors
     )
     assert returncode == 2
 
@@ -283,8 +282,18 @@ def test_list_deps_json__dir__prints_deps_from_requirements_txt(
     expect = {
         "imports": None,
         "declared_deps": [
-            {"name": "requests", "source": {"path": f"{tmp_path}/requirements.txt"}},
-            {"name": "pandas", "source": {"path": f"{tmp_path}/requirements.txt"}},
+            {
+                "name": "requests",
+                "source": {"path": f"{tmp_path}/requirements.txt"},
+                "import_names": ["requests"],
+                "mapping": "IDENTITY",
+            },
+            {
+                "name": "pandas",
+                "source": {"path": f"{tmp_path}/requirements.txt"},
+                "import_names": ["pandas"],
+                "mapping": "IDENTITY",
+            },
         ],
         "undeclared_deps": None,
         "unused_deps": None,
@@ -317,7 +326,7 @@ def test_list_deps__unsupported_file__fails_with_exit_code_2(tmp_path):
 
     _, errors, returncode = run_fawltydeps("--list-deps", f"--deps={filepath}")
     assert returncode == 2
-    assert f"Parsing given deps path isn't supported: {filepath}" in errors
+    assert f"Parsing given dependencies path isn't supported: {filepath}" in errors
 
 
 def test_list_deps__missing_path__fails_with_exit_code_2(tmp_path):
@@ -449,7 +458,12 @@ def test_check_json__simple_project__can_report_both_undeclared_and_unused(
             },
         ],
         "declared_deps": [
-            {"name": "pandas", "source": {"path": f"{tmp_path}/requirements.txt"}},
+            {
+                "name": "pandas",
+                "source": {"path": f"{tmp_path}/requirements.txt"},
+                "import_names": ["pandas"],
+                "mapping": "IDENTITY",
+            },
         ],
         "undeclared_deps": [
             {
@@ -469,6 +483,8 @@ def test_check_json__simple_project__can_report_both_undeclared_and_unused(
                     {
                         "name": "pandas",
                         "source": {"path": f"{tmp_path}/requirements.txt"},
+                        "import_names": ["pandas"],
+                        "mapping": "IDENTITY",
                     },
                 ],
             },
