@@ -151,7 +151,7 @@ def test_extract_from_file_applies_manual_choice_even_if_mismatched(
     parser_choice,
     fn1,
     fn2,
-    exp_deps
+    exp_deps,
 ):
     old_path = tmp_path / fn1
     new_path = tmp_path / fn2
@@ -161,7 +161,5 @@ def test_extract_from_file_applies_manual_choice_even_if_mismatched(
         extract_declared_dependencies(new_path, parser_choice=parser_choice)
     )
     assert_unordered_equivalence(obs_deps, exp_deps)
-    exp_msg = (
-        f"Manually applying parser '{parser_choice}' to dependencies: {new_path}"
-    )
+    exp_msg = f"Manually applying parser '{parser_choice}' to dependencies: {new_path}"
     assert exp_msg in caplog.text
