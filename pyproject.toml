@@ -49,7 +49,6 @@ nox = "^2022.11.21"
 optional = true
 
 [tool.poetry.group.test.dependencies]
-hypothesis = "^6.68.2"
 pytest = "^7.1.0"
 
 [tool.poetry.group.lint]
@@ -82,7 +81,6 @@ optional = true
 black = "^22"
 codespell = "^2.2.2"
 colorama = "^0.4.6"
-hypothesis = "^6.68.2"
 isort = "^5.10"
 mypy = "^0.991"
 nox = "^2022.11.21"
