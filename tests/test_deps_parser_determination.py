@@ -55,7 +55,7 @@ def test_explicit_parse_strategy__mismatch_yields_appropriate_logging(
     )  # Execute here just for effect (log).
     if has_log:
         assert (
-            f"Manually applying parser {parser_choice.name} to dependencies: {deps_path}"
+            f"Manually applying parser '{parser_choice}' to dependencies: {deps_path}"
         ) in caplog.text
     else:
         assert caplog.text == ""
@@ -158,6 +158,6 @@ def test_extract_from_file_applies_manual_choice_even_if_mismatched(
     )
     assert_unordered_equivalence(obs_deps, exp_deps)
     exp_msg = (
-        f"Manually applying parser {parser_choice.name} to dependencies: {new_path}"
+        f"Manually applying parser '{parser_choice}' to dependencies: {new_path}"
     )
     assert exp_msg in caplog.text

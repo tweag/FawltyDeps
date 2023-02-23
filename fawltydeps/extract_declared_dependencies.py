@@ -296,7 +296,7 @@ class ParserChoice(Enum):
     PYPROJECT_TOML = "pyproject.toml"
 
     def __str__(self) -> str:
-        return self.name
+        return self.value
 
 
 def first_applicable_parser(
@@ -349,7 +349,7 @@ def extract_declared_dependencies(
             parser = PARSER_CHOICES[parser_choice]
             if not parser.applies_to_path(path):
                 logger.warning(
-                    f"Manually applying parser {parser_choice} to dependencies: {path}"
+                    f"Manually applying parser '{parser_choice}' to dependencies: {path}"
                 )
         else:
             choice_and_parser = first_applicable_parser(path)
