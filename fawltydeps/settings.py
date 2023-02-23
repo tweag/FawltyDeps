@@ -235,14 +235,14 @@ def populate_parser_actions(parser: argparse._ActionsContainer) -> None:
         dest="actions",
         action="store_const",
         const={Action.LIST_IMPORTS},
-        help="List third-party imports extracted from code and exit",
+        help="List third-party imports extracted from code",
     )
     parser.add_argument(
         "--list-deps",
         dest="actions",
         action="store_const",
         const={Action.LIST_DEPS},
-        help="List declared dependencies and exit",
+        help="List declared dependencies",
     )
 
 
