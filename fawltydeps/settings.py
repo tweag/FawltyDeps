@@ -177,194 +177,6 @@ class Settings(BaseSettings):  # type: ignore
         return cls
 
     @classmethod
-    def populate_parser_actions(cls, parser: argparse._ActionsContainer) -> None:
-        """Add the Actions-related arguments to the command-line parser.
-
-        These are mutually exclusive options that each will set the .actions
-        member to a set of 'Action's. If not given, the .actions member will
-        remain unset, to allow the underlying default to come through.
-        """
-        parser.add_argument(
-            "--check",
-            dest="actions",
-            action="store_const",
-            const={Action.REPORT_UNDECLARED, Action.REPORT_UNUSED},
-            help="Report both undeclared and unused dependencies (default)",
-        )
-        parser.add_argument(
-            "--check-undeclared",
-            dest="actions",
-            action="store_const",
-            const={Action.REPORT_UNDECLARED},
-            help="Report only undeclared dependencies",
-        )
-        parser.add_argument(
-            "--check-unused",
-            dest="actions",
-            action="store_const",
-            const={Action.REPORT_UNUSED},
-            help="Report only unused dependencies",
-        )
-        parser.add_argument(
-            "--list-imports",
-            dest="actions",
-            action="store_const",
-            const={Action.LIST_IMPORTS},
-            help="List third-party imports extracted from code and exit",
-        )
-        parser.add_argument(
-            "--list-deps",
-            dest="actions",
-            action="store_const",
-            const={Action.LIST_DEPS},
-            help="List declared dependencies and exit",
-        )
-
-    @classmethod
-    def populate_output_formats(cls, parser: argparse._ActionsContainer) -> None:
-        """Add arguments related to output format to the command-line parser.
-
-        These are mutually exclusive options that each will set the
-        .output_format member to a one of the available OutputFormat values.
-        If not given, the .output_format member will remain unset, to allow the
-        underlying default to come through.
-        """
-        output_format = parser.add_mutually_exclusive_group()
-        output_format.add_argument(
-            "--summary",
-            dest="output_format",
-            action="store_const",
-            const="human_summary",
-            help="Generate human-readable summary report (default)",
-        )
-        output_format.add_argument(
-            "--detailed",
-            dest="output_format",
-            action="store_const",
-            const="human_detailed",
-            help="Generate human-readable detailed report",
-        )
-        output_format.add_argument(
-            "--json",
-            dest="output_format",
-            action="store_const",
-            const="json",
-            help="Generate JSON output instead of a human-readable report",
-        )
-
-    @classmethod
-    def populate_parser_options(cls, parser: argparse._ActionsContainer) -> None:
-        """Add the other Settings members to the command-line parser.
-
-        Except where otherwise noted, these map directly onto a corresponding
-        Settings member. None of these options should specify default values
-        (and the parser-wide default value should be argparse.SUPPRESS). This
-        ensures that unspecified options are _omitted_ from the resulting
-        argparse.Namespace object, which will allow the underlying defaults
-        from Settings to come through when we create the Settings object in
-        .create() below.
-        """
-        parser.add_argument(
-            "--code",
-            type=parse_path_or_stdin,
-            help=(
-                "Code to parse for import statements (file or directory, use '-' "
-                "to read code from stdin; defaults to the current directory)"
-            ),
-        )
-        parser.add_argument(
-            "--deps",
-            type=Path,
-            help=(
-                "Where to find dependency declarations (file or directory, defaults"
-                " to looking for supported files in the current directory)"
-            ),
-        )
-        parser.add_argument(
-            "--ignore-undeclared",
-            nargs="+",
-            metavar="IMPORT_NAME",
-            help=(
-                "Imports to ignore when looking for undeclared"
-                " dependencies, e.g. --ignore-undeclared isort pkg_resources"
-            ),
-        )
-        parser.add_argument(
-            "--ignore-unused",
-            nargs="+",
-            metavar="DEP_NAME",
-            help=(
-                "Dependencies to ignore when looking for unused"
-                " dependencies, e.g. --ignore-unused pylint black"
-            ),
-        )
-
-        # The following two do not correspond directly to a Settings member,
-        # but the latter is subtracted from the former to make .verbosity.
-        parser.add_argument(
-            "--deps-parser-choice",
-            type=read_parser_choice,
-            choices=list(ParserChoice),
-            help=(
-                "Name of the parsing strategy to use for dependency declarations, "
-                "useful for when the file to parse doesn't match a standard name"
-            ),
-        )
-        parser.add_argument(
-            "-v",
-            "--verbose",
-            action="count",
-            help="Increase log level (WARNING by default, -v: INFO, -vv: DEBUG)",
-        )
-        parser.add_argument(
-            "-q",
-            "--quiet",
-            action="count",
-            help="Decrease log level (WARNING by default, -q: ERROR, -qq: FATAL)",
-        )
-
-    @classmethod
-    def setup_cmdline_parser(
-        cls, description: str
-    ) -> Tuple[argparse.ArgumentParser, argparse._ArgumentGroup]:
-        """Create command-line parser object and populate it with arguments.
-
-        Return the parser itself (which the caller will use to parse/collect
-        command-line arguments), as well as a suitable argument group where the
-        caller can add its own additional command-line arguments.
-        """
-        parser = argparse.ArgumentParser(
-            description=description,
-            formatter_class=argparse.RawDescriptionHelpFormatter,
-            add_help=False,  # instead, add --help in the "Options" group below
-            argument_default=argparse.SUPPRESS,
-        )
-
-        # A mutually exclusive group for arguments specifying .actions
-        action_group = parser.add_argument_group(
-            title="Actions (choose one)"
-        ).add_mutually_exclusive_group()
-        cls.populate_parser_actions(action_group)
-
-        # A mutually exclusive group for arguments specifying .output_format
-        output_format_group = parser.add_argument_group(
-            title="Output format (choose one)"
-        ).add_mutually_exclusive_group()
-        cls.populate_output_formats(output_format_group)
-
-        # A different group for the other options.
-        option_group = parser.add_argument_group(title="Other options")
-        cls.populate_parser_options(option_group)
-        option_group.add_argument(
-            "-h",
-            "--help",
-            action="help",
-            help="Show this help message and exit",
-        )
-
-        return parser, option_group
-
-    @classmethod
     def create(cls, cmdline_args: argparse.Namespace) -> "Settings":
         """Convert the parsed command-line args into a Settings object.
 
@@ -387,3 +199,191 @@ class Settings(BaseSettings):  # type: ignore
             ret["verbosity"] = args_dict.get("verbose", 0) - args_dict.get("quiet", 0)
 
         return cls(**ret)
+
+
+def populate_parser_actions(parser: argparse._ActionsContainer) -> None:
+    """Add the Actions-related arguments to the command-line parser.
+
+    These are mutually exclusive options that each will set the .actions
+    member to a set of 'Action's. If not given, the .actions member will
+    remain unset, to allow the underlying default to come through.
+    """
+    parser.add_argument(
+        "--check",
+        dest="actions",
+        action="store_const",
+        const={Action.REPORT_UNDECLARED, Action.REPORT_UNUSED},
+        help="Report both undeclared and unused dependencies (default)",
+    )
+    parser.add_argument(
+        "--check-undeclared",
+        dest="actions",
+        action="store_const",
+        const={Action.REPORT_UNDECLARED},
+        help="Report only undeclared dependencies",
+    )
+    parser.add_argument(
+        "--check-unused",
+        dest="actions",
+        action="store_const",
+        const={Action.REPORT_UNUSED},
+        help="Report only unused dependencies",
+    )
+    parser.add_argument(
+        "--list-imports",
+        dest="actions",
+        action="store_const",
+        const={Action.LIST_IMPORTS},
+        help="List third-party imports extracted from code and exit",
+    )
+    parser.add_argument(
+        "--list-deps",
+        dest="actions",
+        action="store_const",
+        const={Action.LIST_DEPS},
+        help="List declared dependencies and exit",
+    )
+
+
+def populate_output_formats(parser: argparse._ActionsContainer) -> None:
+    """Add arguments related to output format to the command-line parser.
+
+    These are mutually exclusive options that each will set the
+    .output_format member to a one of the available OutputFormat values.
+    If not given, the .output_format member will remain unset, to allow the
+    underlying default to come through.
+    """
+    output_format = parser.add_mutually_exclusive_group()
+    output_format.add_argument(
+        "--summary",
+        dest="output_format",
+        action="store_const",
+        const="human_summary",
+        help="Generate human-readable summary report (default)",
+    )
+    output_format.add_argument(
+        "--detailed",
+        dest="output_format",
+        action="store_const",
+        const="human_detailed",
+        help="Generate human-readable detailed report",
+    )
+    output_format.add_argument(
+        "--json",
+        dest="output_format",
+        action="store_const",
+        const="json",
+        help="Generate JSON output instead of a human-readable report",
+    )
+
+
+def populate_parser_options(parser: argparse._ActionsContainer) -> None:
+    """Add the other Settings members to the command-line parser.
+
+    Except where otherwise noted, these map directly onto a corresponding
+    Settings member. None of these options should specify default values
+    (and the parser-wide default value should be argparse.SUPPRESS). This
+    ensures that unspecified options are _omitted_ from the resulting
+    argparse.Namespace object, which will allow the underlying defaults
+    from Settings to come through when we create the Settings object in
+    .create() below.
+    """
+    parser.add_argument(
+        "--code",
+        type=parse_path_or_stdin,
+        help=(
+            "Code to parse for import statements (file or directory, use '-' "
+            "to read code from stdin; defaults to the current directory)"
+        ),
+    )
+    parser.add_argument(
+        "--deps",
+        type=Path,
+        help=(
+            "Where to find dependency declarations (file or directory, defaults"
+            " to looking for supported files in the current directory)"
+        ),
+    )
+    parser.add_argument(
+        "--ignore-undeclared",
+        nargs="+",
+        metavar="IMPORT_NAME",
+        help=(
+            "Imports to ignore when looking for undeclared"
+            " dependencies, e.g. --ignore-undeclared isort pkg_resources"
+        ),
+    )
+    parser.add_argument(
+        "--ignore-unused",
+        nargs="+",
+        metavar="DEP_NAME",
+        help=(
+            "Dependencies to ignore when looking for unused"
+            " dependencies, e.g. --ignore-unused pylint black"
+        ),
+    )
+    parser.add_argument(
+        "--deps-parser-choice",
+        type=read_parser_choice,
+        choices=list(ParserChoice),
+        help=(
+            "Name of the parsing strategy to use for dependency declarations, "
+            "useful for when the file to parse doesn't match a standard name"
+        ),
+    )
+
+    # The following two do not correspond directly to a Settings member,
+    # but the latter is subtracted from the former to make .verbosity.
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="count",
+        help="Increase log level (WARNING by default, -v: INFO, -vv: DEBUG)",
+    )
+    parser.add_argument(
+        "-q",
+        "--quiet",
+        action="count",
+        help="Decrease log level (WARNING by default, -q: ERROR, -qq: FATAL)",
+    )
+
+
+def setup_cmdline_parser(
+    description: str,
+) -> Tuple[argparse.ArgumentParser, argparse._ArgumentGroup]:
+    """Create command-line parser object and populate it with arguments.
+
+    Return the parser itself (which the caller will use to parse/collect
+    command-line arguments), as well as a suitable argument group where the
+    caller can add its own additional command-line arguments.
+    """
+    parser = argparse.ArgumentParser(
+        description=description,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        add_help=False,  # instead, add --help in the "Options" group below
+        argument_default=argparse.SUPPRESS,
+    )
+
+    # A mutually exclusive group for arguments specifying .actions
+    action_group = parser.add_argument_group(
+        title="Actions (choose one)"
+    ).add_mutually_exclusive_group()
+    populate_parser_actions(action_group)
+
+    # A mutually exclusive group for arguments specifying .output_format
+    output_format_group = parser.add_argument_group(
+        title="Output format (choose one)"
+    ).add_mutually_exclusive_group()
+    populate_output_formats(output_format_group)
+
+    # A different group for the other options.
+    option_group = parser.add_argument_group(title="Other options")
+    populate_parser_options(option_group)
+    option_group.add_argument(
+        "-h",
+        "--help",
+        action="help",
+        help="Show this help message and exit",
+    )
+
+    return parser, option_group

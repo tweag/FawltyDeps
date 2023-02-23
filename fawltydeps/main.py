@@ -27,7 +27,7 @@ from pydantic.json import custom_pydantic_encoder  # pylint: disable=no-name-in-
 from fawltydeps import extract_imports
 from fawltydeps.check import compare_imports_to_dependencies
 from fawltydeps.extract_declared_dependencies import extract_declared_dependencies
-from fawltydeps.settings import Action, OutputFormat, Settings
+from fawltydeps.settings import Action, OutputFormat, Settings, setup_cmdline_parser
 from fawltydeps.types import (
     DeclaredDependency,
     ParsedImport,
@@ -156,7 +156,7 @@ class Analysis:
 
 def main() -> int:
     """Command-line entry point."""
-    parser, option_group = Settings.setup_cmdline_parser(description=__doc__)
+    parser, option_group = setup_cmdline_parser(description=__doc__)
     option_group.add_argument(
         "-V",
         "--version",
