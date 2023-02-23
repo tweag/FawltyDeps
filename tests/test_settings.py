@@ -8,7 +8,7 @@ import pytest
 from pydantic import ValidationError
 from pydantic.env_settings import SettingsError  # pylint: disable=no-name-in-module
 
-from fawltydeps.settings import Action, Settings
+from fawltydeps.settings import Action, OutputFormat, Settings
 
 if sys.version_info >= (3, 11):
     from tomllib import TOMLDecodeError  # pylint: disable=no-member
@@ -19,7 +19,7 @@ EXPECT_DEFAULTS = dict(
     actions={Action.REPORT_UNDECLARED, Action.REPORT_UNUSED},
     code=Path("."),
     deps=Path("."),
-    json_output=False,
+    output_format=OutputFormat.HUMAN_READABLE,
     ignore_undeclared=set(),
     ignore_unused=set(),
     deps_parser_choice=None,

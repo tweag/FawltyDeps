@@ -67,6 +67,13 @@ class Action(OrderedEnum):
     REPORT_UNUSED = "check_unused"
 
 
+class OutputFormat(OrderedEnum):
+    """Output formats provided by the FawltyDeps application."""
+
+    HUMAN_READABLE = "human_readable"
+    JSON = "json"
+
+
 class ParserChoice(Enum):
     """Enumerate the choices of dependency declaration parsers."""
 
@@ -111,7 +118,7 @@ class Settings(BaseSettings):  # type: ignore
     actions: Set[Action] = {Action.REPORT_UNDECLARED, Action.REPORT_UNUSED}
     code: PathOrSpecial = Path(".")
     deps: Path = Path(".")
-    json_output: bool = False
+    output_format: OutputFormat = OutputFormat.HUMAN_READABLE
     ignore_undeclared: Set[str] = set()
     ignore_unused: Set[str] = set()
     deps_parser_choice: Optional[ParserChoice] = None
@@ -242,8 +249,9 @@ class Settings(BaseSettings):  # type: ignore
         )
         parser.add_argument(
             "--json",
-            dest="json_output",
-            action="store_true",
+            dest="output_format",
+            action="store_const",
+            const="json",
             help="Generate JSON output instead of a human-readable report",
         )
         parser.add_argument(
