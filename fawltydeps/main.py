@@ -1,16 +1,13 @@
 """Find undeclared and/or unused 3rd-party dependencies in your Python project.
 
-* Supported files for Python code containing third-party imports:
-  * Python scripts with filenames that end in `.py`
-  * Jupyter notebooks with filenames that end in `.ipynb`
+Supports finding 3rd-party imports in Python scripts (*.py) and Jupyter
+notebooks (*.ipynb).
 
-* Supported files/formats for dependency declarations:
-  * `*requirements*.txt` and `*requirements*.in`
-  * `pyproject.toml` (following PEP 621 or Poetry conventions)
-  * `setup.py` (only limited support for simple files with a single `setup()`
-    call and no computation involved for setting the `install_requires` and
-    `extras_require` arguments)
-  * `setup.cfg`
+Supports finding dependency declarations in *requirements*.txt (and .in) files,
+pyproject.toml (following PEP 621 or Poetry conventions), setup.cfg, as well as
+limited support for setup.py files with a single, simple setup() call and
+minimal computation involved in setting the install_requires and extras_require
+arguments.
 """
 
 import json
