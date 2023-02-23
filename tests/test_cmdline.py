@@ -227,8 +227,7 @@ def test_list_imports__from_unsupported_file__fails_with_exit_code_2(tmp_path):
     filepath.write_text("import pandas")
     _output, errors, returncode = run_fawltydeps("--list-imports", f"--code={filepath}")
     assert (
-        f"Cannot parse code from {filepath}: supported formats are .py and .ipynb."
-        in errors
+        f"Supported formats are .py and .ipynb; Cannot parse code: {filepath}" in errors
     )
     assert returncode == 2
 
@@ -238,7 +237,7 @@ def test_list_imports__from_missing_file__fails_with_exit_code_2(tmp_path):
     _output, errors, returncode = run_fawltydeps(
         "--list-imports", f"--code={missing_path}"
     )
-    assert f"Cannot parse code from {missing_path}: Not a dir or file!" in errors
+    assert f"Code path to parse is neither dir nor file: {missing_path}" in errors
     assert returncode == 2
 
 
@@ -327,7 +326,7 @@ def test_list_deps__unsupported_file__fails_with_exit_code_2(tmp_path):
 
     _, errors, returncode = run_fawltydeps("--list-deps", f"--deps={filepath}")
     assert returncode == 2
-    assert f"Parsing file {filepath.name} is not supported" in errors
+    assert f"Parsing given dependencies path isn't supported: {filepath}" in errors
 
 
 def test_list_deps__missing_path__fails_with_exit_code_2(tmp_path):
@@ -335,7 +334,10 @@ def test_list_deps__missing_path__fails_with_exit_code_2(tmp_path):
 
     _, errors, returncode = run_fawltydeps("--list-deps", f"--deps={missing_path}")
     assert returncode == 2
-    assert f"Cannot parse dependencies from {missing_path}" in errors
+    assert (
+        f"Dependencies declaration path is neither dir nor file: {missing_path}"
+        in errors
+    )
 
 
 def test_list_deps__empty_dir__verbosely_logs_but_extracts_nothing(tmp_path):

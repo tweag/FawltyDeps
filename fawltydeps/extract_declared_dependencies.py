@@ -5,13 +5,14 @@ import configparser
 import logging
 import re
 import sys
+from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Dict, Iterable, Iterator, Optional, Tuple
+from typing import Any, Callable, Dict, Iterable, Iterator, NamedTuple, Optional, Tuple
 
 from pkg_resources import Requirement
 
 from fawltydeps.limited_eval import CannotResolve, VariableTracker
-from fawltydeps.types import ArgParseError, DeclaredDependency, Location
+from fawltydeps.types import DeclaredDependency, Location, UnparseablePathException
 from fawltydeps.utils import walk_dir
 
 if sys.version_info >= (3, 11):
@@ -279,49 +280,97 @@ def parse_pyproject_contents(
         logger.debug("%s does not contain [tool.poetry].", source)
 
 
-def extract_declared_dependencies(path: Path) -> Iterator[DeclaredDependency]:
+class ParsingStrategy(NamedTuple):
+    """Named pairing of an applicability criterion and a dependency parser"""
+
+    applies_to_path: Callable[[Path], bool]
+    execute: Callable[[str, Location], Iterator[DeclaredDependency]]
+
+
+class ParserChoice(Enum):
+    """Enumerate the choices of dependency declaration parsers."""
+
+    REQUIREMENTS_TXT = "requirements.txt"
+    SETUP_PY = "setup.py"
+    SETUP_CFG = "setup.cfg"
+    PYPROJECT_TOML = "pyproject.toml"
+
+    def __str__(self) -> str:
+        return self.value
+
+
+def first_applicable_parser(
+    path: Path,
+) -> Optional[Tuple[ParserChoice, ParsingStrategy]]:
+    """Find the first applicable parser choice for given path."""
+    return next(
+        (
+            (choice, parser)
+            for choice, parser in PARSER_CHOICES.items()
+            if parser.applies_to_path(path)
+        ),
+        None,
+    )
+
+
+PARSER_CHOICES = {
+    ParserChoice.PYPROJECT_TOML: ParsingStrategy(
+        lambda path: path.name == "pyproject.toml", parse_pyproject_contents
+    ),
+    ParserChoice.REQUIREMENTS_TXT: ParsingStrategy(
+        lambda path: re.compile(r".*\brequirements\b.*\.(txt|in)").match(path.name)
+        is not None,
+        parse_requirements_contents,
+    ),
+    ParserChoice.SETUP_CFG: ParsingStrategy(
+        lambda path: path.name == "setup.cfg", parse_setup_cfg_contents
+    ),
+    ParserChoice.SETUP_PY: ParsingStrategy(
+        lambda path: path.name == "setup.py", parse_setup_contents
+    ),
+}
+
+
+def extract_declared_dependencies(
+    path: Path, parser_choice: Optional[ParserChoice] = None
+) -> Iterator[DeclaredDependency]:
     """Extract dependencies (package names) from supported file types.
 
-    Pass a file to parse dependency declarations found inside that file. Pass
+    Pass a path from which to discover and parse dependency declarations. Pass
     a directory to traverse that directory tree to find and automatically parse
     any supported files.
 
     Generate (i.e. yield) a DeclaredDependency object for each dependency found.
     There is no guaranteed ordering on the generated dependencies.
     """
-    parsers = {
-        re.compile(r".*\brequirements\b.*\.(txt|in)"): parse_requirements_contents,
-        "setup.py": parse_setup_contents,
-        "setup.cfg": parse_setup_cfg_contents,
-        "pyproject.toml": parse_pyproject_contents,
-    }
-
-    def get_parser(
-        path: Path,
-    ) -> Optional[Callable[[str, Location], Iterator[DeclaredDependency]]]:
-        for pattern, parse_func in parsers.items():
-            if (isinstance(pattern, re.Pattern) and pattern.fullmatch(path.name)) or (
-                isinstance(pattern, str) and pattern == path.name
-            ):
-                return parse_func
-        return None
-
-    logger.debug(path)
 
     if path.is_file():
-        parser = get_parser(path)
-        if parser is None:
-            raise ArgParseError(f"Parsing file {path.name} is not supported")
-        logger.debug(f"Extracting dependencies from {path}.")
-        yield from parser(path.read_text(), Location(path))
+        if parser_choice is not None:
+            parser = PARSER_CHOICES[parser_choice]
+            if not parser.applies_to_path(path):
+                logger.warning(
+                    f"Manually applying parser '{parser_choice}' to dependencies: {path}"
+                )
+        else:
+            choice_and_parser = first_applicable_parser(path)
+            if choice_and_parser is None:  # nothing found
+                raise UnparseablePathException(
+                    ctx="Parsing given dependencies path isn't supported", path=path
+                )
+            parser = choice_and_parser[1]
+        yield from parser.execute(path.read_text(), Location(path))
     elif path.is_dir():
         logger.debug("Extracting dependencies from files under %s", path)
         for file in walk_dir(path):
-            parser = get_parser(file)
-            if parser:
-                logger.debug(f"Extracting dependencies from {file}.")
-                yield from parser(file.read_text(), Location(file))
+            choice_and_parser = first_applicable_parser(file)
+            if choice_and_parser is None:  # nothing found
+                continue
+            if parser_choice is None or choice_and_parser[0] == parser_choice:
+                logger.debug(f"Extracting dependencies: {file}")
+                yield from choice_and_parser[1].execute(
+                    file.read_text(), Location(file)
+                )
     else:
-        raise ArgParseError(
-            f"Cannot parse dependencies from {path}: Not a dir or file!"
+        raise UnparseablePathException(
+            ctx="Dependencies declaration path is neither dir nor file", path=path
         )
