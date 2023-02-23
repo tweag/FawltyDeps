@@ -1,4 +1,4 @@
-"""Test that dependencies are parsed from requirements files"""
+"""Test that dependencies are parsed from requirements files."""
 from pathlib import Path
 from textwrap import dedent
 from typing import List
@@ -532,3 +532,8 @@ def test_extract_declared_dependencies__project_with_setup_cfg_pyproject_require
         )
     )
     assert_unordered_equivalence(actual, expect)
+
+
+def test_parse_requirements_per_req_options():
+    # originally motivated by #114 (A dep can span multiple lines.)
+    pass
