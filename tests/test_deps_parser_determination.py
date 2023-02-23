@@ -8,8 +8,7 @@ import pytest
 
 from fawltydeps.extract_declared_dependencies import (
     ParserChoice,
-    extract_declared_dependencies,
-    finalize_parse_strategy,
+    extract_declared_dependencies
 )
 
 from .utils import assert_unordered_equivalence, collect_dep_names
@@ -31,31 +30,6 @@ def mkfile(folder: Path, filename: str) -> Path:
     fp = folder / filename
     with open(fp, "w"):
         return fp
-
-
-@pytest.mark.parametrize("parser_choice", list(ParserChoice))
-def test__to_cmdl_from_cmdl__are_inverses(parser_choice):
-    """The parser choice command-line arg functions are exact inverses."""
-    assert ParserChoice.from_cmdl(parser_choice.to_cmdl()) == parser_choice
-
-
-@pytest.mark.parametrize(
-    ["parser_choice", "deps_file_name"],
-    [
-        pytest.param(pc, fn, id=f"{fn_match}_{fn}")
-        for pc, fn_match in PARSER_CHOICE_FILE_NAME_MATCH_GRID.items()
-        for fn in [fn_match] + PARSER_CHOICE_FILE_NAME_MISMATCH_GRID[pc]
-    ],
-)
-def test_parse_strategy__explicit_is_always_chosen(
-    tmp_path, parser_choice, deps_file_name
-):
-    """Even when filename doesn't match, explicit parser choice is respected."""
-    deps_path = mkfile(tmp_path, deps_file_name)
-    assert deps_path.is_file()  # precondition
-    assert (
-        finalize_parse_strategy(deps_path, parser_choice) == parser_choice.value.execute
-    )
 
 
 @pytest.mark.parametrize(
@@ -81,21 +55,36 @@ def test_explicit_parse_strategy__mismatch_yields_appropriate_logging(
     )  # Execute here just for effect (log).
     if has_log:
         assert (
-            f"Manually applying parser {parser_choice.name} to dependencies: {deps_path}"
+            f"Manually applying parser '{parser_choice}' to dependencies: {deps_path}"
         ) in caplog.text
     else:
         assert caplog.text == ""
 
 
 @pytest.mark.parametrize(
-    ["deps_file_name", "exp_parse_choice"],
-    [(fn, pc.value.execute) for pc, fn in PARSER_CHOICE_FILE_NAME_MATCH_GRID.items()],
+    ["deps_file_name", "exp_deps"],
+    [
+        pytest.param(fn, deps, id=fn)
+        for fn, deps in [
+            ("requirements.txt", ["pandas", "click"]),
+            ("setup.py", []),
+            ("setup.cfg", ["dependencyA", "dependencyB"]),
+            ("pyproject.toml", ["pandas", "pydantic", "pylint"]),
+        ]
+    ],
 )
-def test_filepath_inference(tmp_path, deps_file_name, exp_parse_choice):
+# pylint: disable=unused-argument
+def test_filepath_inference(
+    tmp_path,
+    project_with_setup_with_cfg_pyproject_and_requirements,
+    deps_file_name,
+    exp_deps,
+):
     """Parser choice finalization function can choose based on deps filename."""
-    deps_path = mkfile(tmp_path, deps_file_name)
-    obs_parse_choice = finalize_parse_strategy(deps_path)
-    assert obs_parse_choice == exp_parse_choice
+    deps_path = tmp_path / deps_file_name
+    assert deps_path.is_file()  # precondition
+    obs_deps = collect_dep_names(extract_declared_dependencies(deps_path))
+    assert_unordered_equivalence(obs_deps, exp_deps)
 
 
 @pytest.mark.parametrize(
@@ -113,6 +102,7 @@ def test_filepath_inference(tmp_path, deps_file_name, exp_parse_choice):
         ]
     ],
 )
+# pylint: disable=unused-argument
 def test_extract_from_directory_applies_manual_parser_choice_iff_choice_applies(
     tmp_path,
     project_with_setup_with_cfg_pyproject_and_requirements,
@@ -152,6 +142,8 @@ def test_extract_from_directory_applies_manual_parser_choice_iff_choice_applies(
         ]
     ],
 )
+# pylint: disable=unused-argument
+# pylint: disable=too-many-arguments
 def test_extract_from_file_applies_manual_choice_even_if_mismatched(
     caplog,
     tmp_path,
@@ -159,7 +151,7 @@ def test_extract_from_file_applies_manual_choice_even_if_mismatched(
     parser_choice,
     fn1,
     fn2,
-    exp_deps,
+    exp_deps
 ):
     old_path = tmp_path / fn1
     new_path = tmp_path / fn2
@@ -170,6 +162,6 @@ def test_extract_from_file_applies_manual_choice_even_if_mismatched(
     )
     assert_unordered_equivalence(obs_deps, exp_deps)
     exp_msg = (
-        f"Manually applying parser {parser_choice.name} to dependencies: {new_path}"
+        f"Manually applying parser '{parser_choice}' to dependencies: {new_path}"
     )
     assert exp_msg in caplog.text
