@@ -3,8 +3,9 @@
 import logging
 import sys
 from itertools import groupby
-from typing import Iterable, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
+from fawltydeps.settings import Settings
 from fawltydeps.types import (
     DeclaredDependency,
     DependenciesMapping,
@@ -96,8 +97,7 @@ def map_dependencies_to_imports(
 def compare_imports_to_dependencies(
     imports: List[ParsedImport],
     dependencies: List[DeclaredDependency],
-    ignored_unused: Iterable[str] = (),
-    ignored_undeclared: Iterable[str] = (),
+    settings: Settings,
 ) -> Tuple[List[UndeclaredDependency], List[UnusedDependency]]:
     """
     Compares imports to dependencies
@@ -118,7 +118,7 @@ def compare_imports_to_dependencies(
     undeclared = [
         i
         for i in imports
-        if i.name not in names_from_dependencies.union(ignored_undeclared)
+        if i.name not in names_from_dependencies.union(settings.ignore_undeclared)
     ]
     undeclared.sort(key=lambda i: i.name)  # groupby requires pre-sorting
     undeclared_grouped = [
@@ -129,7 +129,7 @@ def compare_imports_to_dependencies(
     unused = [
         dep
         for dep in mapped_dependencies
-        if (dep.name not in ignored_unused)
+        if (dep.name not in settings.ignore_unused)
         and len(set(dep.import_names) & names_from_imports) == 0
     ]
     unused.sort(key=lambda d: d.name)  # groupby requires pre-sorting

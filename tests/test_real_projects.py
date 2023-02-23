@@ -39,7 +39,7 @@ REAL_PROJECTS_DIR = Path(__file__).with_name("real_projects")
 
 def run_fawltydeps_json(*args: str, cwd: Optional[Path] = None) -> JsonData:
     proc = subprocess.run(
-        ["fawltydeps"] + list(args) + ["--json"],
+        ["fawltydeps", "--config-file=/dev/null"] + list(args) + ["--json"],
         stdout=subprocess.PIPE,
         check=False,
         cwd=cwd,
@@ -133,7 +133,7 @@ class ThirdPartyProject(NamedTuple):
 
     The actual data populating these objects is read from TOML files in
     REAL_PROJECTS_DIR, and the tarballs are downloaded, unpacked, and cached
-    by the cached_tarball() fixture above.
+    by the methods below.
     """
 
     toml_path: Path

@@ -82,9 +82,95 @@ be explicit about where to find the declared dependencies.
 If no `--deps` option is passed, FawltyDeps will look for the above files under
 the current directory, i.e. same as `--deps=.`
 
+### Ignoring irrelevant results
+
+There may be `import` statements in your code that should not be considered an
+undeclared dependency. This might happen if you for example do a conditional
+`import` with a `try: ... except ImportError: ...` block (or similar).
+FawltyDeps is not able to recognize whether these dependencies should have been
+declared or not, but you can ask for them to be ignored with the
+`--ignore-undeclared` option, for example:
+`--ignore-undeclared some_module some_other_module`
+
+Conversely, there may be dependencies that you have declared without intending
+to `import` them. This is often the case for developer tools like Black or Mypy
+that are part of your project's development environment.
+FawltyDeps cannot automatically tell which of your declared dependencies are
+meant to be `import`ed or not, but you ask for specific deps to be ignored with
+the `--ignore-unused` option, for example:
+`--ignore-unused black mypy`
+
+### Output formats
+
+The default output from FawltyDeps is a summary outlining the relevant
+dependencies found (according to the selected actions).
+However you can also ask for more information from FawltyDeps:
+
+- `--summary`: Default (human-readable) summary output
+- `--detailed`: Longer (human-readable) output that includes the location of
+  the relevant dependencies.
+- `--json`: Verbose JSON-formatted output for other tools to consume and
+  process further.
+
+Only one of these options can be used at a time.
+
 ### More help
 
 Run `fawltydeps --help` to get the full list of available options.
+
+## Configuration
+
+You can use a `[tool.fawltydeps]` section in `pyproject.toml` to configure the
+default behavior of FawltyDeps. Here's a fairly comprehensive example:
+
+```toml
+[tool.fawltydeps]
+code = "myproject"  # Only search for imports under ./myproject
+deps = "pyproject.toml"  # Only look for declared dependencies here
+ignore_unused = ["black"]  # We use `black`, but we don't intend to import it
+output_format = "human_detailed"  # Detailed report by default
+```
+
+Here is a complete list of configuration directives we support:
+
+- `actions`: A list of one or more of these actions to perform: `list_imports`,
+  `list_deps`, `check_undeclared`, `check_unused`. The default behavior
+  corresponds to `actions = ["check_undeclared", "check_unused"]`.
+- `code`: A file or directory containing the code to parse for import statements.
+  Defaults to the current directory, i.e. like `code = .`.
+- `deps`: A file or directory containing the declared dependencies.
+  Defaults to the current directory, i.e. like `deps = .`.
+- `output_format`: Which output format to use by default. One of `human_summary`,
+  `human_detailed`, or `json`.
+  The default corresponds to `output_format = "human_summary"`.
+- `ignore_undeclared`: A list of specific dependencies to ignore when reporting
+  undeclared dependencies, for example: `["some_module", "some_other_module"]`.
+  The default is the empty list: `ignore_undeclared = []`.
+- `ignore_unused`: A list of specific dependencies to ignore when reporting
+  unused dependencies, for example: `["black", "mypy"]`.
+  The default is the empty list: `ignore_unused = []`.
+- `verbosity`: An integer controlling the default log level of FawltyDeps:
+  - `-2`: Only `CRITICAL`-level log messages are shown.
+  - `-1`: `ERROR`-level log messages and above are shown.
+  - `0`: `WARNING`-level log messages and above are shown. This is the default.
+  - `1`: `INFO`-level log messages and above are shown.
+  - `2`: All log messages (including `DEBUG`) are shown.
+
+### Environment variables
+
+In addition to configuring FawltyDeps via `pyproject.toml` as show above, you
+may also pass the above configuration directives via the environment, using a
+`fawltydeps_` prefix. For example, to enable JSON output via the environment,
+set `fawltydeps_output_format=json` in FawltyDeps' environment.
+
+### Configuration cascade
+
+- Command-line options take precedence, and override corresponding settings
+  passed via the environment or `pyproject.toml`.
+- Environment variables override corresponding settings from `pyproject.toml`.
+- Configuration in `pyproject.toml` override only the ultimate hardcoded defaults.
+- The ultimate defaults when no cutomizations takes place are hardcoded inside
+  FawltyDeps, and are documented above.
 
 ## Documentation
 
@@ -186,5 +272,3 @@ The resulting updates are introduced to `fawltydeps` and reflected in our expect
 If you find a project where FawltyDeps is not doing a good job, we would appreciate
 if you add that project under [`tests/real_projects`](./tests/real_projects).
 To see how these tests work, look at the existing files in that directory.
-
-

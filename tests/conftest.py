@@ -1,9 +1,11 @@
 """Fixtures for tests"""
 from pathlib import Path
 from textwrap import dedent
-from typing import Dict
+from typing import Dict, Union
 
 import pytest
+
+from fawltydeps.types import TomlData
 
 
 @pytest.fixture
@@ -70,7 +72,7 @@ def project_with_setup_and_requirements(write_tmp_files):
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def project_with_setup_pyproject_and_requirements(write_tmp_files):
     return write_tmp_files(
         {
@@ -108,7 +110,7 @@ def project_with_setup_pyproject_and_requirements(write_tmp_files):
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def project_with_pyproject(write_tmp_files):
     return write_tmp_files(
         {
@@ -126,7 +128,7 @@ def project_with_pyproject(write_tmp_files):
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def project_with_setup_cfg(write_tmp_files):
     return write_tmp_files(
         {
@@ -151,7 +153,7 @@ def project_with_setup_cfg(write_tmp_files):
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def project_with_setup_with_cfg_pyproject_and_requirements(write_tmp_files):
     return write_tmp_files(
         {
@@ -196,3 +198,24 @@ def project_with_setup_with_cfg_pyproject_and_requirements(write_tmp_files):
             "python_file.py": "import django",
         }
     )
+
+
+@pytest.fixture
+def setup_fawltydeps_config(write_tmp_files):
+    """Write a custom tmp_path/pyproject.toml with a [tool.fawltydeps] section.
+
+    Write the given dict as config directives inside the [tool.fawltydeps]
+    section. If a string is given instead of a dict, then write a pyproject.toml
+    with that string (no automatic [tool.fawltydeps] section).
+    """
+
+    def _inner(contents: Union[str, TomlData]):
+        if isinstance(contents, dict):
+            contents = "".join(
+                ["[tool.fawltydeps]\n"]
+                + [f"{k} = {v!r}\n" for k, v in contents.items()]
+            )
+        tmp_path = write_tmp_files({"pyproject.toml": contents})
+        return tmp_path / "pyproject.toml"
+
+    return _inner

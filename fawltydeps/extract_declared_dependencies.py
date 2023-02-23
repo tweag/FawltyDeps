@@ -5,24 +5,27 @@ import configparser
 import logging
 import re
 import sys
-from enum import Enum
 from functools import partial
 from pathlib import Path
-from typing import Any, Callable, Dict, Iterable, Iterator, NamedTuple, Optional, Tuple
+from typing import Callable, Iterable, Iterator, NamedTuple, Optional, Tuple
 
 from more_itertools import split_at
 from pkg_resources import Requirement
 
 from fawltydeps.limited_eval import CannotResolve, VariableTracker
-from fawltydeps.types import DeclaredDependency, Location, UnparseablePathException
+from fawltydeps.settings import ParserChoice
+from fawltydeps.types import (
+    DeclaredDependency,
+    Location,
+    TomlData,
+    UnparseablePathException,
+)
 from fawltydeps.utils import walk_dir
 
 if sys.version_info >= (3, 11):
     import tomllib  # pylint: disable=E1101
 else:
     import tomli as tomllib
-
-TomlData = Dict[str, Any]  # type: ignore
 
 logger = logging.getLogger(__name__)
 
@@ -324,18 +327,6 @@ class ParsingStrategy(NamedTuple):
 
     applies_to_path: Callable[[Path], bool]
     execute: Callable[[str, Location], Iterator[DeclaredDependency]]
-
-
-class ParserChoice(Enum):
-    """Enumerate the choices of dependency declaration parsers."""
-
-    REQUIREMENTS_TXT = "requirements.txt"
-    SETUP_PY = "setup.py"
-    SETUP_CFG = "setup.cfg"
-    PYPROJECT_TOML = "pyproject.toml"
-
-    def __str__(self) -> str:
-        return self.value
 
 
 def first_applicable_parser(

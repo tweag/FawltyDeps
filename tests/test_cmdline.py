@@ -14,7 +14,7 @@ from typing import Iterable, Optional, Tuple
 
 import pytest
 
-from fawltydeps.main import VERBOSE_PROMPT
+from fawltydeps.main import VERBOSE_PROMPT, version
 
 from .test_extract_imports_simple import generate_notebook
 
@@ -38,11 +38,12 @@ def project_with_code_and_requirements_txt(write_tmp_files):
 
 def run_fawltydeps(
     *args: str,
+    config_file: Path = Path("/dev/null"),
     to_stdin: Optional[str] = None,
     cwd: Optional[Path] = None,
 ) -> Tuple[str, str, int]:
     proc = subprocess.run(
-        ["fawltydeps"] + list(args),
+        ["fawltydeps", f"--config-file={config_file}"] + list(args),
         input=to_stdin,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
@@ -59,7 +60,7 @@ def run_fawltydeps(
     return proc.stdout.strip(), proc.stderr.strip(), proc.returncode
 
 
-def test_list_imports__verbose_from_dash__prints_imports_from_stdin():
+def test_list_imports_detailed__from_dash__prints_imports_from_stdin():
     code = dedent(
         """\
         from pathlib import Path
@@ -78,14 +79,14 @@ def test_list_imports__verbose_from_dash__prints_imports_from_stdin():
         "INFO:fawltydeps.extract_imports:Parsing Python code from standard input"
     )
     output, errors, returncode = run_fawltydeps(
-        "--list-imports", "-v", "--code=-", to_stdin=code
+        "--list-imports", "--detailed", "-v", "--code=-", to_stdin=code
     )
     assert output.splitlines() == expect
     assert errors == expect_logs
     assert returncode == 0
 
 
-def test_list_imports_quiet__from_dash__prints_imports_from_stdin():
+def test_list_imports_summary__from_dash__prints_imports_from_stdin():
     code = dedent(
         """\
         from pathlib import Path
@@ -99,7 +100,7 @@ def test_list_imports_quiet__from_dash__prints_imports_from_stdin():
 
     expect = ["foo", "numpy", "requests"]  # alphabetically sorted
     output, errors, returncode = run_fawltydeps(
-        "--list-imports", "--code=-", to_stdin=code
+        "--list-imports", "--summary", "--code=-", to_stdin=code
     )
     assert output.splitlines()[:-2] == expect
     assert errors == ""
@@ -128,7 +129,7 @@ def test_list_imports__from_py_file__prints_imports_from_file(write_tmp_files):
         f"INFO:fawltydeps.extract_imports:Parsing Python file {tmp_path}/myfile.py"
     )
     output, errors, returncode = run_fawltydeps(
-        "--list-imports", "-v", f"--code={tmp_path}/myfile.py"
+        "--list-imports", "--detailed", "-v", f"--code={tmp_path}/myfile.py"
     )
     assert output.splitlines() == expect
     assert errors == expect_logs
@@ -150,6 +151,16 @@ def test_list_imports_json__from_py_file__prints_imports_from_file(write_tmp_fil
     )
 
     expect = {
+        "settings": {
+            "actions": ["list_imports"],
+            "code": f"{tmp_path}/myfile.py",
+            "deps": ".",
+            "output_format": "json",
+            "ignore_undeclared": [],
+            "ignore_unused": [],
+            "deps_parser_choice": None,
+            "verbosity": 0,
+        },
         "imports": [
             {
                 "name": "requests",
@@ -161,6 +172,7 @@ def test_list_imports_json__from_py_file__prints_imports_from_file(write_tmp_fil
         "declared_deps": None,
         "undeclared_deps": None,
         "unused_deps": None,
+        "version": version(),
     }
     output, _errors, returncode = run_fawltydeps(
         "--list-imports", "--json", f"--code={tmp_path}/myfile.py"
@@ -181,7 +193,7 @@ def test_list_imports__from_ipynb_file__prints_imports_from_file(write_tmp_files
         f"INFO:fawltydeps.extract_imports:Parsing Notebook file {tmp_path}/myfile.ipynb"
     )
     output, errors, returncode = run_fawltydeps(
-        "--list-imports", "-v", f"--code={tmp_path}/myfile.ipynb"
+        "--list-imports", "--detailed", "-v", f"--code={tmp_path}/myfile.ipynb"
     )
     assert output.splitlines() == expect
     assert errors == expect_logs
@@ -215,7 +227,7 @@ def test_list_imports__from_dir__prints_imports_from_py_and_ipynb_files_only(
         f"INFO:fawltydeps.extract_imports:Parsing Python files under {tmp_path}"
     )
     output, errors, returncode = run_fawltydeps(
-        "--list-imports", "-v", f"--code={tmp_path}"
+        "--list-imports", "--detailed", "-v", f"--code={tmp_path}"
     )
     assert output.splitlines() == expect
     assert errors == expect_logs
@@ -244,7 +256,7 @@ def test_list_imports__from_missing_file__fails_with_exit_code_2(tmp_path):
 def test_list_imports__from_empty_dir__logs_but_extracts_nothing(tmp_path):
     # Enable log level INFO with -v
     output, errors, returncode = run_fawltydeps(
-        "--list-imports", f"--code={tmp_path}", "-v"
+        "--list-imports", f"--code={tmp_path}", "--detailed", "-v"
     )
     assert output == ""
     assert f"Parsing Python files under {tmp_path}" in errors
@@ -264,7 +276,7 @@ def test_list_deps__dir__prints_deps_from_requirements_txt(
         f"{tmp_path}/requirements.txt: requests",
     ]
     output, errors, returncode = run_fawltydeps(
-        "--list-deps", "-v", f"--deps={tmp_path}"
+        "--list-deps", "--detailed", "-v", f"--deps={tmp_path}"
     )
     assert output.splitlines() == expect
     assert errors == ""
@@ -280,6 +292,16 @@ def test_list_deps_json__dir__prints_deps_from_requirements_txt(
     )
 
     expect = {
+        "settings": {
+            "actions": ["list_deps"],
+            "code": ".",
+            "deps": f"{tmp_path}",
+            "output_format": "json",
+            "ignore_undeclared": [],
+            "ignore_unused": [],
+            "deps_parser_choice": None,
+            "verbosity": 0,
+        },
         "imports": None,
         "declared_deps": [
             {
@@ -297,6 +319,7 @@ def test_list_deps_json__dir__prints_deps_from_requirements_txt(
         ],
         "undeclared_deps": None,
         "unused_deps": None,
+        "version": version(),
     }
     output, _errors, returncode = run_fawltydeps(
         "--list-deps", "--json", f"--deps={tmp_path}"
@@ -343,7 +366,7 @@ def test_list_deps__missing_path__fails_with_exit_code_2(tmp_path):
 def test_list_deps__empty_dir__verbosely_logs_but_extracts_nothing(tmp_path):
     # Enable log level INFO with -v
     output, errors, returncode = run_fawltydeps(
-        "--list-deps", f"--deps={tmp_path}", "-v"
+        "--list-deps", f"--deps={tmp_path}", "--detailed", "-v"
     )
     assert output == ""
     assert errors == ""
@@ -384,7 +407,7 @@ def test_check__simple_project_with_missing_deps__reports_undeclared(
         f"INFO:fawltydeps.extract_imports:Parsing Python files under {tmp_path}"
     )
     output, errors, returncode = run_fawltydeps(
-        "--check", "-v", f"--code={tmp_path}", f"--deps={tmp_path}"
+        "--check", "--detailed", "-v", f"--code={tmp_path}", f"--deps={tmp_path}"
     )
     assert output.splitlines() == expect
     assert errors == expect_logs
@@ -408,7 +431,7 @@ def test_check__simple_project_with_extra_deps__reports_unused(
         f"INFO:fawltydeps.extract_imports:Parsing Python files under {tmp_path}"
     )
     output, errors, returncode = run_fawltydeps(
-        "--check", "-v", f"--code={tmp_path}", f"--deps={tmp_path}"
+        "--check", "--detailed", "-v", f"--code={tmp_path}", f"--deps={tmp_path}"
     )
     assert output.splitlines() == expect
     assert errors == expect_logs
@@ -435,7 +458,59 @@ def test_check__simple_project__can_report_both_undeclared_and_unused(
         f"INFO:fawltydeps.extract_imports:Parsing Python files under {tmp_path}"
     )
     output, errors, returncode = run_fawltydeps(
-        "--check", "-v", f"--code={tmp_path}", f"--deps={tmp_path}"
+        "--check", "--detailed", "-v", f"--code={tmp_path}", f"--deps={tmp_path}"
+    )
+    assert output.splitlines() == expect
+    assert errors == expect_logs
+    assert returncode == 3  # undeclared is more important than unused
+
+
+def test_check__simple_project__summary_report_with_verbose_logging(
+    project_with_code_and_requirements_txt,
+):
+    tmp_path = project_with_code_and_requirements_txt(
+        imports=["requests"],
+        declares=["pandas"],
+    )
+
+    expect = [
+        "These imports appear to be undeclared dependencies:",
+        "- 'requests'",
+        "These dependencies appear to be unused (i.e. not imported):",
+        "- 'pandas'",
+        "",
+        VERBOSE_PROMPT,
+    ]
+    expect_logs = (
+        f"INFO:fawltydeps.extract_imports:Parsing Python files under {tmp_path}"
+    )
+    output, errors, returncode = run_fawltydeps(
+        "--check", "--summary", "--verbose", f"--code={tmp_path}", f"--deps={tmp_path}"
+    )
+    assert output.splitlines() == expect
+    assert errors == expect_logs
+    assert returncode == 3  # undeclared is more important than unused
+
+
+def test_check__simple_project__detailed_report_with_quiet_logging(
+    project_with_code_and_requirements_txt,
+):
+    tmp_path = project_with_code_and_requirements_txt(
+        imports=["requests"],
+        declares=["pandas"],
+    )
+
+    expect = [
+        "These imports appear to be undeclared dependencies:",
+        "- 'requests' imported at:",
+        f"    {tmp_path / 'code.py'}:1",
+        "These dependencies appear to be unused (i.e. not imported):",
+        "- 'pandas' declared in:",
+        f"    {tmp_path / 'requirements.txt'}",
+    ]
+    expect_logs = ""
+    output, errors, returncode = run_fawltydeps(
+        "--check", "--detailed", f"--code={tmp_path}", f"--deps={tmp_path}"
     )
     assert output.splitlines() == expect
     assert errors == expect_logs
@@ -451,6 +526,16 @@ def test_check_json__simple_project__can_report_both_undeclared_and_unused(
     )
 
     expect = {
+        "settings": {
+            "actions": ["check_undeclared", "check_unused"],
+            "code": f"{tmp_path}",
+            "deps": f"{tmp_path}",
+            "output_format": "json",
+            "ignore_undeclared": [],
+            "ignore_unused": [],
+            "deps_parser_choice": None,
+            "verbosity": 0,
+        },
         "imports": [
             {
                 "name": "requests",
@@ -489,6 +574,7 @@ def test_check_json__simple_project__can_report_both_undeclared_and_unused(
                 ],
             },
         ],
+        "version": version(),
     }
     output, _errors, returncode = run_fawltydeps(
         "--check", "--json", f"--code={tmp_path}", f"--deps={tmp_path}"
@@ -514,7 +600,11 @@ def test_check_undeclared__simple_project__reports_only_undeclared(
         f"INFO:fawltydeps.extract_imports:Parsing Python files under {tmp_path}"
     )
     output, errors, returncode = run_fawltydeps(
-        "--check-undeclared", "-v", f"--code={tmp_path}", f"--deps={tmp_path}"
+        "--check-undeclared",
+        "--detailed",
+        "-v",
+        f"--code={tmp_path}",
+        f"--deps={tmp_path}",
     )
     assert output.splitlines() == expect
     assert errors == expect_logs
@@ -538,7 +628,7 @@ def test_check_unused__simple_project__reports_only_unused(
         f"INFO:fawltydeps.extract_imports:Parsing Python files under {tmp_path}"
     )
     output, errors, returncode = run_fawltydeps(
-        "--check-unused", "-v", f"--code={tmp_path}", f"--deps={tmp_path}"
+        "--check-unused", "--detailed", "-v", f"--code={tmp_path}", f"--deps={tmp_path}"
     )
     assert output.splitlines() == expect
     assert errors == expect_logs
@@ -565,7 +655,7 @@ def test__no_action__defaults_to_check_action(
         f"INFO:fawltydeps.extract_imports:Parsing Python files under {tmp_path}"
     )
     output, errors, returncode = run_fawltydeps(
-        f"--code={tmp_path}", "-v", f"--deps={tmp_path}"
+        f"--code={tmp_path}", "--detailed", "-v", f"--deps={tmp_path}"
     )
     assert output.splitlines() == expect
     assert errors == expect_logs
@@ -589,7 +679,7 @@ def test__no_options__defaults_to_check_action_in_current_dir(
         "    requirements.txt",
     ]
     expect_logs = "INFO:fawltydeps.extract_imports:Parsing Python files under ."
-    output, errors, returncode = run_fawltydeps("-v", cwd=tmp_path)
+    output, errors, returncode = run_fawltydeps("--detailed", "-v", cwd=tmp_path)
     assert output.splitlines() == expect
     assert errors == expect_logs
     assert returncode == 3
@@ -694,3 +784,71 @@ def test_cmdline_on_ignored_undeclared_option(
     assert output.splitlines() == expected
     assert errors == ""
     assert returncode == 0
+
+
+@pytest.mark.parametrize(
+    "config,args,expect",
+    [
+        pytest.param(
+            {},
+            [],
+            [
+                "These imports appear to be undeclared dependencies:",
+                "- 'requests'",
+                "These dependencies appear to be unused (i.e. not imported):",
+                "- 'pandas'",
+                "",
+                VERBOSE_PROMPT,
+            ],
+            id="no_config_no_args__show_summary_of_undeclared_and_unused",
+        ),
+        pytest.param(
+            {"actions": ["list_imports"]},
+            [],
+            [
+                "requests",
+                "",
+                VERBOSE_PROMPT,
+            ],
+            id="setting_actions_in_config__changes_default_action",
+        ),
+        pytest.param(
+            {"actions": ["list_imports"]},
+            ["--detailed"],
+            ["code.py:1: requests"],
+            id="combine_actions_in_config_with_detailed_on_command_line",
+        ),
+        pytest.param(
+            {"actions": ["list_imports"], "output_format": "human_detailed"},
+            ["--list-deps"],
+            ["requirements.txt: pandas"],
+            id="override_some_config_directives_on_command_line",
+        ),
+        pytest.param(
+            {"actions": ["list_imports"], "output_format": "human_detailed"},
+            ["--summary"],
+            [
+                "requests",
+                "",
+                VERBOSE_PROMPT,
+            ],
+            id="override_output_format_from_config_with_command_line_option",
+        ),
+    ],
+)
+def test_cmdline_args_in_combination_with_config_file(
+    config,
+    args,
+    expect,
+    project_with_code_and_requirements_txt,
+    setup_fawltydeps_config,
+):
+    # We keep the project itself constant (one undeclared + one unused dep),
+    # but we vary the FD configuration directives and command line args
+    tmp_path = project_with_code_and_requirements_txt(
+        imports=["requests"],
+        declares=["pandas"],
+    )
+    setup_fawltydeps_config(config)
+    output, *_ = run_fawltydeps("--config-file=pyproject.toml", *args, cwd=tmp_path)
+    assert output.splitlines() == expect

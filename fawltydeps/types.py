@@ -6,7 +6,7 @@ from enum import Enum
 from functools import total_ordering
 from operator import attrgetter
 from pathlib import Path
-from typing import List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from fawltydeps.utils import hide_dataclass_fields
 
@@ -16,7 +16,8 @@ else:
     from typing_extensions import Literal
 
 SpecialPath = Literal["<stdin>"]
-PathOrSpecial = Union[Path, SpecialPath]
+PathOrSpecial = Union[SpecialPath, Path]
+TomlData = Dict[str, Any]  # type: ignore
 
 
 class UnparseablePathException(Exception):
