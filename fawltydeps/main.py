@@ -27,7 +27,7 @@ from pydantic.json import custom_pydantic_encoder  # pylint: disable=no-name-in-
 from fawltydeps import extract_imports
 from fawltydeps.check import compare_imports_to_dependencies
 from fawltydeps.extract_declared_dependencies import extract_declared_dependencies
-from fawltydeps.settings import Action, Settings
+from fawltydeps.settings import Action, OutputFormat, Settings
 from fawltydeps.types import (
     DeclaredDependency,
     ParsedImport,
@@ -181,7 +181,7 @@ def main() -> int:
     except UnparseablePathException as exc:
         return parser.error(exc.msg)  # exit code 2
 
-    if settings.json_output:
+    if settings.output_format == OutputFormat.JSON:
         analysis.print_json(sys.stdout)
     else:
         analysis.print_human_readable(sys.stdout, details=settings.verbosity > 0)
