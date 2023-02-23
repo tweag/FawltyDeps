@@ -161,13 +161,9 @@ class UndeclaredDependency:
 
         Level of detail is determined by `include_references`.
         """
-        ret = f"{self.name!r}"
-        if include_references:
-            ret += " imported at:" + "".join(
-                f"\n    {ref.source}"
-                for ref in sorted(self.references, key=attrgetter("source"))
-            )
-        return ret
+        return render_problematic_dependency(
+            self, "imported at" if include_references else None
+        )
 
 
 @dataclass
@@ -182,10 +178,19 @@ class UnusedDependency:
 
         Level of detail is determined by `include_references`.
         """
-        ret = f"{self.name!r}"
-        if include_references:
-            ret += " declared in:" + "".join(
-                f"\n    {ref.source}"
-                for ref in sorted(self.references, key=attrgetter("source"))
-            )
-        return ret
+        return render_problematic_dependency(
+            self, "declared in" if include_references else None
+        )
+
+
+def render_problematic_dependency(
+    dep: Union[UndeclaredDependency, UnusedDependency], context: Optional[str]
+) -> str:
+    """Create text representation of the given unused or undeclared dependency."""
+    ret = f"{dep.name!r}"
+    if context is not None:
+        ret += f" {context}:" + "".join(
+            f"\n    {ref.source}" # type: ignore[attr-defined]
+            for ref in sorted(set(dep.references), key=attrgetter("source"))
+        )
+    return ret
