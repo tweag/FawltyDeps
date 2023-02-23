@@ -146,13 +146,14 @@ class Analysis:
                 print("\n".join(sorted(unique_dependencies)), file=out)
 
         if self.is_enabled(Action.REPORT_UNDECLARED) and self.undeclared_deps:
-            print("These imports appear to be undeclared dependencies:", file=out)
+            print("\nThese imports appear to be undeclared dependencies:", file=out)
             for undeclared in self.undeclared_deps:
                 print(f"- {undeclared.render(details)}", file=out)
 
         if self.is_enabled(Action.REPORT_UNUSED) and self.unused_deps:
             print(
-                "These dependencies appear to be unused (i.e. not imported):", file=out
+                "\nThese dependencies appear to be unused (i.e. not imported):",
+                file=out,
             )
             for unused in self.unused_deps:
                 print(f"- {unused.render(details)}", file=out)
