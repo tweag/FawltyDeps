@@ -8,7 +8,7 @@ import pytest
 
 from fawltydeps.extract_declared_dependencies import (
     ParserChoice,
-    extract_declared_dependencies
+    extract_declared_dependencies,
 )
 
 from .utils import assert_unordered_equivalence, collect_dep_names
