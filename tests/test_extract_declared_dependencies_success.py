@@ -535,30 +535,30 @@ def test_extract_declared_dependencies__project_with_setup_cfg_pyproject_require
 
 
 @pytest.mark.parametrize(
-    ["reqs_file_lines", "exp_deps"],
+    ["deps_file_content", "exp_deps"],
     [
         pytest.param(lines, exp, id=id)
         for lines, exp, id in [
             (
                 """
-FooProject >= 1.2 --global-option="--no-user-cfg" \
-                  --install-option="--prefix='/usr/local'" \
-                  --install-option="--no-compile" \
+FooProject >= 1.2 --global-option="--no-user-cfg" \\
+                  --install-option="--prefix='/usr/local'" \\
+                  --install-option="--no-compile" \\
 """,
                 ["FooProject"],
                 "original-use-case",
             ),
             (
-                """FooProject --global-option="--no-user-cfg" \
-   MyProject
+                """FooProject --global-option="--no-user-cfg"
+                MyProject
 """,
                 ["FooProject", "MyProject"],
                 "with-without",
             ),
             (
-                """MyProject \
-   FooProject --global-option="--no-user-cfg"
-   MyProject2
+                """MyProject
+                FooProject --global-option="--no-user-cfg"
+                MyProject2
 """,
                 ["MyProject", "FooProject", "MyProject2"],
                 "without-with-without",
@@ -566,11 +566,9 @@ FooProject >= 1.2 --global-option="--no-user-cfg" \
         ]
     ],
 )
-def test_parse_requirements_per_req_options(tmp_path, reqs_file_lines, exp_deps):
+def test_parse_requirements_per_req_options(tmp_path, deps_file_content, exp_deps):
     # originally motivated by #114 (A dep can span multiple lines.)
     deps_path = tmp_path / "requirements.txt"
-    with open(deps_path, "w") as fh:
-        for line in reqs_file_lines:
-            fh.write(line + "\n")
+    deps_path.write_text(dedent(deps_file_content))
     obs_deps = collect_dep_names(extract_declared_dependencies(deps_path))
     assert_unordered_equivalence(obs_deps, exp_deps)
