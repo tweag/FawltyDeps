@@ -190,7 +190,7 @@ def render_problematic_dependency(
     ret = f"{dep.name!r}"
     if context is not None:
         ret += f" {context}:" + "".join(
-            f"\n    {ref.source}" # type: ignore[attr-defined]
+            f"\n    {ref.source}"  # type: ignore[attr-defined]
             for ref in sorted(set(dep.references), key=attrgetter("source"))
         )
     return ret
