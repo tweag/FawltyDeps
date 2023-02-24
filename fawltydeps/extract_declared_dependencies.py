@@ -30,6 +30,7 @@ else:
 logger = logging.getLogger(__name__)
 
 ERROR_MESSAGE_TEMPLATE = "Failed to %s %s %s dependencies in %s: %s"
+# https://pip.pypa.io/en/stable/reference/requirements-file-format/#per-requirement-options
 PER_REQUIREMENT_OPTIONS = [
     "--install-option",
     "--global-option",
@@ -94,7 +95,6 @@ def parse_requirements_contents(
                     for per_req_opt in PER_REQUIREMENT_OPTIONS
                     if breakpoints[0].startswith(per_req_opt)
                 ]:
-                    # https://pip.pypa.io/en/stable/reference/requirements-file-format/#per-requirement-options
                     new_req_try = sep.join(pre_break)
                     yield parse_one(new_req_try)
                 else:
