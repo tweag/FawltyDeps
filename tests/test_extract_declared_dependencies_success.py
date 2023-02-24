@@ -537,29 +537,31 @@ def test_extract_declared_dependencies__project_with_setup_cfg_pyproject_require
 @pytest.mark.parametrize(
     ["deps_file_content", "exp_deps"],
     [
-        pytest.param(lines, exp, id=id)
+        pytest.param(dedent(lines), exp, id=id)
         for lines, exp, id in [
             (
                 """
-FooProject >= 1.2 --global-option="--no-user-cfg" \\
-                  --install-option="--prefix='/usr/local'" \\
-                  --install-option="--no-compile" \\
-""",
+                FooProject >= 1.2 --global-option="--no-user-cfg" \\
+                    --install-option="--prefix='/usr/local'" \\
+                    --install-option="--no-compile" \\
+                """,
                 ["FooProject"],
                 "original-use-case",
             ),
             (
-                """FooProject --global-option="--no-user-cfg"
+                """
+                FooProject --global-option="--no-user-cfg"
                 MyProject
-""",
+                """,
                 ["FooProject", "MyProject"],
                 "with-without",
             ),
             (
-                """MyProject
+                """
+                MyProject
                 FooProject --global-option="--no-user-cfg"
                 MyProject2
-""",
+                """,
                 ["MyProject", "FooProject", "MyProject2"],
                 "without-with-without",
             ),

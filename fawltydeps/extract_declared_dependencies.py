@@ -6,10 +6,10 @@ import logging
 import re
 import sys
 from functools import partial
+from itertools import takewhile
 from pathlib import Path
 from typing import Callable, Iterable, Iterator, NamedTuple, Optional, Tuple
 
-from more_itertools import split_at
 from pkg_resources import Requirement
 
 from fawltydeps.limited_eval import CannotResolve, VariableTracker
@@ -30,6 +30,7 @@ else:
 logger = logging.getLogger(__name__)
 
 ERROR_MESSAGE_TEMPLATE = "Failed to %s %s %s dependencies in %s: %s"
+# https://pip.pypa.io/en/stable/reference/requirements-file-format/#per-requirement-options
 PER_REQUIREMENT_OPTIONS = [
     "--install-option",
     "--global-option",
@@ -76,31 +77,15 @@ def parse_requirements_contents(
         try:
             yield parse_one(line)
         except ValueError:
-            sep = " "
-            fields = line.split(sep)
-            splits = list(
-                split_at(
-                    fields,
-                    lambda s: s.startswith("--"),
-                    maxsplit=1,
-                    keep_separator=True,
-                )
+            # Try again with the initial part of the line preceding any of the
+            # PER_REQUIREMENT_OPTIONS
+            pre_opt_words = takewhile(
+                lambda word: not any(
+                    word.startswith(opt) for opt in PER_REQUIREMENT_OPTIONS
+                ),
+                cleaned.split(),
             )
-            if len(splits) == 3:  # pre, sep, post
-                pre_break, breakpoints, _ = splits
-                assert 1 == len(breakpoints)
-                if [
-                    per_req_opt
-                    for per_req_opt in PER_REQUIREMENT_OPTIONS
-                    if breakpoints[0].startswith(per_req_opt)
-                ]:
-                    # https://pip.pypa.io/en/stable/reference/requirements-file-format/#per-requirement-options
-                    new_req_try = sep.join(pre_break)
-                    yield parse_one(new_req_try)
-                else:
-                    raise
-            else:
-                raise  # can't rescue the parse
+            yield parse_one(" ".join(pre_opt_words))
 
 
 def parse_setup_contents(text: str, source: Location) -> Iterator[DeclaredDependency]:
