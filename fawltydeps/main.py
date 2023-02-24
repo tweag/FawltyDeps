@@ -18,9 +18,10 @@ import logging
 import sys
 from dataclasses import dataclass
 from functools import partial
+from itertools import groupby
 from operator import attrgetter
 from pathlib import Path
-from typing import List, Optional, TextIO, Union, no_type_check
+from typing import Iterator, List, Optional, TextIO, Union, no_type_check
 
 from pydantic.json import custom_pydantic_encoder  # pylint: disable=no-name-in-module
 
@@ -45,6 +46,7 @@ else:
 logger = logging.getLogger(__name__)
 
 VERBOSE_PROMPT = "For a more verbose report re-run with the `--detailed` option."
+UNUSED_DEPS_OUTPUT_PREFIX = "These dependencies appear to be unused (i.e. not imported)"
 
 
 @no_type_check
@@ -148,10 +150,21 @@ class Analysis:
                 print(render_dep_list_item(undeclared, details), file=out)
 
         if self.is_enabled(Action.REPORT_UNUSED) and self.unused_deps:
-            print(
-                "These dependencies appear to be unused (i.e. not imported):", file=out
-            )
-            for unused in set(self.unused_deps):
+
+            def agg_deps_group(
+                unused_deps: Iterator[UnusedDependency],
+            ) -> UnusedDependency:
+                ret = next(unused_deps)
+                for curr in unused_deps:
+                    ret = ret.combine(curr)
+                return ret
+
+            aggregated = [
+                agg_deps_group(deps)
+                for _, deps in groupby(self.unused_deps, key=lambda d: d.name)
+            ]
+            print(f"{UNUSED_DEPS_OUTPUT_PREFIX}:", file=out)
+            for unused in sorted(aggregated, key=lambda d: d.name):
                 print(render_dep_list_item(unused, details), file=out)
 
 

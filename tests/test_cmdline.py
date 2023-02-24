@@ -8,15 +8,23 @@ core exhaustively (which is what the other unit tests are for.
 import json
 import logging
 import subprocess
+from itertools import dropwhile
 from pathlib import Path
 from textwrap import dedent
 from typing import Iterable, Optional, Tuple
 
 import pytest
 
-from fawltydeps.main import VERBOSE_PROMPT, version
+from fawltydeps.main import (
+    UNUSED_DEPS_OUTPUT_PREFIX,
+    VERBOSE_PROMPT,
+    render_dep_list_item,
+    version,
+)
+from fawltydeps.types import DeclaredDependency, Location, UnusedDependency
 
 from .test_extract_imports_simple import generate_notebook
+from .utils import assert_unordered_equivalence
 
 logger = logging.getLogger(__name__)
 
@@ -852,3 +860,82 @@ def test_cmdline_args_in_combination_with_config_file(
     setup_fawltydeps_config(config)
     output, *_ = run_fawltydeps("--config-file=pyproject.toml", *args, cwd=tmp_path)
     assert output.splitlines() == expect
+
+
+@pytest.fixture
+def pyproject_toml_contents():
+    data = dedent(
+        """
+        [tool.poetry.group.lint.dependencies]
+        mypy = "^0.991"
+        pylint = "^2.15.8"
+        types-setuptools = "^65.6.0.2"
+
+        [tool.poetry.group.format.dependencies]
+        black = "^22"
+        colorama = "^0.4.6"
+        codespell = "^2.2.2"
+
+        [tool.poetry.group.dev.dependencies]
+        # The dev group is a convenience group for FawltyDeps developers. When adding
+        # something to the above groups (i.e. something that targets a specific purpose
+        # (e.g. a CI action), consider whether it's also useful to have this available
+        # in a developers environment
+        black = "^22"
+        codespell = "^2.2.2"
+        colorama = "^0.4.6"
+        mypy = "^0.991"
+        pylint = "^2.15.8"
+        types-setuptools = "^65.6.0.2"
+        """
+    )
+    uniq_deps = (
+        "black",
+        "codespell",
+        "colorama",
+        "mypy",
+        "pylint",
+        "types-setuptools",
+    )
+    return data, uniq_deps
+
+
+def test_deps_across_groups_appear_just_once_in_list_deps_detailed(
+    tmp_path, pyproject_toml_contents
+):
+    deps_data, uniq_deps = pyproject_toml_contents
+    deps_path = tmp_path / "pyproject.toml"
+    exp_lines_from_pyproject = [f"{deps_path}: {dep}" for dep in uniq_deps]
+    deps_path.write_text(dedent(deps_data))
+    output, *_ = run_fawltydeps("--list-deps", "--detailed", f"--deps={deps_path}")
+    obs_lines = output.splitlines()
+    from_pyproject, from_elsewhere = [], []
+    for line in obs_lines:
+        coll = from_pyproject if str(deps_path) in line else from_elsewhere
+        coll.append(line.strip())
+    assert len(from_pyproject) == len(exp_lines_from_pyproject)
+    assert_unordered_equivalence(from_pyproject, exp_lines_from_pyproject)
+
+
+def test_deps_across_groups_appear_just_once_in_order_in_general_detailed(
+    tmp_path, pyproject_toml_contents
+):
+    deps_data, uniq_deps = pyproject_toml_contents
+    deps_path = tmp_path / "pyproject.toml"
+    deps_path.write_text(dedent(deps_data))
+    output, *_ = run_fawltydeps("--detailed", f"--deps={deps_path}")
+    obs_lines_absolute = output.splitlines()
+    obs_lines_relevant = dropwhile(
+        lambda line: not line.startswith(UNUSED_DEPS_OUTPUT_PREFIX), obs_lines_absolute
+    )
+    next(obs_lines_relevant)  # discard
+    unused_deps = [
+        UnusedDependency(name, [DeclaredDependency(name, Location(deps_path))])
+        for name in uniq_deps
+    ]
+    exp_lines = [
+        line
+        for dep in unused_deps
+        for line in render_dep_list_item(dep, include_details=True).split("\n")
+    ]
+    assert list(obs_lines_relevant) == exp_lines
