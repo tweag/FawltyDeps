@@ -5,12 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from fawltydeps.types import (
-    DeclaredDependency,
-    DependenciesMapping,
-    Location,
-    ParsedImport,
-)
+from fawltydeps.types import DeclaredDependency, Location, ParsedImport
 
 testdata = {  # Test ID -> (Location args, expected string representation, sort order)
     # First arg must be a Path, or "<stdin>"
@@ -114,14 +109,3 @@ def test_declareddependency_is_immutable():
         dd.name = "bar_package"
     with pytest.raises(FrozenInstanceError):
         dd.source = dd.source.supply(lineno=123)
-
-
-def test_compare_declareddependency():
-    dd1 = DeclaredDependency("foo_package", Location(Path("requirements.txt")))
-    dd2 = dd1.replace_mapping(("foo_package"), DependenciesMapping.LOCAL_ENV)
-    dd3 = dd1.replace_mapping(("foo", "bar"), DependenciesMapping.LOCAL_ENV)
-    dd4 = dd3.replace_mapping(("foo_package"), DependenciesMapping.LOCAL_ENV)
-
-    assert dd1 != dd2
-    assert dd2 != dd3
-    assert dd2 == dd4

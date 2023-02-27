@@ -8,7 +8,6 @@ from fawltydeps.check import compare_imports_to_dependencies
 from fawltydeps.settings import Settings
 from fawltydeps.types import (
     DeclaredDependency,
-    DependenciesMapping,
     Location,
     ParsedImport,
     UndeclaredDependency,
@@ -153,8 +152,6 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
                             DeclaredDependency(
                                 name="isort",
                                 source=Location(Path("foo")),
-                                import_names=("isort",),
-                                mapping=DependenciesMapping.LOCAL_ENV,
                             )
                         ],
                     ),

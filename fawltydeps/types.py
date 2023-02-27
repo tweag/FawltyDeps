@@ -2,7 +2,6 @@
 
 import sys
 from dataclasses import asdict, dataclass, field, replace
-from enum import Enum
 from functools import total_ordering
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
@@ -24,13 +23,6 @@ class UnparseablePathException(Exception):
 
     def __init__(self, ctx: str, path: Path):
         self.msg = f"{ctx}: {path}"
-
-
-class DependenciesMapping(Enum):
-    """Types of dependency and imports mapping"""
-
-    IDENTITY = "IDENTITY"
-    LOCAL_ENV = "LOCAL_ENV"
 
 
 @total_ordering
@@ -129,24 +121,6 @@ class DeclaredDependency:
 
     name: str
     source: Location
-    import_names: Tuple[str, ...] = ()
-    mapping: DependenciesMapping = DependenciesMapping.IDENTITY
-
-    def __post_init__(self) -> None:
-        """Set an identity mapping by default"""
-        if self.mapping == DependenciesMapping.IDENTITY:
-            if len(self.import_names) < 1:
-                object.__setattr__(self, "import_names", (self.name,))
-            elif len(self.import_names) > 1:
-                raise ValueError(
-                    "Don't pass custom import_names with IDENTITY mapping!"
-                )
-
-    def replace_mapping(
-        self, import_names: Tuple[str, ...], mapping: DependenciesMapping
-    ) -> "DeclaredDependency":
-        """Supply a custom mapping of dependency to imports"""
-        return replace(self, import_names=import_names, mapping=mapping)
 
 
 @dataclass

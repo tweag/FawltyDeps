@@ -3,13 +3,13 @@
 import logging
 import sys
 from dataclasses import dataclass, field
+from enum import Enum
 from itertools import groupby
 from typing import Dict, Iterable, List, Optional, Set, Tuple
 
 from fawltydeps.settings import Settings
 from fawltydeps.types import (
     DeclaredDependency,
-    DependenciesMapping,
     ParsedImport,
     UndeclaredDependency,
     UnusedDependency,
@@ -24,6 +24,13 @@ else:
     from importlib_metadata import packages_distributions
 
 logger = logging.getLogger(__name__)
+
+
+class DependenciesMapping(Enum):
+    """Types of dependency and imports mapping"""
+
+    IDENTITY = "IDENTITY"
+    LOCAL_ENV = "LOCAL_ENV"
 
 
 @dataclass
@@ -81,12 +88,6 @@ class Package:
     def is_used(self, imported_names: Iterable[str]) -> bool:
         """Return True iff this package is among the given import names."""
         return bool(self.import_names.intersection(imported_names))
-
-    def modify(self, dep: DeclaredDependency) -> DeclaredDependency:
-        """TEMPORARY: Modify DeclaredDependency obj according to this mapping."""
-        assert self.normalize_name(dep.name) == self.package_name
-        assert len(self.mappings) == 1
-        return dep.replace_mapping(tuple(self.import_names), next(iter(self.mappings)))
 
 
 class LocalPackageLookup:
@@ -181,7 +182,7 @@ def compare_imports_to_dependencies(
     ]
 
     unused = [
-        packages[dep.name].modify(dep)
+        dep
         for dep in dependencies
         if (dep.name not in settings.ignore_unused)
         and not packages[dep.name].is_used(imported_names)
