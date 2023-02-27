@@ -68,3 +68,38 @@ unused_deps = [
     "pytest-remotedata",
     "pyyaml"
 ]
+
+[experiments.all_reqs_installed]
+description = "Running FD on the entire peppy project"
+args = []
+requirements = [
+    "attmap>=0.13.2",
+    "logmuse>=0.2",
+    "markdown-include",
+    "mkdocs>=1.0",
+    "mock",
+    "pandas>=0.24.2",
+    "pydoc-markdown",
+    "pytest",
+    "pytest-cov",
+    "pytest-remotedata",
+    "pyyaml",
+    "rich>=10.3.0",
+    "ubiquerg>=0.6.2"
+]
+# When we run FawltyDeps with the above arguments, we expect these results:
+undeclared_deps = [
+    "numpy",
+    "setuptools",
+]
+
+unused_deps = [
+    "logmuse",
+    "markdown-include",
+    "mkdocs",
+    "mock",
+    "peppy",
+    "pydoc-markdown",
+    "pytest-cov",
+    "pytest-remotedata",
+]
