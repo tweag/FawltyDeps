@@ -18,10 +18,9 @@ import logging
 import sys
 from dataclasses import dataclass
 from functools import partial
-from itertools import groupby
 from operator import attrgetter
 from pathlib import Path
-from typing import Iterator, List, Optional, TextIO, Union, no_type_check
+from typing import List, Optional, TextIO, Union, no_type_check
 
 from pydantic.json import custom_pydantic_encoder  # pylint: disable=no-name-in-module
 
@@ -136,13 +135,16 @@ class Analysis:
 
         if self.is_enabled(Action.LIST_DEPS):
             assert self.declared_deps is not None  # sanity-check / convince Mypy
-            declared = set(self.declared_deps)
             if details:
                 # Sort dependencies by location, then by name
-                for dep in sorted(declared, key=attrgetter("source", "name")):
+                for dep in sorted(
+                    set(self.declared_deps), key=attrgetter("source", "name")
+                ):
                     print(f"{dep.source}: {dep.name}", file=out)
             else:
-                print("\n".join(sorted(d.name for d in declared)), file=out)
+                print(
+                    "\n".join(sorted(set(d.name for d in self.declared_deps))), file=out
+                )
 
         if self.is_enabled(Action.REPORT_UNDECLARED) and self.undeclared_deps:
             print("These imports appear to be undeclared dependencies:", file=out)
@@ -150,21 +152,8 @@ class Analysis:
                 print(render_dep_list_item(undeclared, details), file=out)
 
         if self.is_enabled(Action.REPORT_UNUSED) and self.unused_deps:
-
-            def agg_deps_group(
-                unused_deps: Iterator[UnusedDependency],
-            ) -> UnusedDependency:
-                ret = next(unused_deps)
-                for curr in unused_deps:
-                    ret = ret.combine(curr)
-                return ret
-
-            aggregated = [
-                agg_deps_group(deps)
-                for _, deps in groupby(self.unused_deps, key=lambda d: d.name)
-            ]
             print(f"{UNUSED_DEPS_OUTPUT_PREFIX}:", file=out)
-            for unused in sorted(aggregated, key=lambda d: d.name):
+            for unused in sorted(self.unused_deps, key=lambda d: d.name):
                 print(render_dep_list_item(unused, details), file=out)
 
 

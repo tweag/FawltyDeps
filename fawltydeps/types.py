@@ -173,22 +173,18 @@ class UnusedDependency:
     name: str
     references: List[DeclaredDependency]
 
-    def combine(self, other: "UnusedDependency") -> "UnusedDependency":
-        """Aggregate unused dependencies."""
-        if self.name != other.name:
-            raise ValueError(
-                f"Cannot combine unused dependencies with different names: "
-                f"'{self.name}' and '{other.name}'"
-            )
-        return UnusedDependency(self.name, self.references + other.references)
-
     def render(self, include_references: bool) -> str:
         """Return a human-readable string representation.
 
         Level of detail is determined by `include_references`.
         """
+        unique_locations = set(ref.source for ref in self.references)
+        location_unique_refs = [
+            DeclaredDependency(self.name, src) for src in unique_locations
+        ]
         return render_problematic_dependency(
-            self, "declared in" if include_references else None
+            replace(self, references=location_unique_refs),
+            "declared in" if include_references else None,
         )
 
 
