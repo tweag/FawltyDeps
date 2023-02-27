@@ -135,11 +135,12 @@ class DeclaredDependency:
     def __post_init__(self) -> None:
         """Set an identity mapping by default"""
         if self.mapping == DependenciesMapping.IDENTITY:
-            if self.import_names not in {(), (self.name,)}:
+            if len(self.import_names) < 1:
+                object.__setattr__(self, "import_names", (self.name,))
+            elif len(self.import_names) > 1:
                 raise ValueError(
                     "Don't pass custom import_names with IDENTITY mapping!"
                 )
-            object.__setattr__(self, "import_names", (self.name,))
 
     def replace_mapping(
         self, import_names: Tuple[str, ...], mapping: DependenciesMapping
