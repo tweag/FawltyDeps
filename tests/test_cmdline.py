@@ -904,12 +904,7 @@ def test_deps_across_groups_appear_just_once_in_list_deps_detailed(
     deps_path.write_text(dedent(deps_data))
     output, *_ = run_fawltydeps("--list-deps", "--detailed", f"--deps={deps_path}")
     obs_lines = output.splitlines()
-    from_pyproject, from_elsewhere = [], []
-    for line in obs_lines:
-        coll = from_pyproject if str(deps_path) in line else from_elsewhere
-        coll.append(line.strip())
-    assert len(from_pyproject) == len(exp_lines_from_pyproject)
-    assert_unordered_equivalence(from_pyproject, exp_lines_from_pyproject)
+    assert_unordered_equivalence(obs_lines, exp_lines_from_pyproject)
 
 
 def test_deps_across_groups_appear_just_once_in_order_in_general_detailed(
