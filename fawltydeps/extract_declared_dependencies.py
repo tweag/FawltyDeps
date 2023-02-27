@@ -34,7 +34,7 @@ ERROR_MESSAGE_TEMPLATE = "Failed to %s %s %s dependencies in %s: %s"
 PER_REQUIREMENT_OPTIONS = [
     "--install-option",
     "--global-option",
-    "config-setting",
+    "--config-setting",
     "--hash",
 ]
 
