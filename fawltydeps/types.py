@@ -30,7 +30,7 @@ class DependenciesMapping(Enum):
     """Types of dependency and imports mapping"""
 
     IDENTITY = "IDENTITY"
-    DEPENDENCY_TO_IMPORT = "DEPENDENCY_TO_IMPORT"
+    LOCAL_ENV = "LOCAL_ENV"
 
 
 @total_ordering

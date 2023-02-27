@@ -63,7 +63,7 @@ def test_LocalPackageLookup_lookup_package(dep_name, expect_import_names):
                     name="pip",
                     source=Location(Path("foo")),
                     import_names=("pip",),
-                    mapping=DependenciesMapping.DEPENDENCY_TO_IMPORT,
+                    mapping=DependenciesMapping.LOCAL_ENV,
                 )
             ],
             id="dependency_present_in_local_env__uses_d2i_mapping",
@@ -81,7 +81,7 @@ def test_LocalPackageLookup_lookup_package(dep_name, expect_import_names):
                     name="pip",
                     source=Location(Path("foo")),
                     import_names=("pip",),
-                    mapping=DependenciesMapping.DEPENDENCY_TO_IMPORT,
+                    mapping=DependenciesMapping.LOCAL_ENV,
                 )
             ],
             id="mixed_dependencies_in_local_env__uses_id_and_d2i_mapping",
@@ -97,7 +97,7 @@ def test_LocalPackageLookup_lookup_package(dep_name, expect_import_names):
                         "pkg_resources",
                         "setuptools",
                     ),
-                    mapping=DependenciesMapping.DEPENDENCY_TO_IMPORT,
+                    mapping=DependenciesMapping.LOCAL_ENV,
                 )
             ],
             id="dependency_present_in_local_env__uses_d2i_mapping_and_has_correct_imports",
