@@ -1,14 +1,14 @@
 """Test the mapping of dependency names to import names."""
 
 
-from pathlib import Path
-
 import pytest
 
-from fawltydeps.check import LocalPackageLookup, map_dependencies_to_imports
-from fawltydeps.types import DeclaredDependency, DependenciesMapping, Location
-
-from .utils import deps_factory
+from fawltydeps.check import (
+    DependenciesMapping,
+    LocalPackageLookup,
+    Package,
+    resolve_dependencies,
+)
 
 # TODO: These tests are not fully isolated, i.e. they do not control the
 # virtualenv in which they run. For now, we assume that we are running in an
@@ -28,84 +28,68 @@ from .utils import deps_factory
         ),
         pytest.param(
             "isort",
-            ("isort",),
+            {"isort"},
             id="package_exposes_nothing__can_still_infer_import_name",
         ),
         pytest.param(
             "pip",
-            ("pip",),
+            {"pip"},
             id="package_exposes_one_entry__returns_entry",
         ),
         pytest.param(
             "setuptools",
-            ("_distutils_hack", "pkg_resources", "setuptools"),
+            {"_distutils_hack", "pkg_resources", "setuptools"},
             id="package_exposes_many_entries__returns_all_entries",
         ),
         pytest.param(
             "SETUPTOOLS",
-            ("_distutils_hack", "pkg_resources", "setuptools"),
+            {"_distutils_hack", "pkg_resources", "setuptools"},
             id="package_declared_in_capital_letters__is_successfully_mapped_with_d2i",
         ),
     ],
 )
 def test_LocalPackageLookup_lookup_package(dep_name, expect_import_names):
     lpl = LocalPackageLookup()
-    assert lpl.lookup_package(dep_name) == expect_import_names
+    actual = lpl.lookup_package(dep_name)
+    if expect_import_names is None:
+        assert actual is None
+    else:
+        assert actual.import_names == expect_import_names
 
 
 @pytest.mark.parametrize(
-    "dep_names,expected_declared_dependencies",
+    "dep_names,expected_packages",
     [
         pytest.param(
             ["pip"],
-            [
-                DeclaredDependency(
-                    name="pip",
-                    source=Location(Path("foo")),
-                    import_names=("pip",),
-                    mapping=DependenciesMapping.LOCAL_ENV,
-                )
-            ],
+            {"pip": Package("pip", {"pip"}, {DependenciesMapping.LOCAL_ENV})},
             id="dependency_present_in_local_env__uses_d2i_mapping",
         ),
         pytest.param(
             ["pandas"],
-            deps_factory("pandas"),
+            {"pandas": Package("pandas", {"pandas"}, {DependenciesMapping.IDENTITY})},
             id="dependency_not_present_in_local_env__uses_id_mapping",
         ),
         pytest.param(
             ["pandas", "pip"],
-            deps_factory("pandas")
-            + [
-                DeclaredDependency(
-                    name="pip",
-                    source=Location(Path("foo")),
-                    import_names=("pip",),
-                    mapping=DependenciesMapping.LOCAL_ENV,
-                )
-            ],
+            {
+                "pip": Package("pip", {"pip"}, {DependenciesMapping.LOCAL_ENV}),
+                "pandas": Package("pandas", {"pandas"}, {DependenciesMapping.IDENTITY}),
+            },
             id="mixed_dependencies_in_local_env__uses_id_and_d2i_mapping",
         ),
         pytest.param(
             ["setuptools"],
-            [
-                DeclaredDependency(
-                    name="setuptools",
-                    source=Location(Path("foo")),
-                    import_names=(
-                        "_distutils_hack",
-                        "pkg_resources",
-                        "setuptools",
-                    ),
-                    mapping=DependenciesMapping.LOCAL_ENV,
-                )
-            ],
+            {
+                "setuptools": Package(
+                    "setuptools",
+                    {"_distutils_hack", "pkg_resources", "setuptools"},
+                    {DependenciesMapping.LOCAL_ENV},
+                ),
+            },
             id="dependency_present_in_local_env__uses_d2i_mapping_and_has_correct_imports",
         ),
     ],
 )
-def test_map_dependencies_to_imports(dep_names, expected_declared_dependencies):
-    collected_dependencies = deps_factory(*dep_names)
-    mapped_dependencies = map_dependencies_to_imports(collected_dependencies)
-
-    assert mapped_dependencies == expected_declared_dependencies
+def test_resolve_dependencies(dep_names, expected_packages):
+    assert resolve_dependencies(dep_names) == expected_packages
