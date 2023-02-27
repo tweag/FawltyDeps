@@ -82,7 +82,6 @@ class Experiment(NamedTuple):
     name: str
     args: List[str]
     requirements: List[str]
-    venv_dir: Optional[Path] = None
     description: Optional[str] = None
     imports: Optional[List[str]] = None
     declared_deps: Optional[List[str]] = None
@@ -112,7 +111,6 @@ class Experiment(NamedTuple):
             name=name,
             args=data["args"],
             requirements=data.get("requirements", []),
-            venv_dir=data.get("venv_dir"),
             description=data.get("description"),
             imports=data.get("imports"),
             declared_deps=data.get("declared_deps"),
@@ -150,13 +148,34 @@ class Experiment(NamedTuple):
         else:
             print(f"{self.name}: No unused dependencies to check")
 
-    def create_venv_dir(self, venv_dir: Path) -> Optional[Path]:
-        """Create the venv dir and install requirements.
+    def venv_hash(self):
+        """
+        Returns a hash of the venv that depends on the installation script.
+
+        The installation script will change if the code `venv_script` changes
+        or if the requirements field of the experiment changes.
+        """
+        dummy_script = self.venv_script(Path("/dev/null"))
+        dummy_script_bytes = "".join(dummy_script).encode()
+        return hashlib.sha256(dummy_script_bytes).hexdigest()
+
+    def get_venv_dir(self, cache: pytest.Cache) -> Optional[Path]:
+        """
+        Get this venv's dir and create it if necessary.
 
         The venv_dir is where we install the dependencies of the current
-        experiment.
+        experiment. It is keyed by the sha256 checksum of the requirements
+        file and the script we use for setting up the venv. This way, we
+        don't risk using a previously cached venv for a different if the
+        script or the requirements to create that venv change.
         """
-        # Run the script to set up the venv
+        # We cache venv dirs using the hash from create_venv_hash
+        cached_str = cache.get(f"fawltydeps/{self.venv_hash()}", None)
+        if cached_str is not None and Path(cached_str, ".installed").is_file():
+            return Path(cached_str)  # already cached
+
+        # Must run the script to set up the venv
+        venv_dir = Path(cache.mkdir(f"fawltydeps_venv_{self.venv_hash()}"))
         logger.info(f"Creating venv at {venv_dir}...")
         venv_script = self.venv_script(venv_dir)
         subprocess.run(
@@ -166,7 +185,7 @@ class Experiment(NamedTuple):
         )
         # Make sure the venv has been installed
         assert Path(venv_dir, ".installed").is_file()
-
+        cache.set(f"fawltydeps/{self.venv_hash()}", str(venv_dir))
         return venv_dir
 
 
@@ -321,11 +340,8 @@ class ThirdPartyProject(NamedTuple):
 )
 def test_real_project(request, project, experiment):
     project_dir = project.get_project_dir(request.config.cache)
-    if experiment.venv_dir is not None:
-        experiment.create_venv_dir(experiment.venv_dir)
-    analysis = run_fawltydeps_json(
-        *experiment.args, venv_dir=experiment.venv_dir, cwd=project_dir
-    )
+    venv_dir = experiment.get_venv_dir(request.config.cache)
+    analysis = run_fawltydeps_json(*experiment.args, venv_dir=venv_dir, cwd=project_dir)
 
     print(f"Checking experiment {experiment.name} for project under {project_dir}...")
 
