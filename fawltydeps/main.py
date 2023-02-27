@@ -10,6 +10,7 @@ minimal computation involved in setting the install_requires and extras_require
 arguments.
 """
 
+import argparse
 import json
 import logging
 import sys
@@ -25,6 +26,7 @@ from fawltydeps import extract_imports
 from fawltydeps.check import compare_imports_to_dependencies
 from fawltydeps.extract_declared_dependencies import extract_declared_dependencies
 from fawltydeps.settings import (
+    ROOT_PATH_DEFAULT,
     Action,
     OutputFormat,
     Settings,
@@ -185,6 +187,19 @@ def main() -> int:
 
     args = parser.parse_args()
     settings = Settings.config(config_file=args.config_file).create(args)
+
+    root_path = getattr(args, "root-path", None)
+    if (
+        len({root_path, settings.code, settings.deps}) == 3
+        and root_path != ROOT_PATH_DEFAULT
+    ):
+        # The problem is when the 3 differ AND root path is non-default.
+        msg = (
+            "3 different values among root-path, code, and deps. At most, "
+            "2 unique values are allowed. "
+            f"root-path={root_path}, code={settings.code}, deps={settings.deps}"
+        )
+        raise argparse.ArgumentError(argument=None, message=msg)
 
     logging.basicConfig(level=logging.WARNING - 10 * settings.verbosity)
 

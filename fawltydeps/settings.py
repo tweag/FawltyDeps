@@ -193,21 +193,6 @@ class Settings(BaseSettings):  # type: ignore
         """
         args_dict = cmdline_args.__dict__
 
-        base_path = args_dict.get("root-path", ROOT_PATH_DEFAULT)
-        code_path = args_dict.setdefault("code", base_path)
-        deps_path = args_dict.setdefault("deps", base_path)
-        if (
-            len({base_path, code_path, deps_path}) == 3
-            and base_path != ROOT_PATH_DEFAULT
-        ):
-            # The problem is when the 3 differ AND base path is non-default.
-            msg = (
-                "3 different values among root-path, --code, and --deps. At most, "
-                "2 unique values are allowed. "
-                f"root-path={base_path}, --code={code_path}, --deps={deps_path}"
-            )
-            raise argparse.ArgumentError(argument=None, message=msg)
-
         # Use subset of args_dict that directly correspond to fields in Settings
         ret = {arg: value for arg, value in args_dict.items() if arg in cls.__fields__}
 
