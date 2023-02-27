@@ -20,6 +20,8 @@ else:
 
 logger = logging.getLogger(__name__)
 
+ROOT_PATH_DEFAULT = Path(".")
+
 
 class PyprojectTomlSettingsSource:
     """A custom settings source that loads settings from pyproject.toml."""
@@ -191,10 +193,13 @@ class Settings(BaseSettings):  # type: ignore
         """
         args_dict = cmdline_args.__dict__
 
-        base_path = args_dict["root-path"]
+        base_path = args_dict.get("root-path", ROOT_PATH_DEFAULT)
         code_path = args_dict.setdefault("code", base_path)
         deps_path = args_dict.setdefault("deps", base_path)
-        if len({base_path, code_path, deps_path}) == 3 and base_path != Path("."):
+        if (
+            len({base_path, code_path, deps_path}) == 3
+            and base_path != ROOT_PATH_DEFAULT
+        ):
             # The problem is when the 3 differ AND base path is non-default.
             msg = (
                 "3 different values among root-path, --code, and --deps. At most, "
@@ -303,7 +308,7 @@ def populate_parser_options(parser: argparse._ActionsContainer) -> None:
     """
     parser.add_argument(
         "root-path",
-        default=Path("."),
+        default=ROOT_PATH_DEFAULT,
         type=Path,
         nargs="?",
         help="Directory in which to search for code (imports) and/or dependency declarations",
