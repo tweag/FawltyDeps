@@ -4,7 +4,6 @@ import sys
 from dataclasses import asdict, dataclass, field, replace
 from enum import Enum
 from functools import total_ordering
-from operator import attrgetter
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
 
@@ -178,12 +177,8 @@ class UnusedDependency:
 
         Level of detail is determined by `include_references`.
         """
-        unique_locations = set(ref.source for ref in self.references)
-        location_unique_refs = [
-            DeclaredDependency(self.name, src) for src in unique_locations
-        ]
         return render_problematic_dependency(
-            replace(self, references=location_unique_refs),
+            self,
             "declared in" if include_references else None,
         )
 
@@ -194,8 +189,8 @@ def render_problematic_dependency(
     """Create text representation of the given unused or undeclared dependency."""
     ret = f"{dep.name!r}"
     if context is not None:
+        unique_locations = {ref.source for ref in dep.references}
         ret += f" {context}:" + "".join(
-            f"\n    {ref.source}"  # type: ignore[attr-defined]
-            for ref in sorted(set(dep.references), key=attrgetter("source"))
+            f"\n    {loc}" for loc in sorted(unique_locations)
         )
     return ret
