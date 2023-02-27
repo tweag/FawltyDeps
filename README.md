@@ -7,13 +7,21 @@ Find _undeclared_ and/or _unused_ 3rd-party dependencies in your Python project.
 ## Table of contents
 
 [Key Concepts](#key-concepts)
+
 [Installation](#installation)
+
 [Usage](#usage)
+
 [Configuration](#configuration)
+
 [Documentation](#documentation)
+
 [Development](#development)
+
 [Integration tests](#integration-tests)
+
 [Contributing](#contributing)
+
 [FAQ](#faq)
 
 ## Key Concepts
@@ -292,6 +300,38 @@ To see how these tests work, look at the existing files in that directory.
 
 ## FAQ
 
+### How not to display packages like `black` and `pylint` in _unused dependencies_?
+
+By default, packages declared in the development environment are included in the FawltyDeps report. Some of them are not being used in the source code but are needed for another purpose. In such cases you may use either:
+
+```
+fawltydeps --ignore-unused black pylint
+```
+
+or add a configuration of FawltyDeps to you `pyproject.toml` (see below).
+
+First run:
+
+```
+fawltydeps --generate-toml-config
+```
+
+to generate a `[tool.fawltydeps]` section with current defaults that may be directly copied to pyproject.toml:
+
+```
+[tool.fawltydeps]
+# actions = ['check_undeclared', 'check_unused']
+# ignore_undeclared = []
+# ignore_unused = []
+...
+```
+
+Then, edit `ignore_unused` to contain packages not to be mentioned in the report if found unused:
+
+```
+ignore_unused = ["black", "pylint"]
+```
+
 ### How to use FawltyDeps in a monorepo?
 
 Do not run a vanilla `fawltydeps` in a root directory of the monorepo.
@@ -316,3 +356,15 @@ run for each `libX`:
 ```
 fawltydeps --code libX/ --deps libX/
 ```
+
+### Why FawltyDeps did not match `sklearn` and `scikit-learn`?
+
+There are cases, where FawltyDeps may not match imports and dependencies
+obviously related, like `sklearn` and `scikit-learn` and reports `sklearn` as
+_undeclared_ and `scikit-learn` as an _unused_ dependency.
+
+To solve this problem, make sure that you run FawltyDeps in the development environment
+of the project you are testing.
+
+To determine a mapping between packages and exported modules,
+FawltyDeps looks into packages installed in the virtual environment it is running in.
