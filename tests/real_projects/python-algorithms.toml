@@ -102,3 +102,48 @@ unused_deps = [
   "yulewalker"
 ]
 
+[experiments.all_reqs_installed]
+description = "Running FD on the entire The Algorithms - Python project"
+args = []
+requirements = [
+    "beautifulsoup4",
+    "fake_useragent",
+    "keras",
+    "lxml",
+    "matplotlib",
+    "numpy",
+    "opencv-python",
+    "pandas",
+    "pillow",
+    "projectq",
+    "qiskit",
+    "requests",
+    "rich",
+    "scikit-fuzzy",
+    "scikit-learn",
+    "statsmodels",
+    "sympy",
+    "tensorflow; python_version < \"3.11\"",
+    "texttable",
+    "tweepy",
+    "xgboost",
+    "yulewalker"
+]
+# When we run FawltyDeps with the above arguments, we expect these results:
+undeclared_deps = [
+    "django",
+    "mpmath",
+    "pytest",
+    "qiskit",
+    "scipy",
+    "seaborn"
+]
+
+unused_deps = [
+    "keras",
+    "projectq",
+    "qiskit",
+    "texttable",
+    "yulewalker"
+]
+
