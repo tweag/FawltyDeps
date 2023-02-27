@@ -27,7 +27,13 @@ from pydantic.json import custom_pydantic_encoder  # pylint: disable=no-name-in-
 from fawltydeps import extract_imports
 from fawltydeps.check import compare_imports_to_dependencies
 from fawltydeps.extract_declared_dependencies import extract_declared_dependencies
-from fawltydeps.settings import Action, OutputFormat, Settings, setup_cmdline_parser
+from fawltydeps.settings import (
+    Action,
+    OutputFormat,
+    Settings,
+    print_toml_config,
+    setup_cmdline_parser,
+)
 from fawltydeps.types import (
     DeclaredDependency,
     ParsedImport,
@@ -173,11 +179,21 @@ def main() -> int:
         default=Path("./pyproject.toml"),
         help="Where to find FawltyDeps config (default: ./pyproject.toml)",
     )
+    option_group.add_argument(
+        "--generate-toml-config",
+        action="store_true",
+        default=False,
+        help="Print a TOML config section with the current settings, and exit",
+    )
 
     args = parser.parse_args()
     settings = Settings.config(config_file=args.config_file).create(args)
 
     logging.basicConfig(level=logging.WARNING - 10 * settings.verbosity)
+
+    if args.generate_toml_config:
+        print_toml_config(settings, sys.stdout)
+        return 0
 
     try:
         analysis = Analysis.create(settings)
