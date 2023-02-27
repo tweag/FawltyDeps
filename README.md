@@ -300,6 +300,17 @@ To see how these tests work, look at the existing files in that directory.
 
 ## FAQ
 
+### I run `fawltydeps` and got some undeclared dependencies. What can I do with it?
+
+You can run a detailed report to see in which file and line number
+the undeclared dependencies were imported:
+
+```
+fawltydeps --detailed
+```
+
+and debug each occurrence.
+
 ### How not to display packages like `black` and `pylint` in _unused dependencies_?
 
 By default, packages declared in the development environment are included in the FawltyDeps report. Some of them are not being used in the source code but are needed for another purpose. In such cases you may use either:
