@@ -857,7 +857,6 @@ def test_cmdline_args_in_combination_with_config_file(
     assert output.splitlines() == expect
 
 
-@pytest.fixture
 def pyproject_toml_contents():
     data = dedent(
         """
@@ -895,10 +894,8 @@ def pyproject_toml_contents():
     return data, uniq_deps
 
 
-def test_deps_across_groups_appear_just_once_in_list_deps_detailed(
-    tmp_path, pyproject_toml_contents
-):
-    deps_data, uniq_deps = pyproject_toml_contents
+def test_deps_across_groups_appear_just_once_in_list_deps_detailed(tmp_path):
+    deps_data, uniq_deps = pyproject_toml_contents()
     deps_path = tmp_path / "pyproject.toml"
     exp_lines_from_pyproject = [f"{deps_path}: {dep}" for dep in uniq_deps]
     deps_path.write_text(dedent(deps_data))
@@ -907,10 +904,8 @@ def test_deps_across_groups_appear_just_once_in_list_deps_detailed(
     assert_unordered_equivalence(obs_lines, exp_lines_from_pyproject)
 
 
-def test_deps_across_groups_appear_just_once_in_order_in_general_detailed(
-    tmp_path, pyproject_toml_contents
-):
-    deps_data, uniq_deps = pyproject_toml_contents
+def test_deps_across_groups_appear_just_once_in_order_in_general_detailed(tmp_path):
+    deps_data, uniq_deps = pyproject_toml_contents()
     deps_path = tmp_path / "pyproject.toml"
     deps_path.write_text(dedent(deps_data))
     output, *_ = run_fawltydeps("--detailed", f"--deps={deps_path}")
