@@ -891,10 +891,6 @@ def pyproject_toml_contents():
         codespell = "^2.2.2"
 
         [tool.poetry.group.dev.dependencies]
-        # The dev group is a convenience group for FawltyDeps developers. When adding
-        # something to the above groups (i.e. something that targets a specific purpose
-        # (e.g. a CI action), consider whether it's also useful to have this available
-        # in a developers environment
         black = "^22"
         codespell = "^2.2.2"
         colorama = "^0.4.6"
