@@ -149,6 +149,10 @@ Here is a complete list of configuration directives we support:
 - `ignore_unused`: A list of specific dependencies to ignore when reporting
   unused dependencies, for example: `["black", "mypy"]`.
   The default is the empty list: `ignore_unused = []`.
+- `deps_parser_choice`: Manually select which format to use for parsing
+  declared dependencies. Must be one of `"requirements.txt"`, `"setup.py"`,
+  `"setup.cfg"`, `"pyproject.toml"`, or leave it unset (i.e. the default) for
+  auto-detection (based on filename).
 - `verbosity`: An integer controlling the default log level of FawltyDeps:
   - `-2`: Only `CRITICAL`-level log messages are shown.
   - `-1`: `ERROR`-level log messages and above are shown.

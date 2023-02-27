@@ -1,16 +1,13 @@
 """Find undeclared and/or unused 3rd-party dependencies in your Python project.
 
-* Supported files for Python code containing third-party imports:
-  * Python scripts with filenames that end in `.py`
-  * Jupyter notebooks with filenames that end in `.ipynb`
+Supports finding 3rd-party imports in Python scripts (*.py) and Jupyter
+notebooks (*.ipynb).
 
-* Supported files/formats for dependency declarations:
-  * `*requirements*.txt` and `*requirements*.in`
-  * `pyproject.toml` (following PEP 621 or Poetry conventions)
-  * `setup.py` (only limited support for simple files with a single `setup()`
-    call and no computation involved for setting the `install_requires` and
-    `extras_require` arguments)
-  * `setup.cfg`
+Supports finding dependency declarations in *requirements*.txt (and .in) files,
+pyproject.toml (following PEP 621 or Poetry conventions), setup.cfg, as well as
+limited support for setup.py files with a single, simple setup() call and
+minimal computation involved in setting the install_requires and extras_require
+arguments.
 """
 
 import json
@@ -153,12 +150,12 @@ class Analysis:
                 )
 
         if self.is_enabled(Action.REPORT_UNDECLARED) and self.undeclared_deps:
-            print("These imports appear to be undeclared dependencies:", file=out)
+            print("\nThese imports appear to be undeclared dependencies:", file=out)
             for undeclared in self.undeclared_deps:
                 print(f"- {undeclared.render(details)}", file=out)
 
         if self.is_enabled(Action.REPORT_UNUSED) and self.unused_deps:
-            print(f"{UNUSED_DEPS_OUTPUT_PREFIX}:", file=out)
+            print(f"\n{UNUSED_DEPS_OUTPUT_PREFIX}:", file=out)
             for unused in sorted(self.unused_deps, key=lambda d: d.name):
                 print(f"- {unused.render(details)}", file=out)
 
