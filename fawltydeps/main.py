@@ -48,6 +48,7 @@ else:
 logger = logging.getLogger(__name__)
 
 VERBOSE_PROMPT = "For a more verbose report re-run with the `--detailed` option."
+UNUSED_DEPS_OUTPUT_PREFIX = "These dependencies appear to be unused (i.e. not imported)"
 
 
 @no_type_check
@@ -139,11 +140,14 @@ class Analysis:
             assert self.declared_deps is not None  # sanity-check / convince Mypy
             if details:
                 # Sort dependencies by location, then by name
-                for dep in sorted(self.declared_deps, key=attrgetter("source", "name")):
+                for dep in sorted(
+                    set(self.declared_deps), key=attrgetter("source", "name")
+                ):
                     print(f"{dep.source}: {dep.name}", file=out)
             else:
-                unique_dependencies = {i.name for i in self.declared_deps}
-                print("\n".join(sorted(unique_dependencies)), file=out)
+                print(
+                    "\n".join(sorted(set(d.name for d in self.declared_deps))), file=out
+                )
 
         if self.is_enabled(Action.REPORT_UNDECLARED) and self.undeclared_deps:
             print("\nThese imports appear to be undeclared dependencies:", file=out)
@@ -151,11 +155,8 @@ class Analysis:
                 print(f"- {undeclared.render(details)}", file=out)
 
         if self.is_enabled(Action.REPORT_UNUSED) and self.unused_deps:
-            print(
-                "\nThese dependencies appear to be unused (i.e. not imported):",
-                file=out,
-            )
-            for unused in self.unused_deps:
+            print(f"\n{UNUSED_DEPS_OUTPUT_PREFIX}:", file=out)
+            for unused in sorted(self.unused_deps, key=lambda d: d.name):
                 print(f"- {unused.render(details)}", file=out)
 
 
