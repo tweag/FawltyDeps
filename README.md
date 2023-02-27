@@ -4,6 +4,18 @@ A dependency checker for Python.
 
 Find _undeclared_ and/or _unused_ 3rd-party dependencies in your Python project.
 
+## Table of contents
+
+[Key Concepts](#key-concepts)
+[Installation](#installation)
+[Usage](#usage)
+[Configuration](#configuration)
+[Documentation](#documentation)
+[Development](#development)
+[Integration tests](#integration-tests)
+[Contributing](#contributing)
+[FAQ](#faq)
+
 ## Key Concepts
 
 - **_undeclared_ dependency**: a package that's used (in particular, `import`ed) by a project and which lacks a corresponding declaration to ensure that it's available.
@@ -265,6 +277,7 @@ outputs, are defined in TOML files under
 [`tests/real_projects`](./tests/real_projects).
 
 ## Contributing
+
 For bug reports, when a user reports that `fawltydeps` does not work on their project, we adopt the following process:
 
 - The project is added to `real_projects`.
@@ -276,3 +289,5 @@ The resulting updates are introduced to `fawltydeps` and reflected in our expect
 If you find a project where FawltyDeps is not doing a good job, we would appreciate
 if you add that project under [`tests/real_projects`](./tests/real_projects).
 To see how these tests work, look at the existing files in that directory.
+
+## FAQ
