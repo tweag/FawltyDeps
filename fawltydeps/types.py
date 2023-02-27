@@ -128,7 +128,7 @@ class UndeclaredDependency:
     """Undeclared dependency found by analysis in the 'check' module."""
 
     name: str
-    references: List[ParsedImport]
+    references: List[Location]
 
     def render(self, include_references: bool) -> str:
         """Return a human-readable string representation.
@@ -145,7 +145,7 @@ class UnusedDependency:
     """Unused dependency found by analysis in the 'check' module."""
 
     name: str
-    references: List[DeclaredDependency]
+    references: List[Location]
 
     def render(self, include_references: bool) -> str:
         """Return a human-readable string representation.
@@ -164,7 +164,7 @@ def render_problematic_dependency(
     """Create text representation of the given unused or undeclared dependency."""
     ret = f"{dep.name!r}"
     if context is not None:
-        unique_locations = {ref.source for ref in dep.references}
+        unique_locations = set(dep.references)
         ret += f" {context}:" + "".join(
             f"\n    {loc}" for loc in sorted(unique_locations)
         )

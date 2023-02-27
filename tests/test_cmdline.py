@@ -16,7 +16,7 @@ from typing import Iterable, Optional, Tuple
 import pytest
 
 from fawltydeps.main import UNUSED_DEPS_OUTPUT_PREFIX, VERBOSE_PROMPT, version
-from fawltydeps.types import DeclaredDependency, Location, UnusedDependency
+from fawltydeps.types import Location, UnusedDependency
 
 from .test_extract_imports_simple import generate_notebook
 from .utils import assert_unordered_equivalence
@@ -553,23 +553,13 @@ def test_check_json__simple_project__can_report_both_undeclared_and_unused(
         "undeclared_deps": [
             {
                 "name": "requests",
-                "references": [
-                    {
-                        "name": "requests",
-                        "source": {"path": f"{tmp_path}/code.py", "lineno": 1},
-                    },
-                ],
+                "references": [{"path": f"{tmp_path}/code.py", "lineno": 1}],
             },
         ],
         "unused_deps": [
             {
                 "name": "pandas",
-                "references": [
-                    {
-                        "name": "pandas",
-                        "source": {"path": f"{tmp_path}/requirements.txt"},
-                    },
-                ],
+                "references": [{"path": f"{tmp_path}/requirements.txt"}],
             },
         ],
         "version": version(),
@@ -929,10 +919,7 @@ def test_deps_across_groups_appear_just_once_in_order_in_general_detailed(tmp_pa
         lambda line: not line.startswith(UNUSED_DEPS_OUTPUT_PREFIX), obs_lines_absolute
     )
     next(obs_lines_relevant)  # discard
-    unused_deps = [
-        UnusedDependency(name, [DeclaredDependency(name, Location(deps_path))])
-        for name in uniq_deps
-    ]
+    unused_deps = [UnusedDependency(name, [Location(deps_path)]) for name in uniq_deps]
     exp_lines = [
         line
         for dep in unused_deps

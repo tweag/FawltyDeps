@@ -7,7 +7,6 @@ import pytest
 from fawltydeps.check import compare_imports_to_dependencies
 from fawltydeps.settings import Settings
 from fawltydeps.types import (
-    DeclaredDependency,
     Location,
     ParsedImport,
     UndeclaredDependency,
@@ -22,11 +21,11 @@ def imports_factory(*imports: str) -> List[ParsedImport]:
 
 
 def undeclared_factory(*deps: str) -> List[UndeclaredDependency]:
-    return [UndeclaredDependency(dep, imports_factory(dep)) for dep in deps]
+    return [UndeclaredDependency(dep, [Location("<stdin>")]) for dep in deps]
 
 
 def unused_factory(*deps: str) -> List[UnusedDependency]:
-    return [UnusedDependency(dep, deps_factory(dep)) for dep in deps]
+    return [UnusedDependency(dep, [Location(Path("foo"))]) for dep in deps]
 
 
 @pytest.mark.parametrize(
@@ -75,7 +74,7 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
                 [
                     UndeclaredDependency(
                         "numpy",
-                        [ParsedImport("numpy", Location(Path("my_file.py"), lineno=3))],
+                        [Location(Path("my_file.py"), lineno=3)],
                     )
                 ],
                 unused_factory("scipy"),
@@ -113,12 +112,7 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
             [],
             (
                 undeclared_factory("numpy"),
-                [
-                    UnusedDependency(
-                        name="flake8",
-                        references=deps_factory("flake8"),
-                    )
-                ],
+                unused_factory("flake8"),
             ),
             id="mixed_dependencies__report_undeclared_and_non_ignored_unused",
         ),
@@ -145,17 +139,7 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
             ["isort"],
             (
                 [],
-                [
-                    UnusedDependency(
-                        name="isort",
-                        references=[
-                            DeclaredDependency(
-                                name="isort",
-                                source=Location(Path("foo")),
-                            )
-                        ],
-                    ),
-                ],
+                unused_factory("isort"),
             ),
             id="one_ignored_import_declared_as_dep__reported_as_unused",
         ),
@@ -166,12 +150,7 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
             ["not_valid"],
             (
                 undeclared_factory("numpy"),
-                [
-                    UnusedDependency(
-                        name="flake8",
-                        references=deps_factory("flake8"),
-                    )
-                ],
+                unused_factory("flake8"),
             ),
             id="mixed_dependencies__report_unused_and_only_non_ignored_undeclared",
         ),
@@ -182,12 +161,7 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
             ["not_valid"],
             (
                 undeclared_factory("numpy"),
-                [
-                    UnusedDependency(
-                        name="flake8",
-                        references=deps_factory("flake8"),
-                    )
-                ],
+                unused_factory("flake8"),
             ),
             id="mixed_dependencies__report_only_non_ignored_unused_and_non_ignored_undeclared",
         ),
