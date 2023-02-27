@@ -154,7 +154,7 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
                                 name="isort",
                                 source=Location(Path("foo")),
                                 import_names=("isort",),
-                                mapping=DependenciesMapping.DEPENDENCY_TO_IMPORT,
+                                mapping=DependenciesMapping.LOCAL_ENV,
                             )
                         ],
                     ),
