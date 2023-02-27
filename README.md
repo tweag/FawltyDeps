@@ -291,3 +291,28 @@ if you add that project under [`tests/real_projects`](./tests/real_projects).
 To see how these tests work, look at the existing files in that directory.
 
 ## FAQ
+
+### How to use FawltyDeps in a monorepo?
+
+Do not run a vanilla `fawltydeps` in a root directory of the monorepo.
+It will collect requirements and the code from _all_ packages
+and the resulting report may be not useful.
+Instead, you should run fawltydeps for each package separately.
+This way it will collect requirements and the code only for
+a chosen package.
+Having:
+
+```.
+├ lib1
+| ├ pyproject.toml
+| ├ ....
+├ lib2
+| ├ pyproject.toml
+| ├ ....
+```
+
+run for each `libX`:
+
+```
+fawltydeps --code libX/ --deps libX/
+```
