@@ -15,12 +15,7 @@ from typing import Iterable, Optional, Tuple
 
 import pytest
 
-from fawltydeps.main import (
-    UNUSED_DEPS_OUTPUT_PREFIX,
-    VERBOSE_PROMPT,
-    render_dep_list_item,
-    version,
-)
+from fawltydeps.main import UNUSED_DEPS_OUTPUT_PREFIX, VERBOSE_PROMPT, version
 from fawltydeps.types import DeclaredDependency, Location, UnusedDependency
 
 from .test_extract_imports_simple import generate_notebook
@@ -936,6 +931,6 @@ def test_deps_across_groups_appear_just_once_in_order_in_general_detailed(
     exp_lines = [
         line
         for dep in unused_deps
-        for line in render_dep_list_item(dep, include_details=True).split("\n")
+        for line in f"- {dep.render(include_references=True)}".split("\n")
     ]
     assert list(obs_lines_relevant) == exp_lines

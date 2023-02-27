@@ -20,7 +20,7 @@ from dataclasses import dataclass
 from functools import partial
 from operator import attrgetter
 from pathlib import Path
-from typing import List, Optional, TextIO, Union, no_type_check
+from typing import List, Optional, TextIO, no_type_check
 
 from pydantic.json import custom_pydantic_encoder  # pylint: disable=no-name-in-module
 
@@ -149,19 +149,12 @@ class Analysis:
         if self.is_enabled(Action.REPORT_UNDECLARED) and self.undeclared_deps:
             print("These imports appear to be undeclared dependencies:", file=out)
             for undeclared in self.undeclared_deps:
-                print(render_dep_list_item(undeclared, details), file=out)
+                print(f"- {undeclared.render(details)}", file=out)
 
         if self.is_enabled(Action.REPORT_UNUSED) and self.unused_deps:
             print(f"{UNUSED_DEPS_OUTPUT_PREFIX}:", file=out)
             for unused in sorted(self.unused_deps, key=lambda d: d.name):
-                print(render_dep_list_item(unused, details), file=out)
-
-
-def render_dep_list_item(
-    dep: Union[UnusedDependency, UndeclaredDependency], include_details: bool
-) -> str:
-    """Render given dependency as list item."""
-    return f"- {dep.render(include_details)}"
+                print(f"- {unused.render(details)}", file=out)
 
 
 def main() -> int:
