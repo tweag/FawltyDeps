@@ -191,6 +191,18 @@ class Settings(BaseSettings):  # type: ignore
         """
         args_dict = cmdline_args.__dict__
 
+        base_path = args_dict["root-path"]
+        code_path = args_dict.setdefault("code", base_path)
+        deps_path = args_dict.setdefault("deps", base_path)
+        if len({base_path, code_path, deps_path}) == 3 and base_path != Path("."):
+            # The problem is when the 3 differ AND base path is non-default.
+            msg = (
+                "3 different values among root-path, --code, and --deps. At most, "
+                "2 unique values are allowed. "
+                f"root-path={base_path}, --code={code_path}, --deps={deps_path}"
+            )
+            raise argparse.ArgumentError(argument=None, message=msg)
+
         # Use subset of args_dict that directly correspond to fields in Settings
         ret = {arg: value for arg, value in args_dict.items() if arg in cls.__fields__}
 
@@ -289,6 +301,13 @@ def populate_parser_options(parser: argparse._ActionsContainer) -> None:
     from Settings to come through when we create the Settings object in
     .create() below.
     """
+    parser.add_argument(
+        "root-path",
+        default=Path("."),
+        type=Path,
+        nargs="?",
+        help="Directory in which to search for code (imports) and/or dependency declarations",
+    )
     parser.add_argument(
         "--code",
         type=parse_path_or_stdin,
