@@ -8,6 +8,7 @@ should find/report.
 import hashlib
 import json
 import logging
+import shlex
 import subprocess
 import sys
 import tarfile
@@ -37,9 +38,14 @@ pytestmark = pytest.mark.integration
 REAL_PROJECTS_DIR = Path(__file__).with_name("real_projects")
 
 
-def run_fawltydeps_json(*args: str, cwd: Optional[Path] = None) -> JsonData:
+def run_fawltydeps_json(
+    *args: str, venv_dir: Optional[Path], cwd: Optional[Path] = None
+) -> JsonData:
+    cmd = ["fawltydeps"]
+    if venv_dir:
+        cmd = [f"{venv_dir}/bin/fawltydeps"]
     proc = subprocess.run(
-        ["fawltydeps", "--config-file=/dev/null"] + list(args) + ["--json"],
+        cmd + ["--config-file=/dev/null"] + list(args) + ["--json"],
         stdout=subprocess.PIPE,
         check=False,
         cwd=cwd,
@@ -75,17 +81,38 @@ class Experiment(NamedTuple):
 
     name: str
     args: List[str]
+    requirements: List[str]
+    venv_dir: Optional[Path] = None
     description: Optional[str] = None
     imports: Optional[List[str]] = None
     declared_deps: Optional[List[str]] = None
     undeclared_deps: Optional[List[str]] = None
     unused_deps: Optional[List[str]] = None
 
+    def venv_script(self, venv_path: Path):
+        return (
+            [
+                f"rm -rf {venv_path}",
+                f"python3 -m venv {venv_path}",
+                f"{venv_path}/bin/pip install --upgrade pip",
+            ]
+            + [
+                f"{venv_path}/bin/pip install {shlex.quote(req)}"
+                for req in self.requirements
+            ]
+            + [
+                f"{venv_path}/bin/pip install -e ./",
+                f"touch {venv_path}/.installed",
+            ]
+        )
+
     @classmethod
     def parse_from_toml(cls, name: str, data: TomlData) -> "Experiment":
         return cls(
             name=name,
             args=data["args"],
+            requirements=data.get("requirements", []),
+            venv_dir=data.get("venv_dir"),
             description=data.get("description"),
             imports=data.get("imports"),
             declared_deps=data.get("declared_deps"),
@@ -122,6 +149,25 @@ class Experiment(NamedTuple):
             assert set(self.unused_deps) == json_names(analysis["unused_deps"])
         else:
             print(f"{self.name}: No unused dependencies to check")
+
+    def create_venv_dir(self, venv_dir: Path) -> Optional[Path]:
+        """Create the venv dir and install requirements.
+
+        The venv_dir is where we install the dependencies of the current
+        experiment.
+        """
+        # Run the script to set up the venv
+        logger.info(f"Creating venv at {venv_dir}...")
+        venv_script = self.venv_script(venv_dir)
+        subprocess.run(
+            " && ".join(venv_script),
+            check=True,  # fail if any of the commands fail
+            shell=True,  # pass multiple shell commands to the subprocess
+        )
+        # Make sure the venv has been installed
+        assert Path(venv_dir, ".installed").is_file()
+
+        return venv_dir
 
 
 class ThirdPartyProject(NamedTuple):
@@ -275,7 +321,11 @@ class ThirdPartyProject(NamedTuple):
 )
 def test_real_project(request, project, experiment):
     project_dir = project.get_project_dir(request.config.cache)
-    analysis = run_fawltydeps_json(*experiment.args, cwd=project_dir)
+    if experiment.venv_dir is not None:
+        experiment.create_venv_dir(experiment.venv_dir)
+    analysis = run_fawltydeps_json(
+        *experiment.args, venv_dir=experiment.venv_dir, cwd=project_dir
+    )
 
     print(f"Checking experiment {experiment.name} for project under {project_dir}...")
 
