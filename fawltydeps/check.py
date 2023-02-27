@@ -177,7 +177,7 @@ def compare_imports_to_dependencies(
     ]
     undeclared.sort(key=lambda i: i.name)  # groupby requires pre-sorting
     undeclared_grouped = [
-        UndeclaredDependency(name, list(imports))
+        UndeclaredDependency(name, [i.source for i in imports])
         for name, imports in groupby(undeclared, key=lambda i: i.name)
     ]
 
@@ -189,7 +189,7 @@ def compare_imports_to_dependencies(
     ]
     unused.sort(key=lambda dep: dep.name)  # groupby requires pre-sorting
     unused_grouped = [
-        UnusedDependency(name, list(deps))
+        UnusedDependency(name, [dep.source for dep in deps])
         for name, deps in groupby(unused, key=lambda d: d.name)
     ]
 
