@@ -20,7 +20,8 @@ else:
 
 logger = logging.getLogger(__name__)
 
-ROOT_PATH_DEFAULT = Path(".")
+CWD_PATH_DEFAULT = Path(".")
+ROOT_PATH_ARGNAME = "root-path"
 
 
 class PyprojectTomlSettingsSource:
@@ -120,8 +121,8 @@ class Settings(BaseSettings):  # type: ignore
     """
 
     actions: Set[Action] = {Action.REPORT_UNDECLARED, Action.REPORT_UNUSED}
-    code: PathOrSpecial = Path(".")
-    deps: Path = Path(".")
+    code: PathOrSpecial = CWD_PATH_DEFAULT
+    deps: Path = CWD_PATH_DEFAULT
     output_format: OutputFormat = OutputFormat.HUMAN_SUMMARY
     ignore_undeclared: Set[str] = set()
     ignore_unused: Set[str] = set()
@@ -292,8 +293,8 @@ def populate_parser_options(parser: argparse._ActionsContainer) -> None:
     .create() below.
     """
     parser.add_argument(
-        "root-path",
-        default=ROOT_PATH_DEFAULT,
+        ROOT_PATH_ARGNAME,
+        default=CWD_PATH_DEFAULT,
         type=Path,
         nargs="?",
         help="Directory in which to search for code (imports) and/or dependency declarations",
