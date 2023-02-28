@@ -49,7 +49,7 @@ class Package:
         context of the local environment with a slightly different spelling
         (e.g. typing_extension).
         """
-        return package_name.lower()
+        return package_name.lower().replace("-", "_")
 
     def add_import_names(
         self, *import_names: str, mapping: DependenciesMapping
