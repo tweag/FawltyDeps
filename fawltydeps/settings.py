@@ -21,7 +21,6 @@ else:
 logger = logging.getLogger(__name__)
 
 CWD_PATH_DEFAULT = Path(".")
-ROOT_PATH_ARGNAME = "root-path"
 
 
 class PyprojectTomlSettingsSource:
@@ -293,7 +292,7 @@ def populate_parser_options(parser: argparse._ActionsContainer) -> None:
     .create() below.
     """
     parser.add_argument(
-        ROOT_PATH_ARGNAME,
+        "basepath",
         default=CWD_PATH_DEFAULT,
         type=Path,
         nargs="?",

@@ -26,8 +26,6 @@ from fawltydeps import extract_imports
 from fawltydeps.check import compare_imports_to_dependencies
 from fawltydeps.extract_declared_dependencies import extract_declared_dependencies
 from fawltydeps.settings import (
-    CWD_PATH_DEFAULT,
-    ROOT_PATH_ARGNAME,
     Action,
     OutputFormat,
     Settings,
@@ -163,8 +161,24 @@ class Analysis:
                 print(f"- {unused.render(details)}", file=out)
 
 
-def main() -> int:
-    """Command-line entry point."""
+def build_settings(args: argparse.Namespace) -> Settings:
+    """Use parsed CLI options to build the program settings."""
+    try:
+        base_path = args.basepath
+    except AttributeError:
+        logger.debug("No root path set")
+    else:
+        code_path = args.__dict__.setdefault("code", base_path)
+        deps_path = args.__dict__.setdefault("deps", base_path)
+        paths = [base_path, code_path, deps_path]
+        if len(set(paths)) == len(paths):
+            msg = f"Each path option has a different value: {paths}"
+            raise argparse.ArgumentError(argument=None, message=msg)
+    return Settings.config(config_file=args.config_file).create(args)
+
+
+def build_parser() -> argparse.ArgumentParser:
+    """Create the CLI parser."""
     parser, option_group = setup_cmdline_parser(description=__doc__)
     option_group.add_argument(
         "-V",
@@ -185,23 +199,14 @@ def main() -> int:
         default=False,
         help="Print a TOML config section with the current settings, and exit",
     )
+    return parser
 
+
+def main() -> int:
+    """Command-line entry point."""
+    parser = build_parser()
     args = parser.parse_args()
-
-    try:
-        root_path = args.root_path
-    except AttributeError:
-        logger.debug("No root path set")
-    else:
-        code_path = args.__dict__.setdefault("code", root_path)
-        deps_path = args.__dict__.setdefault("deps", root_path)
-        paths = [root_path, code_path, deps_path]
-        if len(set(paths)) == len(paths):
-            # The problem is when each is unique AND root path is non-default.
-            msg = f"Each path option has a different value: {paths}"
-            raise argparse.ArgumentError(argument=None, message=msg)
-
-    settings = Settings.config(config_file=args.config_file).create(args)
+    settings = build_settings(args)
 
     logging.basicConfig(level=logging.WARNING - 10 * settings.verbosity)
 

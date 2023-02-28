@@ -1,13 +1,18 @@
 """Test how settings cascade/combine across command-line, config file, etc."""
 import argparse
 import logging
+import string
 import sys
 from pathlib import Path
+from typing import List
 
 import pytest
+from hypothesis import given
+from hypothesis import strategies as st
 from pydantic import ValidationError
 from pydantic.env_settings import SettingsError  # pylint: disable=no-name-in-module
 
+from fawltydeps.main import build_parser, build_settings
 from fawltydeps.settings import Action, OutputFormat, Settings
 
 if sys.version_info >= (3, 11):
@@ -25,6 +30,13 @@ EXPECT_DEFAULTS = dict(
     deps_parser_choice=None,
     verbosity=0,
 )
+
+
+def run_build_settings(cmdl: List[str]) -> Settings:
+    """Combine the two relevant function calls to get a Settings."""
+    parser = build_parser()
+    opts = parser.parse_args(cmdl)
+    return build_settings(opts)
 
 
 def make_settings_dict(**kwargs):
@@ -46,6 +58,42 @@ def setup_env(monkeypatch):
             monkeypatch.setenv(f"fawltydeps_{k}", v)
 
     return _inner
+
+
+def are_unique(*args) -> bool:
+    """Check that arguments are unique."""
+    return len(args) == len(set(args))
+
+
+safe_string = st.text(alphabet=string.ascii_letters + string.digits, min_size=1)
+three_different_strings = st.tuples(safe_string, safe_string, safe_string).filter(
+    lambda ss: are_unique(*ss)
+)
+
+
+@given(code_deps_base=three_different_strings)
+def test_code_deps_and_base_unequal_raises_error(code_deps_base):
+    code, deps, base = code_deps_base
+    with pytest.raises(argparse.ArgumentError):
+        run_build_settings([f"--code={code}", f"--deps={deps}", base])
+
+
+@given(basepath=safe_string)
+@pytest.mark.parametrize(["filled", "unfilled"], [("code", "deps"), ("deps", "code")])
+def assert_base_path_respects_already_filled_path_while_filling_other(
+    basepath, filled, unfilled
+):
+    filler = "This_is_a_filler"
+    settings = run_build_settings([f"--{filled}={filler}", basepath])
+    assert getattr(settings, filled) == Path(filler)
+    assert getattr(settings, unfilled) == Path(basepath)
+
+
+@given(basepath=safe_string)
+@pytest.mark.parametrize("path_attr_name", ["code", "deps"])
+def test_base_path_fills_code_and_deps(basepath, path_attr_name):
+    settings = run_build_settings([basepath])
+    assert getattr(settings, path_attr_name) == Path(basepath)
 
 
 @pytest.mark.parametrize(
