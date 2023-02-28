@@ -17,7 +17,7 @@ from dataclasses import dataclass
 from functools import partial
 from operator import attrgetter
 from pathlib import Path
-from typing import List, Optional, TextIO, no_type_check
+from typing import Dict, List, Optional, TextIO, no_type_check
 
 from pydantic.json import custom_pydantic_encoder  # pylint: disable=no-name-in-module
 
@@ -33,6 +33,7 @@ from fawltydeps.settings import (
 )
 from fawltydeps.types import (
     DeclaredDependency,
+    Package,
     ParsedImport,
     UndeclaredDependency,
     UnparseablePathException,
@@ -69,6 +70,7 @@ class Analysis:
     settings: Settings
     imports: Optional[List[ParsedImport]] = None
     declared_deps: Optional[List[DeclaredDependency]] = None
+    resolved_deps: Optional[Dict[str, Package]] = None
     undeclared_deps: Optional[List[UndeclaredDependency]] = None
     unused_deps: Optional[List[UnusedDependency]] = None
     version: str = version()
@@ -108,7 +110,11 @@ class Analysis:
         if ret.is_enabled(Action.REPORT_UNDECLARED, Action.REPORT_UNUSED):
             assert ret.imports is not None  # convince Mypy that these cannot
             assert ret.declared_deps is not None  # be None at this time.
-            ret.undeclared_deps, ret.unused_deps = compare_imports_to_dependencies(
+            (
+                ret.resolved_deps,
+                ret.undeclared_deps,
+                ret.unused_deps,
+            ) = compare_imports_to_dependencies(
                 imports=ret.imports,
                 dependencies=ret.declared_deps,
                 settings=settings,

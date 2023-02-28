@@ -1,13 +1,15 @@
 """Test the imports to dependencies comparison function."""
 from pathlib import Path
-from typing import List
+from typing import Dict, List
 
 import pytest
 
-from fawltydeps.check import compare_imports_to_dependencies
+from fawltydeps.check import LocalPackageLookup, compare_imports_to_dependencies
 from fawltydeps.settings import Settings
 from fawltydeps.types import (
+    DependenciesMapping,
     Location,
+    Package,
     ParsedImport,
     UndeclaredDependency,
     UnusedDependency,
@@ -15,9 +17,20 @@ from fawltydeps.types import (
 
 from .utils import deps_factory
 
+local_env = LocalPackageLookup()
+
 
 def imports_factory(*imports: str) -> List[ParsedImport]:
     return [ParsedImport(imp, Location("<stdin>")) for imp in imports]
+
+
+def resolved_factory(*deps: str) -> Dict[str, Package]:
+    def mapping_for_dep(dep: str) -> DependenciesMapping:
+        if local_env.lookup_package(dep) is None:
+            return DependenciesMapping.IDENTITY
+        return DependenciesMapping.LOCAL_ENV
+
+    return {dep: Package(dep, {dep}, {mapping_for_dep(dep)}) for dep in deps}
 
 
 def undeclared_factory(*deps: str) -> List[UndeclaredDependency]:
@@ -31,13 +44,13 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
 @pytest.mark.parametrize(
     "imports,dependencies,ignore_unused,ignore_undeclared,expected",
     [
-        pytest.param([], [], [], [], ([], []), id="no_import_no_dependencies"),
+        pytest.param([], [], [], [], ({}, [], []), id="no_import_no_dependencies"),
         pytest.param(
             imports_factory("pandas"),
             [],
             [],
             [],
-            (undeclared_factory("pandas"), []),
+            ({}, undeclared_factory("pandas"), []),
             id="one_import_no_dependencies",
         ),
         pytest.param(
@@ -45,7 +58,7 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
             deps_factory("pandas"),
             [],
             [],
-            ([], unused_factory("pandas")),
+            (resolved_factory("pandas"), [], unused_factory("pandas")),
             id="no_imports_one_dependency",
         ),
         pytest.param(
@@ -53,7 +66,7 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
             deps_factory("pandas"),
             [],
             [],
-            ([], []),
+            (resolved_factory("pandas"), [], []),
             id="matched_import_with_dependency",
         ),
         pytest.param(
@@ -61,7 +74,11 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
             deps_factory("pandas", "scipy"),
             [],
             [],
-            (undeclared_factory("numpy"), unused_factory("scipy")),
+            (
+                resolved_factory("pandas", "scipy"),
+                undeclared_factory("numpy"),
+                unused_factory("scipy"),
+            ),
             id="mixed_imports_with_unused_and_undeclared_dependencies",
         ),
         pytest.param(
@@ -71,6 +88,7 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
             [],
             [],
             (
+                resolved_factory("pandas", "scipy"),
                 [
                     UndeclaredDependency(
                         "numpy",
@@ -86,7 +104,7 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
             deps_factory("black"),
             ["black"],
             [],
-            ([], []),
+            (resolved_factory("black"), [], []),
             id="one_ignored_and_unused_dep__not_reported_as_unused",
         ),
         pytest.param(
@@ -94,7 +112,7 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
             deps_factory("isort"),
             ["isort"],
             [],
-            ([], []),
+            (resolved_factory("isort"), [], []),
             id="one_ignored_and_used_dep__not_reported_as_unused",
         ),
         pytest.param(
@@ -102,7 +120,7 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
             deps_factory(),
             ["isort"],
             [],
-            (undeclared_factory("isort"), []),
+            ({}, undeclared_factory("isort"), []),
             id="one_ignored_and_undeclared_dep__reported_as_undeclared",
         ),
         pytest.param(
@@ -111,6 +129,7 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
             ["isort"],
             [],
             (
+                resolved_factory("pandas", "isort", "flake8"),
                 undeclared_factory("numpy"),
                 unused_factory("flake8"),
             ),
@@ -121,7 +140,7 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
             [],
             [],
             ["invalid_import"],
-            ([], []),
+            ({}, [], []),
             id="one_ignored_undeclared_dep__not_reported_as_undeclared",
         ),
         pytest.param(
@@ -129,7 +148,7 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
             deps_factory("isort"),
             [],
             ["isort"],
-            ([], []),
+            (resolved_factory("isort"), [], []),
             id="one_ignored_and_declared_dep__not_reported_as_undeclared",
         ),
         pytest.param(
@@ -137,10 +156,7 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
             deps_factory("isort"),
             [],
             ["isort"],
-            (
-                [],
-                unused_factory("isort"),
-            ),
+            (resolved_factory("isort"), [], unused_factory("isort")),
             id="one_ignored_import_declared_as_dep__reported_as_unused",
         ),
         pytest.param(
@@ -149,6 +165,7 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
             [],
             ["not_valid"],
             (
+                resolved_factory("pandas", "flake8"),
                 undeclared_factory("numpy"),
                 unused_factory("flake8"),
             ),
@@ -160,6 +177,7 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
             ["isort"],
             ["not_valid"],
             (
+                resolved_factory("pandas", "flake8", "isort"),
                 undeclared_factory("numpy"),
                 unused_factory("flake8"),
             ),
