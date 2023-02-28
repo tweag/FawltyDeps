@@ -300,7 +300,7 @@ To see how these tests work, look at the existing files in that directory.
 
 ## FAQ
 
-### I run `fawltydeps` and got some undeclared dependencies. What can I do with it?
+### I run `fawltydeps` and get some undeclared dependencies. What can I do with it?
 
 You can run a detailed report to see in which file and line number
 the undeclared dependencies were imported:
@@ -310,6 +310,7 @@ fawltydeps --detailed
 ```
 
 and debug each occurrence. Typically an undeclared dependency can be fixed in a couple of ways:
+
 - A true undeclared dependency is fixed by _declaring_ it, e.g. adding it to your `pyproject.toml` or similar.
 - If you disagree with FawltyDeps' classification, you can always use `--ignore-undeclared` to silence the error. If you're sure this dependency should not have been reported by FawltyDeps, you may consider filing a bug report.
 
