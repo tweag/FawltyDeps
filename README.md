@@ -309,17 +309,19 @@ the undeclared dependencies were imported:
 fawltydeps --detailed
 ```
 
-and debug each occurrence.
+and debug each occurrence. Typically an undeclared dependency can be fixed in a couple of ways:
+- A true undeclared dependency is fixed by _declaring_ it, e.g. adding it to your `pyproject.toml` or similar.
+- If you disagree with FawltyDeps' classification, you can always use `--ignore-undeclared` to silence the error. If you're sure this dependency should not have been reported by FawltyDeps, you may consider filing a bug report.
 
-### How not to display packages like `black` and `pylint` in _unused dependencies_?
+### How not to display tools like `black` and `pylint` in _unused dependencies_?
 
-By default, packages declared in the development environment are included in the FawltyDeps report. Some of them are not being used in the source code but are needed for another purpose. In such cases you may use either:
+By default, all packages declared in the development environment are included in the FawltyDeps report, even if they only contain tools that were not meant to be `import`ed, but rather to be run by, say, a pre-commit or CI script. In such cases you may use either:
 
 ```
 fawltydeps --ignore-unused black pylint
 ```
 
-or add a configuration of FawltyDeps to you `pyproject.toml` (see below).
+or add an equivalent directive to the FawltyDeps configuration in your `pyproject.toml` (see below).
 
 First run:
 
