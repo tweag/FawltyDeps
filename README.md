@@ -348,12 +348,14 @@ ignore_unused = ["black", "pylint"]
 
 ### How to use FawltyDeps in a monorepo?
 
-Do not run a vanilla `fawltydeps` in a root directory of the monorepo.
-It will collect requirements and the code from _all_ packages
-and the resulting report may be not useful.
-Instead, you should run fawltydeps for each package separately.
-This way it will collect requirements and the code only for
-a chosen package.
+Running `fawltydeps` without arguments in the root directory of a monorepo
+is most likely not what you want to see the results of:
+it will collect dependencies and import statements from _all_ packages.
+The report produced may be overwhelming and at the same time not granular enough.
+
+Instead, you should run FawltyDeps for each package separately.
+This collects dependencies and import statements for one package at a time.
+
 Having:
 
 ```.
@@ -373,8 +375,8 @@ fawltydeps --code libX/ --deps libX/
 
 ### Why FawltyDeps did not match `sklearn` and `scikit-learn`?
 
-There are cases, where FawltyDeps may not match imports and dependencies
-obviously related, like `sklearn` and `scikit-learn` and reports `sklearn` as
+There are cases, where FawltyDeps may not match imports and obviously related
+dependencies, like `sklearn` and `scikit-learn` and reports `sklearn` as
 _undeclared_ and `scikit-learn` as an _unused_ dependency.
 
 To solve this problem, make sure that you run FawltyDeps in the development environment
