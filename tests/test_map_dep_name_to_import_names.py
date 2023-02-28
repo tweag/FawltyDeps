@@ -3,12 +3,8 @@
 
 import pytest
 
-from fawltydeps.check import (
-    DependenciesMapping,
-    LocalPackageLookup,
-    Package,
-    resolve_dependencies,
-)
+from fawltydeps.check import LocalPackageLookup, resolve_dependencies
+from fawltydeps.types import DependenciesMapping, Package
 
 # TODO: These tests are not fully isolated, i.e. they do not control the
 # virtualenv in which they run. For now, we assume that we are running in an
