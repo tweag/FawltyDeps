@@ -173,6 +173,7 @@ def test_list_imports_json__from_py_file__prints_imports_from_file(write_tmp_fil
             {"name": "numpy", "source": {"path": f"{tmp_path}/myfile.py", "lineno": 6}},
         ],
         "declared_deps": None,
+        "resolved_deps": None,
         "undeclared_deps": None,
         "unused_deps": None,
         "version": version(),
@@ -316,6 +317,7 @@ def test_list_deps_json__dir__prints_deps_from_requirements_txt(
                 "source": {"path": f"{tmp_path}/requirements.txt"},
             },
         ],
+        "resolved_deps": None,
         "undeclared_deps": None,
         "unused_deps": None,
         "version": version(),
@@ -550,6 +552,13 @@ def test_check_json__simple_project__can_report_both_undeclared_and_unused(
                 "source": {"path": f"{tmp_path}/requirements.txt"},
             },
         ],
+        "resolved_deps": {
+            "pandas": {
+                "package_name": "pandas",
+                "import_names": ["pandas"],
+                "mappings": ["identity"],
+            }
+        },
         "undeclared_deps": [
             {
                 "name": "requests",

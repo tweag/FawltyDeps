@@ -92,7 +92,7 @@ def compare_imports_to_dependencies(
     imports: List[ParsedImport],
     dependencies: List[DeclaredDependency],
     settings: Settings,
-) -> Tuple[List[UndeclaredDependency], List[UnusedDependency]]:
+) -> Tuple[Dict[str, Package], List[UndeclaredDependency], List[UnusedDependency]]:
     """Compares imports to dependencies.
 
     Returns set of undeclared imports and set of unused dependencies.
@@ -129,4 +129,4 @@ def compare_imports_to_dependencies(
         for name, deps in groupby(unused, key=lambda d: d.name)
     ]
 
-    return undeclared_grouped, unused_grouped
+    return packages, undeclared_grouped, unused_grouped
