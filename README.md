@@ -302,7 +302,7 @@ To see how these tests work, look at the existing files in that directory.
 
 ### I run `fawltydeps` and get some undeclared dependencies. What can I do with it?
 
-You can run a detailed report to see in which file and line number
+You can run a detailed report to see the exact location (file and line number), in which
 the undeclared dependencies were imported:
 
 ```
@@ -316,7 +316,7 @@ and debug each occurrence. Typically an undeclared dependency can be fixed in a 
 
 ### How not to display tools like `black` and `pylint` in _unused dependencies_?
 
-By default, all packages declared in the development environment are included in the FawltyDeps report, even if they only contain tools that were not meant to be `import`ed, but rather to be run by, say, a pre-commit or CI script. In such cases you may use either:
+By default, all packages declared in the development environment are included in the FawltyDeps report, even if they only contain tools that were not meant to be `import`ed, but rather to be run by, say, a pre-commit hook or a CI script. In such cases you may use either:
 
 ```
 fawltydeps --ignore-unused black pylint
@@ -340,7 +340,7 @@ to generate a `[tool.fawltydeps]` section with current defaults that may be dire
 ...
 ```
 
-Then, edit `ignore_unused` to contain packages not to be mentioned in the report if found unused:
+Then, edit `ignore_unused` to contain packages that should not be mentioned in the report if found unused:
 
 ```
 ignore_unused = ["black", "pylint"]
@@ -348,10 +348,10 @@ ignore_unused = ["black", "pylint"]
 
 ### How to use FawltyDeps in a monorepo?
 
-Running `fawltydeps` without arguments in the root directory of a monorepo
-is most likely not what you want to see the results of:
-it will collect dependencies and import statements from _all_ packages.
-The report produced may be overwhelming and at the same time not granular enough.
+Running `fawltydeps` without arguments at the root of a monorepo
+will most likely not give you a useful result:
+it will collect dependencies and import statements from across the _entire_ monorepo.
+The produced report may be overwhelming and at the same time not granular enough.
 
 Instead, you should run FawltyDeps for each package separately.
 This collects dependencies and import statements for one package at a time.
@@ -373,7 +373,7 @@ run for each `libX`:
 fawltydeps --code libX/ --deps libX/
 ```
 
-### Why FawltyDeps did not match `sklearn` and `scikit-learn`?
+### Why FawltyDeps does not match `sklearn` with `scikit-learn`?
 
 There are cases, where FawltyDeps may not match imports and obviously related
 dependencies, like `sklearn` and `scikit-learn` and reports `sklearn` as
