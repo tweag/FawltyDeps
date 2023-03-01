@@ -100,7 +100,6 @@ class Experiment(NamedTuple):
                 for req in self.requirements
             ]
             + [
-                f"{venv_path}/bin/pip install -e ./",
                 f"touch {venv_path}/.installed",
             ]
         )
@@ -333,6 +332,16 @@ class ThirdPartyProject(NamedTuple):
 
         logger.info(f"Unpacked project is at {project_dir}")
         return project_dir
+
+
+@pytest.fixture(scope="function", autouse=True)
+def setup_fawltydeps_in_venv(request, experiment):
+    venv_dir = experiment.get_venv_dir(request.config.cache)
+    # setup: install editable fawltydeps
+    subprocess.run([f"{venv_dir}/bin/pip", "install", "-e", "./"], check=True)
+    yield
+    # teardown: uninstall fawltydeps
+    subprocess.run([f"{venv_dir}/bin/pip", "uninstall", "-y", "fawltydeps"], check=True)
 
 
 @pytest.mark.parametrize(
