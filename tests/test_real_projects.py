@@ -150,13 +150,17 @@ class Experiment(NamedTuple):
 
     def venv_hash(self):
         """
-        Returns a hash of the venv that depends on the installation script.
+        Returns a hash that depends on the venv script and python version.
 
-        The installation script will change if the code `venv_script` changes
-        or if the requirements field of the experiment changes.
+        The installation script will change if the code to setup the venv on
+        `venv_script` changes or if the requirements field of the experiment
+        changes. It will also be different for different Python versions.
+        The Python version currently used to run the tests is used to compute
+        the hash and create the venv.
         """
         dummy_script = self.venv_script(Path("/dev/null"))
-        dummy_script_bytes = "".join(dummy_script).encode()
+        script_and_py_version = "".join(dummy_script) + str(sys.version_info)
+        dummy_script_bytes = script_and_py_version.encode()
         return hashlib.sha256(dummy_script_bytes).hexdigest()
 
     def get_venv_dir(self, cache: pytest.Cache) -> Optional[Path]:
