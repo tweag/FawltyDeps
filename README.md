@@ -376,11 +376,13 @@ fawltydeps --code libX/ --deps libX/
 ### Why FawltyDeps does not match `sklearn` with `scikit-learn`?
 
 There are cases, where FawltyDeps may not match imports and obviously related
-dependencies, like `sklearn` and `scikit-learn` and reports `sklearn` as
+dependencies, like `sklearn` and `scikit-learn`. It will report `sklearn` as
 _undeclared_ and `scikit-learn` as an _unused_ dependency.
 
-To solve this problem, make sure that you run FawltyDeps in the development environment
-of the project you are testing.
+This happens because FawltyDeps is not running in a Python environment (typically a virtualenv)
+where the `scikit-learn` package is installed, and as a result it cannot see
+that `scikit-learn` provides the `sklearn` import name.
 
-To determine a mapping between packages and exported modules,
-FawltyDeps looks into packages installed in the virtual environment it is running in.
+To solve this problem, make sure that you install and run FawltyDeps
+in a development environment (e.g. virtualenv)
+where your project's dependencies are also installed.
