@@ -163,17 +163,13 @@ class Analysis:
 
 def build_settings(args: argparse.Namespace) -> Settings:
     """Use parsed CLI options to build the program settings."""
-    try:
-        base_path = args.basepath
-    except AttributeError:
-        logger.debug("No root path set")
-    else:
-        code_path = args.__dict__.setdefault("code", base_path)
-        deps_path = args.__dict__.setdefault("deps", base_path)
-        paths = [base_path, code_path, deps_path]
-        if len(set(paths)) == len(paths):
-            msg = f"Each path option has a different value: {paths}"
-            raise argparse.ArgumentError(argument=None, message=msg)
+    base_path = args.basepath
+    code_path = args.__dict__.setdefault("code", base_path)
+    deps_path = args.__dict__.setdefault("deps", base_path)
+    paths = [base_path, code_path, deps_path]
+    if len(set(paths)) == len(paths):
+        msg = f"Each path option has a different value: {paths}"
+        raise argparse.ArgumentError(argument=None, message=msg)
     return Settings.config(config_file=args.config_file).create(args)
 
 
