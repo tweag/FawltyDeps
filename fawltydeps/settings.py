@@ -20,8 +20,6 @@ else:
 
 logger = logging.getLogger(__name__)
 
-CWD_PATH_DEFAULT = Path(".")
-
 
 class PyprojectTomlSettingsSource:
     """A custom settings source that loads settings from pyproject.toml."""
@@ -120,8 +118,8 @@ class Settings(BaseSettings):  # type: ignore
     """
 
     actions: Set[Action] = {Action.REPORT_UNDECLARED, Action.REPORT_UNUSED}
-    code: PathOrSpecial = CWD_PATH_DEFAULT
-    deps: Path = CWD_PATH_DEFAULT
+    code: PathOrSpecial = Path(".")
+    deps: Path = Path(".")
     output_format: OutputFormat = OutputFormat.HUMAN_SUMMARY
     ignore_undeclared: Set[str] = set()
     ignore_unused: Set[str] = set()
@@ -293,11 +291,11 @@ def populate_parser_options(parser: argparse._ActionsContainer) -> None:
     """
     parser.add_argument(
         "basepath",
-        default=CWD_PATH_DEFAULT,
         type=Path,
         nargs="?",
+        default=argparse.SUPPRESS,
         help="(Optional) directory in which to search for code (imports) "
-             "and/or dependency declarations",
+        "and/or dependency declarations",
     )
     parser.add_argument(
         "--code",
