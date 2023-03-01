@@ -4,6 +4,26 @@ A dependency checker for Python.
 
 Find _undeclared_ and/or _unused_ 3rd-party dependencies in your Python project.
 
+## Table of contents
+
+[Key Concepts](#key-concepts)
+
+[Installation](#installation)
+
+[Usage](#usage)
+
+[Configuration](#configuration)
+
+[Documentation](#documentation)
+
+[Development](#development)
+
+[Integration tests](#integration-tests)
+
+[Contributing](#contributing)
+
+[FAQ](#faq)
+
 ## Key Concepts
 
 - **_undeclared_ dependency**: a package that's used (in particular, `import`ed) by a project and which lacks a corresponding declaration to ensure that it's available.
@@ -265,6 +285,7 @@ outputs, are defined in TOML files under
 [`tests/real_projects`](./tests/real_projects).
 
 ## Contributing
+
 For bug reports, when a user reports that `fawltydeps` does not work on their project, we adopt the following process:
 
 - The project is added to `real_projects`.
@@ -276,3 +297,92 @@ The resulting updates are introduced to `fawltydeps` and reflected in our expect
 If you find a project where FawltyDeps is not doing a good job, we would appreciate
 if you add that project under [`tests/real_projects`](./tests/real_projects).
 To see how these tests work, look at the existing files in that directory.
+
+## FAQ
+
+### I run `fawltydeps` and get some undeclared dependencies. What can I do with it?
+
+You can run a detailed report to see the exact location (file and line number), in which
+the undeclared dependencies were imported:
+
+```
+fawltydeps --detailed
+```
+
+and debug each occurrence. Typically an undeclared dependency can be fixed in a couple of ways:
+
+- A true undeclared dependency is fixed by _declaring_ it, e.g. adding it to your `pyproject.toml` or similar.
+- If you disagree with FawltyDeps' classification, you can always use `--ignore-undeclared` to silence the error. If you're sure this dependency should not have been reported by FawltyDeps, you may consider filing a bug report.
+
+### How not to display tools like `black` and `pylint` in _unused dependencies_?
+
+By default, all packages declared in the development environment are included in the FawltyDeps report, even if they only contain tools that were not meant to be `import`ed, but rather to be run by, say, a pre-commit hook or a CI script. In such cases you may use either:
+
+```
+fawltydeps --ignore-unused black pylint
+```
+
+or add an equivalent directive to the FawltyDeps configuration in your `pyproject.toml` (see below).
+
+First run:
+
+```
+fawltydeps --generate-toml-config
+```
+
+to generate a `[tool.fawltydeps]` section with current defaults that may be directly copied to pyproject.toml:
+
+```
+[tool.fawltydeps]
+# actions = ['check_undeclared', 'check_unused']
+# ignore_undeclared = []
+# ignore_unused = []
+...
+```
+
+Then, edit `ignore_unused` to contain packages that should not be mentioned in the report if found unused:
+
+```
+ignore_unused = ["black", "pylint"]
+```
+
+### How to use FawltyDeps in a monorepo?
+
+Running `fawltydeps` without arguments at the root of a monorepo
+will most likely not give you a useful result:
+it will collect dependencies and import statements from across the _entire_ monorepo.
+The produced report may be overwhelming and at the same time not granular enough.
+
+Instead, you should run FawltyDeps for each package separately.
+This collects dependencies and import statements for one package at a time.
+
+Having:
+
+```.
+├ lib1
+| ├ pyproject.toml
+| ├ ....
+├ lib2
+| ├ pyproject.toml
+| ├ ....
+```
+
+run for each `libX`:
+
+```
+fawltydeps --code libX/ --deps libX/
+```
+
+### Why FawltyDeps does not match `sklearn` with `scikit-learn`?
+
+There are cases, where FawltyDeps may not match imports and obviously related
+dependencies, like `sklearn` and `scikit-learn`. It will report `sklearn` as
+_undeclared_ and `scikit-learn` as an _unused_ dependency.
+
+This happens because FawltyDeps is not running in a Python environment (typically a virtualenv)
+where the `scikit-learn` package is installed, and as a result it cannot see
+that `scikit-learn` provides the `sklearn` import name.
+
+To solve this problem, make sure that you install and run FawltyDeps
+in a development environment (e.g. virtualenv)
+where your project's dependencies are also installed.
