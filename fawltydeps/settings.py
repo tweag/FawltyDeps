@@ -296,7 +296,8 @@ def populate_parser_options(parser: argparse._ActionsContainer) -> None:
         default=CWD_PATH_DEFAULT,
         type=Path,
         nargs="?",
-        help="(Optional) directory in which to search for code (imports) and/or dependency declarations",
+        help="(Optional) directory in which to search for code (imports) "
+             "and/or dependency declarations",
     )
     parser.add_argument(
         "--code",
