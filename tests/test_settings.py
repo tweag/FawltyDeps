@@ -7,8 +7,7 @@ from pathlib import Path
 from typing import List
 
 import pytest
-from hypothesis import given
-from hypothesis import strategies as st
+from hypothesis import given, strategies
 from pydantic import ValidationError
 from pydantic.env_settings import SettingsError  # pylint: disable=no-name-in-module
 
@@ -60,19 +59,14 @@ def setup_env(monkeypatch):
     return _inner
 
 
-def are_unique(*args) -> bool:
-    """Check that arguments are unique."""
-    return len(args) == len(set(args))
-
-
-safe_string = st.text(alphabet=string.ascii_letters + string.digits, min_size=1)
-three_different_strings = st.tuples(safe_string, safe_string, safe_string).filter(
-    lambda ss: are_unique(*ss)
-)
+safe_string = strategies.text(alphabet=string.ascii_letters + string.digits, min_size=1)
+three_different_strings = strategies.tuples(
+    safe_string, safe_string, safe_string
+).filter(lambda ss: len(ss) == len(set(ss)))
 
 
 @given(code_deps_base=three_different_strings)
-def test_code_deps_and_base_unequal_raises_error(code_deps_base):
+def test_code_deps_and_base_unequal__raises_error(code_deps_base):
     code, deps, base = code_deps_base
     with pytest.raises(argparse.ArgumentError):
         run_build_settings([f"--code={code}", f"--deps={deps}", base])
@@ -90,10 +84,10 @@ def assert_base_path_respects_already_filled_path_while_filling_other(
 
 
 @given(basepath=safe_string)
-@pytest.mark.parametrize("path_attr_name", ["code", "deps"])
-def test_base_path_fills_code_and_deps(basepath, path_attr_name):
+def test_base_path_fills_code_and_deps(basepath):
     settings = run_build_settings([basepath])
-    assert getattr(settings, path_attr_name) == Path(basepath)
+    assert settings.code == Path(basepath)
+    assert settings.deps == Path(basepath)
 
 
 @pytest.mark.parametrize(
