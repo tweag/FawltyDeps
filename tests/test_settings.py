@@ -11,7 +11,7 @@ from hypothesis import given, strategies
 from pydantic import ValidationError
 from pydantic.env_settings import SettingsError  # pylint: disable=no-name-in-module
 
-from fawltydeps.main import build_parser, build_settings
+from fawltydeps.main import build_parser
 from fawltydeps.settings import Action, OutputFormat, Settings
 
 if sys.version_info >= (3, 11):
@@ -34,8 +34,8 @@ EXPECT_DEFAULTS = dict(
 def run_build_settings(cmdl: List[str]) -> Settings:
     """Combine the two relevant function calls to get a Settings."""
     parser = build_parser()
-    opts = parser.parse_args(cmdl)
-    return build_settings(opts)
+    args = parser.parse_args(cmdl)
+    return Settings.create(args)
 
 
 def make_settings_dict(**kwargs):
@@ -74,7 +74,7 @@ def test_code_deps_and_base_unequal__raises_error(code_deps_base):
 
 @given(basepath=safe_string)
 @pytest.mark.parametrize(["filled", "unfilled"], [("code", "deps"), ("deps", "code")])
-def assert_base_path_respects_already_filled_path_while_filling_other(
+def test_base_path_respects_already_filled_path_while_filling_other(
     basepath, filled, unfilled
 ):
     filler = "This_is_a_filler"

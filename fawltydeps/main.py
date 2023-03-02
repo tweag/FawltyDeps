@@ -161,19 +161,6 @@ class Analysis:
                 print(f"- {unused.render(details)}", file=out)
 
 
-def build_settings(args: argparse.Namespace) -> Settings:
-    """Use parsed CLI options to build the program settings."""
-    base_path = getattr(args, "basepath", Path(argparse.SUPPRESS))
-    if base_path != Path(argparse.SUPPRESS):
-        code_path = args.__dict__.setdefault("code", base_path)
-        deps_path = args.__dict__.setdefault("deps", base_path)
-        paths = [base_path, code_path, deps_path]
-        if len(set(paths)) == len(paths):
-            msg = f"Each path option has a different value: {paths}"
-            raise argparse.ArgumentError(argument=None, message=msg)
-    return Settings.config(config_file=args.config_file).create(args)
-
-
 def build_parser() -> argparse.ArgumentParser:
     """Create the CLI parser."""
     parser, option_group = setup_cmdline_parser(description=__doc__)
@@ -203,7 +190,7 @@ def main() -> int:
     """Command-line entry point."""
     parser = build_parser()
     args = parser.parse_args()
-    settings = build_settings(args)
+    settings = Settings.config(config_file=args.config_file).create(args)
 
     logging.basicConfig(level=logging.WARNING - 10 * settings.verbosity)
 
