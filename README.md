@@ -1,8 +1,12 @@
+[![PyPI Latest Release](https://img.shields.io/pypi/v/fawltydeps.svg)](https://pypi.org/project/fawltydeps/)
+
 # FawltyDeps
 
 A dependency checker for Python.
 
 Find _undeclared_ and/or _unused_ 3rd-party dependencies in your Python project.
+
+![FawltyDeps demo](./docs/fawltydeps_demo_tqdm.gif)
 
 ## Table of contents
 
