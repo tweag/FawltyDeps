@@ -4,7 +4,7 @@ import logging
 import string
 import sys
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 import pytest
 from hypothesis import given, strategies
@@ -31,11 +31,11 @@ EXPECT_DEFAULTS = dict(
 )
 
 
-def run_build_settings(cmdl: List[str]) -> Settings:
+def run_build_settings(cmdl: List[str], config_file: Optional[Path] = None) -> Settings:
     """Combine the two relevant function calls to get a Settings."""
     parser = build_parser()
     args = parser.parse_args(cmdl)
-    return Settings.create(args)
+    return Settings.config(config_file=config_file).create(args)
 
 
 def make_settings_dict(**kwargs):
@@ -74,9 +74,7 @@ def test_code_deps_and_base_unequal__raises_error(code_deps_base):
 
 @given(basepath=safe_string)
 @pytest.mark.parametrize(["filled", "unfilled"], [("code", "deps"), ("deps", "code")])
-def test_base_path_respects_already_filled_path_while_filling_other(
-    basepath, filled, unfilled
-):
+def test_base_path_respects_path_already_filled_via_cli(basepath, filled, unfilled):
     filler = "This_is_a_filler"
     settings = run_build_settings([f"--{filled}={filler}", basepath])
     assert getattr(settings, filled) == Path(filler)
@@ -84,10 +82,35 @@ def test_base_path_respects_already_filled_path_while_filling_other(
 
 
 @given(basepath=safe_string)
-def test_base_path_fills_code_and_deps(basepath):
+def test_base_path_fills_code_and_deps_when_other_path_settings_are_absent(basepath):
+    # Nothing else through CLI nor through config file
     settings = run_build_settings([basepath])
     assert settings.code == Path(basepath)
     assert settings.deps == Path(basepath)
+
+
+@pytest.mark.parametrize(
+    "config_settings",
+    [
+        pytest.param(conf_sett, id=test_name)
+        for conf_sett, test_name in [
+            (None, "empty-config"),
+            (dict(code="test-code"), "only-code-set"),
+            (dict(deps="deps-test"), "only-deps-set"),
+            (dict(code="code-test", deps="test-deps"), "code-and-deps-set"),
+        ]
+    ],
+)
+def test_base_path_overrides_config_file_code_and_deps(
+    config_settings, setup_fawltydeps_config
+):
+    config_file = (
+        None if config_settings is None else setup_fawltydeps_config(config_settings)
+    )
+    basepath = Path("my-temp-basepath")
+    settings = run_build_settings(cmdl=[str(basepath)], config_file=config_file)
+    assert settings.code == basepath
+    assert settings.deps == basepath
 
 
 @pytest.mark.parametrize(
