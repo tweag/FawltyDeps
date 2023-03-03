@@ -124,7 +124,7 @@ class DeclaredDependency:
     source: Location
 
 
-class DependenciesMapping(Enum):
+class DependenciesMapping(str, Enum):
     """Types of dependency and imports mapping"""
 
     IDENTITY = "identity"
@@ -141,8 +141,17 @@ class Package:
     """
 
     package_name: str
+    mappings: Dict[DependenciesMapping, Set[str]] = field(default_factory=dict)
     import_names: Set[str] = field(default_factory=set)
-    mappings: Set[DependenciesMapping] = field(default_factory=set)
+
+    def __post_init__(self) -> None:
+        # The .import_names member is entirely redundant, as it can always be
+        # calculated from a union of self.mappings.values(). However, it is
+        # still used often enough (.is_used() is called once per declared
+        # dependency) that it makes sense to pre-calculate it, and rather hide
+        # the redundancy from our JSON output
+        self.import_names = {name for names in self.mappings.values() for name in names}
+        hide_dataclass_fields(self, "import_names")
 
     @staticmethod
     def normalize_name(package_name: str) -> str:
@@ -159,9 +168,13 @@ class Package:
     def add_import_names(
         self, *import_names: str, mapping: DependenciesMapping
     ) -> None:
-        """Add an import name provided by this package."""
+        """Add import names provided by this package.
+
+        Import names must be associated with a DependenciesMapping enum value,
+        as keeping track of this is extremely helpful when debugging.
+        """
+        self.mappings.setdefault(mapping, set()).update(import_names)
         self.import_names.update(import_names)
-        self.mappings.add(mapping)
 
     def add_identity_import(self) -> None:
         """Add identity mapping to this package.

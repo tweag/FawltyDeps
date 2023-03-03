@@ -63,19 +63,19 @@ def test_LocalPackageLookup_lookup_package(dep_name, expect_import_names):
     [
         pytest.param(
             ["pip"],
-            {"pip": Package("pip", {"pip"}, {DependenciesMapping.LOCAL_ENV})},
+            {"pip": Package("pip", {DependenciesMapping.LOCAL_ENV: {"pip"}})},
             id="dependency_present_in_local_env__uses_d2i_mapping",
         ),
         pytest.param(
             ["pandas"],
-            {"pandas": Package("pandas", {"pandas"}, {DependenciesMapping.IDENTITY})},
+            {"pandas": Package("pandas", {DependenciesMapping.IDENTITY: {"pandas"}})},
             id="dependency_not_present_in_local_env__uses_id_mapping",
         ),
         pytest.param(
             ["pandas", "pip"],
             {
-                "pip": Package("pip", {"pip"}, {DependenciesMapping.LOCAL_ENV}),
-                "pandas": Package("pandas", {"pandas"}, {DependenciesMapping.IDENTITY}),
+                "pip": Package("pip", {DependenciesMapping.LOCAL_ENV: {"pip"}}),
+                "pandas": Package("pandas", {DependenciesMapping.IDENTITY: {"pandas"}}),
             },
             id="mixed_dependencies_in_local_env__uses_id_and_d2i_mapping",
         ),
@@ -84,8 +84,13 @@ def test_LocalPackageLookup_lookup_package(dep_name, expect_import_names):
             {
                 "setuptools": Package(
                     "setuptools",
-                    {"_distutils_hack", "pkg_resources", "setuptools"},
-                    {DependenciesMapping.LOCAL_ENV},
+                    {
+                        DependenciesMapping.LOCAL_ENV: {
+                            "_distutils_hack",
+                            "pkg_resources",
+                            "setuptools",
+                        }
+                    },
                 ),
             },
             id="dependency_present_in_local_env__uses_d2i_mapping_and_has_correct_imports",
