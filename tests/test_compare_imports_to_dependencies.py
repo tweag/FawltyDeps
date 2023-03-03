@@ -7,6 +7,7 @@ import pytest
 from fawltydeps.check import LocalPackageLookup, compare_imports_to_dependencies
 from fawltydeps.settings import Settings
 from fawltydeps.types import (
+    DeclaredDependency,
     DependenciesMapping,
     Location,
     Package,
@@ -101,10 +102,10 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
         ),
         pytest.param(
             [],
-            deps_factory("black"),
-            ["black"],
+            deps_factory("pip"),
+            ["pip"],
             [],
-            (resolved_factory("black"), [], []),
+            (resolved_factory("pip"), [], []),
             id="one_ignored_and_unused_dep__not_reported_as_unused",
         ),
         pytest.param(
@@ -182,6 +183,31 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
                 unused_factory("flake8"),
             ),
             id="mixed_dependencies__report_only_non_ignored_unused_and_non_ignored_undeclared",
+        ),
+        pytest.param(
+            [],
+            [
+                DeclaredDependency(
+                    name="Pip", source=Location(Path("requirements1.txt"))
+                ),
+                DeclaredDependency(
+                    name="pip", source=Location(Path("requirements2.txt"))
+                ),
+            ],
+            [],
+            [],
+            (
+                {
+                    "Pip": Package("pip", {DependenciesMapping.LOCAL_ENV: {"pip"}}),
+                    "pip": Package("pip", {DependenciesMapping.LOCAL_ENV: {"pip"}}),
+                },
+                [],
+                [
+                    UnusedDependency("Pip", [Location(Path("requirements1.txt"))]),
+                    UnusedDependency("pip", [Location(Path("requirements2.txt"))]),
+                ],
+            ),
+            id="deps_with_diff_name_for_the_same_import",
         ),
     ],
 )
