@@ -46,7 +46,7 @@ sample_projects_params = [
 
 
 @pytest.mark.parametrize("project_path", sample_projects_params)
-def test_integration_analysis_on_sample_projects__(project_path):
+def test_integration_analysis_on_sample_projects__(project_path, caplog):
     settings = Settings(
         actions={Action.REPORT_UNDECLARED, Action.REPORT_UNUSED},
         code=project_path,
@@ -66,3 +66,9 @@ def test_integration_analysis_on_sample_projects__(project_path):
         expected.get("analysis_result", {}).get("undeclared_deps", [])
     )
     assert actual_undeclared == expect_undeclared
+
+    # Logs should be error-free
+    for record in caplog.records:
+        assert record.levelname != "CRITICAL"
+        assert record.levelname != "ERROR"
+
