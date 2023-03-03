@@ -5,7 +5,13 @@ from pathlib import Path
 
 import pytest
 
-from fawltydeps.types import DeclaredDependency, Location, ParsedImport
+from fawltydeps.types import (
+    DeclaredDependency,
+    DependenciesMapping,
+    Location,
+    Package,
+    ParsedImport,
+)
 
 testdata = {  # Test ID -> (Location args, expected string representation, sort order)
     # First arg must be a Path, or "<stdin>"
@@ -109,3 +115,129 @@ def test_declareddependency_is_immutable():
         dd.name = "bar_package"
     with pytest.raises(FrozenInstanceError):
         dd.source = dd.source.supply(lineno=123)
+
+
+def test_package__empty_package__matches_nothing():
+    p = Package("foobar")  # no mappings
+    assert p.package_name == "foobar"
+    assert not p.is_used(["foobar"])
+
+
+@pytest.mark.parametrize(
+    "package_name,matching_imports,non_matching_imports",
+    [
+        pytest.param(
+            "foobar",
+            ["foobar", "and", "other", "names"],
+            ["only", "other", "names", "foo_bar", "Foobar", "FooBar", "FOOBAR"],
+            id="simple_lowercase_name__matches_itself_only",
+        ),
+        pytest.param(
+            "FooBar",
+            ["foobar", "and", "other", "names"],
+            ["only", "other", "names", "foo_bar", "Foobar", "FooBar", "FOOBAR"],
+            id="mixed_case_name__matches_lowercase_only",
+        ),
+        pytest.param(
+            "typing-extensions",
+            ["typing_extensions", "and", "other", "names"],
+            ["typing-extensions", "typingextensions"],
+            id="name_with_hyphen__matches_name_with_underscore_only",
+        ),
+        pytest.param(
+            "Foo-Bar",
+            ["foo_bar", "and", "other", "names"],
+            ["foo-bar", "Foobar", "FooBar", "FOOBAR"],
+            id="weird_name__matches_normalized_name_only",
+        ),
+    ],
+)
+def test_package__identity_mapping(
+    package_name, matching_imports, non_matching_imports
+):
+    p = Package.identity_mapping(package_name)
+    assert p.package_name == package_name  # package name is not normalized
+    assert p.is_used(matching_imports)
+    assert not p.is_used(non_matching_imports)
+
+
+@pytest.mark.parametrize(
+    "package_name,import_names,matching_imports,non_matching_imports",
+    [
+        pytest.param(
+            "foobar",
+            ["foobar"],
+            ["foobar", "and", "other", "names"],
+            ["only", "other", "names", "foo_bar", "Foobar", "FooBar", "FOOBAR"],
+            id="simple_name_mapped_to_itself__matches_itself_only",
+        ),
+        pytest.param(
+            "FooBar",
+            ["FooBar"],
+            ["FooBar", "and", "other", "names"],
+            ["only", "other", "names", "foo_bar", "foobar", "FOOBAR"],
+            id="mixed_case_name_mapped_to_itself__matches_exact_spelling_only",
+        ),
+        pytest.param(
+            "typing-extensions",
+            ["typing_extensions"],
+            ["typing_extensions", "and", "other", "names"],
+            ["typing-extensions", "typingextensions"],
+            id="hyphen_name_mapped_to_underscore_name__matches_only_underscore_name",
+        ),
+        pytest.param(
+            "Foo-Bar",
+            ["blorp"],
+            ["blorp", "and", "other", "names"],
+            ["Foo-Bar", "foo-bar", "foobar", "FooBar", "FOOBAR", "Blorp", "BLORP"],
+            id="weird_name_mapped_diff_name__matches_diff_name_only",
+        ),
+        pytest.param(
+            "foobar",
+            ["foo", "bar", "baz"],
+            ["foo", "and", "other", "names"],
+            ["foobar", "and", "other", "names"],
+            id="name_with_three_imports__matches_first_import",
+        ),
+        pytest.param(
+            "foobar",
+            ["foo", "bar", "baz"],
+            ["bar", "and", "other", "names"],
+            ["foobar", "and", "other", "names"],
+            id="name_with_three_imports__matches_second_import",
+        ),
+        pytest.param(
+            "foobar",
+            ["foo", "bar", "baz"],
+            ["baz", "and", "other", "names"],
+            ["foobar", "and", "other", "names"],
+            id="name_with_three_imports__matches_third_import",
+        ),
+    ],
+)
+def test_package__local_env_mapping(
+    package_name, import_names, matching_imports, non_matching_imports
+):
+    p = Package(package_name)
+    p.add_import_names(*import_names, mapping=DependenciesMapping.LOCAL_ENV)
+    assert p.package_name == package_name  # package name is not normalized
+    assert p.is_used(matching_imports)
+    assert not p.is_used(non_matching_imports)
+
+
+def test_package__both_mappings():
+    p = Package.identity_mapping("FooBar")
+    import_names = ["foo", "bar", "baz"]
+    p.add_import_names(*import_names, mapping=DependenciesMapping.LOCAL_ENV)
+    assert p.package_name == "FooBar"  # package name is not normalized
+    assert p.is_used(["foobar"])  # but identity-mapped import name _is_.
+    assert p.is_used(["foo"])
+    assert p.is_used(["bar"])
+    assert p.is_used(["baz"])
+    assert not p.is_used(["fooba"])
+    assert not p.is_used(["foobarbaz"])
+    assert p.mappings == {
+        DependenciesMapping.IDENTITY: {"foobar"},
+        DependenciesMapping.LOCAL_ENV: {"foo", "bar", "baz"},
+    }
+    assert p.import_names == {"foobar", "foo", "bar", "baz"}
