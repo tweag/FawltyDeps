@@ -1,0 +1,22 @@
+[project]
+# General information about a simplified project: Its name, why we test it,
+# its relation to real world projects
+name = "file__requirements"
+description = '''
+  A project with:
+  - a single python file containing the source code
+  - requirements.txt with listed dependencies. 
+  - a notebook that is in GitHub lfs and contains only metadata
+  Identity mapping between import and dependencies is sufficient.
+'''
+
+[analysis_result]
+# Names of imports found in the code which 
+# do not have a matching dependency declared.
+# What we expect the analysis to return.
+undeclared_deps = []
+
+# Names of declared dependencies which were not used in any `import` 
+# statement within the code.
+# What we expect the analysis to return.
+unused_deps = ["scipy"]
