@@ -158,9 +158,9 @@ class Experiment(NamedTuple):
         the hash and create the venv.
         """
         dummy_script = self.venv_script(Path("/dev/null"))
-        script_and_py_version = "".join(dummy_script) + str(sys.version_info)
-        dummy_script_bytes = script_and_py_version.encode()
-        return hashlib.sha256(dummy_script_bytes).hexdigest()
+        py_version = f"{sys.version_info.major},{sys.version_info.major}"
+        script_and_version_bytes = ("".join(dummy_script) + py_version).encode()
+        return hashlib.sha256(script_and_version_bytes).hexdigest()
 
     def get_venv_dir(self, cache: pytest.Cache) -> Optional[Path]:
         """
