@@ -189,7 +189,17 @@ class Settings(BaseSettings):  # type: ignore
         ultimately - from the hardcoded defaults above) must NOT appear in
         these keyword args (cf. use of argparse.SUPPRESS above).
         """
+
         args_dict = cmdline_args.__dict__
+
+        base_path = getattr(cmdline_args, "basepath", None)
+        if base_path is not None:
+            code_path = args_dict.setdefault("code", base_path)
+            deps_path = args_dict.setdefault("deps", base_path)
+            paths = [base_path, code_path, deps_path]
+            if len(set(paths)) == len(paths):
+                msg = f"Each path option has a different value: {paths}"
+                raise argparse.ArgumentError(argument=None, message=msg)
 
         # Use subset of args_dict that directly correspond to fields in Settings
         ret = {arg: value for arg, value in args_dict.items() if arg in cls.__fields__}
@@ -289,6 +299,13 @@ def populate_parser_options(parser: argparse._ActionsContainer) -> None:
     from Settings to come through when we create the Settings object in
     .create() below.
     """
+    parser.add_argument(
+        "basepath",
+        type=lambda p: None if p == argparse.SUPPRESS else Path(p),
+        nargs="?",
+        help="(Optional) directory in which to search for code (imports) "
+        "and/or dependency declarations",
+    )
     parser.add_argument(
         "--code",
         type=parse_path_or_stdin,

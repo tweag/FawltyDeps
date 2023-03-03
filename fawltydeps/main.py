@@ -10,6 +10,7 @@ minimal computation involved in setting the install_requires and extras_require
 arguments.
 """
 
+import argparse
 import json
 import logging
 import sys
@@ -160,8 +161,8 @@ class Analysis:
                 print(f"- {unused.render(details)}", file=out)
 
 
-def main() -> int:
-    """Command-line entry point."""
+def build_parser() -> argparse.ArgumentParser:
+    """Create the CLI parser."""
     parser, option_group = setup_cmdline_parser(description=__doc__)
     option_group.add_argument(
         "-V",
@@ -182,7 +183,12 @@ def main() -> int:
         default=False,
         help="Print a TOML config section with the current settings, and exit",
     )
+    return parser
 
+
+def main() -> int:
+    """Command-line entry point."""
+    parser = build_parser()
     args = parser.parse_args()
     settings = Settings.config(config_file=args.config_file).create(args)
 
