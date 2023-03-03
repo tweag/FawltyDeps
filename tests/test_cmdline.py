@@ -555,8 +555,7 @@ def test_check_json__simple_project__can_report_both_undeclared_and_unused(
         "resolved_deps": {
             "pandas": {
                 "package_name": "pandas",
-                "import_names": ["pandas"],
-                "mappings": ["identity"],
+                "mappings": {"identity": ["pandas"]},
             }
         },
         "undeclared_deps": [

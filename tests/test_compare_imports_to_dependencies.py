@@ -30,7 +30,7 @@ def resolved_factory(*deps: str) -> Dict[str, Package]:
             return DependenciesMapping.IDENTITY
         return DependenciesMapping.LOCAL_ENV
 
-    return {dep: Package(dep, {dep}, {mapping_for_dep(dep)}) for dep in deps}
+    return {dep: Package(dep, {mapping_for_dep(dep): {dep}}) for dep in deps}
 
 
 def undeclared_factory(*deps: str) -> List[UndeclaredDependency]:
