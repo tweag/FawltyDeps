@@ -15,7 +15,7 @@ from fawltydeps.types import (
     PathOrSpecial,
     UnparseablePathException,
 )
-from fawltydeps.utils import dirs_between, walk_dir
+from fawltydeps.utils import dirs_between, is_lfs_marker, walk_dir
 
 logger = logging.getLogger(__name__)
 
@@ -108,7 +108,14 @@ def parse_notebook_file(
         try:
             notebook_content = json.load(notebook, strict=False)
         except json.decoder.JSONDecodeError as exc:
-            logger.error(f"Could not parse code from {path}: {exc}")
+            print(notebook.read())
+            problem_hint = (
+                """This file looks as if it is stored on LFS and not downloaded.
+                   Please download the file and rerun FawltyDeps."""
+                if is_lfs_marker(notebook.readline().decode("utf-8"))
+                else ""
+            )
+            logger.error(f"Could not parse code from {path}: {exc}. {problem_hint}")
             return
 
     language_name = (

@@ -39,3 +39,9 @@ def hide_dataclass_fields(instance: object, *field_names: str) -> None:
         if name not in field_names
     }
     object.__setattr__(instance, "__dataclass_fields__", remaining_fields)
+
+
+def is_lfs_marker(line: str) -> bool:
+    """Check if a line is a lfs GitHub marker"""
+    print(line)
+    return line.lower().startswith("version https://git-lfs.github.com/")
