@@ -23,12 +23,9 @@ from typing import Dict, List, Optional, TextIO, no_type_check
 from pydantic.json import custom_pydantic_encoder  # pylint: disable=no-name-in-module
 
 from fawltydeps import extract_imports
-from fawltydeps.check import (
-    calculate_undeclared,
-    calculate_unused,
-    resolve_dependencies,
-)
+from fawltydeps.check import calculate_undeclared, calculate_unused
 from fawltydeps.extract_declared_dependencies import extract_declared_dependencies
+from fawltydeps.packages import Package, resolve_dependencies
 from fawltydeps.settings import (
     Action,
     OutputFormat,
@@ -38,7 +35,6 @@ from fawltydeps.settings import (
 )
 from fawltydeps.types import (
     DeclaredDependency,
-    Package,
     ParsedImport,
     UndeclaredDependency,
     UnparseablePathException,
