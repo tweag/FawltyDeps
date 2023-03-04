@@ -136,23 +136,3 @@ def calculate_unused(
         UnusedDependency(name, [dep.source for dep in deps])
         for name, deps in groupby(unused, key=lambda d: d.name)
     ]
-
-
-def compare_imports_to_dependencies(
-    imports: List[ParsedImport],
-    dependencies: List[DeclaredDependency],
-    settings: Settings,
-) -> Tuple[Dict[str, Package], List[UndeclaredDependency], List[UnusedDependency]]:
-    """Compares imports to dependencies.
-
-    Returns set of undeclared imports and set of unused dependencies.
-    For undeclared dependencies returns files and line numbers
-    where they were imported in the code.
-    """
-    # TODO consider empty list of dependency to import
-    packages = resolve_dependencies(dep.name for dep in dependencies)
-    return (
-        packages,
-        calculate_undeclared(imports, packages, settings),
-        calculate_unused(imports, dependencies, packages, settings),
-    )
