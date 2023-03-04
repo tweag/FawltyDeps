@@ -2,10 +2,9 @@
 
 import sys
 from dataclasses import asdict, dataclass, field, replace
-from enum import Enum
 from functools import total_ordering
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Set, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from fawltydeps.utils import hide_dataclass_fields
 
@@ -122,83 +121,6 @@ class DeclaredDependency:
 
     name: str
     source: Location
-
-
-class DependenciesMapping(str, Enum):
-    """Types of dependency and imports mapping"""
-
-    IDENTITY = "identity"
-    LOCAL_ENV = "local_env"
-
-
-@dataclass
-class Package:
-    """Encapsulate an installable Python package.
-
-    This encapsulates the mapping between a package name (i.e. something you can
-    pass to `pip install`) and the import names that it provides once it is
-    installed.
-    """
-
-    package_name: str
-    mappings: Dict[DependenciesMapping, Set[str]] = field(default_factory=dict)
-    import_names: Set[str] = field(default_factory=set)
-
-    def __post_init__(self) -> None:
-        # The .import_names member is entirely redundant, as it can always be
-        # calculated from a union of self.mappings.values(). However, it is
-        # still used often enough (.is_used() is called once per declared
-        # dependency) that it makes sense to pre-calculate it, and rather hide
-        # the redundancy from our JSON output
-        self.import_names = {name for names in self.mappings.values() for name in names}
-        hide_dataclass_fields(self, "import_names")
-
-    @staticmethod
-    def normalize_name(package_name: str) -> str:
-        """Perform standard normalization of package names.
-
-        Verbatim package names are not always appropriate to use in various
-        contexts: For example, a package can be installed using one spelling
-        (e.g. typing-extensions), but once installed, it is presented in the
-        context of the local environment with a slightly different spelling
-        (e.g. typing_extension).
-        """
-        return package_name.lower().replace("-", "_")
-
-    def add_import_names(
-        self, *import_names: str, mapping: DependenciesMapping
-    ) -> None:
-        """Add import names provided by this package.
-
-        Import names must be associated with a DependenciesMapping enum value,
-        as keeping track of this is extremely helpful when debugging.
-        """
-        self.mappings.setdefault(mapping, set()).update(import_names)
-        self.import_names.update(import_names)
-
-    def add_identity_import(self) -> None:
-        """Add identity mapping to this package.
-
-        This builds on an assumption that a package 'foo' installed with e.g.
-        `pip install foo`, will also provide an import name 'foo'. This
-        assumption does not always hold, but sometimes we don't have much else
-        to go on...
-        """
-        self.add_import_names(
-            self.normalize_name(self.package_name),
-            mapping=DependenciesMapping.IDENTITY,
-        )
-
-    @classmethod
-    def identity_mapping(cls, package_name: str) -> "Package":
-        """Factory for conveniently creating identity-mapped package object."""
-        ret = cls(package_name)
-        ret.add_identity_import()
-        return ret
-
-    def is_used(self, imported_names: Iterable[str]) -> bool:
-        """Return True iff this package is among the given import names."""
-        return bool(self.import_names.intersection(imported_names))
 
 
 @dataclass
