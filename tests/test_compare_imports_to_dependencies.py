@@ -4,7 +4,11 @@ from typing import Dict, List
 
 import pytest
 
-from fawltydeps.check import LocalPackageLookup, compare_imports_to_dependencies
+from fawltydeps.check import (
+    LocalPackageLookup,
+    compare_imports_to_dependencies,
+    resolve_dependencies,
+)
 from fawltydeps.settings import Settings
 from fawltydeps.types import (
     DeclaredDependency,
@@ -17,6 +21,13 @@ from fawltydeps.types import (
 )
 
 from .utils import deps_factory
+
+# TODO: These tests are not fully isolated, i.e. they do not control the
+# virtualenv in which they run. For now, we assume that we are running in an
+# environment where at least these packages are available:
+# - setuptools (exposes multiple import names, including pkg_resources)
+# - pip (exposes a single import name: pip)
+# - isort (exposes no top_level.txt, but 'isort' import name can be inferred)
 
 local_env = LocalPackageLookup()
 
@@ -40,6 +51,42 @@ def undeclared_factory(*deps: str) -> List[UndeclaredDependency]:
 
 def unused_factory(*deps: str) -> List[UnusedDependency]:
     return [UnusedDependency(dep, [Location(Path("foo"))]) for dep in deps]
+
+
+@pytest.mark.parametrize(
+    "dep_names,expected",
+    [
+        pytest.param(
+            ["pandas", "numpy", "other"],
+            {
+                "pandas": Package("pandas", {DependenciesMapping.IDENTITY: {"pandas"}}),
+                "numpy": Package("numpy", {DependenciesMapping.IDENTITY: {"numpy"}}),
+                "other": Package("other", {DependenciesMapping.IDENTITY: {"other"}}),
+            },
+            id="uninstalled_deps__use_identity_mapping",
+        ),
+        pytest.param(
+            ["setuptools", "pip", "isort"],
+            {
+                "setuptools": Package(
+                    "setuptools",
+                    {
+                        DependenciesMapping.LOCAL_ENV: {
+                            "_distutils_hack",
+                            "pkg_resources",
+                            "setuptools",
+                        }
+                    },
+                ),
+                "pip": Package("pip", {DependenciesMapping.LOCAL_ENV: {"pip"}}),
+                "isort": Package("isort", {DependenciesMapping.LOCAL_ENV: {"isort"}}),
+            },
+            id="installed_deps__use_local_env_mapping",
+        ),
+    ],
+)
+def test_resolve_dependencies(dep_names, expected):
+    assert resolve_dependencies(dep_names) == expected
 
 
 @pytest.mark.parametrize(
