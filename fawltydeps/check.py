@@ -88,6 +88,56 @@ def resolve_dependencies(dep_names: Iterable[str]) -> Dict[str, Package]:
     return ret
 
 
+def calculate_undeclared(
+    imports: List[ParsedImport],
+    resolved_deps: Dict[str, Package],
+    settings: Settings,
+) -> List[UndeclaredDependency]:
+    """Calculate which imports are not covered by declared dependencies.
+
+    Return a list of UndeclaredDependency objects that represent the import
+    names in 'imports' that are not found in any of the packages in
+    'resolved_deps' (representing declared dependencies).
+    """
+    declared_names = {name for p in resolved_deps.values() for name in p.import_names}
+    undeclared = [
+        i
+        for i in imports
+        if i.name not in declared_names.union(settings.ignore_undeclared)
+    ]
+    undeclared.sort(key=lambda i: i.name)  # groupby requires pre-sorting
+    return [
+        UndeclaredDependency(name, [i.source for i in imports])
+        for name, imports in groupby(undeclared, key=lambda i: i.name)
+    ]
+
+
+def calculate_unused(
+    imports: List[ParsedImport],
+    declared_deps: List[DeclaredDependency],
+    resolved_deps: Dict[str, Package],
+    settings: Settings,
+) -> List[UnusedDependency]:
+    """Calculate which declared dependencies have no corresponding imports.
+
+    Return a list of UnusedDependency objects that represent the dependencies in
+    'declared_deps' for which none of the provided import names (found via
+    'resolved_deps') are present in the list of actual 'imports'.
+    """
+    imported_names = {i.name for i in imports}
+    unused = [
+        dep
+        for dep in declared_deps
+        if (dep.name not in settings.ignore_unused)
+        and not resolved_deps[dep.name].is_used(imported_names)
+    ]
+    unused.sort(key=lambda dep: dep.name)  # groupby requires pre-sorting
+    return [
+        UnusedDependency(name, [dep.source for dep in deps])
+        for name, deps in groupby(unused, key=lambda d: d.name)
+    ]
+
+
 def compare_imports_to_dependencies(
     imports: List[ParsedImport],
     dependencies: List[DeclaredDependency],
@@ -99,34 +149,10 @@ def compare_imports_to_dependencies(
     For undeclared dependencies returns files and line numbers
     where they were imported in the code.
     """
-
     # TODO consider empty list of dependency to import
     packages = resolve_dependencies(dep.name for dep in dependencies)
-
-    imported_names = {i.name for i in imports}
-    declared_names = {name for p in packages.values() for name in p.import_names}
-
-    undeclared = [
-        i
-        for i in imports
-        if i.name not in declared_names.union(settings.ignore_undeclared)
-    ]
-    undeclared.sort(key=lambda i: i.name)  # groupby requires pre-sorting
-    undeclared_grouped = [
-        UndeclaredDependency(name, [i.source for i in imports])
-        for name, imports in groupby(undeclared, key=lambda i: i.name)
-    ]
-
-    unused = [
-        dep
-        for dep in dependencies
-        if (dep.name not in settings.ignore_unused)
-        and not packages[dep.name].is_used(imported_names)
-    ]
-    unused.sort(key=lambda dep: dep.name)  # groupby requires pre-sorting
-    unused_grouped = [
-        UnusedDependency(name, [dep.source for dep in deps])
-        for name, deps in groupby(unused, key=lambda d: d.name)
-    ]
-
-    return packages, undeclared_grouped, unused_grouped
+    return (
+        packages,
+        calculate_undeclared(imports, packages, settings),
+        calculate_unused(imports, dependencies, packages, settings),
+    )
