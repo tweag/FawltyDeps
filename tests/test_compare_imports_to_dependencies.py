@@ -9,7 +9,6 @@ from fawltydeps.check import (
     LocalPackageLookup,
     calculate_undeclared,
     calculate_unused,
-    compare_imports_to_dependencies,
     resolve_dependencies,
 )
 from fawltydeps.settings import Settings
@@ -261,17 +260,3 @@ def test_calculate_unused(vector):
         vector.imports, vector.declared_deps, vector.expect_resolved_deps, settings
     )
     assert actual == vector.expect_unused_deps
-
-
-@pytest.mark.parametrize("vector", [pytest.param(v, id=v.id) for v in testdata])
-def test_compare_imports_to_dependencies(vector):
-    settings = Settings(
-        ignore_unused=vector.ignore_unused, ignore_undeclared=vector.ignore_undeclared
-    )
-    actual = compare_imports_to_dependencies(
-        vector.imports, vector.declared_deps, settings
-    )
-    actual_resolved_deps, actual_undeclared_deps, actual_unused_deps = actual
-    assert actual_resolved_deps == vector.expect_resolved_deps
-    assert actual_undeclared_deps == vector.expect_undeclared_deps
-    assert actual_unused_deps == vector.expect_unused_deps
