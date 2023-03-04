@@ -264,22 +264,21 @@ def populate_output_formats(parser: argparse._ActionsContainer) -> None:
     If not given, the .output_format member will remain unset, to allow the
     underlying default to come through.
     """
-    output_format = parser.add_mutually_exclusive_group()
-    output_format.add_argument(
+    parser.add_argument(
         "--summary",
         dest="output_format",
         action="store_const",
         const="human_summary",
         help="Generate human-readable summary report (default)",
     )
-    output_format.add_argument(
+    parser.add_argument(
         "--detailed",
         dest="output_format",
         action="store_const",
         const="human_detailed",
         help="Generate human-readable detailed report",
     )
-    output_format.add_argument(
+    parser.add_argument(
         "--json",
         dest="output_format",
         action="store_const",
