@@ -23,7 +23,11 @@ from typing import Dict, List, Optional, TextIO, no_type_check
 from pydantic.json import custom_pydantic_encoder  # pylint: disable=no-name-in-module
 
 from fawltydeps import extract_imports
-from fawltydeps.check import compare_imports_to_dependencies
+from fawltydeps.check import (
+    calculate_undeclared,
+    calculate_unused,
+    resolve_dependencies,
+)
 from fawltydeps.extract_declared_dependencies import extract_declared_dependencies
 from fawltydeps.settings import (
     Action,
@@ -91,7 +95,6 @@ class Analysis:
         Although the main caller is the command-line interface defined below,
         this can also be called from other Python contexts without having to go
         via the command-line.
-
         """
         ret = cls(settings)
         if ret.is_enabled(
@@ -111,14 +114,23 @@ class Analysis:
         if ret.is_enabled(Action.REPORT_UNDECLARED, Action.REPORT_UNUSED):
             assert ret.imports is not None  # convince Mypy that these cannot
             assert ret.declared_deps is not None  # be None at this time.
-            (
-                ret.resolved_deps,
-                ret.undeclared_deps,
-                ret.unused_deps,
-            ) = compare_imports_to_dependencies(
-                imports=ret.imports,
-                dependencies=ret.declared_deps,
-                settings=settings,
+            ret.resolved_deps = resolve_dependencies(
+                dep.name for dep in ret.declared_deps
+            )
+
+        if ret.is_enabled(Action.REPORT_UNDECLARED):
+            assert ret.imports is not None  # convince Mypy that these cannot
+            assert ret.resolved_deps is not None  # be None at this time.
+            ret.undeclared_deps = calculate_undeclared(
+                ret.imports, ret.resolved_deps, settings
+            )
+
+        if ret.is_enabled(Action.REPORT_UNUSED):
+            assert ret.imports is not None  # convince Mypy that these cannot
+            assert ret.declared_deps is not None  # be None at this time.
+            assert ret.resolved_deps is not None
+            ret.unused_deps = calculate_unused(
+                ret.imports, ret.declared_deps, ret.resolved_deps, settings
             )
 
         return ret
