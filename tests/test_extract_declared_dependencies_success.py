@@ -84,6 +84,19 @@ def dependency_factory(data: List[str], path: str) -> List[DeclaredDependency]:
             ),
             id="__requirements_with_option__ignores_option",
         ),
+        pytest.param(
+            dedent(
+                """\
+                . # for running tests
+                click >=1.2
+                """
+            ),
+            dependency_factory(
+                ["click"],
+                "requirements.txt",
+            ),
+            id="__requirements_with_option__ignores_option_Issue200",
+        ),
     ],
 )
 def test_parse_requirements_contents(file_content, expected):
