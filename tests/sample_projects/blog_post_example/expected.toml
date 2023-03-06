@@ -1,0 +1,45 @@
+# This file is NOT part of the example project!
+# Rather, it is part of FawltyDeps' own test suite, and describes the expected
+# behavior of FawltyDeps when run inside this Python project.
+
+[project]
+# General information about a simplified project: Its name, why we test it,
+# its relation to real world projects
+name = "blog_post_example"
+description = '''
+  This is the example being used in the blog post that announces FawltyDeps
+  on Tweag's blow: https://www.tweag.io/blog/
+  This example project is contrived to demonstrate what FawltyDeps can do, and
+  and what benefits it can bring to a Python project. The project includes:
+  - A couple of undeclared dependencies, one that should obviously have been
+    declared, and another that is conditionally depended upon.
+  - A couple of unused dependencies, one that is obviously extraneous, and
+    should be removed from the project, and another that points to a commonly
+    used tool, where the correct course of action is rather to tell FawltyDeps
+    to look the other way.
+'''
+
+[analysis_result]
+# 3rd-party imports found in the code:
+imports = [
+    "requests",
+    "tomli",
+]
+
+# Declared dependencies found in the project configuration:
+declared_deps = [
+    "tensorflow",  # requirements.txt
+    "black",  # dev-requirements.txt
+]
+
+# Import names in the code that do not have a matching dependency declared:
+undeclared_deps = [
+    "requests",
+    "tomli",
+]
+
+# Declared dependencies which were never `import`ed from the code:
+unused_deps = [
+    "black",
+    "tensorflow",
+]
