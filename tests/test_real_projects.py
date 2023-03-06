@@ -12,6 +12,7 @@ import shlex
 import subprocess
 import sys
 import tarfile
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Dict, Iterator, List, NamedTuple, Optional, Set, Tuple
 from urllib.parse import urlparse
@@ -162,7 +163,7 @@ class Experiment(NamedTuple):
         script_and_version_bytes = ("".join(dummy_script) + py_version).encode()
         return hashlib.sha256(script_and_version_bytes).hexdigest()
 
-    def get_venv_dir(self, cache: pytest.Cache) -> Optional[Path]:
+    def get_venv_dir(self, cache: pytest.Cache) -> Path:
         """
         Get this venv's dir and create it if necessary.
 
@@ -190,6 +191,26 @@ class Experiment(NamedTuple):
         assert Path(venv_dir, ".installed").is_file()
         cache.set(f"fawltydeps/{self.venv_hash()}", str(venv_dir))
         return venv_dir
+
+    @contextmanager
+    def venv_dir_w_fawltydeps(self, cache: pytest.Cache) -> Iterator[Path]:
+        """Provide this experiments's venv with FawltyDeps installed within.
+
+        Provide a context in which the FawltyDeps version located in the current
+        working directory is installed in editable mode. Uninstall FawltyDeps
+        upon exiting the context, so that the venv_dir is ready for the next
+        test (which may be run from a different current working directory).
+        """
+        venv_dir = self.get_venv_dir(cache)
+        # setup: install editable fawltydeps
+        subprocess.run([f"{venv_dir}/bin/pip", "install", "-e", "./"], check=True)
+        try:
+            yield venv_dir
+        finally:
+            # teardown: uninstall fawltydeps
+            subprocess.run(
+                [f"{venv_dir}/bin/pip", "uninstall", "-y", "fawltydeps"], check=True
+            )
 
 
 class ThirdPartyProject(NamedTuple):
@@ -334,16 +355,6 @@ class ThirdPartyProject(NamedTuple):
         return project_dir
 
 
-@pytest.fixture(scope="function", autouse=True)
-def setup_fawltydeps_in_venv(request, experiment):
-    venv_dir = experiment.get_venv_dir(request.config.cache)
-    # setup: install editable fawltydeps
-    subprocess.run([f"{venv_dir}/bin/pip", "install", "-e", "./"], check=True)
-    yield
-    # teardown: uninstall fawltydeps
-    subprocess.run([f"{venv_dir}/bin/pip", "uninstall", "-y", "fawltydeps"], check=True)
-
-
 @pytest.mark.parametrize(
     "project, experiment",
     [
@@ -353,9 +364,12 @@ def setup_fawltydeps_in_venv(request, experiment):
 )
 def test_real_project(request, project, experiment):
     project_dir = project.get_project_dir(request.config.cache)
-    venv_dir = experiment.get_venv_dir(request.config.cache)
-    analysis = run_fawltydeps_json(*experiment.args, venv_dir=venv_dir, cwd=project_dir)
+    with experiment.venv_dir_w_fawltydeps(request.config.cache) as venv_dir:
+        analysis = run_fawltydeps_json(
+            *experiment.args,
+            venv_dir=venv_dir,
+            cwd=project_dir,
+        )
 
     print(f"Checking experiment {experiment.name} for project under {project_dir}...")
-
     experiment.verify_analysis_json(analysis)
