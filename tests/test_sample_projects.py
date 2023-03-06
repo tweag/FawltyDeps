@@ -55,14 +55,30 @@ def test_integration_analysis_on_sample_projects__(project_path):
     analysis = Analysis.create(settings)
 
     with (project_path / "expected.toml").open("rb") as f:
-        expected = tomllib.load(f)
+        experiment = tomllib.load(f)
 
-    actual_unused = {u.name for u in analysis.unused_deps}
-    expect_unused = set(expected.get("analysis_result", {}).get("unused_deps", []))
-    assert actual_unused == expect_unused
+    print(experiment["project"].get("name"))
+    print(experiment["project"].get("description"))
+    expected = experiment.get("analysis_result", {})
 
+    if "imports" in expected:
+        print("Verifying 'imports'...")
+        actual_imports = {i.name for i in analysis.imports}
+        expect_imports = set(expected["imports"])
+        assert actual_imports == expect_imports
+
+    if "declared_deps" in expected:
+        print("Verifying 'declared_deps'...")
+        actual_declared = {d.name for d in analysis.declared_deps}
+        expect_declared = set(expected["declared_deps"])
+        assert actual_declared == expect_declared
+
+    print("Verifying 'undeclared_deps'...")
     actual_undeclared = {u.name for u in analysis.undeclared_deps}
-    expect_undeclared = set(
-        expected.get("analysis_result", {}).get("undeclared_deps", [])
-    )
+    expect_undeclared = set(expected.get("undeclared_deps", []))
     assert actual_undeclared == expect_undeclared
+
+    print("Verifying 'unused_deps'...")
+    actual_unused = {u.name for u in analysis.unused_deps}
+    expect_unused = set(expected.get("unused_deps", []))
+    assert actual_unused == expect_unused
