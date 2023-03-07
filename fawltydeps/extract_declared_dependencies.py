@@ -88,8 +88,7 @@ def parse_requirements_contents(
             try:
                 yield parse_one(" ".join(pre_opt_words))
             except ValueError as exc:
-                logger.debug(exc)
-                continue
+                logger.warning(f"Could not parse {source} line {line!r}: {exc}")
 
 
 def parse_setup_contents(text: str, source: Location) -> Iterator[DeclaredDependency]:
