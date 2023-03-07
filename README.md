@@ -75,7 +75,27 @@ one of these can be used at a time:
 
 When none of these are specified, the default action is `--check`.
 
-### Where to find Python code
+### Where to find code and dependency declarations
+
+By default, FawltyDeps will look for Python code (`*.py` and `*.ipynb`) and
+dependency declarations (see list of supported files below) under the current
+directory. If you want FawltyDeps to look elsewhere, you can pass a different
+directory (aka `basepath`) as a positional argument:
+
+```
+fawltydeps my_project/
+```
+
+If you want to separately declare the source of the code and the source of the
+dependencies, you may use the `--code` and `--deps` options documented in the
+next section. In short, giving the `basepath` positional argument is equivalent
+to passing both the `--code` and the `--deps` options, like this:
+
+```
+fawltydeps --code=my_project/ --deps=my_project/
+```
+
+#### Where to find Python code
 
 The `--code` option tells FawltyDeps where to find the Python code to parse for
 `import` statements. You can pass either of these:
@@ -86,9 +106,9 @@ The `--code` option tells FawltyDeps where to find the Python code to parse for
   from stdin.
 
 If no `--code` option is passed, FawltyDeps will find all Python code under the
-current directory, i.e. same as `--code=.`
+`basepath`, if given, or the current directory (i.e. same as `--code=.`).
 
-### Where to find declared dependencies
+#### Where to find declared dependencies
 
 The `--deps` option tells FawltyDeps where to look for your project's declared
 dependencies. A number of file formats are supported:
@@ -105,7 +125,7 @@ looking for the above files under that directory. or a file, in case you want to
 be explicit about where to find the declared dependencies.
 
 If no `--deps` option is passed, FawltyDeps will look for the above files under
-the current directory, i.e. same as `--deps=.`
+the `basepath`, if given, or the current directory (i.e. same as `--deps=.`).
 
 ### Ignoring irrelevant results
 
@@ -375,7 +395,7 @@ Having:
 run for each `libX`:
 
 ```
-fawltydeps --code libX/ --deps libX/
+fawltydeps libX
 ```
 
 ### Why FawltyDeps does not match `sklearn` with `scikit-learn`?
