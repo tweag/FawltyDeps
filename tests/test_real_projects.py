@@ -193,7 +193,7 @@ class Experiment(NamedTuple):
         return venv_dir
 
     @contextmanager
-    def venv_dir_w_fawltydeps(self, cache: pytest.Cache) -> Iterator[Path]:
+    def venv_with_fawltydeps(self, cache: pytest.Cache) -> Iterator[Path]:
         """Provide this experiments's venv with FawltyDeps installed within.
 
         Provide a context in which the FawltyDeps version located in the current
@@ -364,7 +364,7 @@ class ThirdPartyProject(NamedTuple):
 )
 def test_real_project(request, project, experiment):
     project_dir = project.get_project_dir(request.config.cache)
-    with experiment.venv_dir_w_fawltydeps(request.config.cache) as venv_dir:
+    with experiment.venv_with_fawltydeps(request.config.cache) as venv_dir:
         analysis = run_fawltydeps_json(
             *experiment.args,
             venv_dir=venv_dir,
