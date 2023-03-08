@@ -48,15 +48,16 @@ def test_explicit_parse_strategy__mismatch_yields_appropriate_logging(
     tmp_path, caplog, parser_choice, deps_file_name, has_log
 ):
     """Logging message should be conditional on mismatch between strategy and filename."""
-    deps_path = mkfile(tmp_path, deps_file_name)
+    deps_paths = [mkfile(tmp_path, deps_file_name)]
     caplog.set_level(logging.WARNING)
     list(
-        extract_declared_dependencies(deps_path, parser_choice)
+        extract_declared_dependencies(deps_paths, parser_choice)
     )  # Execute here just for effect (log).
     if has_log:
-        assert (
-            f"Manually applying parser '{parser_choice}' to dependencies: {deps_path}"
-        ) in caplog.text
+        for path in deps_paths:
+            assert (
+                f"Manually applying parser '{parser_choice}' to dependencies: {path}"
+            ) in caplog.text
     else:
         assert caplog.text == ""
 
@@ -81,9 +82,9 @@ def test_filepath_inference(
     exp_deps,
 ):
     """Parser choice finalization function can choose based on deps filename."""
-    deps_path = tmp_path / deps_file_name
-    assert deps_path.is_file()  # precondition
-    obs_deps = collect_dep_names(extract_declared_dependencies(deps_path))
+    deps_paths = [tmp_path / deps_file_name]
+    assert all(dp.is_file() for dp in deps_paths)  # precondition
+    obs_deps = collect_dep_names(extract_declared_dependencies(deps_paths))
     assert_unordered_equivalence(obs_deps, exp_deps)
 
 
@@ -110,7 +111,7 @@ def test_extract_from_directory_applies_manual_parser_choice_iff_choice_applies(
     exp_deps,
 ):
     obs_deps = collect_dep_names(
-        extract_declared_dependencies(tmp_path, parser_choice=parser_choice)
+        extract_declared_dependencies([tmp_path], parser_choice=parser_choice)
     )
     assert_unordered_equivalence(obs_deps, exp_deps)
 
@@ -158,7 +159,7 @@ def test_extract_from_file_applies_manual_choice_even_if_mismatched(
     shutil.move(old_path, new_path)
     caplog.set_level(logging.WARNING)
     obs_deps = collect_dep_names(
-        extract_declared_dependencies(new_path, parser_choice=parser_choice)
+        extract_declared_dependencies([new_path], parser_choice=parser_choice)
     )
     assert_unordered_equivalence(obs_deps, exp_deps)
     exp_msg = f"Manually applying parser '{parser_choice}' to dependencies: {new_path}"

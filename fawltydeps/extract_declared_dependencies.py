@@ -8,7 +8,7 @@ import sys
 from functools import partial
 from itertools import takewhile
 from pathlib import Path
-from typing import Callable, Iterable, Iterator, NamedTuple, Optional, Tuple
+from typing import Callable, Iterable, Iterator, NamedTuple, Optional, Set, Tuple
 
 from pkg_resources import Requirement
 
@@ -350,7 +350,7 @@ PARSER_CHOICES = {
 
 
 def extract_declared_dependencies(
-    path: Path, parser_choice: Optional[ParserChoice] = None
+    paths: List[Path], parser_choice: Optional[ParserChoice] = None
 ) -> Iterator[DeclaredDependency]:
     """Extract dependencies (package names) from supported file types.
 
@@ -362,33 +362,49 @@ def extract_declared_dependencies(
     There is no guaranteed ordering on the generated dependencies.
     """
 
-    if path.is_file():
-        if parser_choice is not None:
-            parser = PARSER_CHOICES[parser_choice]
-            if not parser.applies_to_path(path):
-                logger.warning(
-                    f"Manually applying parser '{parser_choice}' to dependencies: {path}"
-                )
+    # print(paths)
+    for path in paths:
+        if path.is_file():
+            if parser_choice is not None:
+                parser = PARSER_CHOICES[parser_choice]
+                if not parser.applies_to_path(path):
+                    logger.warning(
+                        f"Manually applying parser '{parser_choice}' to dependencies: {path}"
+                    )
+            else:
+                choice_and_parser = first_applicable_parser(path)
+                if choice_and_parser is None:  # nothing found
+                    raise UnparseablePathException(
+                        ctx="Parsing given dependencies path isn't supported", path=path
+                    )
+                parser = choice_and_parser[1]
+            yield from parser.execute(path.read_text(), Location(path))
+        elif path.is_dir():
+            logger.debug("Extracting dependencies from files under %s", path)
+            for file in walk_dir(path):
+                choice_and_parser = first_applicable_parser(file)
+                if choice_and_parser is None:  # nothing found
+                    continue
+                if parser_choice is None or choice_and_parser[0] == parser_choice:
+                    logger.debug(f"Extracting dependencies: {file}")
+                    yield from choice_and_parser[1].execute(
+                        file.read_text(), Location(file)
+                    )
         else:
-            choice_and_parser = first_applicable_parser(path)
-            if choice_and_parser is None:  # nothing found
-                raise UnparseablePathException(
-                    ctx="Parsing given dependencies path isn't supported", path=path
-                )
-            parser = choice_and_parser[1]
-        yield from parser.execute(path.read_text(), Location(path))
-    elif path.is_dir():
-        logger.debug("Extracting dependencies from files under %s", path)
-        for file in walk_dir(path):
-            choice_and_parser = first_applicable_parser(file)
-            if choice_and_parser is None:  # nothing found
-                continue
-            if parser_choice is None or choice_and_parser[0] == parser_choice:
-                logger.debug(f"Extracting dependencies: {file}")
-                yield from choice_and_parser[1].execute(
-                    file.read_text(), Location(file)
-                )
-    else:
-        raise UnparseablePathException(
-            ctx="Dependencies declaration path is neither dir nor file", path=path
+            raise UnparseablePathException(
+                ctx="Dependencies declaration path is neither dir nor file", path=path
+            )
+
+
+def extract_declared_dependencies(
+    paths: Set[Path], parser_choice: Optional[ParserChoice] = None
+) -> Iterator[DeclaredDependency]:
+    """Extract dependencies (package names) from supported file types.
+
+    Pass a list of paths from which to discover and parse dependency declarations.
+    """
+
+    for path in paths:
+        yield from extract_declared_dependencies_from_path(
+            path, parser_choice=parser_choice
         )
