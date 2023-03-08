@@ -1,6 +1,5 @@
 [![PyPI Latest Release](https://img.shields.io/pypi/v/fawltydeps.svg)](https://pypi.org/project/fawltydeps/) [![Supported Python versions](https://img.shields.io/pypi/pyversions/fawltydeps.svg)](https://pypi.org/project/fawltydeps/) [![Licence](https://img.shields.io/pypi/l/fawltydeps.svg)](https://pypi.org/project/fawltydeps/)
 
-
 # FawltyDeps
 
 A dependency checker for Python.
@@ -92,7 +91,7 @@ next section. In short, giving the `basepath` positional argument is equivalent
 to passing both the `--code` and the `--deps` options, like this:
 
 ```
-fawltydeps --code=my_project/ --deps=my_project/
+fawltydeps --code my_project/ --deps my_project/
 ```
 
 #### Where to find Python code
@@ -120,12 +119,14 @@ dependencies. A number of file formats are supported:
   `extras_require` arguments)
 - `setup.cfg`
 
-The `--deps` option accepts either a directory, in which case FawltyDeps will go
-looking for the above files under that directory. or a file, in case you want to
+The `--deps` option accepts a space-separated list of files or directories.
+Each file will be parsed for declared dependencies; each directory will
+be searched, parsing all of the supported files (see the above list) found
+within. You would typically want to pass individual files, if you want to
 be explicit about where to find the declared dependencies.
 
 If no `--deps` option is passed, FawltyDeps will look for the above files under
-the `basepath`, if given, or the current directory (i.e. same as `--deps=.`).
+the `basepath`, if given, or the current directory (i.e. same as `--deps .`).
 
 ### Ignoring irrelevant results
 
