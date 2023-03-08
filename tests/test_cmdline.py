@@ -157,7 +157,7 @@ def test_list_imports_json__from_py_file__prints_imports_from_file(write_tmp_fil
         "settings": {
             "actions": ["list_imports"],
             "code": f"{tmp_path}/myfile.py",
-            "deps": ".",
+            "deps": ["."],
             "output_format": "json",
             "ignore_undeclared": [],
             "ignore_unused": [],
@@ -299,7 +299,7 @@ def test_list_deps_json__dir__prints_deps_from_requirements_txt(
         "settings": {
             "actions": ["list_deps"],
             "code": ".",
-            "deps": f"{tmp_path}",
+            "deps": [f"{tmp_path}"],
             "output_format": "json",
             "ignore_undeclared": [],
             "ignore_unused": [],
@@ -370,6 +370,20 @@ def test_list_deps__empty_dir__verbosely_logs_but_extracts_nothing(tmp_path):
         "--list-deps", f"--deps={tmp_path}", "--detailed", "-v"
     )
     assert output == ""
+    assert errors == ""
+    assert returncode == 0
+
+
+def test_list_deps__pick_multiple_listed_files__prints_all_dependencies(
+    project_with_setup_and_requirements,
+):
+    path_deps1 = project_with_setup_and_requirements / "requirements.txt"
+    path_deps2 = project_with_setup_and_requirements / "setup.py"
+    output, errors, returncode = run_fawltydeps(
+        "--list-deps", "--deps", f"{path_deps1}", f"{path_deps2}", "-v"
+    )
+    expect = ["annoy", "jieba", "click", "pandas"]
+    assert_unordered_equivalence(output.splitlines()[:-2], expect)
     assert errors == ""
     assert returncode == 0
 
@@ -498,7 +512,12 @@ def test_check__simple_project__summary_report_with_verbose_logging(
         " Assuming it can be imported as pandas",
     ]
     output, errors, returncode = run_fawltydeps(
-        "--check", "--summary", "--verbose", f"--code={tmp_path}", f"--deps={tmp_path}"
+        "--check",
+        "--summary",
+        "--verbose",
+        f"--code={tmp_path}",
+        "--deps",
+        f"{tmp_path}",
     )
     assert output.splitlines() == expect
     assert errors == "\n".join(expect_logs)
@@ -543,7 +562,7 @@ def test_check_json__simple_project__can_report_both_undeclared_and_unused(
         "settings": {
             "actions": ["check_undeclared", "check_unused"],
             "code": f"{tmp_path}",
-            "deps": f"{tmp_path}",
+            "deps": [f"{tmp_path}"],
             "output_format": "json",
             "ignore_undeclared": [],
             "ignore_unused": [],
@@ -612,7 +631,8 @@ def test_check_undeclared__simple_project__reports_only_undeclared(
         "--detailed",
         "-v",
         f"--code={tmp_path}",
-        f"--deps={tmp_path}",
+        "--deps",
+        f"{tmp_path}",
     )
     assert output.splitlines() == expect
     assert errors == "\n".join(expect_logs)
@@ -638,7 +658,12 @@ def test_check_unused__simple_project__reports_only_unused(
         " Assuming it can be imported as pandas",
     ]
     output, errors, returncode = run_fawltydeps(
-        "--check-unused", "--detailed", "-v", f"--code={tmp_path}", f"--deps={tmp_path}"
+        "--check-unused",
+        "--detailed",
+        "-v",
+        f"--code={tmp_path}",
+        "--deps",
+        f"{tmp_path}",
     )
     assert output.splitlines() == expect
     assert errors == "\n".join(expect_logs)
@@ -864,7 +889,7 @@ def test_cmdline_on_ignored_undeclared_option(
                 [tool.fawltydeps]
                 actions = ['list_imports']
                 # code = '.'
-                deps = 'foobar'
+                deps = ['foobar']
                 output_format = 'human_detailed'
                 # ignore_undeclared = []
                 # ignore_unused = []

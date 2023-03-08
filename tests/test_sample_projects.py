@@ -50,7 +50,7 @@ def test_integration_analysis_on_sample_projects__(project_path):
     settings = Settings(
         actions={Action.REPORT_UNDECLARED, Action.REPORT_UNUSED},
         code=project_path,
-        deps=project_path,
+        deps=[project_path],
     )
     analysis = Analysis.create(settings)
 

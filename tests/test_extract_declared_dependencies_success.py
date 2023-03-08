@@ -431,7 +431,9 @@ def test_extract_declared_dependencies__simple_project__returns_list(
     project_with_requirements,
 ):
     expect = ["pandas", "click", "pandas", "tensorflow"]
-    actual = collect_dep_names(extract_declared_dependencies(project_with_requirements))
+    actual = collect_dep_names(
+        extract_declared_dependencies([project_with_requirements])
+    )
     assert_unordered_equivalence(actual, expect)
 
 
@@ -449,7 +451,7 @@ def test_extract_declared_dependencies__project_with_requirements_and_setup__ret
         "tensorflow",
     ]
     actual = collect_dep_names(
-        extract_declared_dependencies(project_with_setup_and_requirements)
+        extract_declared_dependencies([project_with_setup_and_requirements])
     )
     assert_unordered_equivalence(actual, expect)
 
@@ -463,7 +465,7 @@ def test_extract_declared_dependencies__parse_only_requirements_from_subdir__ret
         "tensorflow",
     ]
     path = project_with_setup_and_requirements / "subdir/requirements.txt"
-    actual = collect_dep_names(extract_declared_dependencies(path))
+    actual = collect_dep_names(extract_declared_dependencies([path]))
     assert_unordered_equivalence(actual, expect)
 
 
@@ -488,7 +490,7 @@ def test_extract_declared_dependencies__project_with_pyproject_setup_and_require
         "pylint",
     ]
     actual = collect_dep_names(
-        extract_declared_dependencies(project_with_setup_pyproject_and_requirements)
+        extract_declared_dependencies([project_with_setup_pyproject_and_requirements])
     )
     assert_unordered_equivalence(actual, expect)
 
@@ -501,7 +503,7 @@ def test_extract_declared_dependencies__project_with_pyproject__returns_list(
         "pydantic",
         "pylint",
     ]
-    actual = collect_dep_names(extract_declared_dependencies(project_with_pyproject))
+    actual = collect_dep_names(extract_declared_dependencies([project_with_pyproject]))
     assert_unordered_equivalence(actual, expect)
 
 
@@ -512,7 +514,7 @@ def test_extract_declared_dependencies__project_with_setup_cfg__returns_list(
         "pandas",
         "django",
     ]
-    actual = collect_dep_names(extract_declared_dependencies(project_with_setup_cfg))
+    actual = collect_dep_names(extract_declared_dependencies([project_with_setup_cfg]))
     assert_unordered_equivalence(actual, expect)
 
 
@@ -541,7 +543,7 @@ def test_extract_declared_dependencies__project_with_setup_cfg_pyproject_require
     ]
     actual = collect_dep_names(
         extract_declared_dependencies(
-            project_with_setup_with_cfg_pyproject_and_requirements
+            [project_with_setup_with_cfg_pyproject_and_requirements]
         )
     )
     assert_unordered_equivalence(actual, expect)
@@ -585,5 +587,5 @@ def test_parse_requirements_per_req_options(tmp_path, deps_file_content, exp_dep
     # originally motivated by #114 (A dep can span multiple lines.)
     deps_path = tmp_path / "requirements.txt"
     deps_path.write_text(dedent(deps_file_content))
-    obs_deps = collect_dep_names(extract_declared_dependencies(deps_path))
+    obs_deps = collect_dep_names(extract_declared_dependencies([deps_path]))
     assert_unordered_equivalence(obs_deps, exp_deps)
