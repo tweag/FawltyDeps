@@ -398,15 +398,51 @@ run for each `libX`:
 fawltydeps libX
 ```
 
-### Why FawltyDeps does not match `sklearn` with `scikit-learn`?
+### Why should FawltyDeps be installed in the same Python environment as my project dependencies?
+
+The core logic of FawltyDeps needs to match `import` statements in your code
+with dependencies declared in your project configuration. This is straightforward
+for many packages: for example you `pip install requests` and then
+you can `import requests` in your code. However, this mapping from the name you
+install to the name you `import` is not always self-evident:
+
+- There are sometimes differences between the package name that you
+  declare as a dependency, and the `import` name it provides. For example, you
+  depend on `PyYAML`, but you `import yaml`.
+- A dependency can expose more than one import name. For example the
+  `setuptools` package exposes three `import`able packages: `_distutils_hack`,
+  `pkg_resources`, and `setuptools`. So when you `import pkg_resources`,
+  FawltyDeps need to figure out that this corresponds to the `setuptools`
+  dependency.
+
+To solve this, FawltyDeps looks at the packages installed in your current Python
+environment to correctly map dependencies (package names) into the imports that
+they provide.
+
+However, when a declared dependency is _not_ found in your current environment,
+FawltyDeps will fall back to an "identity mapping", that is, we will _assume_
+that when you depend on `some_package`, then that should correspond to an
+`import some_package` statement in your code.
+
+This fallback assumption is not always correct, but it allows FawltyDeps to
+produce results (albeit sometimes inaccurate) when the current Python
+environment does not contains all of your declared dependencies.
+
+This is an area of active development in FawltyDeps, and we are
+[working on better solutions](https://github.com/tweag/FawltyDeps/issues/195),
+to avoid having to fall back to this identity mapping.
+
+### Why does FawltyDeps fail to match `sklearn` with `scikit-learn`?
 
 There are cases, where FawltyDeps may not match imports and obviously related
 dependencies, like `sklearn` and `scikit-learn`. It will report `sklearn` as
 _undeclared_ and `scikit-learn` as an _unused_ dependency.
 
-This happens because FawltyDeps is not running in a Python environment (typically a virtualenv)
-where the `scikit-learn` package is installed, and as a result it cannot see
-that `scikit-learn` provides the `sklearn` import name.
+This is very much related to the above question. `scikit-learn` is an example
+of a package that exposes a different import name: `sklearn`.
+When `scikit-learn` is not installed in the current Python environment (the one
+that FawltyDeps uses to find these mappings), then FawltyDeps is unable to make
+the connection between these two names.
 
 To solve this problem, make sure that you install and run FawltyDeps
 in a development environment (e.g. virtualenv)
