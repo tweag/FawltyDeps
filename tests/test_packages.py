@@ -1,5 +1,7 @@
 """Verify behavior of package lookup and mapping to import names."""
 
+import logging
+
 import pytest
 
 from fawltydeps.packages import (
@@ -239,3 +241,22 @@ def test_resolve_dependencies__focus_on_mappings(dep_names, expected):
 def test_resolve_dependencies(vector):
     dep_names = [dd.name for dd in vector.declared_deps]
     assert resolve_dependencies(dep_names) == vector.expect_resolved_deps
+
+
+def test_resolve_dependencies__informs_once_when_id_mapping_is_used(caplog):
+    dep_names = ["some-foo", "pip", "some-foo"]
+    expect = {
+        "pip": Package("pip", {DependenciesMapping.LOCAL_ENV: {"pip"}}),
+        "some-foo": Package("some-foo", {DependenciesMapping.IDENTITY: {"some_foo"}}),
+    }
+    expect_log = [
+        (
+            "fawltydeps.packages",
+            logging.INFO,
+            "Could not find 'some-foo' in the current environment."
+            " Assuming it can be imported as some_foo",
+        )
+    ]
+    caplog.set_level(logging.INFO)
+    assert resolve_dependencies(dep_names) == expect
+    assert caplog.record_tuples == expect_log

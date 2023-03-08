@@ -154,5 +154,9 @@ def resolve_dependencies(dep_names: Iterable[str]) -> Dict[str, Package]:
             package = local_packages.lookup_package(name)
             if package is None:  # fall back to identity mapping
                 package = Package.identity_mapping(name)
+                logger.info(
+                    f"Could not find {name!r} in the current environment. Assuming "
+                    f"it can be imported as {', '.join(sorted(package.import_names))}"
+                )
             ret[name] = package
     return ret
