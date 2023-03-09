@@ -377,12 +377,12 @@ def test_list_deps__empty_dir__verbosely_logs_but_extracts_nothing(tmp_path):
 def test_list_deps__pick_multiple_listed_files__prints_all_dependencies(
     project_with_setup_and_requirements,
 ):
-    path_deps1 = project_with_setup_and_requirements / "requirements.txt"
+    path_deps1 = project_with_setup_and_requirements / "subdir/requirements.txt"
     path_deps2 = project_with_setup_and_requirements / "setup.py"
     output, errors, returncode = run_fawltydeps(
         "--list-deps", "--deps", f"{path_deps1}", f"{path_deps2}", "-v"
     )
-    expect = ["annoy", "jieba", "click", "pandas"]
+    expect = ["annoy", "jieba", "click", "pandas", "tensorflow"]
     assert_unordered_equivalence(output.splitlines()[:-2], expect)
     assert errors == ""
     assert returncode == 0
