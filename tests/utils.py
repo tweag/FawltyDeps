@@ -41,12 +41,13 @@ def deps_factory(*deps: str) -> List[DeclaredDependency]:
 
 
 def resolved_factory(*deps: str) -> Dict[str, Package]:
-    def mapping_for_dep(dep: str) -> DependenciesMapping:
-        if local_env.lookup_package(dep) is None:
-            return DependenciesMapping.IDENTITY
-        return DependenciesMapping.LOCAL_ENV
+    def resolve_one(dep: str) -> Package:
+        from_env = local_env.lookup_package(dep)
+        if from_env is None:
+            return Package(dep, {DependenciesMapping.IDENTITY: {dep}})
+        return from_env
 
-    return {dep: Package(dep, {mapping_for_dep(dep): {dep}}) for dep in deps}
+    return {dep: resolve_one(dep) for dep in deps}
 
 
 def undeclared_factory(*deps: str) -> List[UndeclaredDependency]:
