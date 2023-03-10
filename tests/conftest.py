@@ -1,7 +1,7 @@
 """Fixtures for tests"""
 from pathlib import Path
 from textwrap import dedent
-from typing import Dict, Union
+from typing import Dict, Iterable, Union
 
 import pytest
 
@@ -214,6 +214,21 @@ def project_with_multiple_python_files(write_tmp_files):
             "subdir2/python_file4.py": "import notimported",
         }
     )
+
+
+@pytest.fixture
+def project_with_code_and_requirements_txt(write_tmp_files):
+    def _inner(*, imports: Iterable[str], declares: Iterable[str]):
+        code = "".join(f"import {s}\n" for s in imports)
+        requirements = "".join(f"{s}\n" for s in declares)
+        return write_tmp_files(
+            {
+                "code.py": code,
+                "requirements.txt": requirements,
+            }
+        )
+
+    return _inner
 
 
 @pytest.fixture

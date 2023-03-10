@@ -1,8 +1,10 @@
 """ Utilities to share among test modules """
 
+import logging
+import subprocess
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, Iterable, List
+from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 from fawltydeps.packages import DependenciesMapping, LocalPackageLookup, Package
 from fawltydeps.types import (
@@ -12,6 +14,8 @@ from fawltydeps.types import (
     UndeclaredDependency,
     UnusedDependency,
 )
+
+logger = logging.getLogger(__name__)
 
 
 def assert_unordered_equivalence(actual: Iterable[Any], expected: Iterable[Any]):
@@ -56,6 +60,30 @@ def undeclared_factory(*deps: str) -> List[UndeclaredDependency]:
 
 def unused_factory(*deps: str) -> List[UnusedDependency]:
     return [UnusedDependency(dep, [Location(Path("foo"))]) for dep in deps]
+
+
+def run_fawltydeps(
+    *args: str,
+    config_file: Path = Path("/dev/null"),
+    to_stdin: Optional[str] = None,
+    cwd: Optional[Path] = None,
+) -> Tuple[str, str, int]:
+    proc = subprocess.run(
+        ["fawltydeps", f"--config-file={config_file}"] + list(args),
+        input=to_stdin,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        universal_newlines=True,
+        check=False,
+        cwd=cwd,
+    )
+    logger.debug(
+        f"Run `fawltydeps {' '.join(args)}` returned exit code {proc.returncode}\n"
+        f"    ---- STDOUT ----\n{proc.stdout}"
+        f"    ---- STDERR ----\n{proc.stderr}"
+        "    ----------------"
+    )
+    return proc.stdout.strip(), proc.stderr.strip(), proc.returncode
 
 
 @dataclass

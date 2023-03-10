@@ -7,11 +7,8 @@ core exhaustively (which is what the other unit tests are for.
 
 import json
 import logging
-import subprocess
 from itertools import dropwhile
-from pathlib import Path
 from textwrap import dedent
-from typing import Iterable, Optional, Tuple
 
 import pytest
 
@@ -19,48 +16,9 @@ from fawltydeps.main import UNUSED_DEPS_OUTPUT_PREFIX, VERBOSE_PROMPT, version
 from fawltydeps.types import Location, UnusedDependency
 
 from .test_extract_imports_simple import generate_notebook
-from .utils import assert_unordered_equivalence
+from .utils import assert_unordered_equivalence, run_fawltydeps
 
 logger = logging.getLogger(__name__)
-
-
-@pytest.fixture
-def project_with_code_and_requirements_txt(write_tmp_files):
-    def _inner(*, imports: Iterable[str], declares: Iterable[str]):
-        code = "".join(f"import {s}\n" for s in imports)
-        requirements = "".join(f"{s}\n" for s in declares)
-        return write_tmp_files(
-            {
-                "code.py": code,
-                "requirements.txt": requirements,
-            }
-        )
-
-    return _inner
-
-
-def run_fawltydeps(
-    *args: str,
-    config_file: Path = Path("/dev/null"),
-    to_stdin: Optional[str] = None,
-    cwd: Optional[Path] = None,
-) -> Tuple[str, str, int]:
-    proc = subprocess.run(
-        ["fawltydeps", f"--config-file={config_file}"] + list(args),
-        input=to_stdin,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        universal_newlines=True,
-        check=False,
-        cwd=cwd,
-    )
-    logger.debug(
-        f"Run `fawltydeps {' '.join(args)}` returned exit code {proc.returncode}\n"
-        f"    ---- STDOUT ----\n{proc.stdout}"
-        f"    ---- STDERR ----\n{proc.stderr}"
-        "    ----------------"
-    )
-    return proc.stdout.strip(), proc.stderr.strip(), proc.returncode
 
 
 def test_list_imports_detailed__from_dash__prints_imports_from_stdin():
