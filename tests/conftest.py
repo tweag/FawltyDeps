@@ -201,6 +201,22 @@ def project_with_setup_with_cfg_pyproject_and_requirements(write_tmp_files):
 
 
 @pytest.fixture
+def project_with_multiple_python_files(write_tmp_files):
+    return write_tmp_files(
+        {
+            "requirements.txt": """\
+                pandas
+                click
+                """,
+            "python_file.py": "import django",
+            "subdir/python_file2.py": "import pandas",
+            "subdir/python_file3.py": "import click",
+            "subdir2/python_file4.py": "import notimported",
+        }
+    )
+
+
+@pytest.fixture
 def setup_fawltydeps_config(write_tmp_files):
     """Write a custom tmp_path/pyproject.toml with a [tool.fawltydeps] section.
 
