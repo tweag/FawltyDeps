@@ -156,7 +156,7 @@ def test_list_imports_json__from_py_file__prints_imports_from_file(write_tmp_fil
     expect = {
         "settings": {
             "actions": ["list_imports"],
-            "code": f"{tmp_path}/myfile.py",
+            "code": [f"{tmp_path}/myfile.py"],
             "deps": ["."],
             "output_format": "json",
             "ignore_undeclared": [],
@@ -275,9 +275,13 @@ def test_list_imports__pick_multiple_files_dir__prints_all_imports(
     output, errors, returncode = run_fawltydeps(
         "--list-imports", "--code", f"{path_code1}", f"{path_code2}", "-v"
     )
+    expect_logs = [
+        f"INFO:fawltydeps.extract_imports:Parsing Python files under {path_code1}",
+        f"INFO:fawltydeps.extract_imports:Parsing Python file {path_code2}",
+    ]
     expect = ["django", "pandas", "click"]
     assert_unordered_equivalence(output.splitlines()[:-2], expect)
-    assert errors == ""
+    assert all(el in errors for el in expect_logs)
     assert returncode == 0
 
 
@@ -296,11 +300,14 @@ def test_list_imports__pick_multiple_files_dir_and_code__prints_all_imports(
     )
     path_code2 = project_with_multiple_python_files / "python_file.py"
     output, errors, returncode = run_fawltydeps(
-        "--list-imports", "--code", f"{code}", f"{path_code2}", "-v"
+        "--list-imports", "--code", "-", f"{path_code2}", "-v", to_stdin=code
     )
+    expect_logs = [
+        f"INFO:fawltydeps.extract_imports:Parsing Python file {path_code2}",
+    ]
     expect = ["django", "requests", "foo", "numpy"]
     assert_unordered_equivalence(output.splitlines()[:-2], expect)
-    assert errors == ""
+    assert all(el in errors for el in expect_logs)
     assert returncode == 0
 
 
@@ -335,7 +342,7 @@ def test_list_deps_json__dir__prints_deps_from_requirements_txt(
     expect = {
         "settings": {
             "actions": ["list_deps"],
-            "code": ".",
+            "code": ["."],
             "deps": [f"{tmp_path}"],
             "output_format": "json",
             "ignore_undeclared": [],
@@ -598,7 +605,7 @@ def test_check_json__simple_project__can_report_both_undeclared_and_unused(
     expect = {
         "settings": {
             "actions": ["check_undeclared", "check_unused"],
-            "code": f"{tmp_path}",
+            "code": [f"{tmp_path}"],
             "deps": [f"{tmp_path}"],
             "output_format": "json",
             "ignore_undeclared": [],
@@ -925,7 +932,7 @@ def test_cmdline_on_ignored_undeclared_option(
                 # (default values are commented)
                 [tool.fawltydeps]
                 actions = ['list_imports']
-                # code = '.'
+                # code = ['.']
                 deps = ['foobar']
                 output_format = 'human_detailed'
                 # ignore_undeclared = []
