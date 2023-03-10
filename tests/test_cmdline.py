@@ -267,6 +267,43 @@ def test_list_imports__from_empty_dir__logs_but_extracts_nothing(tmp_path):
     assert returncode == 0
 
 
+def test_list_imports__pick_multiple_files_dir__prints_all_imports(
+    project_with_multiple_python_files,
+):
+    path_code1 = project_with_multiple_python_files / "subdir"
+    path_code2 = project_with_multiple_python_files / "python_file.py"
+    output, errors, returncode = run_fawltydeps(
+        "--list-imports", "--code", f"{path_code1}", f"{path_code2}", "-v"
+    )
+    expect = ["django", "pandas", "click"]
+    assert_unordered_equivalence(output.splitlines()[:-2], expect)
+    assert errors == ""
+    assert returncode == 0
+
+
+def test_list_imports__pick_multiple_files_dir_and_code__prints_all_imports(
+    project_with_multiple_python_files,
+):
+    code = dedent(
+        """\
+        from pathlib import Path
+        import platform, sys
+
+        import requests
+        from foo import bar, baz
+        import numpy as np
+        """
+    )
+    path_code2 = project_with_multiple_python_files / "python_file.py"
+    output, errors, returncode = run_fawltydeps(
+        "--list-imports", "--code", f"{code}", f"{path_code2}", "-v"
+    )
+    expect = ["django", "requests", "foo", "numpy"]
+    assert_unordered_equivalence(output.splitlines()[:-2], expect)
+    assert errors == ""
+    assert returncode == 0
+
+
 def test_list_deps__dir__prints_deps_from_requirements_txt(
     project_with_code_and_requirements_txt,
 ):
