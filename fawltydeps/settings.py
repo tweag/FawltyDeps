@@ -118,7 +118,7 @@ class Settings(BaseSettings):  # type: ignore
     """
 
     actions: Set[Action] = {Action.REPORT_UNDECLARED, Action.REPORT_UNUSED}
-    code: PathOrSpecial = Path(".")
+    code: Set[PathOrSpecial] = {Path(".")}
     deps: Set[Path] = {Path(".")}
     output_format: OutputFormat = OutputFormat.HUMAN_SUMMARY
     ignore_undeclared: Set[str] = set()
@@ -194,9 +194,9 @@ class Settings(BaseSettings):  # type: ignore
 
         base_path = getattr(cmdline_args, "basepath", None)
         if base_path is not None:
-            code_path = args_dict.setdefault("code", base_path)
+            code_path = args_dict.setdefault("code", {base_path})
             deps_paths = args_dict.setdefault("deps", {base_path})
-            paths = [base_path, code_path, *deps_paths]
+            paths = [base_path, *code_path, *deps_paths]
             if len(set(paths)) == len(paths):
                 msg = f"Each path option has a different value: {paths}"
                 raise argparse.ArgumentError(argument=None, message=msg)
@@ -307,6 +307,7 @@ def populate_parser_options(parser: argparse._ActionsContainer) -> None:
     )
     parser.add_argument(
         "--code",
+        nargs="+",
         type=parse_path_or_stdin,
         help=(
             "Code to parse for import statements (file or directory, use '-' "

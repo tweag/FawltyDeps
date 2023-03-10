@@ -5,7 +5,7 @@ import json
 import logging
 import sys
 from pathlib import Path
-from typing import Iterable, Iterator, Optional, Tuple
+from typing import Iterable, Iterator, Optional, Set, Tuple
 
 import isort
 
@@ -203,3 +203,12 @@ def parse_any_arg(arg: PathOrSpecial) -> Iterator[ParsedImport]:
     raise UnparseablePathException(
         ctx="Code path to parse is neither dir nor file", path=arg
     )
+
+
+def parse_any_args(args: Set[PathOrSpecial]) -> Iterator[ParsedImport]:
+    """Interpret given set of command line arguments.
+
+    Pass a list of paths from which to discover and parse imports from the code.
+    """
+    for arg in args:
+        yield from parse_any_arg(arg)
