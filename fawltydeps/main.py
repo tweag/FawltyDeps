@@ -96,7 +96,7 @@ class Analysis:
         if ret.is_enabled(
             Action.LIST_IMPORTS, Action.REPORT_UNDECLARED, Action.REPORT_UNUSED
         ):
-            ret.imports = list(extract_imports.parse_any_arg(settings.code))
+            ret.imports = list(extract_imports.parse_any_args(settings.code))
 
         if ret.is_enabled(
             Action.LIST_DEPS, Action.REPORT_UNDECLARED, Action.REPORT_UNUSED
