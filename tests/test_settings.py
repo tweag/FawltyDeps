@@ -21,7 +21,7 @@ else:
 
 EXPECT_DEFAULTS = dict(
     actions={Action.REPORT_UNDECLARED, Action.REPORT_UNUSED},
-    code=Path("."),
+    code={Path(".")},
     deps={Path(".")},
     output_format=OutputFormat.HUMAN_SUMMARY,
     ignore_undeclared=set(),
@@ -77,17 +77,15 @@ def test_code_deps_and_base_unequal__raises_error(code_deps_base):
 def test_base_path_respects_path_already_filled_via_cli(basepath, filled, unfilled):
     filler = "This_is_a_filler"
     settings = run_build_settings([f"--{filled}={filler}", basepath])
-    # helper needed until we have symmetric multiple --code entries available
-    wrap_in_set = lambda name, value: {value} if name == "deps" else value
-    assert getattr(settings, filled) == wrap_in_set(filled, Path(filler))
-    assert getattr(settings, unfilled) == wrap_in_set(unfilled, Path(basepath))
+    assert getattr(settings, filled) == {Path(filler)}
+    assert getattr(settings, unfilled) == {Path(basepath)}
 
 
 @given(basepath=safe_string)
 def test_base_path_fills_code_and_deps_when_other_path_settings_are_absent(basepath):
     # Nothing else through CLI nor through config file
     settings = run_build_settings([basepath])
-    assert settings.code == Path(basepath)
+    assert settings.code == {Path(basepath)}
     assert settings.deps == {Path(basepath)}
 
 
@@ -97,9 +95,9 @@ def test_base_path_fills_code_and_deps_when_other_path_settings_are_absent(basep
         pytest.param(conf_sett, id=test_name)
         for conf_sett, test_name in [
             (None, "empty-config"),
-            (dict(code="test-code"), "only-code-set"),
+            (dict(code=["test-code"]), "only-code-set"),
             (dict(deps=["deps-test"]), "only-deps-set"),
-            (dict(code="code-test", deps=["test-deps"]), "code-and-deps-set"),
+            (dict(code=["code-test"], deps=["test-deps"]), "code-and-deps-set"),
         ]
     ],
 )
@@ -111,7 +109,7 @@ def test_base_path_overrides_config_file_code_and_deps(
     )
     basepath = Path("my-temp-basepath")
     settings = run_build_settings(cmdl=[str(basepath)], config_file=config_file)
-    assert settings.code == basepath
+    assert settings.code == {basepath}
     assert settings.deps == {basepath}
 
 
@@ -193,12 +191,12 @@ def test_base_path_overrides_config_file_code_and_deps(
             id="env_vars__overrides_some_defaults",
         ),
         pytest.param(
-            dict(code="my_code_dir", deps=["my_requirements.txt"]),
+            dict(code=["my_code_dir"], deps=["my_requirements.txt"]),
             dict(actions='["list_imports"]', ignore_unused='["foo", "bar"]'),
             {},
             make_settings_dict(
                 actions={Action.LIST_IMPORTS},
-                code=Path("my_code_dir"),
+                code={Path("my_code_dir")},
                 deps={Path("my_requirements.txt")},
                 ignore_unused={"foo", "bar"},
             ),
@@ -206,11 +204,11 @@ def test_base_path_overrides_config_file_code_and_deps(
         ),
         pytest.param(
             dict(code="my_code_dir", deps=["my_requirements.txt"]),
-            dict(actions='["list_imports"]', code="<stdin>"),
+            dict(actions='["list_imports"]', code='["<stdin>"]'),
             {},
             make_settings_dict(
                 actions={Action.LIST_IMPORTS},
-                code="<stdin>",
+                code={"<stdin>"},
                 deps={Path("my_requirements.txt")},
             ),
             id="config_file_and_env_vars__env_overrides_file",
@@ -248,10 +246,10 @@ def test_base_path_overrides_config_file_code_and_deps(
         pytest.param(
             dict(code="my_code_dir", deps=["my_requirements.txt"]),
             {},
-            dict(actions={Action.LIST_IMPORTS}, code="<stdin>"),
+            dict(actions={Action.LIST_IMPORTS}, code={"<stdin>"}),
             make_settings_dict(
                 actions={Action.LIST_IMPORTS},
-                code="<stdin>",
+                code={"<stdin>"},
                 deps={Path("my_requirements.txt")},
             ),
             id="cmd_line__overrides_config_file",
@@ -280,15 +278,17 @@ def test_base_path_overrides_config_file_code_and_deps(
         pytest.param(
             dict(
                 actions='["list_imports"]',
-                code="my_code_dir",
+                code=["my_code_dir"],
                 deps=["my_requirements.txt"],
                 verbosity=1,
             ),
-            dict(actions='["list_deps"]', code="<stdin>"),
-            dict(code="my_notebook.ipynb", verbose=2, quiet=4),
+            dict(actions='["list_deps"]', code='["<stdin>"]'),
+            dict(code=["my_notebook.ipynb"], verbose=2, quiet=4),
             make_settings_dict(
                 actions={Action.LIST_DEPS},  # env overrides config file
-                code=Path("my_notebook.ipynb"),  # cmd line overrides env + config file
+                code={
+                    Path("my_notebook.ipynb")
+                },  # cmd line overrides env + config file
                 deps={Path("my_requirements.txt")},  # from config file
                 verbosity=-2,  # calculated from cmd line, overrides config file
             ),
@@ -321,7 +321,7 @@ def test_settings(
 def test_settings__instance__is_immutable():
     settings = Settings.config(config_file=None)()
     with pytest.raises(TypeError):
-        settings.code = "<stdin>"
+        settings.code = ["<stdin>"]
     assert settings.dict() == make_settings_dict()
 
 
