@@ -97,7 +97,7 @@ fawltydeps --code my_project/ --deps my_project/
 #### Where to find Python code
 
 The `--code` option tells FawltyDeps where to find the Python code to parse for
-`import` statements. You can pass either of these:
+`import` statements. You can pass any number of these:
 
 - a single file: Either a Python file (`*.py`) or a Jupyter Notebook (`*.ipynb`)
 - a directory: FawltyDeps will find all Python files and Jupyter notebooks under this directory.
@@ -106,6 +106,11 @@ The `--code` option tells FawltyDeps where to find the Python code to parse for
 
 If no `--code` option is passed, FawltyDeps will find all Python code under the
 `basepath`, if given, or the current directory (i.e. same as `--code=.`).
+To include both code from stdin (`import foo`) and a file path (`file.py`), use:
+
+```
+echo "import foo" | fawltydeps --list-imports --code - file.py
+```
 
 #### Where to find declared dependencies
 
