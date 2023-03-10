@@ -309,6 +309,7 @@ def populate_parser_options(parser: argparse._ActionsContainer) -> None:
         "--code",
         nargs="+",
         type=parse_path_or_stdin,
+        metavar="PATH_OR_STDIN",
         help=(
             "Code to parse for import statements (file or directory, use '-' "
             "to read code from stdin; defaults to the current directory)"
@@ -318,7 +319,7 @@ def populate_parser_options(parser: argparse._ActionsContainer) -> None:
         "--deps",
         nargs="+",
         type=Path,
-        metavar="DEPS",
+        metavar="PATH",
         help=(
             "Where to find dependency declarations (file or directory, defaults"
             " to looking for supported files in the current directory)"
