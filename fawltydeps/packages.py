@@ -6,15 +6,14 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Dict, Iterable, Optional, Set
 
-from fawltydeps.utils import hide_dataclass_fields
+# importlib_metadata is gradually graduating into the importlib.metadata stdlib
+# module, however we rely on internal functions and recent (and upcoming)
+# bugfixes that will first be available in the stdlib version in Python v3.12
+# (or even later). For now, it is safer for us to _pin_ the 3rd-party dependency
+# and use that across all of our supported Python versions.
+from importlib_metadata import packages_distributions
 
-# importlib.metadata.packages_distributions() was introduced in v3.10, but it
-# is not able to infer import names for modules lacking a top_level.txt until
-# v3.11. Hence we prefer importlib_metadata in v3.10 as well as pre-v3.10.
-if sys.version_info >= (3, 11):
-    from importlib.metadata import packages_distributions
-else:
-    from importlib_metadata import packages_distributions
+from fawltydeps.utils import hide_dataclass_fields
 
 logger = logging.getLogger(__name__)
 
