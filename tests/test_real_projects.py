@@ -12,7 +12,6 @@ import shlex
 import subprocess
 import sys
 import tarfile
-from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Dict, Iterator, List, NamedTuple, Optional, Set, Tuple
 from urllib.parse import urlparse
@@ -53,11 +52,11 @@ def verify_requirements(venv_path: Path, requirements: List[str]) -> None:
 def run_fawltydeps_json(
     *args: str, venv_dir: Optional[Path], cwd: Optional[Path] = None
 ) -> JsonData:
-    cmd = ["fawltydeps"]
-    if venv_dir:
-        cmd = [f"{venv_dir}/bin/fawltydeps"]
+    argv = ["fawltydeps", "--config-file=/dev/null", "--json"]
+    if venv_dir is not None:
+        argv += [f"--venv={venv_dir}"]
     proc = subprocess.run(
-        cmd + ["--config-file=/dev/null"] + list(args) + ["--json"],
+        argv + list(args),
         stdout=subprocess.PIPE,
         check=False,
         cwd=cwd,
@@ -202,26 +201,6 @@ class Experiment(NamedTuple):
         assert Path(venv_dir, ".installed").is_file()
         cache.set(f"fawltydeps/{self.venv_hash()}", str(venv_dir))
         return venv_dir
-
-    @contextmanager
-    def venv_with_fawltydeps(self, cache: pytest.Cache) -> Iterator[Path]:
-        """Provide this experiments's venv with FawltyDeps installed within.
-
-        Provide a context in which the FawltyDeps version located in the current
-        working directory is installed in editable mode. Uninstall FawltyDeps
-        upon exiting the context, so that the venv_dir is ready for the next
-        test (which may be run from a different current working directory).
-        """
-        venv_dir = self.get_venv_dir(cache)
-        # setup: install editable fawltydeps
-        subprocess.run([f"{venv_dir}/bin/pip", "install", "-e", "./"], check=True)
-        try:
-            yield venv_dir
-        finally:
-            # teardown: uninstall fawltydeps
-            subprocess.run(
-                [f"{venv_dir}/bin/pip", "uninstall", "-y", "fawltydeps"], check=True
-            )
 
 
 class ThirdPartyProject(NamedTuple):
@@ -375,13 +354,13 @@ class ThirdPartyProject(NamedTuple):
 )
 def test_real_project(request, project, experiment):
     project_dir = project.get_project_dir(request.config.cache)
-    with experiment.venv_with_fawltydeps(request.config.cache) as venv_dir:
-        verify_requirements(venv_dir, experiment.requirements)
-        analysis = run_fawltydeps_json(
-            *experiment.args,
-            venv_dir=venv_dir,
-            cwd=project_dir,
-        )
+    venv_dir = experiment.get_venv_dir(request.config.cache)
+    verify_requirements(venv_dir, experiment.requirements)
+    analysis = run_fawltydeps_json(
+        *experiment.args,
+        venv_dir=venv_dir,
+        cwd=project_dir,
+    )
 
     print(f"Checking experiment {experiment.name} for project under {project_dir}...")
     experiment.verify_analysis_json(analysis)
