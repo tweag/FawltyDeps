@@ -121,6 +121,7 @@ def test_list_imports_json__from_py_file__prints_imports_from_file(write_tmp_fil
             "actions": ["list_imports"],
             "code": [f"{tmp_path}/myfile.py"],
             "deps": ["."],
+            "venv": None,
             "output_format": "json",
             "ignore_undeclared": [],
             "ignore_unused": [],
@@ -307,6 +308,7 @@ def test_list_deps_json__dir__prints_deps_from_requirements_txt(
             "actions": ["list_deps"],
             "code": ["."],
             "deps": [f"{tmp_path}"],
+            "venv": None,
             "output_format": "json",
             "ignore_undeclared": [],
             "ignore_unused": [],
@@ -570,6 +572,7 @@ def test_check_json__simple_project__can_report_both_undeclared_and_unused(
             "actions": ["check_undeclared", "check_unused"],
             "code": [f"{tmp_path}"],
             "deps": [f"{tmp_path}"],
+            "venv": None,
             "output_format": "json",
             "ignore_undeclared": [],
             "ignore_unused": [],
@@ -758,6 +761,25 @@ def test__quiet_check__writes_only_names_of_unused_and_undeclared(
     assert returncode == 3
 
 
+def test_check__simple_project_in_fake_venv__resolves_imports_vs_deps(
+    fake_venv, project_with_code_and_requirements_txt
+):
+    tmp_path = project_with_code_and_requirements_txt(
+        imports=["requests"],
+        declares=["pandas"],
+    )
+    # A venv where the "pandas" package provides a "requests" import name
+    # should satisfy our comparison
+    venv_dir = fake_venv({"pandas": {"requests"}})
+
+    output, errors, returncode = run_fawltydeps(
+        "--detailed", f"--code={tmp_path}", f"--deps={tmp_path}", f"--venv={venv_dir}"
+    )
+    assert output.splitlines() == [SUCCESS_MESSAGE]
+    assert errors == ""
+    assert returncode == 0
+
+
 @pytest.mark.parametrize(
     "args,imports,dependencies,expected",
     [
@@ -897,6 +919,7 @@ def test_cmdline_on_ignored_undeclared_option(
                 actions = ['list_imports']
                 # code = ['.']
                 deps = ['foobar']
+                # venv = None
                 output_format = 'human_detailed'
                 # ignore_undeclared = []
                 # ignore_unused = []

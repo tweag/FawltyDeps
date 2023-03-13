@@ -23,6 +23,7 @@ EXPECT_DEFAULTS = dict(
     actions={Action.REPORT_UNDECLARED, Action.REPORT_UNUSED},
     code={Path(".")},
     deps={Path(".")},
+    venv=None,
     output_format=OutputFormat.HUMAN_SUMMARY,
     ignore_undeclared=set(),
     ignore_unused=set(),
