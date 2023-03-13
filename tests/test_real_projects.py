@@ -19,8 +19,10 @@ from urllib.parse import urlparse
 from urllib.request import urlretrieve
 
 import pytest
+from pkg_resources import Requirement
 
-from fawltydeps.extract_declared_dependencies import TomlData
+from fawltydeps.packages import LocalPackageLookup
+from fawltydeps.types import TomlData
 
 if sys.version_info >= (3, 11):
     import tomllib  # pylint: disable=E1101
@@ -37,6 +39,15 @@ pytestmark = pytest.mark.integration
 # Directory with .toml files that define test cases for selected tarballs from
 # 3rd-party/real-world projects.
 REAL_PROJECTS_DIR = Path(__file__).with_name("real_projects")
+
+
+def verify_requirements(venv_path: Path, requirements: List[str]) -> None:
+    lpl = LocalPackageLookup(venv_path)
+    for req in requirements:
+        if "python_version" in req:  # we don't know how to parse these (yet)
+            continue  # skip checking this requirement
+        pkg_name = Requirement.parse(req).unsafe_name
+        assert lpl.lookup_package(pkg_name) is not None
 
 
 def run_fawltydeps_json(
@@ -365,6 +376,7 @@ class ThirdPartyProject(NamedTuple):
 def test_real_project(request, project, experiment):
     project_dir = project.get_project_dir(request.config.cache)
     with experiment.venv_with_fawltydeps(request.config.cache) as venv_dir:
+        verify_requirements(venv_dir, experiment.requirements)
         analysis = run_fawltydeps_json(
             *experiment.args,
             venv_dir=venv_dir,
