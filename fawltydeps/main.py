@@ -107,7 +107,8 @@ class Analysis:
             assert ret.imports is not None  # convince Mypy that these cannot
             assert ret.declared_deps is not None  # be None at this time.
             ret.resolved_deps = resolve_dependencies(
-                dep.name for dep in ret.declared_deps
+                (dep.name for dep in ret.declared_deps),
+                venv_path=settings.venv,
             )
 
         if ret.is_enabled(Action.REPORT_UNDECLARED):

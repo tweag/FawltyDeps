@@ -120,6 +120,7 @@ class Settings(BaseSettings):  # type: ignore
     actions: Set[Action] = {Action.REPORT_UNDECLARED, Action.REPORT_UNUSED}
     code: Set[PathOrSpecial] = {Path(".")}
     deps: Set[Path] = {Path(".")}
+    venv: Optional[Path] = None
     output_format: OutputFormat = OutputFormat.HUMAN_SUMMARY
     ignore_undeclared: Set[str] = set()
     ignore_unused: Set[str] = set()
@@ -323,6 +324,16 @@ def populate_parser_options(parser: argparse._ActionsContainer) -> None:
         help=(
             "Where to find dependency declarations (file or directory, defaults"
             " to looking for supported files in the current directory)"
+        ),
+    )
+    parser.add_argument(
+        "--venv",
+        type=Path,
+        metavar="VENV_DIR",
+        help=(
+            "Where to find a virtualenv that has the project dependencies"
+            " installed, defaults to the Python environment where FawltyDeps is"
+            " installed."
         ),
     )
     parser.add_argument(

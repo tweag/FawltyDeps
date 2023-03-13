@@ -81,7 +81,7 @@ def lint(session):
     session.run("pylint", "fawltydeps")
     session.run(
         "pylint",
-        "--disable=missing-function-docstring,invalid-name,redefined-outer-name",
+        "--disable=missing-function-docstring,invalid-name,redefined-outer-name,too-many-lines",
         "tests",
     )
 
