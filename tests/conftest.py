@@ -1,7 +1,10 @@
 """Fixtures for tests"""
+import sys
+import venv
 from pathlib import Path
+from tempfile import mkdtemp
 from textwrap import dedent
-from typing import Dict, Iterable, Union
+from typing import Dict, Iterable, Set, Union
 
 import pytest
 
@@ -19,6 +22,34 @@ def write_tmp_files(tmp_path: Path):
         return tmp_path
 
     return _inner
+
+
+@pytest.fixture
+def fake_venv(tmp_path):
+    def create_one_fake_venv(fake_packages: Dict[str, Set[str]]) -> Path:
+        venv_dir = Path(mkdtemp(prefix="fake_venv.", dir=tmp_path))
+        venv.create(venv_dir, with_pip=False)
+
+        # Create fake packages
+        major, minor = sys.version_info[:2]
+        site_dir = venv_dir / f"lib/python{major}.{minor}/site-packages"
+        assert site_dir.is_dir()
+        for package_name, import_names in fake_packages.items():
+            # Create just enough files under site_dir to fool importlib_metadata
+            # into believing these are genuine packages
+            dist_info_dir = site_dir / f"{package_name}-1.2.3.dist-info"
+            dist_info_dir.mkdir()
+            (dist_info_dir / "METADATA").write_text(
+                f"Name: {package_name}\nVersion: 1.2.3\n"
+            )
+            top_level = dist_info_dir / "top_level.txt"
+            top_level.write_text("".join(f"{name}\n" for name in sorted(import_names)))
+            for name in import_names:
+                (site_dir / f"{name}.py").touch()
+
+        return venv_dir
+
+    return create_one_fake_venv
 
 
 @pytest.fixture
