@@ -147,7 +147,10 @@ class LocalPackageLookup:
             # that map to zero import names.
             context = DistributionFinder.Context(path=paths)  # type: ignore
             for dist in MetadataPathFinder().find_distributions(context):  # type: ignore
-                imports = set(_top_level_declared(dist) or _top_level_inferred(dist))  # type: ignore
+                imports = set(
+                    _top_level_declared(dist)  # type: ignore
+                    or _top_level_inferred(dist)  # type: ignore
+                )
                 package = Package(dist.name, {DependenciesMapping.LOCAL_ENV: imports})
                 self._packages[Package.normalize_name(dist.name)] = package
 
