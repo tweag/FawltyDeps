@@ -17,7 +17,6 @@ from importlib_metadata import (
     MetadataPathFinder,
     _top_level_declared,
     _top_level_inferred,
-    packages_distributions,
 )
 
 from fawltydeps.utils import hide_dataclass_fields
@@ -153,28 +152,6 @@ class LocalPackageLookup:
                 )
                 package = Package(dist.name, {DependenciesMapping.LOCAL_ENV: imports})
                 self._packages[Package.normalize_name(dist.name)] = package
-
-            # Double-check against packages_distributions()
-            if self.venv_path is None:
-                verify: Dict[str, Package] = {}
-                for import_name, package_names in packages_distributions().items():
-                    for package_name in package_names:
-                        package = verify.setdefault(
-                            Package.normalize_name(package_name),
-                            Package(package_name),
-                        )
-                        package.add_import_names(
-                            import_name, mapping=DependenciesMapping.LOCAL_ENV
-                        )
-
-                # Note that packages_distributions() is not able to return packages
-                # that map to zero import names.
-                for name, package in self._packages.items():
-                    if name not in verify:
-                        assert not package.import_names  # No import names!
-                        verify[name] = package
-
-                assert self._packages == verify
 
         return self._packages
 
