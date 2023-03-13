@@ -4,6 +4,7 @@ import logging
 import sys
 from dataclasses import dataclass, field
 from enum import Enum
+from pathlib import Path
 from typing import Dict, Iterable, Optional, Set
 
 # importlib_metadata is gradually graduating into the importlib.metadata stdlib
@@ -11,7 +12,13 @@ from typing import Dict, Iterable, Optional, Set
 # bugfixes that will first be available in the stdlib version in Python v3.12
 # (or even later). For now, it is safer for us to _pin_ the 3rd-party dependency
 # and use that across all of our supported Python versions.
-from importlib_metadata import packages_distributions
+from importlib_metadata import (
+    DistributionFinder,
+    MetadataPathFinder,
+    _top_level_declared,
+    _top_level_inferred,
+    packages_distributions,
+)
 
 from fawltydeps.utils import hide_dataclass_fields
 
@@ -98,25 +105,75 @@ class Package:
 class LocalPackageLookup:
     """Lookup import names exposed by packages installed in the current venv."""
 
-    def __init__(self) -> None:
-        """Collect packages installed in the current python environment.
+    def __init__(self, venv_path: Optional[Path] = None) -> None:
+        """Lookup packages installed in the given virtualenv.
 
-        Use importlib.metadata to look up the mapping between packages and their
-        provided import names. This obviously depends on the Python environment
-        (e.g. virtualenv) that we're calling from.
+        Default to the current python environment if `venv_path` is not given
+        (or None).
+
+        Use importlib_metadata to look up the mapping between packages and their
+        provided import names.
         """
-        # We call packages_distributions() only _once here, and build a cache of
-        # Package objects from the information extracted.
-        self.packages: Dict[str, Package] = {}
-        for import_name, package_names in packages_distributions().items():
-            for package_name in package_names:
-                package = self.packages.setdefault(
-                    Package.normalize_name(package_name),
-                    Package(package_name),
-                )
-                package.add_import_names(
-                    import_name, mapping=DependenciesMapping.LOCAL_ENV
-                )
+        if venv_path is not None and not (venv_path / "pyvenv.cfg").is_file():
+            raise ValueError(f"Not a virtualenv: {venv_path}/pyvenv.cfg missing!")
+
+        self.venv_path = venv_path
+        # We enumerate packages for venv_path _once_ and cache the result here:
+        self._packages: Optional[Dict[str, Package]] = None
+
+    @property
+    def packages(self) -> Dict[str, Package]:
+        """Return mapping of package names to Package objects for this venv.
+
+        This enumerates the available packages in the given virtualenv (or the
+        current Python environment) _once_, and caches the result for the
+        remainder of this object's life.
+        """
+        if self._packages is None:  # need to build cache
+            if self.venv_path is None:
+                paths = sys.path
+            else:
+                # Construct faux sys.path for the given venv_path. This must
+                # handle whatever supported Python version is used by the venv
+                paths = [
+                    str(p) for p in self.venv_path.glob("lib/python?.*/site-packages")
+                ]
+
+            self._packages = {}
+            # We're reaching into the internals of importlib_metadata here,
+            # which Mypy is not overly fond of. Roughly what we're doing here
+            # is calling packages_distributions(), but on a different venv.
+            # Note that packages_distributions() is not able to return packages
+            # that map to zero import names.
+            context = DistributionFinder.Context(path=paths)  # type: ignore
+            for dist in MetadataPathFinder().find_distributions(context):  # type: ignore
+                imports = set(_top_level_declared(dist) or _top_level_inferred(dist))  # type: ignore
+                package = Package(dist.name, {DependenciesMapping.LOCAL_ENV: imports})
+                self._packages[Package.normalize_name(dist.name)] = package
+
+            # Double-check against packages_distributions()
+            if self.venv_path is None:
+                verify: Dict[str, Package] = {}
+                for import_name, package_names in packages_distributions().items():
+                    for package_name in package_names:
+                        package = verify.setdefault(
+                            Package.normalize_name(package_name),
+                            Package(package_name),
+                        )
+                        package.add_import_names(
+                            import_name, mapping=DependenciesMapping.LOCAL_ENV
+                        )
+
+                # Note that packages_distributions() is not able to return packages
+                # that map to zero import names.
+                for name, package in self._packages.items():
+                    if name not in verify:
+                        assert not package.import_names  # No import names!
+                        verify[name] = package
+
+                assert self._packages == verify
+
+        return self._packages
 
     def lookup_package(self, package_name: str) -> Optional[Package]:
         """Convert a package name to a locally available Package object.
