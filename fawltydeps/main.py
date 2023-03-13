@@ -20,6 +20,7 @@ from operator import attrgetter
 from pathlib import Path
 from typing import Dict, List, Optional, TextIO, no_type_check
 
+import importlib_metadata
 from pydantic.json import custom_pydantic_encoder  # pylint: disable=no-name-in-module
 
 from fawltydeps import extract_imports
@@ -40,12 +41,6 @@ from fawltydeps.types import (
     UnparseablePathException,
     UnusedDependency,
 )
-
-if sys.version_info >= (3, 8):
-    import importlib.metadata as importlib_metadata
-else:
-    import importlib_metadata
-
 
 logger = logging.getLogger(__name__)
 
