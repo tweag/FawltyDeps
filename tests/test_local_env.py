@@ -1,8 +1,12 @@
-"""Verify behavior of LocalPackageLookup looking at a given venv."""
-
+"""Verify behavior of package module looking at a given venv."""
 import venv
 
-from fawltydeps.packages import DependenciesMapping, LocalPackageLookup
+from fawltydeps.packages import (
+    DependenciesMapping,
+    LocalPackageLookup,
+    Package,
+    resolve_dependencies,
+)
 
 
 def test_local_env__empty_venv__has_no_packages(tmp_path):
@@ -45,3 +49,28 @@ def test_local_env__current_venv__contains_our_test_dependencies():
     ]
     for package_name in expect_package_names:
         assert package_name in lpl.packages
+
+
+def test_resolve_dependencies__in_empty_venv__reverts_to_id_mapping(tmp_path):
+    venv.create(tmp_path, with_pip=False)
+    actual = resolve_dependencies(["pip", "setuptools"], venv_path=tmp_path)
+    assert actual == {
+        "pip": Package.identity_mapping("pip"),
+        "setuptools": Package.identity_mapping("setuptools"),
+    }
+
+
+def test_resolve_dependencies__in_fake_venv__returns_local_and_id_deps(fake_venv):
+    venv_dir = fake_venv(
+        {
+            "pip": {"pip"},
+            "setuptools": {"setuptools", "pkg_resources"},
+            "empty_pkg": set(),
+        }
+    )
+    actual = resolve_dependencies(["PIP", "pandas", "empty-pkg"], venv_path=venv_dir)
+    assert actual == {
+        "PIP": Package("pip", {DependenciesMapping.LOCAL_ENV: {"pip"}}),
+        "pandas": Package.identity_mapping("pandas"),
+        "empty-pkg": Package("empty_pkg", {DependenciesMapping.LOCAL_ENV: set()}),
+    }
