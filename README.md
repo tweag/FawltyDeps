@@ -133,6 +133,46 @@ be explicit about where to find the declared dependencies.
 If no `--deps` option is passed, FawltyDeps will look for the above files under
 the `basepath`, if given, or the current directory (i.e. same as `--deps .`).
 
+### Resolving dependencies via your Python environment
+
+When FawltyDeps looks for undeclared and unused dependencies, it needs to match
+`import` statements in your code with corresponding package dependencies
+declared in your project configuration.
+
+To solve this, FawltyDeps looks at the packages installed in your _current
+Python environment_ and what import names each of them provide in order to
+correctly match your dependencies against your imports.
+
+The _current Python environment_ in this case is the environment in which
+FawltyDeps itself is installed. This works well when you, for example,
+`pip install fawltydeps` into the same virtualenv as your project dependencies.
+
+If you instead want FawltyDeps to look into a _different_ virtualenv for mapping
+dependencies to import names, you can use the `--venv` option, for example:
+
+```
+fawltydeps --code my_package/ --deps pyproject.toml --venv .venv/
+```
+
+This will tell FawltyDeps:
+
+- to look for `import` statements in the `my_package/` directory,
+- to parse dependencies from `pyprojects.toml`, and
+- to use the virtualenv at `.venv/` to map dependency names in `pyproject.toml`
+  into import names used in your code under `my_package/`
+
+When FawltyDeps is unable to find an installed package that corresponds to a
+declared dependency, FawltyDeps will fall back to an "identity mapping", where
+it _assumes_ that the dependency provides a single import of the same name,
+i.e. it will expect that when you depend on `some_package`, then that should
+correspond to `import some_package` statements in your code.
+
+This fallback assumption is not always correct, but it allows FawltyDeps to
+produce results (albeit sometimes inaccurate) when the current Python
+environment does not contain all of your declared dependencies. Please see
+FAQ below about [why FawltyDeps must run in the same Python environment as your
+project dependencies](#why-must-fawltydeps-run-in-the-same-python-environment-as-my-project-dependencies).
+
 ### Ignoring irrelevant results
 
 There may be `import` statements in your code that should not be considered an
@@ -410,10 +450,12 @@ run for each `libX`:
 fawltydeps libX
 ```
 
-### Why should FawltyDeps be installed in the same Python environment as my project dependencies?
+### Why must FawltyDeps run in the same Python environment as my project dependencies?
 
-The core logic of FawltyDeps needs to match `import` statements in your code
-with dependencies declared in your project configuration. This is straightforward
+As explained above in the section on [resolving dependencies via your Python
+environment](#resolving-dependencies-via-your-python-environment), the core
+logic of FawltyDeps needs to match `import` statements in your code with
+dependencies declared in your project configuration. This is straightforward
 for many packages: for example you `pip install requests` and then
 you can `import requests` in your code. However, this mapping from the name you
 install to the name you `import` is not always self-evident:
@@ -428,17 +470,13 @@ install to the name you `import` is not always self-evident:
   dependency.
 
 To solve this, FawltyDeps looks at the packages installed in your current Python
-environment to correctly map dependencies (package names) into the imports that
-they provide.
+environment (or the virtualenv given by the `--venv` option) to correctly map
+dependencies (package names) into the imports that they provide.
 
-However, when a declared dependency is _not_ found in your current environment,
-FawltyDeps will fall back to an "identity mapping", that is, we will _assume_
-that when you depend on `some_package`, then that should correspond to an
-`import some_package` statement in your code.
-
-This fallback assumption is not always correct, but it allows FawltyDeps to
-produce results (albeit sometimes inaccurate) when the current Python
-environment does not contains all of your declared dependencies.
+However, when an installed package is not found for a declared dependency, the
+_identity mapping_ that FawltyDeps falls back to will still do a good job for
+the majority of dependencies where the import name is indeed identical to the
+package name that you depend on.
 
 This is an area of active development in FawltyDeps, and we are
 [working on better solutions](https://github.com/tweag/FawltyDeps/issues/195),
@@ -456,6 +494,8 @@ When `scikit-learn` is not installed in the current Python environment (the one
 that FawltyDeps uses to find these mappings), then FawltyDeps is unable to make
 the connection between these two names.
 
-To solve this problem, make sure that you install and run FawltyDeps
-in a development environment (e.g. virtualenv)
-where your project's dependencies are also installed.
+To solve this problem, make sure that you either install and run FawltyDeps
+in a development environment (e.g. virtualenv) where your project's dependencies
+(including `scikit-learn`) are also installed. Alternatively, you can use the
+`--venv` option to point at a virtualenv where `scikit-learn` (and your other
+dependencies) are installed.
