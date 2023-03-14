@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "fawltydeps"
-version = "0.6.1"
-description = "Find undeclared 3rd-party dependencies in your Python project."
+version = "0.7.0"
+description = "Find undeclared and unused 3rd-party dependencies in your Python project."
 authors = [
     "Maria Knorps <maria.knorps@tweag.io>",
     "Nour El Mawass <nour.elmawass@tweag.io>",
