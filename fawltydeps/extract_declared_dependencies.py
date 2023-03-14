@@ -58,7 +58,7 @@ def parse_one_req(req_text: str, source: Location) -> DeclaredDependency:
     return DeclaredDependency(req_name, source)
 
 
-def parse_requirements_contents(path: Path) -> Iterator[DeclaredDependency]:
+def parse_requirements_txt(path: Path) -> Iterator[DeclaredDependency]:
     """Extract dependencies (packages names) from a requirements file.
 
     This is usually a requirements.txt file or any other file following the
@@ -92,7 +92,7 @@ def parse_requirements_contents(path: Path) -> Iterator[DeclaredDependency]:
                 logger.warning(f"Could not parse {source} line {line!r}: {exc}")
 
 
-def parse_setup_contents(path: Path) -> Iterator[DeclaredDependency]:
+def parse_setup_py(path: Path) -> Iterator[DeclaredDependency]:
     """Extract dependencies (package names) from setup.py.
 
     This file can contain arbitrary Python code, and simply executing it has
@@ -150,7 +150,7 @@ def parse_setup_contents(path: Path) -> Iterator[DeclaredDependency]:
             break
 
 
-def parse_setup_cfg_contents(path: Path) -> Iterator[DeclaredDependency]:
+def parse_setup_cfg(path: Path) -> Iterator[DeclaredDependency]:
     """Extract dependencies (package names) from setup.cfg.
 
     `ConfigParser` basic building blocks are "sections"
@@ -172,11 +172,11 @@ def parse_setup_cfg_contents(path: Path) -> Iterator[DeclaredDependency]:
         return
 
     def parse_value(value: str) -> Iterator[DeclaredDependency]:
-        # Ugly hack since parse_requirements_contents() accepts only a path:
+        # Ugly hack since parse_requirements_txt() accepts only a path:
         with NamedTemporaryFile(mode="wt") as tmp:
             tmp.write(value)
             tmp.flush()
-            for dep in parse_requirements_contents(Path(tmp.name)):
+            for dep in parse_requirements_txt(Path(tmp.name)):
                 yield replace(dep, source=source)
 
     def extract_section(section: str) -> Iterator[DeclaredDependency]:
@@ -293,7 +293,7 @@ def parse_pyproject_elements(
             )
 
 
-def parse_pyproject_contents(path: Path) -> Iterator[DeclaredDependency]:
+def parse_pyproject_toml(path: Path) -> Iterator[DeclaredDependency]:
     """Extract dependencies (package names) from pyproject.toml.
 
     There are multiple ways to declare dependencies inside a pyproject.toml.
@@ -338,18 +338,18 @@ def first_applicable_parser(
 
 PARSER_CHOICES = {
     ParserChoice.PYPROJECT_TOML: ParsingStrategy(
-        lambda path: path.name == "pyproject.toml", parse_pyproject_contents
+        lambda path: path.name == "pyproject.toml", parse_pyproject_toml
     ),
     ParserChoice.REQUIREMENTS_TXT: ParsingStrategy(
         lambda path: re.compile(r".*\brequirements\b.*\.(txt|in)").match(path.name)
         is not None,
-        parse_requirements_contents,
+        parse_requirements_txt,
     ),
     ParserChoice.SETUP_CFG: ParsingStrategy(
-        lambda path: path.name == "setup.cfg", parse_setup_cfg_contents
+        lambda path: path.name == "setup.cfg", parse_setup_cfg
     ),
     ParserChoice.SETUP_PY: ParsingStrategy(
-        lambda path: path.name == "setup.py", parse_setup_contents
+        lambda path: path.name == "setup.py", parse_setup_py
     ),
 }
 

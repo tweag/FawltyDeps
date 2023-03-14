@@ -3,7 +3,7 @@ import logging
 
 import pytest
 
-from fawltydeps.extract_declared_dependencies import parse_pyproject_contents
+from fawltydeps.extract_declared_dependencies import parse_pyproject_toml
 from fawltydeps.types import DeclaredDependency, Location
 
 
@@ -158,13 +158,13 @@ from fawltydeps.types import DeclaredDependency, Location
         ),
     ],
 )
-def test_parse_pyproject_content__pep621_or_poetry_dependencies__yields_dependencies(
+def test_parse_pyproject_toml__pep621_or_poetry_dependencies__yields_dependencies(
     write_tmp_files, pyproject_toml, expected_deps
 ):
     tmp_path = write_tmp_files({"pyproject.toml": pyproject_toml})
     path = tmp_path / "pyproject.toml"
 
-    result = list(parse_pyproject_contents(path))
+    result = list(parse_pyproject_toml(path))
     expected = [DeclaredDependency(dep, Location(path)) for dep in expected_deps]
     assert result == expected
 
@@ -270,7 +270,7 @@ def test_parse_pyproject_content__malformatted_poetry_dependencies__yields_no_de
     path = tmp_path / "pyproject.toml"
 
     caplog.set_level(logging.ERROR)
-    result = list(parse_pyproject_contents(path))
+    result = list(parse_pyproject_toml(path))
     assert result == expected
     for field_type in field_types:
         assert (
@@ -308,14 +308,14 @@ def test_parse_pyproject_content__malformatted_poetry_dependencies__yields_no_de
         ),
     ],
 )
-def test_parse_pyproject_contents__missing_dependencies__logs_debug_message(
+def test_parse_pyproject_toml__missing_dependencies__logs_debug_message(
     write_tmp_files, caplog, tmp_path, pyproject_toml, expected, expected_logs
 ):
     tmp_path = write_tmp_files({"pyproject.toml": pyproject_toml})
     path = tmp_path / "pyproject.toml"
 
     caplog.set_level(logging.DEBUG)
-    result = list(parse_pyproject_contents(path))
+    result = list(parse_pyproject_toml(path))
     assert expected == result
     for metadata_standard, field_type in expected_logs:
         assert (

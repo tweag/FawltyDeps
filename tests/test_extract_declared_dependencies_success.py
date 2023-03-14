@@ -7,9 +7,9 @@ import pytest
 
 from fawltydeps.extract_declared_dependencies import (
     extract_declared_dependencies,
-    parse_requirements_contents,
-    parse_setup_cfg_contents,
-    parse_setup_contents,
+    parse_requirements_txt,
+    parse_setup_cfg,
+    parse_setup_py,
 )
 from fawltydeps.types import DeclaredDependency, Location
 
@@ -73,12 +73,12 @@ def dependency_factory(data: List[str], path: str) -> List[DeclaredDependency]:
         ),
     ],
 )
-def test_parse_requirements_contents(write_tmp_files, file_content, expect_deps):
+def test_parse_requirements_txt(write_tmp_files, file_content, expect_deps):
     tmp_path = write_tmp_files({"requirements.txt": file_content})
     path = tmp_path / "requirements.txt"
 
     expected = dependency_factory(expect_deps, path)
-    result = list(parse_requirements_contents(path))
+    result = list(parse_requirements_txt(path))
     assert_unordered_equivalence(result, expected)
 
 
@@ -278,12 +278,12 @@ def test_parse_requirements_contents(write_tmp_files, file_content, expect_deps)
         ),
     ],
 )
-def test_parse_setup_contents(write_tmp_files, file_content, expect_deps):
+def test_parse_setup_py(write_tmp_files, file_content, expect_deps):
     tmp_path = write_tmp_files({"setup.py": file_content})
     path = tmp_path / "setup.py"
 
     expected = dependency_factory(expect_deps, path)
-    result = list(parse_setup_contents(path))
+    result = list(parse_setup_py(path))
     assert_unordered_equivalence(result, expected)
 
 
@@ -366,16 +366,16 @@ def test_parse_setup_contents(write_tmp_files, file_content, expect_deps):
         ),
     ],
 )
-def test_parse_setup_cfg_contents(write_tmp_files, file_content, expect_deps):
+def test_parse_setup_cfg(write_tmp_files, file_content, expect_deps):
     tmp_path = write_tmp_files({"setup.cfg": file_content})
     path = tmp_path / "setup.cfg"
 
     expected = dependency_factory(expect_deps, path)
-    result = list(parse_setup_cfg_contents(path))
+    result = list(parse_setup_cfg(path))
     assert_unordered_equivalence(result, expected)
 
 
-def test_parse_setup_contents__multiple_entries_in_extras_require__returns_list(
+def test_parse_setup_py__multiple_entries_in_extras_require__returns_list(
     write_tmp_files,
 ):
     tmp_path = write_tmp_files(
@@ -410,7 +410,7 @@ def test_parse_setup_contents__multiple_entries_in_extras_require__returns_list(
         ],
         path,
     )
-    result = list(parse_setup_contents(path))
+    result = list(parse_setup_py(path))
     assert_unordered_equivalence(result, expected)
 
 
