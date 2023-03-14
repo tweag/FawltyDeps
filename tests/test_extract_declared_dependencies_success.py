@@ -21,18 +21,15 @@ def dependency_factory(data: List[str], path: str) -> List[DeclaredDependency]:
 
 
 @pytest.mark.parametrize(
-    "file_content,expected",
+    "file_content,expect_deps",
     [
         pytest.param(
             """\
             pandas
             click
             """,
-            dependency_factory(
-                ["pandas", "click"],
-                "requirements.txt",
-            ),
-            id="__simple_requirements_success",
+            ["pandas", "click"],
+            id="simple_requirements_success",
         ),
         pytest.param(
             """\
@@ -40,73 +37,52 @@ def dependency_factory(data: List[str], path: str) -> List[DeclaredDependency]:
 
             click >=1.2
             """,
-            dependency_factory(
-                ["pandas", "click"],
-                "requirements.txt",
-            ),
-            id="__requirements_with_versions__yields_names",
+            ["pandas", "click"],
+            id="requirements_with_versions__yields_names",
         ),
         pytest.param(
-            dedent(
-                """\
-                requests [security] @ https://github.com/psf/requests/archive/refs/heads/main.zip
-                """
-            ),
-            dependency_factory(
-                ["requests"],
-                "requirements.txt",
-            ),
-            id="__requirements_with_url_based_specifier__yields_names",
+            """\
+            requests [security] @ https://github.com/psf/requests/archive/refs/heads/main.zip
+            """,
+            ["requests"],
+            id="requirements_with_url_based_specifier__yields_names",
         ),
         pytest.param(
-            dedent(
-                """\
-                # this is a comment
-                click >=1.2
-                """
-            ),
-            dependency_factory(
-                ["click"],
-                "requirements.txt",
-            ),
-            id="__requirements_with_comment__ignores_comment",
+            """\
+            # this is a comment
+            click >=1.2
+            """,
+            ["click"],
+            id="requirements_with_comment__ignores_comment",
         ),
         pytest.param(
-            dedent(
-                """\
-                -e .
-                click >=1.2
-                """
-            ),
-            dependency_factory(
-                ["click"],
-                "requirements.txt",
-            ),
-            id="__requirements_with_option__ignores_option",
+            """\
+            -e .
+            click >=1.2
+            """,
+            ["click"],
+            id="requirements_with_option__ignores_option",
         ),
         pytest.param(
-            dedent(
-                """\
-                . # for running tests
-                click >=1.2
-                """
-            ),
-            dependency_factory(
-                ["click"],
-                "requirements.txt",
-            ),
-            id="__requirements_with_option__ignores_option_Issue200",
+            """\
+            . # for running tests
+            click >=1.2
+            """,
+            ["click"],
+            id="requirements_with_option__ignores_option_Issue200",
         ),
     ],
 )
-def test_parse_requirements_contents(file_content, expected):
+def test_parse_requirements_contents(file_content, expect_deps):
     source = Location(Path("requirements.txt"))
+
+    expected = dependency_factory(expect_deps, source.path)
     result = list(parse_requirements_contents(dedent(file_content), source))
     assert_unordered_equivalence(result, expected)
 
 
 @pytest.mark.parametrize(
-    "file_content,expected",
+    "file_content,expect_deps",
     [
         pytest.param(
             """\
@@ -117,8 +93,8 @@ def test_parse_requirements_contents(file_content, expected):
                 install_requires=["pandas", "click"]
             )
             """,
-            dependency_factory(["pandas", "click"], "setup.py"),
-            id="__simple_requirements_in_setup_py__succeeds",
+            ["pandas", "click"],
+            id="simple_requirements_in_setup_py__succeeds",
         ),
         pytest.param(
             """\
@@ -129,8 +105,8 @@ def test_parse_requirements_contents(file_content, expected):
                 install_requires=["pandas", "click>=1.2"]
             )
             """,
-            dependency_factory(["pandas", "click"], "setup.py"),
-            id="__requirements_with_versions__yields_names",
+            ["pandas", "click"],
+            id="requirements_with_versions__yields_names",
         ),
         pytest.param(
             """\
@@ -141,7 +117,7 @@ def test_parse_requirements_contents(file_content, expected):
             )
             """,
             [],
-            id="__no_requirements__yields_nothing",
+            id="no_requirements__yields_nothing",
         ),
         pytest.param(
             """\
@@ -156,8 +132,8 @@ def test_parse_requirements_contents(file_content, expected):
                 install_requires=["pandas", "click>=1.2"]
             )
             """,
-            dependency_factory(["pandas", "click"], "setup.py"),
-            id="__handles_nested_functions__yields_names",
+            ["pandas", "click"],
+            id="handles_nested_functions__yields_names",
         ),
         pytest.param(
             """\
@@ -177,8 +153,8 @@ def test_parse_requirements_contents(file_content, expected):
                 install_requires=["pandas", "click>=1.2"]
             )
             """,
-            dependency_factory(["pandas", "click"], "setup.py"),
-            id="__two_setup_calls__uses_only_top_level",
+            ["pandas", "click"],
+            id="two_setup_calls__uses_only_top_level",
         ),
         pytest.param(
             """\
@@ -192,8 +168,8 @@ def test_parse_requirements_contents(file_content, expected):
                     }
             )
             """,
-            dependency_factory(["annoy", "jieba"], "setup.py"),
-            id="__extras_present__yields_names",
+            ["annoy", "jieba"],
+            id="extras_present__yields_names",
         ),
         pytest.param(
             """\
@@ -208,8 +184,8 @@ def test_parse_requirements_contents(file_content, expected):
                     }
             )
             """,
-            dependency_factory(["pandas", "click", "annoy", "jieba"], "setup.py"),
-            id="__extras_and_regular_dependencies__yields_all_names",
+            ["pandas", "click", "annoy", "jieba"],
+            id="extras_and_regular_dependencies__yields_all_names",
         ),
         pytest.param(
             """\
@@ -222,8 +198,8 @@ def test_parse_requirements_contents(file_content, expected):
                 install_requires=my_deps,
             )
             """,
-            dependency_factory(["pandas", "click"], "setup.py"),
-            id="__direct_list_variable_reference__succeeds",
+            ["pandas", "click"],
+            id="direct_list_variable_reference__succeeds",
         ),
         pytest.param(
             """\
@@ -239,8 +215,8 @@ def test_parse_requirements_contents(file_content, expected):
                 extras_require=my_extra_deps,
             )
             """,
-            dependency_factory(["annoy", "jieba"], "setup.py"),
-            id="__direct_dict_variable_reference__succeeds",
+            ["annoy", "jieba"],
+            id="direct_dict_variable_reference__succeeds",
         ),
         pytest.param(
             """\
@@ -254,8 +230,8 @@ def test_parse_requirements_contents(file_content, expected):
                 install_requires=[pandas, click],
             )
             """,
-            dependency_factory(["pandas", "click"], "setup.py"),
-            id="__variable_reference_inside_list__succeeds",
+            ["pandas", "click"],
+            id="variable_reference_inside_list__succeeds",
         ),
         pytest.param(
             """\
@@ -273,8 +249,8 @@ def test_parse_requirements_contents(file_content, expected):
                 },
             )
             """,
-            dependency_factory(["annoy", "foobar"], "setup.py"),
-            id="__variable_reference_inside_dict__succeeds",
+            ["annoy", "foobar"],
+            id="variable_reference_inside_dict__succeeds",
         ),
         pytest.param(
             """\
@@ -296,19 +272,21 @@ def test_parse_requirements_contents(file_content, expected):
                 extras_require=my_extra_deps,
             )
             """,
-            dependency_factory(["pandas", "click", "annoy", "foobar"], "setup.py"),
-            id="__nested_variable_reference__succeeds",
+            ["pandas", "click", "annoy", "foobar"],
+            id="nested_variable_reference__succeeds",
         ),
     ],
 )
-def test_parse_setup_contents(file_content, expected):
+def test_parse_setup_contents(write_tmp_files, file_content, expect_deps):
     source = Location(Path("setup.py"))
+
+    expected = dependency_factory(expect_deps, source.path)
     result = list(parse_setup_contents(dedent(file_content), source))
     assert_unordered_equivalence(result, expected)
 
 
 @pytest.mark.parametrize(
-    "file_content,expected",
+    "file_content,expect_deps",
     [
         pytest.param(
             """\
@@ -317,8 +295,8 @@ def test_parse_setup_contents(file_content, expected):
                 pandas
                 click
             """,
-            dependency_factory(["pandas", "click"], "setup.cfg"),
-            id="__simple_requirements_in_setup_cfg__succeeds",
+            ["pandas", "click"],
+            id="simple_requirements_in_setup_cfg__succeeds",
         ),
         pytest.param(
             """\
@@ -326,23 +304,23 @@ def test_parse_setup_contents(file_content, expected):
             license_files = LICENSE
             """,
             [],
-            id="__no_requirements_in_setup_cfg__returns_none",
+            id="no_requirements_in_setup_cfg__returns_none",
         ),
         pytest.param(
             """\
             [options.extras_require]
             test = pytest
             """,
-            [DeclaredDependency("pytest", Location(Path("setup.cfg")))],
-            id="__extra_requirements_section_in_setup_cfg__succeeds",
+            ["pytest"],
+            id="extra_requirements_section_in_setup_cfg__succeeds",
         ),
         pytest.param(
             """\
             [options.tests_require]
             test = pytest
             """,
-            [DeclaredDependency("pytest", Location(Path("setup.cfg")))],
-            id="__tests_requirements_section_in_setup_cfg__succeeds",
+            ["pytest"],
+            id="tests_requirements_section_in_setup_cfg__succeeds",
         ),
         pytest.param(
             """\
@@ -351,8 +329,8 @@ def test_parse_setup_contents(file_content, expected):
                 hypothesis
                 tox
             """,
-            dependency_factory(["hypothesis", "tox"], "setup.cfg"),
-            id="__tests_requirements_in_setup_cfg__succeeds",
+            ["hypothesis", "tox"],
+            id="tests_requirements_in_setup_cfg__succeeds",
         ),
         pytest.param(
             """\
@@ -361,8 +339,8 @@ def test_parse_setup_contents(file_content, expected):
                 hypothesis
                 tox
             """,
-            dependency_factory(["hypothesis", "tox"], "setup.cfg"),
-            id="__extras_requirements_in_setup_cfg__succeeds",
+            ["hypothesis", "tox"],
+            id="extras_requirements_in_setup_cfg__succeeds",
         ),
         pytest.param(
             """\
@@ -381,15 +359,15 @@ def test_parse_setup_contents(file_content, expected):
             [options.tests_require]
             test = hypothesis
             """,
-            dependency_factory(
-                ["pandas", "click", "tox", "scipy", "pytest", "hypothesis"], "setup.cfg"
-            ),
-            id="__all_requirements_types_in_setup_cfg__succeeds",
+            ["pandas", "click", "tox", "scipy", "pytest", "hypothesis"],
+            id="all_requirements_types_in_setup_cfg__succeeds",
         ),
     ],
 )
-def test_parse_setup_cfg_contents(file_content, expected):
+def test_parse_setup_cfg_contents(write_tmp_files, file_content, expect_deps):
     source = Location(Path("setup.cfg"))
+
+    expected = dependency_factory(expect_deps, source.path)
     result = list(parse_setup_cfg_contents(dedent(file_content), source))
     assert_unordered_equivalence(result, expected)
 
