@@ -347,33 +347,39 @@ and debug each occurrence. Typically an undeclared dependency can be fixed in a 
 
 ### How not to display tools like `black` and `pylint` in _unused dependencies_?
 
-By default, all packages declared in the development environment are included in the FawltyDeps report, even if they only contain tools that were not meant to be `import`ed, but rather to be run by, say, a pre-commit hook or a CI script. In such cases you may use either:
+By default, all packages declared as dependencies by your project are included
+in the FawltyDeps analysis, even if they only contain tools that were not meant
+to be `import`ed, but rather meant to be run by, say, in a pre-commit hook or a
+CI script. In such cases you may use either:
 
 ```
 fawltydeps --ignore-unused black pylint
 ```
 
-or add an equivalent directive to the FawltyDeps configuration in your `pyproject.toml` (see below).
+or add an equivalent directive to the FawltyDeps configuration in your
+`pyproject.toml` (see below).
 
-First run:
+### How can I store my `fawltydeps` command line options in a configuration file?
+
+You can run:
 
 ```
 fawltydeps --generate-toml-config
 ```
 
-to generate a `[tool.fawltydeps]` section with current defaults that may be directly copied to pyproject.toml:
+to generate a `[tool.fawltydeps]` section with the current configuration that
+you can then directly copy into your `pyproject.toml`. Options that have their
+default value are commented in this output, so you have quickly see where your
+settings differ from the FawltyDeps defaults.
+
+This also works together with other command line options, so for example in the
+previous question, you could add `--generate-toml-config` to the command line
+(i.e. run `fawltydeps --ignore-unused black pylint --generate-toml-config`),
+to get this:
 
 ```
 [tool.fawltydeps]
-# actions = ['check_undeclared', 'check_unused']
-# ignore_undeclared = []
-# ignore_unused = []
-...
-```
-
-Then, edit `ignore_unused` to contain packages that should not be mentioned in the report if found unused:
-
-```
+# Default options are commented...
 ignore_unused = ["black", "pylint"]
 ```
 
