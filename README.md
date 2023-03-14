@@ -2,7 +2,10 @@
 
 # FawltyDeps
 
-FawltyDeps is a dependency checker for Python that finds _undeclared_ and/or _unused_ 3rd-party dependencies in your Python project. The name is inspired by the Monty Python's [Fawlty Towers](https://en.wikipedia.org/wiki/Fawlty_Towers) sitcom.
+FawltyDeps is a dependency checker for Python that finds _undeclared_ and/or
+_unused_ 3rd-party dependencies in your Python project.
+The name is inspired by the Monty Python-adjacent
+[Fawlty Towers](https://en.wikipedia.org/wiki/Fawlty_Towers) sitcom.
 
 ![FawltyDeps demo](https://github.com/tweag/FawltyDeps/raw/main/docs/fawltydeps_demo_tqdm.gif)
 
