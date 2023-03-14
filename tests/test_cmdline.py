@@ -12,7 +12,12 @@ from textwrap import dedent
 
 import pytest
 
-from fawltydeps.main import UNUSED_DEPS_OUTPUT_PREFIX, VERBOSE_PROMPT, version
+from fawltydeps.main import (
+    SUCCESS_MESSAGE,
+    UNUSED_DEPS_OUTPUT_PREFIX,
+    VERBOSE_PROMPT,
+    version,
+)
 from fawltydeps.types import Location, UnusedDependency
 
 from .test_extract_imports_simple import generate_notebook
@@ -398,7 +403,7 @@ def test_check__simple_project_imports_match_dependencies__prints_verbose_option
         declares=["requests", "pandas"],
     )
 
-    expect = [VERBOSE_PROMPT]
+    expect = [SUCCESS_MESSAGE]
     output, errors, returncode = run_fawltydeps(
         "--check", f"--code={tmp_path}", f"--deps={tmp_path}"
     )
@@ -760,7 +765,7 @@ def test__quiet_check__writes_only_names_of_unused_and_undeclared(
             ["--check-unused", "--ignore-unused", "black", "mypy"],
             ["requests"],
             ["black", "mypy"],
-            [VERBOSE_PROMPT],
+            [SUCCESS_MESSAGE],
             id="check_unused_action_on_ignored_unused_dep__outputs_nothing",
         ),
         pytest.param(
@@ -774,14 +779,14 @@ def test__quiet_check__writes_only_names_of_unused_and_undeclared(
             ["--check-undeclared", "--ignore-unused", "isort"],
             ["isort"],
             ["isort"],
-            [VERBOSE_PROMPT],
+            [SUCCESS_MESSAGE],
             id="check_undeclared_action_on_ignored_declared_dep__does_not_report_dep_as_undeclared",
         ),
         pytest.param(
             ["--check-undeclared", "--ignore-undeclared", "black", "mypy"],
             ["black", "mypy"],
             ["numpy"],
-            [VERBOSE_PROMPT],
+            [SUCCESS_MESSAGE],
             id="check_undeclared_action_on_ignored_undeclared_import__outputs_nothing",
         ),
         pytest.param(
@@ -795,7 +800,7 @@ def test__quiet_check__writes_only_names_of_unused_and_undeclared(
             ["--check-unused", "--ignore-undeclared", "isort"],
             ["isort"],
             ["isort"],
-            [VERBOSE_PROMPT],
+            [SUCCESS_MESSAGE],
             id="check_unused_action_on_ignored_but_used_import__does_not_report_dep_as_unused",
         ),
         pytest.param(
@@ -810,7 +815,7 @@ def test__quiet_check__writes_only_names_of_unused_and_undeclared(
             ],
             ["isort", "numpy"],
             ["pylint", "black"],
-            [VERBOSE_PROMPT],
+            [SUCCESS_MESSAGE],
             id="check_action_on_ignored__does_not_report_ignored",
         ),
     ],

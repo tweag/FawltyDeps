@@ -44,6 +44,7 @@ from fawltydeps.types import (
 
 logger = logging.getLogger(__name__)
 
+SUCCESS_MESSAGE = "No unused or undeclared dependencies detected."
 VERBOSE_PROMPT = "For a more verbose report re-run with the `--detailed` option."
 UNUSED_DEPS_OUTPUT_PREFIX = "These dependencies appear to be unused (i.e. not imported)"
 
@@ -212,24 +213,33 @@ def main() -> int:
     except UnparseablePathException as exc:
         return parser.error(exc.msg)  # exit code 2
 
-    if settings.output_format == OutputFormat.JSON:
-        analysis.print_json(sys.stdout)
-    elif settings.output_format == OutputFormat.HUMAN_DETAILED:
-        analysis.print_human_readable(sys.stdout, details=True)
-    elif settings.output_format == OutputFormat.HUMAN_SUMMARY:
-        analysis.print_human_readable(sys.stdout, details=False)
-        print(f"\n{VERBOSE_PROMPT}")
-    else:
-        raise NotImplementedError
-
     # Exit codes:
     # 0 - success, no problems found
     # 1 - an exception propagates (this should not happen)
     # 2 - command-line parsing error (see above)
     # 3 - undeclared dependencies found
     # 4 - unused dependencies found
+    exit_code = 0
     if analysis.is_enabled(Action.REPORT_UNDECLARED) and analysis.undeclared_deps:
-        return 3
-    if analysis.is_enabled(Action.REPORT_UNUSED) and analysis.unused_deps:
-        return 4
-    return 0
+        exit_code = 3
+    elif analysis.is_enabled(Action.REPORT_UNUSED) and analysis.unused_deps:
+        exit_code = 4
+
+    is_checking = analysis.is_enabled(Action.REPORT_UNDECLARED, Action.REPORT_UNUSED)
+
+    if settings.output_format == OutputFormat.JSON:
+        analysis.print_json(sys.stdout)
+    elif settings.output_format == OutputFormat.HUMAN_DETAILED:
+        analysis.print_human_readable(sys.stdout, details=True)
+        if exit_code == 0 and is_checking:
+            print(f"\n{SUCCESS_MESSAGE}")
+    elif settings.output_format == OutputFormat.HUMAN_SUMMARY:
+        analysis.print_human_readable(sys.stdout, details=False)
+        if exit_code == 0 and is_checking:
+            print(f"\n{SUCCESS_MESSAGE}")
+        else:
+            print(f"\n{VERBOSE_PROMPT}")
+    else:
+        raise NotImplementedError
+
+    return exit_code
