@@ -5,9 +5,11 @@ import configparser
 import logging
 import re
 import sys
+from dataclasses import replace
 from functools import partial
 from itertools import takewhile
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 from typing import Callable, Iterable, Iterator, NamedTuple, Optional, Set, Tuple
 
 from pkg_resources import Requirement
@@ -56,17 +58,16 @@ def parse_one_req(req_text: str, source: Location) -> DeclaredDependency:
     return DeclaredDependency(req_name, source)
 
 
-def parse_requirements_contents(
-    text: str, source: Location
-) -> Iterator[DeclaredDependency]:
+def parse_requirements_contents(path: Path) -> Iterator[DeclaredDependency]:
     """Extract dependencies (packages names) from a requirements file.
 
     This is usually a requirements.txt file or any other file following the
     Requirements File Format as documented here:
     https://pip.pypa.io/en/stable/reference/requirements-file-format/.
     """
+    source = Location(path)
     parse_one = partial(parse_one_req, source=source)
-    for line in text.splitlines():
+    for line in path.read_text().splitlines():
         cleaned = line.lstrip()
         if (
             not cleaned  # skip empty lines
@@ -91,7 +92,7 @@ def parse_requirements_contents(
                 logger.warning(f"Could not parse {source} line {line!r}: {exc}")
 
 
-def parse_setup_contents(text: str, source: Location) -> Iterator[DeclaredDependency]:
+def parse_setup_contents(path: Path) -> Iterator[DeclaredDependency]:
     """Extract dependencies (package names) from setup.py.
 
     This file can contain arbitrary Python code, and simply executing it has
@@ -100,7 +101,7 @@ def parse_setup_contents(text: str, source: Location) -> Iterator[DeclaredDepend
     the `install_requires` and `extras_require` keyword args from that function
     call.
     """
-
+    source = Location(path)
     # Attempt to keep track of simple variable assignments (name -> value)
     # declared in the setup.py prior to the setup() call, so that we can
     # resolve any variable references in the arguments to the setup() call.
@@ -139,7 +140,7 @@ def parse_setup_contents(text: str, source: Location) -> Iterator[DeclaredDepend
             and node.value.func.id == "setup"
         )
 
-    setup_contents = ast.parse(text, filename=str(source.path))
+    setup_contents = ast.parse(path.read_text(), filename=str(source.path))
     for node in ast.walk(setup_contents):
         tracked_vars.evaluate(node)
         if _is_setup_function_call(node):
@@ -149,9 +150,7 @@ def parse_setup_contents(text: str, source: Location) -> Iterator[DeclaredDepend
             break
 
 
-def parse_setup_cfg_contents(
-    text: str, source: Location
-) -> Iterator[DeclaredDependency]:
+def parse_setup_cfg_contents(path: Path) -> Iterator[DeclaredDependency]:
     """Extract dependencies (package names) from setup.cfg.
 
     `ConfigParser` basic building blocks are "sections"
@@ -163,16 +162,22 @@ def parse_setup_cfg_contents(
     The declaration uses `section` + `option` syntax where section may be [options]
     or [options.{requirements_type}].
     """
+    source = Location(path)
     parser = configparser.ConfigParser()
     try:
-        parser.read_string(text)
+        parser.read([path])
     except configparser.Error as exc:
         logger.debug(exc)
         logger.error("Could not parse contents of `%s`", source)
         return
 
     def parse_value(value: str) -> Iterator[DeclaredDependency]:
-        yield from parse_requirements_contents(value, source=source)
+        # Ugly hack since parse_requirements_contents() accepts only a path:
+        with NamedTemporaryFile(mode="wt") as tmp:
+            tmp.write(value)
+            tmp.flush()
+            for dep in parse_requirements_contents(Path(tmp.name)):
+                yield replace(dep, source=source)
 
     def extract_section(section: str) -> Iterator[DeclaredDependency]:
         if section in parser:
@@ -288,9 +293,7 @@ def parse_pyproject_elements(
             )
 
 
-def parse_pyproject_contents(
-    text: str, source: Location
-) -> Iterator[DeclaredDependency]:
+def parse_pyproject_contents(path: Path) -> Iterator[DeclaredDependency]:
     """Extract dependencies (package names) from pyproject.toml.
 
     There are multiple ways to declare dependencies inside a pyproject.toml.
@@ -298,7 +301,9 @@ def parse_pyproject_contents(
     - PEP 621 core metadata fields
     - Poetry-specific metadata in `tool.poetry` sections.
     """
-    parsed_contents = tomllib.loads(text)
+    source = Location(path)
+    with path.open("rb") as tomlfile:
+        parsed_contents = tomllib.load(tomlfile)
 
     yield from parse_pep621_pyproject_contents(parsed_contents, source)
 
@@ -314,7 +319,7 @@ class ParsingStrategy(NamedTuple):
     """Named pairing of an applicability criterion and a dependency parser"""
 
     applies_to_path: Callable[[Path], bool]
-    execute: Callable[[str, Location], Iterator[DeclaredDependency]]
+    execute: Callable[[Path], Iterator[DeclaredDependency]]
 
 
 def first_applicable_parser(
@@ -375,7 +380,7 @@ def extract_declared_dependencies_from_path(
                     ctx="Parsing given dependencies path isn't supported", path=path
                 )
             parser = choice_and_parser[1]
-        yield from parser.execute(path.read_text(), Location(path))
+        yield from parser.execute(path)
     elif path.is_dir():
         logger.debug("Extracting dependencies from files under %s", path)
         for file in walk_dir(path):
@@ -384,9 +389,7 @@ def extract_declared_dependencies_from_path(
                 continue
             if parser_choice is None or choice_and_parser[0] == parser_choice:
                 logger.debug(f"Extracting dependencies: {file}")
-                yield from choice_and_parser[1].execute(
-                    file.read_text(), Location(file)
-                )
+                yield from choice_and_parser[1].execute(file)
     else:
         raise UnparseablePathException(
             ctx="Dependencies declaration path is neither dir nor file", path=path

@@ -73,11 +73,12 @@ def dependency_factory(data: List[str], path: str) -> List[DeclaredDependency]:
         ),
     ],
 )
-def test_parse_requirements_contents(file_content, expect_deps):
-    source = Location(Path("requirements.txt"))
+def test_parse_requirements_contents(write_tmp_files, file_content, expect_deps):
+    tmp_path = write_tmp_files({"requirements.txt": file_content})
+    path = tmp_path / "requirements.txt"
 
-    expected = dependency_factory(expect_deps, source.path)
-    result = list(parse_requirements_contents(dedent(file_content), source))
+    expected = dependency_factory(expect_deps, path)
+    result = list(parse_requirements_contents(path))
     assert_unordered_equivalence(result, expected)
 
 
@@ -278,10 +279,11 @@ def test_parse_requirements_contents(file_content, expect_deps):
     ],
 )
 def test_parse_setup_contents(write_tmp_files, file_content, expect_deps):
-    source = Location(Path("setup.py"))
+    tmp_path = write_tmp_files({"setup.py": file_content})
+    path = tmp_path / "setup.py"
 
-    expected = dependency_factory(expect_deps, source.path)
-    result = list(parse_setup_contents(dedent(file_content), source))
+    expected = dependency_factory(expect_deps, path)
+    result = list(parse_setup_contents(path))
     assert_unordered_equivalence(result, expected)
 
 
@@ -365,32 +367,39 @@ def test_parse_setup_contents(write_tmp_files, file_content, expect_deps):
     ],
 )
 def test_parse_setup_cfg_contents(write_tmp_files, file_content, expect_deps):
-    source = Location(Path("setup.cfg"))
+    tmp_path = write_tmp_files({"setup.cfg": file_content})
+    path = tmp_path / "setup.cfg"
 
-    expected = dependency_factory(expect_deps, source.path)
-    result = list(parse_setup_cfg_contents(dedent(file_content), source))
+    expected = dependency_factory(expect_deps, path)
+    result = list(parse_setup_cfg_contents(path))
     assert_unordered_equivalence(result, expected)
 
 
-def test_parse_setup_contents__multiple_entries_in_extras_require__returns_list():
-    setup_contents = dedent(
-        """\
-        from setuptools import setup
+def test_parse_setup_contents__multiple_entries_in_extras_require__returns_list(
+    write_tmp_files,
+):
+    tmp_path = write_tmp_files(
+        {
+            "setup.py": """\
+                from setuptools import setup
 
-        setup(
-            name="MyLib",
-            extras_require={
-                "simple_parsing":["abc"],
-                "bert": [
-                    "bert-serving-server>=1.8.6",
-                    "bert-serving-client>=1.8.6",
-                    "pytorch-transformer",
-                    "flair"
-                    ],
-                }
-        )
-        """
+                setup(
+                    name="MyLib",
+                    extras_require={
+                        "simple_parsing":["abc"],
+                        "bert": [
+                            "bert-serving-server>=1.8.6",
+                            "bert-serving-client>=1.8.6",
+                            "pytorch-transformer",
+                            "flair"
+                            ],
+                        }
+                )
+                """,
+        }
     )
+    path = tmp_path / "setup.py"
+
     expected = dependency_factory(
         [
             "abc",
@@ -399,9 +408,9 @@ def test_parse_setup_contents__multiple_entries_in_extras_require__returns_list(
             "pytorch-transformer",
             "flair",
         ],
-        Path(""),
+        path,
     )
-    result = list(parse_setup_contents(setup_contents, Location(Path(""))))
+    result = list(parse_setup_contents(path))
     assert_unordered_equivalence(result, expected)
 
 

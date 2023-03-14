@@ -1,8 +1,6 @@
 """Test unhappy path, where parsing of dependencies fails"""
 
 import logging
-from pathlib import Path
-from textwrap import dedent
 
 import pytest
 
@@ -25,20 +23,22 @@ def test_extract_declared_dependencies__unsupported_file__raises_error(
         )
 
 
-def test_parse_setup_cfg_contents__malformed__logs_error(caplog):
-    setup_contents = dedent(
-        """\
-        [options
-        install_requires =
-            pandas
-        """
+def test_parse_setup_cfg_contents__malformed__logs_error(write_tmp_files, caplog):
+    tmp_path = write_tmp_files(
+        {
+            "setup.cfg": """\
+                [options
+                install_requires =
+                    pandas
+                """,
+        }
     )
     expected = []
     caplog.set_level(logging.ERROR)
 
-    source = Location(Path("setup.cfg"))
-    result = list(parse_setup_cfg_contents(setup_contents, source))
-    assert f"Could not parse contents of `{source}`" in caplog.text
+    path = tmp_path / "setup.cfg"
+    result = list(parse_setup_cfg_contents(path))
+    assert f"Could not parse contents of `{Location(path)}`" in caplog.text
     assert expected == result
 
 
@@ -125,10 +125,13 @@ def test_parse_setup_cfg_contents__malformed__logs_error(caplog):
     ],
 )
 def test_parse_setup_contents__cannot_parse__logs_warning(
-    caplog, code, expect, fail_arg
+    write_tmp_files, caplog, code, expect, fail_arg
 ):
+    tmp_path = write_tmp_files({"setup.py": code})
+    path = tmp_path / "setup.py"
+
     caplog.set_level(logging.WARNING)
-    result = list(parse_setup_contents(dedent(code), Location(Path("setup.py"))))
+    result = list(parse_setup_contents(path))
     assert f"Could not parse contents of `{fail_arg}`" in caplog.text
-    assert "setup.py" in caplog.text
+    assert str(path) in caplog.text
     assert expect == result

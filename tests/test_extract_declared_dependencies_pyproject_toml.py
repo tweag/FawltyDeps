@@ -1,6 +1,5 @@
 """Test extracting dependencies from pyproject.toml"""
 import logging
-from pathlib import Path
 from textwrap import dedent
 
 import pytest
@@ -177,11 +176,13 @@ from fawltydeps.types import DeclaredDependency, Location
     ],
 )
 def test_parse_pyproject_content__pep621_or_poetry_dependencies__yields_dependencies(
-    pyproject_toml, expected_deps
+    write_tmp_files, pyproject_toml, expected_deps
 ):
-    source = Location(Path("pyproject.toml"))
-    result = list(parse_pyproject_contents(pyproject_toml, source))
-    expected = [DeclaredDependency(dep, source) for dep in expected_deps]
+    tmp_path = write_tmp_files({"pyproject.toml": pyproject_toml})
+    path = tmp_path / "pyproject.toml"
+
+    result = list(parse_pyproject_contents(path))
+    expected = [DeclaredDependency(dep, Location(path)) for dep in expected_deps]
     assert result == expected
 
 
@@ -296,15 +297,17 @@ def test_parse_pyproject_content__pep621_or_poetry_dependencies__yields_dependen
     ],
 )
 def test_parse_pyproject_content__malformatted_poetry_dependencies__yields_no_dependencies(
-    caplog, pyproject_toml, expected, metadata_standard, field_types
+    write_tmp_files, caplog, pyproject_toml, expected, metadata_standard, field_types
 ):
-    source = Location(Path("pyproject.toml"))
+    tmp_path = write_tmp_files({"pyproject.toml": pyproject_toml})
+    path = tmp_path / "pyproject.toml"
+
     caplog.set_level(logging.ERROR)
-    result = list(parse_pyproject_contents(pyproject_toml, source))
+    result = list(parse_pyproject_contents(path))
     assert result == expected
     for field_type in field_types:
         assert (
-            f"Failed to parse {metadata_standard} {field_type} dependencies in {source.path}"
+            f"Failed to parse {metadata_standard} {field_type} dependencies in {path}"
             in caplog.text
         )
 
@@ -343,17 +346,16 @@ def test_parse_pyproject_content__malformatted_poetry_dependencies__yields_no_de
     ],
 )
 def test_parse_pyproject_contents__missing_dependencies__logs_debug_message(
-    caplog, tmp_path, pyproject_toml, expected, expected_logs
+    write_tmp_files, caplog, tmp_path, pyproject_toml, expected, expected_logs
 ):
+    tmp_path = write_tmp_files({"pyproject.toml": pyproject_toml})
+    path = tmp_path / "pyproject.toml"
+
     caplog.set_level(logging.DEBUG)
-    path_hint = tmp_path / "pyproject.toml"
-
-    result = list(parse_pyproject_contents(pyproject_toml, path_hint))
-
+    result = list(parse_pyproject_contents(path))
     assert expected == result
-
     for metadata_standard, field_type in expected_logs:
         assert (
-            f"Failed to find {metadata_standard} {field_type} dependencies in {path_hint}"
+            f"Failed to find {metadata_standard} {field_type} dependencies in {path}"
             in caplog.text
         )
