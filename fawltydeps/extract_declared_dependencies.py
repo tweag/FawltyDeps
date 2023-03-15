@@ -6,12 +6,11 @@ import logging
 import re
 import sys
 from dataclasses import replace
-from functools import partial
-from itertools import takewhile
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Callable, Iterable, Iterator, NamedTuple, Optional, Set, Tuple
 
+from pip_requirements_parser import RequirementsFile  # type: ignore
 from pkg_resources import Requirement
 
 from fawltydeps.limited_eval import CannotResolve, VariableTracker
@@ -32,13 +31,6 @@ else:
 logger = logging.getLogger(__name__)
 
 ERROR_MESSAGE_TEMPLATE = "Failed to %s %s %s dependencies in %s: %s"
-# https://pip.pypa.io/en/stable/reference/requirements-file-format/#per-requirement-options
-PER_REQUIREMENT_OPTIONS = [
-    "--install-option",
-    "--global-option",
-    "--config-setting",
-    "--hash",
-]
 
 NamedLocations = Iterator[Tuple[str, Location]]
 
@@ -66,30 +58,9 @@ def parse_requirements_txt(path: Path) -> Iterator[DeclaredDependency]:
     https://pip.pypa.io/en/stable/reference/requirements-file-format/.
     """
     source = Location(path)
-    parse_one = partial(parse_one_req, source=source)
-    for line in path.read_text().splitlines():
-        cleaned = line.lstrip()
-        if (
-            not cleaned  # skip empty lines
-            or cleaned.startswith(("-", "#"))  # skip options and comments
-            or ("://" in line.split()[0])  # skip bare URLs at the start of line
-        ):
-            continue
-        try:
-            yield parse_one(line)
-        except ValueError:
-            # Try again with the initial part of the line preceding any of the
-            # PER_REQUIREMENT_OPTIONS
-            pre_opt_words = takewhile(
-                lambda word: not any(
-                    word.startswith(opt) for opt in PER_REQUIREMENT_OPTIONS
-                ),
-                cleaned.split(),
-            )
-            try:
-                yield parse_one(" ".join(pre_opt_words))
-            except ValueError as exc:
-                logger.warning(f"Could not parse {source} line {line!r}: {exc}")
+    for dep in RequirementsFile.from_file(path).requirements:
+        if dep.name:
+            yield DeclaredDependency(dep.name, source)
 
 
 def parse_setup_py(path: Path) -> Iterator[DeclaredDependency]:
@@ -172,7 +143,10 @@ def parse_setup_cfg(path: Path) -> Iterator[DeclaredDependency]:
         return
 
     def parse_value(value: str) -> Iterator[DeclaredDependency]:
-        # Ugly hack since parse_requirements_txt() accepts only a path:
+        # Ugly hack since parse_requirements_txt() accepts only a path.
+        # TODO: try leveraging RequirementsFile.from_string once
+        #       pip-requirements-parser updates.
+        # See:  https://github.com/nexB/pip-requirements-parser/pull/17
         with NamedTemporaryFile(mode="wt") as tmp:
             tmp.write(value)
             tmp.flush()
