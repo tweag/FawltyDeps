@@ -142,9 +142,12 @@ class Analysis:
     def print_json(self, out: TextIO) -> None:
         """Print the JSON representation of this analysis to 'out'."""
         # The default pydantic_encoder uses list() to serialize set objects.
-        # Use sorted() instead, to ensure stable serialization to JSON.
-        # This requires that all our sets contain orderable elements!
-        encoder = partial(custom_pydantic_encoder, {frozenset: sorted, set: sorted})
+        # We need a stable serialization to JSON, so let's use sorted() instead.
+        # However, not all elements that we store in a set are automatically
+        # orderable (e.g. PathOrSpecial don't know how to order SpecialPath vs
+        # Path), so order by string representation instead:
+        set_sort = partial(sorted, key=str)
+        encoder = partial(custom_pydantic_encoder, {frozenset: set_sort, set: set_sort})
         json.dump(self, out, indent=2, default=encoder)
 
     def print_human_readable(self, out: TextIO, details: bool = True) -> None:
