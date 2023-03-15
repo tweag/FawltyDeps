@@ -12,12 +12,7 @@ from textwrap import dedent
 
 import pytest
 
-from fawltydeps.main import (
-    SUCCESS_MESSAGE,
-    UNUSED_DEPS_OUTPUT_PREFIX,
-    VERBOSE_PROMPT,
-    version,
-)
+from fawltydeps.main import UNUSED_DEPS_OUTPUT_PREFIX, VERBOSE_PROMPT, Analysis, version
 from fawltydeps.types import Location, UnusedDependency
 
 from .test_extract_imports_simple import generate_notebook
@@ -405,7 +400,7 @@ def test_check__simple_project_imports_match_dependencies__prints_verbose_option
         declares=["requests", "pandas"],
     )
 
-    expect = [SUCCESS_MESSAGE]
+    expect = [Analysis.success_message(check_undeclared=True, check_unused=True)]
     output, errors, returncode = run_fawltydeps(
         "--check", f"--code={tmp_path}", f"--deps={tmp_path}"
     )
@@ -775,7 +770,9 @@ def test_check__simple_project_in_fake_venv__resolves_imports_vs_deps(
     output, errors, returncode = run_fawltydeps(
         "--detailed", f"--code={tmp_path}", f"--deps={tmp_path}", f"--venv={venv_dir}"
     )
-    assert output.splitlines() == [SUCCESS_MESSAGE]
+    assert output.splitlines() == [
+        Analysis.success_message(check_undeclared=True, check_unused=True)
+    ]
     assert errors == ""
     assert returncode == 0
 
@@ -787,7 +784,7 @@ def test_check__simple_project_in_fake_venv__resolves_imports_vs_deps(
             ["--check-unused", "--ignore-unused", "black", "mypy"],
             ["requests"],
             ["black", "mypy"],
-            [SUCCESS_MESSAGE],
+            [Analysis.success_message(check_undeclared=False, check_unused=True)],
             id="check_unused_action_on_ignored_unused_dep__outputs_nothing",
         ),
         pytest.param(
@@ -801,14 +798,14 @@ def test_check__simple_project_in_fake_venv__resolves_imports_vs_deps(
             ["--check-undeclared", "--ignore-unused", "isort"],
             ["isort"],
             ["isort"],
-            [SUCCESS_MESSAGE],
+            [Analysis.success_message(check_undeclared=True, check_unused=False)],
             id="check_undeclared_action_on_ignored_declared_dep__does_not_report_dep_as_undeclared",
         ),
         pytest.param(
             ["--check-undeclared", "--ignore-undeclared", "black", "mypy"],
             ["black", "mypy"],
             ["numpy"],
-            [SUCCESS_MESSAGE],
+            [Analysis.success_message(check_undeclared=True, check_unused=False)],
             id="check_undeclared_action_on_ignored_undeclared_import__outputs_nothing",
         ),
         pytest.param(
@@ -822,7 +819,7 @@ def test_check__simple_project_in_fake_venv__resolves_imports_vs_deps(
             ["--check-unused", "--ignore-undeclared", "isort"],
             ["isort"],
             ["isort"],
-            [SUCCESS_MESSAGE],
+            [Analysis.success_message(check_undeclared=False, check_unused=True)],
             id="check_unused_action_on_ignored_but_used_import__does_not_report_dep_as_unused",
         ),
         pytest.param(
@@ -837,7 +834,7 @@ def test_check__simple_project_in_fake_venv__resolves_imports_vs_deps(
             ],
             ["isort", "numpy"],
             ["pylint", "black"],
-            [SUCCESS_MESSAGE],
+            [Analysis.success_message(check_undeclared=True, check_unused=True)],
             id="check_action_on_ignored__does_not_report_ignored",
         ),
     ],
