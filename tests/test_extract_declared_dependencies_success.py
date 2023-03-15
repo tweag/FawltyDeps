@@ -71,6 +71,14 @@ def dependency_factory(data: List[str], path: str) -> List[DeclaredDependency]:
             ["click"],
             id="requirements_with_option__ignores_option_Issue200",
         ),
+        pytest.param(
+            """\
+            black == 23.1.0 \
+                --hash=sha256:0052dba51dec07ed029ed61b18183942043e00008ec65d5028814afaab9a22fd
+            """,
+            ["black"],
+            id="per_req_option_not_on_same_line__parses_properly_Issue225",
+        ),
     ],
 )
 def test_parse_requirements_txt(write_tmp_files, file_content, expect_deps):
