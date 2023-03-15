@@ -216,8 +216,8 @@ default behavior of FawltyDeps. Here's a fairly comprehensive example:
 
 ```toml
 [tool.fawltydeps]
-code = "myproject"  # Only search for imports under ./myproject
-deps = "pyproject.toml"  # Only look for declared dependencies here
+code = ["myproject"]  # Only search for imports under ./myproject
+deps = ["pyproject.toml"]  # Only look for declared dependencies here
 ignore_unused = ["black"]  # We use `black`, but we don't intend to import it
 output_format = "human_detailed"  # Detailed report by default
 ```
@@ -227,10 +227,10 @@ Here is a complete list of configuration directives we support:
 - `actions`: A list of one or more of these actions to perform: `list_imports`,
   `list_deps`, `check_undeclared`, `check_unused`. The default behavior
   corresponds to `actions = ["check_undeclared", "check_unused"]`.
-- `code`: A file or directory containing the code to parse for import statements.
-  Defaults to the current directory, i.e. like `code = .`.
-- `deps`: A file or directory containing the declared dependencies.
-  Defaults to the current directory, i.e. like `deps = .`.
+- `code`: Files or directories containing the code to parse for import statements.
+  Defaults to the current directory, i.e. like `code = ["."]`.
+- `deps`: Files or directories containing the declared dependencies.
+  Defaults to the current directory, i.e. like `deps = ["."]`.
 - `output_format`: Which output format to use by default. One of `human_summary`,
   `human_detailed`, or `json`.
   The default corresponds to `output_format = "human_summary"`.
