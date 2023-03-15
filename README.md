@@ -231,6 +231,9 @@ Here is a complete list of configuration directives we support:
   Defaults to the current directory, i.e. like `code = ["."]`.
 - `deps`: Files or directories containing the declared dependencies.
   Defaults to the current directory, i.e. like `deps = ["."]`.
+- `venv`: The path to the Python environment to use for resolving project
+  dependencies to provided import names. Defaults to the Python environment
+  where FawltyDeps is installed.
 - `output_format`: Which output format to use by default. One of `human_summary`,
   `human_detailed`, or `json`.
   The default corresponds to `output_format = "human_summary"`.
