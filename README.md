@@ -358,17 +358,23 @@ while verifying their output. These projects, along with the expected FawltyDeps
 outputs, are defined in TOML files under
 [`tests/real_projects`](./tests/real_projects).
 
-## Contributing
+### Contributing more projects to the test suite
 
-For bug reports, when a user reports that `fawltydeps` does not work on their project, we adopt the following process:
+For bug reports, when a user reports that FawltyDeps does not work as it should
+on their project, we aim to follow this process:
 
-- The project is added to `real_projects`.
-- We isolate the problems/issues/features and define/express them succinctly as a sample project under `sample_projects`.
-- We examine the issue more closely and update core logic, adding/altering unit tests along the way.
+- If the project is freely available, we can add a relevant version of the
+  project under `tests/real_projects`.
+- We can then isolate the problems/issues/features and define/express them
+  succinctly as one or more sample projects under `tests/sample_projects`.
+- We examine the issue more closely and update core logic, adding/altering unit
+  tests along the way.
 
-The resulting updates are introduced to `fawltydeps` and reflected in our expectations, first in the TOML for the sample project(s) and then finally in the `real_projects` TOML.
+The resulting updates are introduced to `fawltydeps` and reflected in our
+expectations, first in the TOML for the sample project(s) and then finally in
+the `real_projects` TOML.
 
-If you find a project where FawltyDeps is not doing a good job, we would appreciate
+If you find a project where FawltyDeps is not doing a good job, we appreciate
 if you add that project under [`tests/real_projects`](./tests/real_projects).
 To see how these tests work, look at the existing files in that directory.
 
