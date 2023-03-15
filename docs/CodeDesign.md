@@ -1,20 +1,23 @@
 # Requirements
 
-## Prototype
+## Initial goals
 
-The goal of the first prototype is to reach a working and usable tool with minimal functionality.
-Namely, a user would be able to run `fawltydeps` as a command line tool in their Python project.
-FawltyDeps will:
+We want a working and usable tool that slowly adds functionality as needed.
+A user runs `fawltydeps` as a command line tool in their Python
+project and immediately gets some useful and actionable information.
 
-- Automatically discover all Python code files and extract all the packages imported in the code.
-- Automatically discover and extract from files declaring dependencies (supporting requirements.txt, setup.py and pyproject.toml).
-- Use identity mapping between extracted imports and declared dependencies,
-- Compare the two sets (of used vs declared dependencies) and report missing and unused dependencies.
-- Support Python version 3.7 - 3.11
+## Boundaries
+
+- Support all current Python versions: that means all Python versions that have
+  a stable release, and are not yet End Of Life. Currently this is: v3.7 - v3.11.
+- For now we support the CPython interpreter only
+- OS-wise, we have concentrated on Linux. We should still run fine on
+  other Unix-like systems, most notably Mac. Windows remains an open question.
 
 # Code style
 
 We value composability and functional style.
+
 We want the code to be readable, testable and maintainable. That is why we use:
 
 - code formatter `black` to unify the code style,
@@ -23,26 +26,36 @@ We want the code to be readable, testable and maintainable. That is why we use:
 - `pytest` for testing
   to ensure this quality.
 
-The code must be type-annotated and functions should have docstrings.
+The code should be type-annotated, and functions should have docstrings.
 
-FawltyDeps searches for imports and dependencies and to do it efficiently, generators are used.
+FawltyDeps searches for imports and dependencies, and to do it efficiently,
+generators are used in many places.
+
+## Code review
+
+Read https://www.mediawiki.org/wiki/Guidelines_for_a_healthy_code_review_culture
+for a good introduction to the code review culture we want to foster in this
+project.
 
 ## Tests
 
-We do not aim for 100% coverage but to document the usecases via tests. FawltyDeps has unit and integration tests.
+FawltyDeps has unit and integration tests.
 
-Tests have following naming convention:
+We do not specifically aim for 100% coverage, but we do want to document the use
+cases via tests.
 
+Many tests use the following naming convention:
 ```
 test_{tested_function}__{short_description}__{expected_result}
 ```
 
 ## Class hierarchy
 
-Our classes can be viewed as four "layers":
+Our main classes can be roughly "layered" as follows:
 
 Level 4: `Analysis`
 Level 3: `UndeclaredDependency` and `UnusedDependency`
+Level 2.5: `Package`
 Level 2: `ParsedImport` and `DeclaredDependency`
 Level 1: `Location`
 
