@@ -44,7 +44,6 @@ from fawltydeps.types import (
 
 logger = logging.getLogger(__name__)
 
-SUCCESS_MESSAGE = "No unused or undeclared dependencies detected."
 VERBOSE_PROMPT = "For a more verbose report re-run with the `--detailed` option."
 UNUSED_DEPS_OUTPUT_PREFIX = "These dependencies appear to be unused (i.e. not imported)"
 
@@ -75,6 +74,18 @@ class Analysis:
     def is_enabled(self, *args: Action) -> bool:
         """Return True if any of the given actions are in self.settings."""
         return len(self.settings.actions.intersection(args)) > 0
+
+    @staticmethod
+    def success_message(check_undeclared: bool, check_unused: bool) -> Optional[str]:
+        """Returns the message to print when the analysis finds no errors."""
+        checking = []
+        if check_undeclared:
+            checking.append("undeclared")
+        if check_unused:
+            checking.append("unused")
+        if checking:
+            return f"No {' or '.join(checking)} dependencies detected."
+        return None
 
     @classmethod
     def create(cls, settings: Settings) -> "Analysis":
@@ -226,18 +237,21 @@ def main() -> int:
     elif analysis.is_enabled(Action.REPORT_UNUSED) and analysis.unused_deps:
         exit_code = 4
 
-    is_checking = analysis.is_enabled(Action.REPORT_UNDECLARED, Action.REPORT_UNUSED)
+    success_message = Analysis.success_message(
+        analysis.is_enabled(Action.REPORT_UNDECLARED),
+        analysis.is_enabled(Action.REPORT_UNUSED),
+    )
 
     if settings.output_format == OutputFormat.JSON:
         analysis.print_json(sys.stdout)
     elif settings.output_format == OutputFormat.HUMAN_DETAILED:
         analysis.print_human_readable(sys.stdout, details=True)
-        if exit_code == 0 and is_checking:
-            print(f"\n{SUCCESS_MESSAGE}")
+        if exit_code == 0 and success_message:
+            print(f"\n{success_message}")
     elif settings.output_format == OutputFormat.HUMAN_SUMMARY:
         analysis.print_human_readable(sys.stdout, details=False)
-        if exit_code == 0 and is_checking:
-            print(f"\n{SUCCESS_MESSAGE}")
+        if exit_code == 0 and success_message:
+            print(f"\n{success_message}")
         else:
             print(f"\n{VERBOSE_PROMPT}")
     else:
