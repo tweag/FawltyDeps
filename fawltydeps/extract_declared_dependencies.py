@@ -143,7 +143,10 @@ def parse_setup_cfg(path: Path) -> Iterator[DeclaredDependency]:
         return
 
     def parse_value(value: str) -> Iterator[DeclaredDependency]:
-        # Ugly hack since parse_requirements_txt() accepts only a path:
+        # Ugly hack since parse_requirements_txt() accepts only a path.
+        # TODO: try leveraging RequirementsFile.from_string once
+        #       pip-requirements-parser updates.
+        # See:  https://github.com/nexB/pip-requirements-parser/pull/17
         with NamedTemporaryFile(mode="wt") as tmp:
             tmp.write(value)
             tmp.flush()
