@@ -103,7 +103,11 @@ def test_base_path_fills_code_and_deps_when_other_path_settings_are_absent(basep
             (None, {"single-base"}, "empty-config"),
             (dict(code=["test-code"]), {"base1", "base2"}, "only-code-set"),
             (dict(deps=["deps-test"]), {"single-base"}, "only-deps-set"),
-            (dict(code=["code-test"], deps=["test-deps"]), {"base1", "base2"}, "code-and-deps-set"),
+            (
+                dict(code=["code-test"], deps=["test-deps"]),
+                {"base1", "base2"},
+                "code-and-deps-set",
+            ),
         ]
     ],
 )
