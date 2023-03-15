@@ -193,13 +193,16 @@ class Settings(BaseSettings):  # type: ignore
 
         args_dict = cmdline_args.__dict__
 
-        base_path = getattr(cmdline_args, "basepath", None)
-        if base_path is not None:
-            code_path = args_dict.setdefault("code", {base_path})
-            deps_paths = args_dict.setdefault("deps", {base_path})
-            paths = [base_path, *code_path, *deps_paths]
-            if len(set(paths)) == len(paths):
-                msg = f"Each path option has a different value: {paths}"
+        base_paths = set(getattr(cmdline_args, "basepaths", []))
+        if base_paths:
+            code_paths = args_dict.setdefault("code", base_paths)
+            deps_paths = args_dict.setdefault("deps", base_paths)
+            if code_paths != base_paths and deps_paths != base_paths: # pylint: disable=consider-using-in
+                msg = (
+                    "All three path specifications (code, deps, and base)"
+                    f"have been used. Use at most 2. basepaths={base_paths}, "
+                    f"code_paths={code_paths}, deps_paths={deps_paths}"
+                )
                 raise argparse.ArgumentError(argument=None, message=msg)
 
         # Use subset of args_dict that directly correspond to fields in Settings
@@ -300,9 +303,9 @@ def populate_parser_options(parser: argparse._ActionsContainer) -> None:
     .create() below.
     """
     parser.add_argument(
-        "basepath",
+        "basepaths",
         type=lambda p: None if p == argparse.SUPPRESS else Path(p),
-        nargs="?",
+        nargs="*",
         help="(Optional) directory in which to search for code (imports) "
         "and/or dependency declarations",
     )
