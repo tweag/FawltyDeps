@@ -949,6 +949,35 @@ def test_cmdline_args_in_combination_with_config_file(
     assert output.splitlines() == expect
 
 
+def test_deps_across_groups_appear_just_once_in_list_deps_detailed(tmp_path):
+    deps_data, uniq_deps = pyproject_toml_contents()
+    deps_path = tmp_path / "pyproject.toml"
+    exp_lines_from_pyproject = [f"{deps_path}: {dep}" for dep in uniq_deps]
+    deps_path.write_text(dedent(deps_data))
+    output, *_ = run_fawltydeps("--list-deps", "--detailed", f"--deps={deps_path}")
+    obs_lines = output.splitlines()
+    assert_unordered_equivalence(obs_lines, exp_lines_from_pyproject)
+
+
+def test_deps_across_groups_appear_just_once_in_order_in_general_detailed(tmp_path):
+    deps_data, uniq_deps = pyproject_toml_contents()
+    deps_path = tmp_path / "pyproject.toml"
+    deps_path.write_text(dedent(deps_data))
+    output, *_ = run_fawltydeps("--detailed", f"{tmp_path}")
+    obs_lines_absolute = output.splitlines()
+    obs_lines_relevant = dropwhile(
+        lambda line: not line.startswith(UNUSED_DEPS_OUTPUT_PREFIX), obs_lines_absolute
+    )
+    next(obs_lines_relevant)  # discard
+    unused_deps = [UnusedDependency(name, [Location(deps_path)]) for name in uniq_deps]
+    exp_lines = [
+        line
+        for dep in unused_deps
+        for line in f"- {dep.render(include_references=True)}".split("\n")
+    ]
+    assert list(obs_lines_relevant) == exp_lines
+
+
 def pyproject_toml_contents():
     data = dedent(
         """
@@ -980,32 +1009,3 @@ def pyproject_toml_contents():
         "types-setuptools",
     )
     return data, uniq_deps
-
-
-def test_deps_across_groups_appear_just_once_in_list_deps_detailed(tmp_path):
-    deps_data, uniq_deps = pyproject_toml_contents()
-    deps_path = tmp_path / "pyproject.toml"
-    exp_lines_from_pyproject = [f"{deps_path}: {dep}" for dep in uniq_deps]
-    deps_path.write_text(dedent(deps_data))
-    output, *_ = run_fawltydeps("--list-deps", "--detailed", f"--deps={deps_path}")
-    obs_lines = output.splitlines()
-    assert_unordered_equivalence(obs_lines, exp_lines_from_pyproject)
-
-
-def test_deps_across_groups_appear_just_once_in_order_in_general_detailed(tmp_path):
-    deps_data, uniq_deps = pyproject_toml_contents()
-    deps_path = tmp_path / "pyproject.toml"
-    deps_path.write_text(dedent(deps_data))
-    output, *_ = run_fawltydeps("--detailed", f"{tmp_path}")
-    obs_lines_absolute = output.splitlines()
-    obs_lines_relevant = dropwhile(
-        lambda line: not line.startswith(UNUSED_DEPS_OUTPUT_PREFIX), obs_lines_absolute
-    )
-    next(obs_lines_relevant)  # discard
-    unused_deps = [UnusedDependency(name, [Location(deps_path)]) for name in uniq_deps]
-    exp_lines = [
-        line
-        for dep in unused_deps
-        for line in f"- {dep.render(include_references=True)}".split("\n")
-    ]
-    assert list(obs_lines_relevant) == exp_lines
