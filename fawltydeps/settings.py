@@ -197,9 +197,7 @@ class Settings(BaseSettings):  # type: ignore
         if base_paths:
             code_paths = args_dict.setdefault("code", base_paths)
             deps_paths = args_dict.setdefault("deps", base_paths)
-            if (
-                code_paths != base_paths and deps_paths != base_paths
-            ):  # pylint: disable=consider-using-in
+            if code_paths != base_paths and deps_paths != base_paths:
                 msg = (
                     "All three path specifications (code, deps, and base)"
                     f"have been used. Use at most 2. basepaths={base_paths}, "
