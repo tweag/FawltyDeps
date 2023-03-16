@@ -147,19 +147,20 @@ The _current Python environment_ in this case is the environment in which
 FawltyDeps itself is installed. This works well when you, for example,
 `pip install fawltydeps` into the same virtualenv as your project dependencies.
 
-If you instead want FawltyDeps to look into a _different_ virtualenv for mapping
-dependencies to import names, you can use the `--venv` option, for example:
+If you instead want FawltyDeps to look into a _different_ Python environment for
+mapping dependencies to import names, you can use the `--pyenv` option,
+for example:
 
 ```
-fawltydeps --code my_package/ --deps pyproject.toml --venv .venv/
+fawltydeps --code my_package/ --deps pyproject.toml --pyenv .venv/
 ```
 
 This will tell FawltyDeps:
 
 - to look for `import` statements in the `my_package/` directory,
 - to parse dependencies from `pyprojects.toml`, and
-- to use the virtualenv at `.venv/` to map dependency names in `pyproject.toml`
-  into import names used in your code under `my_package/`
+- to use the Python environment at `.venv/` to map dependency names in
+  `pyproject.toml` into import names used in your code under `my_package/`
 
 When FawltyDeps is unable to find an installed package that corresponds to a
 declared dependency, FawltyDeps will fall back to an "identity mapping", where
@@ -231,7 +232,7 @@ Here is a complete list of configuration directives we support:
   Defaults to the current directory, i.e. like `code = ["."]`.
 - `deps`: Files or directories containing the declared dependencies.
   Defaults to the current directory, i.e. like `deps = ["."]`.
-- `venv`: The path to the Python environment to use for resolving project
+- `pyenv`: The path to the Python environment to use for resolving project
   dependencies to provided import names. Defaults to the Python environment
   where FawltyDeps is installed.
 - `output_format`: Which output format to use by default. One of `human_summary`,
@@ -479,7 +480,7 @@ install to the name you `import` is not always self-evident:
   dependency.
 
 To solve this, FawltyDeps looks at the packages installed in your current Python
-environment (or the virtualenv given by the `--venv` option) to correctly map
+environment (or the environment given by the `--pyenv` option) to correctly map
 dependencies (package names) into the imports that they provide.
 
 However, when an installed package is not found for a declared dependency, the
@@ -506,5 +507,5 @@ the connection between these two names.
 To solve this problem, make sure that you either install and run FawltyDeps
 in a development environment (e.g. virtualenv) where your project's dependencies
 (including `scikit-learn`) are also installed. Alternatively, you can use the
-`--venv` option to point at a virtualenv where `scikit-learn` (and your other
-dependencies) are installed.
+`--pyenv` option to point at a Python environment where `scikit-learn` and your
+other dependencies are installed.
