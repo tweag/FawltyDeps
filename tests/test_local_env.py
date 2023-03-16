@@ -1,4 +1,4 @@
-"""Verify behavior of package module looking at a given venv."""
+"""Verify behavior of package module looking at a given Python environment."""
 import sys
 import venv
 
@@ -13,7 +13,7 @@ from fawltydeps.packages import (
 
 major, minor = sys.version_info[:2]
 
-# When the user gives us a --venv arg, what are the the possible paths inside
+# When the user gives us a --pyenv arg, what are the the possible paths inside
 # that Python environment that they might point at (that we should accept)
 env_subdirs = [
     "",
@@ -35,7 +35,7 @@ def test_determine_package_dir__various_paths_in_venv(tmp_path, subdir):
 
 
 @pytest.mark.parametrize(
-    "subdir", [pytest.param(d, id=f"venv:{d}") for d in env_subdirs]
+    "subdir", [pytest.param(d, id=f"poetry2nix:{d}") for d in env_subdirs]
 )
 def test_determine_package_dir__various_paths_in_poetry2nix_env(
     write_tmp_files, subdir
@@ -80,7 +80,7 @@ def test_local_env__default_venv__contains_pip_and_setuptools(tmp_path):
 def test_local_env__current_venv__contains_our_test_dependencies():
     lpl = LocalPackageLookup()
     expect_package_names = [
-        # Present in all venvs:
+        # Present in ~all venvs:
         "pip",
         "setuptools",
         # FawltyDeps main deps
@@ -96,7 +96,7 @@ def test_local_env__current_venv__contains_our_test_dependencies():
 
 def test_resolve_dependencies__in_empty_venv__reverts_to_id_mapping(tmp_path):
     venv.create(tmp_path, with_pip=False)
-    actual = resolve_dependencies(["pip", "setuptools"], venv_path=tmp_path)
+    actual = resolve_dependencies(["pip", "setuptools"], pyenv_path=tmp_path)
     assert actual == {
         "pip": Package.identity_mapping("pip"),
         "setuptools": Package.identity_mapping("setuptools"),
@@ -111,7 +111,7 @@ def test_resolve_dependencies__in_fake_venv__returns_local_and_id_deps(fake_venv
             "empty_pkg": set(),
         }
     )
-    actual = resolve_dependencies(["PIP", "pandas", "empty-pkg"], venv_path=venv_dir)
+    actual = resolve_dependencies(["PIP", "pandas", "empty-pkg"], pyenv_path=venv_dir)
     assert actual == {
         "PIP": Package("pip", {DependenciesMapping.LOCAL_ENV: {"pip"}}),
         "pandas": Package.identity_mapping("pandas"),

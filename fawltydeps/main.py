@@ -119,7 +119,7 @@ class Analysis:
             assert ret.declared_deps is not None  # be None at this time.
             ret.resolved_deps = resolve_dependencies(
                 (dep.name for dep in ret.declared_deps),
-                venv_path=settings.venv,
+                pyenv_path=settings.pyenv,
             )
 
         if ret.is_enabled(Action.REPORT_UNDECLARED):

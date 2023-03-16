@@ -54,7 +54,7 @@ def run_fawltydeps_json(
 ) -> JsonData:
     argv = ["fawltydeps", "--config-file=/dev/null", "--json"]
     if venv_dir is not None:
-        argv += [f"--venv={venv_dir}"]
+        argv += [f"--pyenv={venv_dir}"]
     proc = subprocess.run(
         argv + list(args),
         stdout=subprocess.PIPE,

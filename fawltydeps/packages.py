@@ -195,13 +195,13 @@ class LocalPackageLookup:
 
 
 def resolve_dependencies(
-    dep_names: Iterable[str], venv_path: Optional[Path] = None
+    dep_names: Iterable[str], pyenv_path: Optional[Path] = None
 ) -> Dict[str, Package]:
     """Associate dependencies with corresponding Package objects.
 
     Use LocalPackageLookup to find Package objects for each of the given
-    dependencies inside the virtualenv given by 'venv_path'. When 'venv_path' is
-    None (the default), look for packages in the current Python environment
+    dependencies inside the virtualenv given by 'pyenv_path'. When 'pyenv_path'
+    is None (the default), look for packages in the current Python environment
     (i.e. equivalent to sys.path).
 
     For dependencies that cannot be found with LocalPackageLookup,
@@ -211,7 +211,7 @@ def resolve_dependencies(
     Return a dict mapping dependency names to the resolved Package objects.
     """
     ret = {}
-    local_packages = LocalPackageLookup(venv_path)
+    local_packages = LocalPackageLookup(pyenv_path)
     for name in dep_names:
         if name not in ret:
             package = local_packages.lookup_package(name)
