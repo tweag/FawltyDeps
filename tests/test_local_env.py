@@ -1,5 +1,8 @@
 """Verify behavior of package module looking at a given venv."""
+import sys
 import venv
+
+import pytest
 
 from fawltydeps.packages import (
     DependenciesMapping,
@@ -7,6 +10,46 @@ from fawltydeps.packages import (
     Package,
     resolve_dependencies,
 )
+
+major, minor = sys.version_info[:2]
+
+# When the user gives us a --venv arg, what are the the possible paths inside
+# that Python environment that they might point at (that we should accept)
+env_subdirs = [
+    "",
+    "bin",
+    "lib",
+    f"lib/python{major}.{minor}",
+    f"lib/python{major}.{minor}/site-packages",
+]
+
+
+@pytest.mark.parametrize(
+    "subdir", [pytest.param(d, id=f"venv:{d}") for d in env_subdirs]
+)
+def test_determine_package_dir__various_paths_in_venv(tmp_path, subdir):
+    venv.create(tmp_path, with_pip=False)
+    path = tmp_path / subdir
+    expect = tmp_path / f"lib/python{major}.{minor}/site-packages"
+    assert LocalPackageLookup.determine_package_dir(path) == expect
+
+
+@pytest.mark.parametrize(
+    "subdir", [pytest.param(d, id=f"venv:{d}") for d in env_subdirs]
+)
+def test_determine_package_dir__various_paths_in_poetry2nix_env(
+    write_tmp_files, subdir
+):
+    # A directory structure that resembles a minimal poetry2nix environment:
+    tmp_path = write_tmp_files(
+        {
+            "bin/python": "",
+            f"lib/python{major}.{minor}/site-packages/some_package.py": "",
+        }
+    )
+    path = tmp_path / subdir
+    expect = tmp_path / f"lib/python{major}.{minor}/site-packages"
+    assert LocalPackageLookup.determine_package_dir(path) == expect
 
 
 def test_local_env__empty_venv__has_no_packages(tmp_path):

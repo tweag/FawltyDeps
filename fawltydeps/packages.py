@@ -102,46 +102,67 @@ class Package:
 
 
 class LocalPackageLookup:
-    """Lookup import names exposed by packages installed in the current venv."""
+    """Lookup imports exposed by packages installed in a Python environment."""
 
-    def __init__(self, venv_path: Optional[Path] = None) -> None:
+    def __init__(self, pyenv_path: Optional[Path] = None) -> None:
         """Lookup packages installed in the given virtualenv.
 
-        Default to the current python environment if `venv_path` is not given
+        Default to the current python environment if `pyenv_path` is not given
         (or None).
 
         Use importlib_metadata to look up the mapping between packages and their
         provided import names.
         """
-        if venv_path is not None and not (venv_path / "pyvenv.cfg").is_file():
-            raise ValueError(f"Not a virtualenv: {venv_path}/pyvenv.cfg missing!")
-
-        self.venv_path = venv_path
-        # We enumerate packages for venv_path _once_ and cache the result here:
+        if pyenv_path is not None:
+            self.pyenv_path = self.determine_package_dir(pyenv_path)
+            if self.pyenv_path is None:
+                raise ValueError(f"Not a Python env: {pyenv_path}/bin/python missing!")
+        else:
+            self.pyenv_path = None
+        # We enumerate packages for pyenv_path _once_ and cache the result here:
         self._packages: Optional[Dict[str, Package]] = None
+
+    @classmethod
+    def determine_package_dir(cls, path: Path) -> Optional[Path]:
+        """Return the site-packages directory corresponding to the given path.
+
+        The given 'path' is a user-provided directory path meant to point to
+        a Python environment (e.g. a virtualenv, a poetry2nix environment, or
+        similar). Deduce the appropriate site-packages directory from this path,
+        or return None if no environment could be found at the given path.
+        """
+        # We define a "valid Python environment" as a directory that contains
+        # a bin/python file, and a lib/pythonX.Y/site-packages subdirectory.
+        # From there, the returned directory is that site-packages subdir.
+        # Note that we must also accept lib/pythonX.Y/site-packages for python
+        # versions X.Y that are different from the current Python version.
+        if (path / "bin/python").is_file():
+            for site_packages in path.glob("lib/python?.*/site-packages"):
+                if site_packages.is_dir():
+                    return site_packages
+        # Given path is not a python environment, but it might be _inside_ one.
+        # Try again with parent directory
+        return None if path.parent == path else cls.determine_package_dir(path.parent)
 
     @property
     def packages(self) -> Dict[str, Package]:
-        """Return mapping of package names to Package objects for this venv.
+        """Return mapping of package names to Package objects.
 
-        This enumerates the available packages in the given virtualenv (or the
-        current Python environment) _once_, and caches the result for the
-        remainder of this object's life.
+        This enumerates the available packages in the given Python environment
+        (or the current Python environment) _once_, and caches the result for
+        the remainder of this object's life.
         """
         if self._packages is None:  # need to build cache
-            if self.venv_path is None:
-                paths = sys.path
+            if self.pyenv_path is None:
+                paths = sys.path  # use current Python environment
             else:
-                # Construct faux sys.path for the given venv_path. This must
-                # handle whatever supported Python version is used by the venv
-                paths = [
-                    str(p) for p in self.venv_path.glob("lib/python?.*/site-packages")
-                ]
+                paths = [str(self.pyenv_path)]
 
             self._packages = {}
             # We're reaching into the internals of importlib_metadata here,
             # which Mypy is not overly fond of. Roughly what we're doing here
-            # is calling packages_distributions(), but on a different venv.
+            # is calling packages_distributions(), but on a possibly different
+            # environment than the current one (i.e. sys.path).
             # Note that packages_distributions() is not able to return packages
             # that map to zero import names.
             context = DistributionFinder.Context(path=paths)  # type: ignore
