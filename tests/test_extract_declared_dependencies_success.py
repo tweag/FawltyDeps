@@ -1,7 +1,5 @@
 """Test that dependencies are parsed from requirements files."""
-from pathlib import Path
 from textwrap import dedent
-from typing import List
 
 import pytest
 
@@ -11,13 +9,8 @@ from fawltydeps.extract_declared_dependencies import (
     parse_setup_cfg,
     parse_setup_py,
 )
-from fawltydeps.types import DeclaredDependency, Location
 
-from .utils import assert_unordered_equivalence, collect_dep_names
-
-
-def dependency_factory(data: List[str], path: str) -> List[DeclaredDependency]:
-    return [DeclaredDependency(d, Location(Path(path))) for d in data]
+from .utils import assert_unordered_equivalence, collect_dep_names, deps_factory
 
 
 @pytest.mark.parametrize(
@@ -85,7 +78,7 @@ def test_parse_requirements_txt(write_tmp_files, file_content, expect_deps):
     tmp_path = write_tmp_files({"requirements.txt": file_content})
     path = tmp_path / "requirements.txt"
 
-    expected = dependency_factory(expect_deps, path)
+    expected = deps_factory(*expect_deps, path=path)
     result = list(parse_requirements_txt(path))
     assert_unordered_equivalence(result, expected)
 
@@ -290,7 +283,7 @@ def test_parse_setup_py(write_tmp_files, file_content, expect_deps):
     tmp_path = write_tmp_files({"setup.py": file_content})
     path = tmp_path / "setup.py"
 
-    expected = dependency_factory(expect_deps, path)
+    expected = deps_factory(*expect_deps, path=path)
     result = list(parse_setup_py(path))
     assert_unordered_equivalence(result, expected)
 
@@ -378,7 +371,7 @@ def test_parse_setup_cfg(write_tmp_files, file_content, expect_deps):
     tmp_path = write_tmp_files({"setup.cfg": file_content})
     path = tmp_path / "setup.cfg"
 
-    expected = dependency_factory(expect_deps, path)
+    expected = deps_factory(*expect_deps, path=path)
     result = list(parse_setup_cfg(path))
     assert_unordered_equivalence(result, expected)
 
@@ -408,15 +401,13 @@ def test_parse_setup_py__multiple_entries_in_extras_require__returns_list(
     )
     path = tmp_path / "setup.py"
 
-    expected = dependency_factory(
-        [
-            "abc",
-            "bert-serving-server",
-            "bert-serving-client",
-            "pytorch-transformer",
-            "flair",
-        ],
-        path,
+    expected = deps_factory(
+        "abc",
+        "bert-serving-server",
+        "bert-serving-client",
+        "pytorch-transformer",
+        "flair",
+        path=path,
     )
     result = list(parse_setup_py(path))
     assert_unordered_equivalence(result, expected)
