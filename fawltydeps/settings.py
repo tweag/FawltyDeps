@@ -206,7 +206,18 @@ class Settings(BaseSettings):  # type: ignore
                 raise argparse.ArgumentError(argument=None, message=msg)
 
         # Use subset of args_dict that directly correspond to fields in Settings
-        ret = {arg: value for arg, value in args_dict.items() if arg in cls.__fields__}
+        ret = {}
+        for arg, value in args_dict.items():
+            try:
+                field = cls.__fields__[arg]
+            except KeyError:
+                continue
+            else:
+                ret[arg] = (
+                    set(value)
+                    if isinstance(value, list) and set == field.default
+                    else value
+                )
 
         # If user gives --verbose or --quiet on the command line, we _override_
         # any pre-configured verbosity value
@@ -312,6 +323,7 @@ def populate_parser_options(parser: argparse._ActionsContainer) -> None:
     parser.add_argument(
         "--code",
         nargs="+",
+        action="extend",
         type=parse_path_or_stdin,
         metavar="PATH_OR_STDIN",
         help=(
@@ -322,6 +334,7 @@ def populate_parser_options(parser: argparse._ActionsContainer) -> None:
     parser.add_argument(
         "--deps",
         nargs="+",
+        action="extend",
         type=Path,
         metavar="PATH",
         help=(
@@ -342,6 +355,7 @@ def populate_parser_options(parser: argparse._ActionsContainer) -> None:
     parser.add_argument(
         "--ignore-undeclared",
         nargs="+",
+        action="extend",
         metavar="IMPORT_NAME",
         help=(
             "Imports to ignore when looking for undeclared"
@@ -351,6 +365,7 @@ def populate_parser_options(parser: argparse._ActionsContainer) -> None:
     parser.add_argument(
         "--ignore-unused",
         nargs="+",
+        action="extend",
         metavar="DEP_NAME",
         help=(
             "Dependencies to ignore when looking for unused"
@@ -398,6 +413,9 @@ def setup_cmdline_parser(
         add_help=False,  # instead, add --help in the "Options" group below
         argument_default=argparse.SUPPRESS,
     )
+
+    if sys.version_info < (3, 8):
+        parser.register("action", "extend", ArgparseExtendAction)
 
     # A mutually exclusive group for arguments specifying .actions
     action_group = parser.add_argument_group(
@@ -450,3 +468,12 @@ def print_toml_config(settings: Settings, out: TextIO) -> None:
         for name, value in simple_settings.items()
     ]
     print("\n".join(lines), file=out)
+
+
+class ArgparseExtendAction(argparse.Action):
+    """Action for doing 'extend' pre-3.8"""
+
+    def __call__(self, parser, namespace, values, option_string=None): # type: ignore
+        items = getattr(namespace, self.dest, [])
+        items.extend(values)
+        setattr(namespace, self.dest, items)
