@@ -135,9 +135,9 @@ UNUSED_VALUES = ["h", "i", "j"]
 
 
 def multivalued_optargs_grid():
-    def powerset(iterable):
+    def powerset_non_empties(iterable):
         xs = list(iterable)
-        return chain.from_iterable(combinations(xs, k) for k in range(len(xs) + 1))
+        return chain.from_iterable(combinations(xs, k) for k in range(1, len(xs)))
 
     keyed_items = {
         "code": CODE_VALUES,
@@ -151,8 +151,8 @@ def multivalued_optargs_grid():
         split_2 = set(
             chain.from_iterable(
                 [(x, y), (y, x)]
-                for x, y in combinations(powerset(items), 2)
-                if len(x + y) == len(items) and not set(x) & set(y) and (x and y)
+                for x, y in combinations(powerset_non_empties(items), 2)
+                if len(x + y) == len(items) and not set(x) & set(y)
             )
         )
         ret.append(split_2)
