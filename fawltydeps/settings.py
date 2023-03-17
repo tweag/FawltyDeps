@@ -473,7 +473,7 @@ def print_toml_config(settings: Settings, out: TextIO) -> None:
 class ArgparseExtendAction(argparse.Action):
     """Action for doing 'extend' pre-3.8"""
 
-    def __call__(self, parser, namespace, values, option_string=None): # type: ignore
+    def __call__(self, parser, namespace, values, option_string=None):  # type: ignore
         items = getattr(namespace, self.dest, [])
         items.extend(values)
         setattr(namespace, self.dest, items)
