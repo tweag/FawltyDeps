@@ -120,7 +120,7 @@ class Settings(BaseSettings):  # type: ignore
     actions: Set[Action] = {Action.REPORT_UNDECLARED, Action.REPORT_UNUSED}
     code: Set[PathOrSpecial] = {Path(".")}
     deps: Set[Path] = {Path(".")}
-    venv: Optional[Path] = None
+    pyenv: Optional[Path] = None
     output_format: OutputFormat = OutputFormat.HUMAN_SUMMARY
     ignore_undeclared: Set[str] = set()
     ignore_unused: Set[str] = set()
@@ -343,11 +343,11 @@ def populate_parser_options(parser: argparse._ActionsContainer) -> None:
         ),
     )
     parser.add_argument(
-        "--venv",
+        "--pyenv",
         type=Path,
-        metavar="VENV_DIR",
+        metavar="PYENV_DIR",
         help=(
-            "Where to find a virtualenv that has the project dependencies"
+            "Where to find a Python environment that has the project dependencies"
             " installed, defaults to the Python environment where FawltyDeps is"
             " installed."
         ),
