@@ -4,7 +4,7 @@ import logging
 import random
 import string
 import sys
-from itertools import chain, combinations, permutations, product
+from itertools import chain, combinations, product
 from pathlib import Path
 from typing import Iterable, List, Optional, Set
 
@@ -134,8 +134,8 @@ UNDECLARED_VALUES = ["f", "g"]
 UNUSED_VALUES = ["h", "i", "j"]
 
 
-def tempfix():
-    def powerset(iterable):  # type: ignore
+def multivalued_optargs_grid():
+    def powerset(iterable):
         xs = list(iterable)
         return chain.from_iterable(combinations(xs, k) for k in range(len(xs) + 1))
 
@@ -147,7 +147,7 @@ def tempfix():
     }
     rev_keyed = {v: k for k, vs in keyed_items.items() for v in vs}
     ret = []
-    for key, items in keyed_items.items():
+    for items in keyed_items.values():
         split_2 = set(
             chain.from_iterable(
                 [(x, y), (y, x)]
@@ -166,7 +166,7 @@ def tempfix():
     return ret2
 
 
-@pytest.mark.parametrize("optargs", tempfix())
+@pytest.mark.parametrize("optargs", multivalued_optargs_grid())
 def test_multivalued_options_are_aggregated_correctly(optargs):
     settings = run_build_settings(optargs)
     assert settings.code == to_path_set(CODE_VALUES)
