@@ -4,7 +4,7 @@ import logging
 import string
 import sys
 from pathlib import Path
-from typing import List, Optional
+from typing import Iterable, List, Optional, Set
 
 import pytest
 from hypothesis import given, strategies
@@ -61,57 +61,69 @@ def setup_env(monkeypatch):
 
 
 safe_string = strategies.text(alphabet=string.ascii_letters + string.digits, min_size=1)
-three_different_strings = strategies.tuples(
-    safe_string, safe_string, safe_string
-).filter(lambda ss: len(ss) == len(set(ss)))
+nonempty_string_set = strategies.sets(safe_string, min_size=1)
+three_different_string_groups = strategies.tuples(
+    nonempty_string_set, nonempty_string_set, nonempty_string_set
+).filter(lambda ss: ss[0] != ss[1] and ss[0] != ss[2] and ss[1] != ss[2])
 
 
-@given(code_deps_base=three_different_strings)
+@given(code_deps_base=three_different_string_groups)
 def test_code_deps_and_base_unequal__raises_error(code_deps_base):
     code, deps, base = code_deps_base
+    args = list(base) + ["--code"] + list(code) + ["--deps"] + list(deps)
     with pytest.raises(argparse.ArgumentError):
-        run_build_settings([base, f"--code={code}", f"--deps={deps}"])
+        run_build_settings(args)
 
 
-@given(basepath=safe_string)
+@given(basepaths=nonempty_string_set, fillers=nonempty_string_set)
 @pytest.mark.parametrize(["filled", "unfilled"], [("code", "deps"), ("deps", "code")])
-def test_base_path_respects_path_already_filled_via_cli(basepath, filled, unfilled):
-    filler = "This_is_a_filler"
-    settings = run_build_settings([f"--{filled}={filler}", basepath])
-    assert getattr(settings, filled) == {Path(filler)}
-    assert getattr(settings, unfilled) == {Path(basepath)}
+def test_base_path_respects_path_already_filled_via_cli(
+    basepaths, filled, unfilled, fillers
+):
+    args = list(basepaths) + [f"--{filled}"] + list(fillers)
+    settings = run_build_settings(args)
+    assert getattr(settings, filled) == to_path_set(fillers)
+    assert getattr(settings, unfilled) == to_path_set(basepaths)
 
 
-@given(basepath=safe_string)
-def test_base_path_fills_code_and_deps_when_other_path_settings_are_absent(basepath):
+@given(basepaths=nonempty_string_set)
+def test_base_path_fills_code_and_deps_when_other_path_settings_are_absent(basepaths):
     # Nothing else through CLI nor through config file
-    settings = run_build_settings([basepath])
-    assert settings.code == {Path(basepath)}
-    assert settings.deps == {Path(basepath)}
+    settings = run_build_settings(cmdl=list(basepaths))
+    expected = to_path_set(basepaths)
+    assert settings.code == expected
+    assert settings.deps == expected
 
 
 @pytest.mark.parametrize(
-    "config_settings",
+    ["config_settings", "basepaths"],
     [
-        pytest.param(conf_sett, id=test_name)
-        for conf_sett, test_name in [
-            (None, "empty-config"),
-            (dict(code=["test-code"]), "only-code-set"),
-            (dict(deps=["deps-test"]), "only-deps-set"),
-            (dict(code=["code-test"], deps=["test-deps"]), "code-and-deps-set"),
+        pytest.param(conf_sett, base, id=test_name)
+        for conf_sett, base, test_name in [
+            (None, {"single-base"}, "empty-config"),
+            (dict(code=["test-code"]), {"base1", "base2"}, "only-code-set"),
+            (dict(deps=["deps-test"]), {"single-base"}, "only-deps-set"),
+            (
+                dict(code=["code-test"], deps=["test-deps"]),
+                {"base1", "base2"},
+                "code-and-deps-set",
+            ),
         ]
     ],
 )
 def test_base_path_overrides_config_file_code_and_deps(
-    config_settings, setup_fawltydeps_config
+    config_settings,
+    basepaths,
+    setup_fawltydeps_config,
 ):
     config_file = (
         None if config_settings is None else setup_fawltydeps_config(config_settings)
     )
-    basepath = Path("my-temp-basepath")
-    settings = run_build_settings(cmdl=[str(basepath)], config_file=config_file)
-    assert settings.code == {basepath}
-    assert settings.deps == {basepath}
+
+    settings = run_build_settings(cmdl=list(basepaths), config_file=config_file)
+    expected = to_path_set(basepaths)
+    assert settings.code == expected
+    assert settings.deps == expected
 
 
 @pytest.mark.parametrize(
@@ -333,3 +345,7 @@ def test_settings__missing_config_file__uses_defaults_and_warns(tmp_path, caplog
     assert settings.dict() == make_settings_dict()
     assert "Failed to load configuration file:" in caplog.text
     assert str(missing_file) in caplog.text
+
+
+def to_path_set(ps: Iterable[str]) -> Set[Path]:
+    return set(map(Path, ps))
