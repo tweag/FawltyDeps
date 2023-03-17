@@ -40,8 +40,9 @@ def imports_factory(*imports: str) -> List[ParsedImport]:
     return [ParsedImport(imp, Location("<stdin>")) for imp in imports]
 
 
-def deps_factory(*deps: str) -> List[DeclaredDependency]:
-    return [DeclaredDependency(name=dep, source=Location(Path("foo"))) for dep in deps]
+def deps_factory(*deps: str, path: str = "foo") -> List[DeclaredDependency]:
+    "Dependency generator with a common path for all dependencies"
+    return [DeclaredDependency(name=dep, source=Location(Path(path))) for dep in deps]
 
 
 def resolved_factory(*deps: str) -> Dict[str, Package]:
