@@ -8,7 +8,6 @@ should find/report.
 import hashlib
 import json
 import logging
-import shlex
 import subprocess
 import sys
 import tarfile
@@ -22,6 +21,8 @@ from pkg_resources import Requirement
 
 from fawltydeps.packages import LocalPackageLookup
 from fawltydeps.types import TomlData
+
+from .project_helpers import CachedExperimentVenv
 
 if sys.version_info >= (3, 11):
     import tomllib  # pylint: disable=E1101
@@ -99,22 +100,6 @@ class Experiment(NamedTuple):
     undeclared_deps: Optional[List[str]] = None
     unused_deps: Optional[List[str]] = None
 
-    def venv_script(self, venv_path: Path):
-        return (
-            [
-                f"rm -rf {venv_path}",
-                f"python3 -m venv {venv_path}",
-                f"{venv_path}/bin/pip install --upgrade pip",
-            ]
-            + [
-                f"{venv_path}/bin/pip install {shlex.quote(req)}"
-                for req in self.requirements
-            ]
-            + [
-                f"touch {venv_path}/.installed",
-            ]
-        )
-
     @classmethod
     def parse_from_toml(cls, name: str, data: TomlData) -> "Experiment":
         return cls(
@@ -127,6 +112,11 @@ class Experiment(NamedTuple):
             undeclared_deps=data.get("undeclared_deps"),
             unused_deps=data.get("unused_deps"),
         )
+
+    def get_venv_dir(self, cache: pytest.Cache) -> Path:
+        """Get this venv's dir and create it if necessary."""
+        venv = CachedExperimentVenv(self.requirements)
+        return venv(cache)
 
     def verify_analysis_json(self, analysis: JsonData) -> None:
         """Assert that the given JSON analysis matches our expectations."""
@@ -157,50 +147,6 @@ class Experiment(NamedTuple):
             assert set(self.unused_deps) == json_names(analysis["unused_deps"])
         else:
             print(f"{self.name}: No unused dependencies to check")
-
-    def venv_hash(self):
-        """
-        Returns a hash that depends on the venv script and python version.
-
-        The installation script will change if the code to setup the venv on
-        `venv_script` changes or if the requirements field of the experiment
-        changes. It will also be different for different Python versions.
-        The Python version currently used to run the tests is used to compute
-        the hash and create the venv.
-        """
-        dummy_script = self.venv_script(Path("/dev/null"))
-        py_version = f"{sys.version_info.major},{sys.version_info.major}"
-        script_and_version_bytes = ("".join(dummy_script) + py_version).encode()
-        return hashlib.sha256(script_and_version_bytes).hexdigest()
-
-    def get_venv_dir(self, cache: pytest.Cache) -> Path:
-        """
-        Get this venv's dir and create it if necessary.
-
-        The venv_dir is where we install the dependencies of the current
-        experiment. It is keyed by the sha256 checksum of the requirements
-        file and the script we use for setting up the venv. This way, we
-        don't risk using a previously cached venv for a different if the
-        script or the requirements to create that venv change.
-        """
-        # We cache venv dirs using the hash from create_venv_hash
-        cached_str = cache.get(f"fawltydeps/{self.venv_hash()}", None)
-        if cached_str is not None and Path(cached_str, ".installed").is_file():
-            return Path(cached_str)  # already cached
-
-        # Must run the script to set up the venv
-        venv_dir = Path(cache.mkdir(f"fawltydeps_venv_{self.venv_hash()}"))
-        logger.info(f"Creating venv at {venv_dir}...")
-        venv_script = self.venv_script(venv_dir)
-        subprocess.run(
-            " && ".join(venv_script),
-            check=True,  # fail if any of the commands fail
-            shell=True,  # pass multiple shell commands to the subprocess
-        )
-        # Make sure the venv has been installed
-        assert Path(venv_dir, ".installed").is_file()
-        cache.set(f"fawltydeps/{self.venv_hash()}", str(venv_dir))
-        return venv_dir
 
 
 class ThirdPartyProject(NamedTuple):
