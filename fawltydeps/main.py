@@ -88,7 +88,9 @@ class Analysis:
         return None
 
     @classmethod
-    def create(cls, settings: Settings, stdin: Optional[TextIO] = None) -> "Analysis":
+    def create(
+        cls, settings: Settings, stdin: Optional[TextIO] = None, pull_deps: bool = False
+    ) -> "Analysis":
         """Exercise FawltyDeps' core logic according to the given settings.
 
         Perform the actions specified in 'settings.actions' and apply the other
@@ -120,6 +122,7 @@ class Analysis:
             ret.resolved_deps = resolve_dependencies(
                 (dep.name for dep in ret.declared_deps),
                 pyenv_path=settings.pyenv,
+                pull_deps=pull_deps,
             )
 
         if ret.is_enabled(Action.REPORT_UNDECLARED):

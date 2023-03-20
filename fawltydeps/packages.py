@@ -1,11 +1,15 @@
 """Encapsulate the lookup of packages and their provided import names."""
 
 import logging
+import subprocess
 import sys
+import tempfile
+import venv
+from contextlib import contextmanager, nullcontext
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Dict, Iterable, Optional, Set
+from typing import Dict, Iterable, Iterator, List, Optional, Set
 
 # importlib_metadata is gradually graduating into the importlib.metadata stdlib
 # module, however we rely on internal functions and recent (and upcoming)
@@ -194,8 +198,32 @@ class LocalPackageLookup:
         return self.packages.get(Package.normalize_name(package_name))
 
 
+@contextmanager
+def temp_installed_requirements(
+    requirements: List[str],
+) -> Iterator[LocalPackageLookup]:
+    """Install packages into a temporary venv and provide lookup.
+
+    Provide a `LocalPackageLookup` object into the caller's context which
+    provide dependency-to-imports mapping for the given requirements.
+    The requirements are downloaded and installed into a temporary virtualenv,
+    which is automatically deleted at the end of this context.
+    """
+    with tempfile.TemporaryDirectory() as tmpdir:
+        venv_dir = Path(tmpdir)
+        venv.create(venv_dir, clear=True, with_pip=True)
+        subprocess.run(
+            [f"{venv_dir}/bin/pip", "install", "--no-deps"] + requirements,
+            check=True,  # fail if any of the commands fail
+        )
+        (venv_dir / ".installed").touch()
+        yield LocalPackageLookup(venv_dir)
+
+
 def resolve_dependencies(
-    dep_names: Iterable[str], pyenv_path: Optional[Path] = None
+    dep_names: Iterable[str],
+    pyenv_path: Optional[Path] = None,
+    pull_deps: bool = False,
 ) -> Dict[str, Package]:
     """Associate dependencies with corresponding Package objects.
 
@@ -211,15 +239,29 @@ def resolve_dependencies(
     Return a dict mapping dependency names to the resolved Package objects.
     """
     ret = {}
-    local_packages = LocalPackageLookup(pyenv_path)
-    for name in dep_names:
-        if name not in ret:
-            package = local_packages.lookup_package(name)
-            if package is None:  # fall back to identity mapping
-                package = Package.identity_mapping(name)
-                logger.info(
-                    f"Could not find {name!r} in the current environment. Assuming "
-                    f"it can be imported as {', '.join(sorted(package.import_names))}"
-                )
-            ret[name] = package
+
+    # consume the iterable once
+    deps = list(dep_names)
+
+    if pull_deps:
+        logger.info("Installing dependencies into a new temporary Python environment.")
+        if pyenv_path is not None:
+            logger.info(
+                f"Will not use Python environment defined by --pyenv: {pyenv_path}"
+            )
+        local_packages_context = temp_installed_requirements(deps)
+    else:
+        local_packages_context = nullcontext(LocalPackageLookup(pyenv_path))  # type: ignore
+
+    with local_packages_context as local_packages:
+        for name in deps:
+            if name not in ret:
+                package = local_packages.lookup_package(name)
+                if package is None:  # fall back to identity mapping
+                    package = Package.identity_mapping(name)
+                    logger.info(
+                        f"Could not find {name!r} in the current environment. Assuming "
+                        f"it can be imported as {', '.join(sorted(package.import_names))}"
+                    )
+                ret[name] = package
     return ret
