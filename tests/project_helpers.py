@@ -5,10 +5,16 @@ import shlex
 import subprocess
 import sys
 from dataclasses import dataclass
+from dataclasses import fields as dataclass_fields
 from pathlib import Path
-from typing import List
+from typing import Any, Callable, Dict, Iterable, List, Optional, Set
 
 import pytest
+
+from fawltydeps.main import Analysis
+from fawltydeps.types import TomlData
+
+JsonData = Dict[str, Any]
 
 logger = logging.getLogger(__name__)
 
@@ -84,3 +90,58 @@ class CachedExperimentVenv:
         assert (venv_dir / ".installed").is_file()
         cache.set(f"fawltydeps/{self.venv_hash()}", str(venv_dir))
         return venv_dir
+
+
+@dataclass
+class AnalysisExpectations:
+    """Encode our expectations on the analysis resulting from an experiment.
+
+    Encapsulate the expected values of an Analysis object (or its JSON
+    counterpart) after a real/sample project experiment has been run.
+
+    The members of this expectation object are all optional; if omitted, the
+    corresponding Analysis member will _not_ be checked. Furthermore, no "deep"
+    verification of each member is performed here; rather, we only check that
+    the set of (import or dependency) names that can found in each Analysis
+    member match the expected set stored here.
+    """
+
+    imports: Optional[Set[str]] = None
+    declared_deps: Optional[Set[str]] = None
+    undeclared_deps: Optional[Set[str]] = None
+    unused_deps: Optional[Set[str]] = None
+
+    @classmethod
+    def parse_from_toml(cls, data: TomlData) -> "AnalysisExpectations":
+        """Read expectations from the given TOML table."""
+
+        def set_or_none(data: Optional[Iterable[str]]) -> Optional[Set[str]]:
+            return None if data is None else set(data)
+
+        return cls(
+            imports=set_or_none(data.get("imports")),
+            declared_deps=set_or_none(data.get("declared_deps")),
+            undeclared_deps=set_or_none(data.get("undeclared_deps")),
+            unused_deps=set_or_none(data.get("unused_deps")),
+        )
+
+    def _verify_members(self, member_extractor: Callable[[str], Set[str]]) -> None:
+        for member in dataclass_fields(self):
+            expected_names = getattr(self, member.name)
+            if expected_names is None:
+                print(f"Skip checking .{member.name}")
+                continue
+
+            print(f"Checking .{member.name}")
+            actual_names = member_extractor(member.name)
+            print(f"  Actual names: {sorted(actual_names)}")
+            print(f"  Expect names: {sorted(expected_names)}")
+            assert actual_names == expected_names
+
+    def verify_analysis(self, analysis: Analysis) -> None:
+        """Assert that the given Analysis object matches our expectations."""
+        self._verify_members(lambda member: {m.name for m in getattr(analysis, member)})
+
+    def verify_analysis_json(self, analysis: JsonData) -> None:
+        """Assert that the given JSON analysis matches our expectations."""
+        self._verify_members(lambda member: {m["name"] for m in analysis[member]})
