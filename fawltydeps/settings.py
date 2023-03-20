@@ -6,7 +6,18 @@ import sys
 from enum import Enum
 from functools import total_ordering
 from pathlib import Path
-from typing import ClassVar, List, Optional, Set, TextIO, Tuple, Type, Union
+from typing import (
+    Any,
+    ClassVar,
+    List,
+    Optional,
+    Sequence,
+    Set,
+    TextIO,
+    Tuple,
+    Type,
+    Union,
+)
 
 from pydantic import BaseSettings
 from pydantic.env_settings import SettingsSourceCallable  # pylint: disable=E0611
@@ -206,18 +217,7 @@ class Settings(BaseSettings):  # type: ignore
                 raise argparse.ArgumentError(argument=None, message=msg)
 
         # Use subset of args_dict that directly correspond to fields in Settings
-        ret = {}
-        for arg, value in args_dict.items():
-            try:
-                field = cls.__fields__[arg]
-            except KeyError:
-                continue
-            else:
-                ret[arg] = (
-                    set(value)
-                    if isinstance(value, list) and set == field.default
-                    else value
-                )
+        ret = {opt: arg for opt, arg in args_dict.items() if opt in cls.__fields__}
 
         # If user gives --verbose or --quiet on the command line, we _override_
         # any pre-configured verbosity value
@@ -323,7 +323,7 @@ def populate_parser_options(parser: argparse._ActionsContainer) -> None:
     parser.add_argument(
         "--code",
         nargs="+",
-        action="extend",
+        action="union",
         type=parse_path_or_stdin,
         metavar="PATH_OR_STDIN",
         help=(
@@ -334,7 +334,7 @@ def populate_parser_options(parser: argparse._ActionsContainer) -> None:
     parser.add_argument(
         "--deps",
         nargs="+",
-        action="extend",
+        action="union",
         type=Path,
         metavar="PATH",
         help=(
@@ -355,7 +355,7 @@ def populate_parser_options(parser: argparse._ActionsContainer) -> None:
     parser.add_argument(
         "--ignore-undeclared",
         nargs="+",
-        action="extend",
+        action="union",
         metavar="IMPORT_NAME",
         help=(
             "Imports to ignore when looking for undeclared"
@@ -365,7 +365,7 @@ def populate_parser_options(parser: argparse._ActionsContainer) -> None:
     parser.add_argument(
         "--ignore-unused",
         nargs="+",
-        action="extend",
+        action="union",
         metavar="DEP_NAME",
         help=(
             "Dependencies to ignore when looking for unused"
@@ -414,8 +414,7 @@ def setup_cmdline_parser(
         argument_default=argparse.SUPPRESS,
     )
 
-    if sys.version_info < (3, 8):
-        parser.register("action", "extend", ArgparseExtendAction)
+    parser.register("action", "union", ArgparseUnionAction)
 
     # A mutually exclusive group for arguments specifying .actions
     action_group = parser.add_argument_group(
@@ -470,10 +469,15 @@ def print_toml_config(settings: Settings, out: TextIO) -> None:
     print("\n".join(lines), file=out)
 
 
-class ArgparseExtendAction(argparse.Action):
-    """Action for doing 'extend' pre-3.8"""
+class ArgparseUnionAction(argparse.Action):
+    """Action for doing taking union of multiple command-line arguments for a single option"""
 
-    def __call__(self, parser, namespace, values, option_string=None):  # type: ignore
+    def __call__(  # type: ignore
+        self,
+        parser: argparse.ArgumentParser,
+        namespace: argparse.Namespace,
+        values: Sequence[Any],
+        option_string: Optional[str] = None,
+    ) -> None:
         items = getattr(namespace, self.dest, [])
-        items.extend(values)
-        setattr(namespace, self.dest, items)
+        setattr(namespace, self.dest, set(items) | set(values))

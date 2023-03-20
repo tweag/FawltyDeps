@@ -5,9 +5,9 @@ import random
 import string
 import sys
 from dataclasses import dataclass, field
-from itertools import chain, combinations, product
+from itertools import chain, permutations, product
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Set, Type, Union
+from typing import Any, Dict, Iterable, List, Optional, Set, Tuple, Type, TypeVar, Union
 
 import pytest
 from hypothesis import given, strategies
@@ -131,36 +131,37 @@ def test_base_path_overrides_config_file_code_and_deps(
 
 
 OPTION_VALUES = {
-    "code": ["a", "b", "c"],
-    "deps": ["d", "e"],
-    "ignore-undeclared": ["f", "g"],
-    "ignore-unused": ["h", "i", "j"]
+    "code": {"a", "b", "c"},
+    "deps": {"d", "e"},
+    "ignore-undeclared": {"f", "g"},
+    "ignore-unused": {"h", "i", "j"},
 }
 
-def multivalued_optargs_grid():
-    def powerset_non_empties(iterable):
-        xs = list(iterable)
-        return chain.from_iterable(combinations(xs, k) for k in range(1, len(xs)))
 
-    rev_keyed = {v: k for k, vs in OPTION_VALUES.items() for v in vs}
-    ret = []
-    for items in OPTION_VALUES.values():
-        split_2 = set(
-            chain.from_iterable(
-                [(x, y), (y, x)]
-                for x, y in combinations(powerset_non_empties(items), 2)
-                if len(x + y) == len(items) and not set(x) & set(y)
-            )
-        )
-        ret.append(split_2)
-    ret = list(product(*ret))
-    ret2 = []
-    for param_grid in ret:
+def multivalued_optargs_grid() -> Iterable[List[str]]:
+    """Create command-line option/argument combinations which
+    mix order and number of multivalued parameters."""
+
+    T = TypeVar("T")
+
+    def subsequence_pairs(
+        xs: Tuple[T, ...]
+    ) -> Iterable[Tuple[Tuple[T, ...], Tuple[T, ...]]]:
+        assert len(xs) >= 2
+        for i in range(1, len(xs)):
+            yield xs[:i], xs[i:]
+
+    option_partitions = [
+        {pair for seq in permutations(items) for pair in subsequence_pairs(seq)}
+        for items in OPTION_VALUES.values()
+    ]
+
+    opt_by_arg = {arg: opt for opt, argvals in OPTION_VALUES.items() for arg in argvals}
+
+    for param_grid in set(product(*option_partitions)):
         xss = list(chain(*param_grid))
         random.shuffle(xss)
-        optargs = list(chain(*[[f"--{rev_keyed[xs[0]]}"] + list(xs) for xs in xss]))
-        ret2.append(optargs)
-    return ret2
+        yield list(chain(*[[f"--{opt_by_arg[xs[0]]}"] + list(xs) for xs in xss]))
 
 
 @pytest.mark.parametrize("optargs", multivalued_optargs_grid())
@@ -170,6 +171,17 @@ def test_multivalued_options_are_aggregated_correctly(optargs):
     assert settings.deps == to_path_set(OPTION_VALUES["deps"])
     assert settings.ignore_undeclared == set(OPTION_VALUES["ignore-undeclared"])
     assert settings.ignore_unused == set(OPTION_VALUES["ignore-unused"])
+
+
+@pytest.mark.parametrize(
+    "optname",
+    set(act.dest for act in build_parser()._actions)  # pylint: disable=protected-access
+    & set(Settings.__fields__),
+)
+def test_settings_members_are_absent_from_namespace_if_not_provided_at_cli(optname):
+    parsed_cli = build_parser().parse_args([])
+    with pytest.raises(AttributeError):
+        getattr(parsed_cli, optname)
 
 
 @dataclass
