@@ -12,7 +12,7 @@ import subprocess
 import sys
 import tarfile
 from pathlib import Path
-from typing import Any, Dict, Iterator, List, NamedTuple, Optional, Set, Tuple
+from typing import Iterator, List, NamedTuple, Optional, Tuple
 from urllib.parse import urlparse
 from urllib.request import urlretrieve
 
@@ -22,14 +22,13 @@ from pkg_resources import Requirement
 from fawltydeps.packages import LocalPackageLookup
 from fawltydeps.types import TomlData
 
-from .project_helpers import CachedExperimentVenv
+from .project_helpers import AnalysisExpectations, CachedExperimentVenv, JsonData
 
 if sys.version_info >= (3, 11):
     import tomllib  # pylint: disable=E1101
 else:
     import tomli as tomllib
 
-JsonData = Dict[str, Any]
 logger = logging.getLogger(__name__)
 
 # Each of these tests will download and unpack a 3rd-party project before analyzing it;
@@ -87,66 +86,30 @@ class Experiment(NamedTuple):
     Input to the experiment(`args`) is the set of
     command line options to run `fawltydeps` command line tool.
 
-    The expected results of the experiment are `Analysis` results, namely:
-    `imports`, `declared_deps`, `undeclared_deps`, `unused_deps`
+    The expected results of the experiment are encoded in the .expectation
+    member. See AnalysisExpectation for more details.
     """
 
     name: str
+    description: Optional[str]
     args: List[str]
     requirements: List[str]
-    description: Optional[str] = None
-    imports: Optional[List[str]] = None
-    declared_deps: Optional[List[str]] = None
-    undeclared_deps: Optional[List[str]] = None
-    unused_deps: Optional[List[str]] = None
+    expectations: AnalysisExpectations
 
     @classmethod
     def parse_from_toml(cls, name: str, data: TomlData) -> "Experiment":
         return cls(
             name=name,
+            description=data.get("description"),
             args=data["args"],
             requirements=data.get("requirements", []),
-            description=data.get("description"),
-            imports=data.get("imports"),
-            declared_deps=data.get("declared_deps"),
-            undeclared_deps=data.get("undeclared_deps"),
-            unused_deps=data.get("unused_deps"),
+            expectations=AnalysisExpectations.parse_from_toml(data),
         )
 
     def get_venv_dir(self, cache: pytest.Cache) -> Path:
         """Get this venv's dir and create it if necessary."""
         venv = CachedExperimentVenv(self.requirements)
         return venv(cache)
-
-    def verify_analysis_json(self, analysis: JsonData) -> None:
-        """Assert that the given JSON analysis matches our expectations."""
-
-        def json_names(data: List[JsonData]) -> Set[str]:
-            return {d["name"] for d in data}
-
-        if self.imports is not None:
-            print(f"{self.name}: Checking imports")
-            assert set(self.imports) == json_names(analysis["imports"])
-        else:
-            print(f"{self.name}: No imports to check")
-
-        if self.declared_deps is not None:
-            print(f"{self.name}: Checking declared dependencies")
-            assert set(self.declared_deps) == json_names(analysis["declared_deps"])
-        else:
-            print(f"{self.name}: No declared dependencies")
-
-        if self.undeclared_deps is not None:
-            print(f"{self.name}: Checking undeclared dependencies")
-            assert set(self.undeclared_deps) == json_names(analysis["undeclared_deps"])
-        else:
-            print(f"{self.name}: No undeclared dependencies to check")
-
-        if self.unused_deps is not None:
-            print(f"{self.name}: Checking unused dependencies")
-            assert set(self.unused_deps) == json_names(analysis["unused_deps"])
-        else:
-            print(f"{self.name}: No unused dependencies to check")
 
 
 class ThirdPartyProject(NamedTuple):
@@ -309,4 +272,4 @@ def test_real_project(request, project, experiment):
     )
 
     print(f"Checking experiment {experiment.name} for project under {project_dir}...")
-    experiment.verify_analysis_json(analysis)
+    experiment.expectations.verify_analysis_json(analysis)
