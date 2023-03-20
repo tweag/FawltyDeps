@@ -3,9 +3,8 @@
 import ast
 import json
 import logging
-import sys
 from pathlib import Path
-from typing import Iterable, Iterator, Optional, Set, Tuple
+from typing import Iterable, Iterator, Optional, Set, TextIO, Tuple
 
 import isort
 
@@ -14,6 +13,7 @@ from fawltydeps.types import (
     ParsedImport,
     PathOrSpecial,
     UnparseablePathException,
+    StdInNotProvidedException,
 )
 from fawltydeps.utils import dirs_between, walk_dir
 
@@ -172,7 +172,9 @@ def parse_dir(path: Path) -> Iterator[ParsedImport]:
             yield from parse_notebook_file(file, local_context=local_context)
 
 
-def parse_any_arg(arg: PathOrSpecial) -> Iterator[ParsedImport]:
+def parse_any_arg(
+    arg: PathOrSpecial, stdin: Optional[TextIO] = None
+) -> Iterator[ParsedImport]:
     """Interpret the given command-line argument and invoke a suitable parser.
 
     These cases are handled:
@@ -180,11 +182,17 @@ def parse_any_arg(arg: PathOrSpecial) -> Iterator[ParsedImport]:
       - arg refers to a file: Call parse_python_file() or parse_notebook_file()
       - arg refers to a dir: Call parse_dir()
 
-    Otherwise raise UnparseablePathException with a suitable error message.
+    Otherwise raise UnparseablePathException or StdInNotProvidedException
+    with a suitable error message.
     """
     if arg == "<stdin>":
         logger.info("Parsing Python code from standard input")
-        return parse_code(sys.stdin.read(), source=Location(arg))
+        if stdin:
+            return parse_code(stdin.read(), source=Location(arg))
+        raise StdInNotProvidedException(
+            ctx="There is no stdin to parse."
+            "When giving '-' as '--code' argument, provide a stdin."
+        )
     assert isinstance(arg, Path)
     if arg.is_file():
         if arg.suffix == ".py":
@@ -205,10 +213,12 @@ def parse_any_arg(arg: PathOrSpecial) -> Iterator[ParsedImport]:
     )
 
 
-def parse_any_args(args: Set[PathOrSpecial]) -> Iterator[ParsedImport]:
+def parse_any_args(
+    args: Set[PathOrSpecial], stdin: Optional[TextIO] = None
+) -> Iterator[ParsedImport]:
     """Interpret given set of command line arguments.
 
     Pass a list of paths from which to discover and parse imports from the code.
     """
     for arg in args:
-        yield from parse_any_arg(arg)
+        yield from parse_any_arg(arg, stdin)

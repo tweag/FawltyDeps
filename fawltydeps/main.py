@@ -88,7 +88,7 @@ class Analysis:
         return None
 
     @classmethod
-    def create(cls, settings: Settings) -> "Analysis":
+    def create(cls, settings: Settings, stdin: Optional[TextIO] = None) -> "Analysis":
         """Exercise FawltyDeps' core logic according to the given settings.
 
         Perform the actions specified in 'settings.actions' and apply the other
@@ -103,7 +103,7 @@ class Analysis:
         if ret.is_enabled(
             Action.LIST_IMPORTS, Action.REPORT_UNDECLARED, Action.REPORT_UNUSED
         ):
-            ret.imports = list(extract_imports.parse_any_args(settings.code))
+            ret.imports = list(extract_imports.parse_any_args(settings.code, stdin))
 
         if ret.is_enabled(
             Action.LIST_DEPS, Action.REPORT_UNDECLARED, Action.REPORT_UNUSED
@@ -211,54 +211,77 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main() -> int:
-    """Command-line entry point."""
-    parser = build_parser()
-    args = parser.parse_args()
+def assign_exit_code(analysis: Analysis) -> int:
+    """
+    Assign exit code base in the analysis results.
 
-    settings = Settings.config(config_file=args.config_file).create(args)
-
-    logging.basicConfig(level=logging.WARNING - 10 * settings.verbosity)
-
-    if args.generate_toml_config:
-        print_toml_config(settings, sys.stdout)
-        return 0
-
-    try:
-        analysis = Analysis.create(settings)
-    except UnparseablePathException as exc:
-        return parser.error(exc.msg)  # exit code 2
-
-    # Exit codes:
-    # 0 - success, no problems found
-    # 1 - an exception propagates (this should not happen)
-    # 2 - command-line parsing error (see above)
-    # 3 - undeclared dependencies found
-    # 4 - unused dependencies found
+    Exit codes:
+    0 - success, no problems found
+    1 - an exception propagates (this should not happen)
+    2 - command-line parsing error (see above)
+    3 - undeclared dependencies found
+    4 - unused dependencies found
+    """
     exit_code = 0
     if analysis.is_enabled(Action.REPORT_UNDECLARED) and analysis.undeclared_deps:
         exit_code = 3
     elif analysis.is_enabled(Action.REPORT_UNUSED) and analysis.unused_deps:
         exit_code = 4
 
+    return exit_code
+
+
+def print_summary_message(
+    analysis: Analysis,
+    exit_code: int,
+    stdout: TextIO = sys.stdout,
+) -> None:
+    """
+    Print the summary message for CLI run.
+    """
     success_message = Analysis.success_message(
         analysis.is_enabled(Action.REPORT_UNDECLARED),
         analysis.is_enabled(Action.REPORT_UNUSED),
     )
 
-    if settings.output_format == OutputFormat.JSON:
-        analysis.print_json(sys.stdout)
-    elif settings.output_format == OutputFormat.HUMAN_DETAILED:
+    if analysis.settings.output_format == OutputFormat.JSON:
+        analysis.print_json(stdout)
+    elif analysis.settings.output_format == OutputFormat.HUMAN_DETAILED:
         analysis.print_human_readable(sys.stdout, details=True)
         if exit_code == 0 and success_message:
-            print(f"\n{success_message}")
-    elif settings.output_format == OutputFormat.HUMAN_SUMMARY:
-        analysis.print_human_readable(sys.stdout, details=False)
+            print(f"\n{success_message}", file=stdout)
+    elif analysis.settings.output_format == OutputFormat.HUMAN_SUMMARY:
+        analysis.print_human_readable(stdout, details=False)
         if exit_code == 0 and success_message:
-            print(f"\n{success_message}")
+            print(f"\n{success_message}", file=stdout)
         else:
-            print(f"\n{VERBOSE_PROMPT}")
+            print(f"\n{VERBOSE_PROMPT}", file=stdout)
     else:
         raise NotImplementedError
+
+
+def main(
+    cmdline_args: Optional[List[str]] = None,  # defaults to sys.argv[1:]
+    stdin: TextIO = sys.stdin,
+    stdout: TextIO = sys.stdout,
+) -> int:
+    """Command-line entry point."""
+    parser = build_parser()
+    args = parser.parse_args(cmdline_args)
+    settings = Settings.config(config_file=args.config_file).create(args)
+
+    logging.basicConfig(level=logging.WARNING - 10 * settings.verbosity)
+
+    if args.generate_toml_config:
+        print_toml_config(settings, stdout)
+        return 0
+
+    try:
+        analysis = Analysis.create(settings, stdin)
+    except UnparseablePathException as exc:
+        return parser.error(exc.msg)  # exit code 2
+
+    exit_code = assign_exit_code(analysis=analysis)
+    print_summary_message(analysis=analysis, exit_code=exit_code, stdout=stdout)
 
     return exit_code
