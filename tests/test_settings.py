@@ -130,26 +130,21 @@ def test_base_path_overrides_config_file_code_and_deps(
     assert settings.deps == expected
 
 
-CODE_VALUES = ["a", "b", "c"]
-DEPS_VALUES = ["d", "e"]
-UNDECLARED_VALUES = ["f", "g"]
-UNUSED_VALUES = ["h", "i", "j"]
-
+OPTION_VALUES = {
+    "code": ["a", "b", "c"],
+    "deps": ["d", "e"],
+    "ignore-undeclared": ["f", "g"],
+    "ignore-unused": ["h", "i", "j"]
+}
 
 def multivalued_optargs_grid():
     def powerset_non_empties(iterable):
         xs = list(iterable)
         return chain.from_iterable(combinations(xs, k) for k in range(1, len(xs)))
 
-    keyed_items = {
-        "code": CODE_VALUES,
-        "deps": DEPS_VALUES,
-        "ignore-undeclared": UNDECLARED_VALUES,
-        "ignore-unused": UNUSED_VALUES,
-    }
-    rev_keyed = {v: k for k, vs in keyed_items.items() for v in vs}
+    rev_keyed = {v: k for k, vs in OPTION_VALUES.items() for v in vs}
     ret = []
-    for items in keyed_items.values():
+    for items in OPTION_VALUES.values():
         split_2 = set(
             chain.from_iterable(
                 [(x, y), (y, x)]
@@ -171,10 +166,10 @@ def multivalued_optargs_grid():
 @pytest.mark.parametrize("optargs", multivalued_optargs_grid())
 def test_multivalued_options_are_aggregated_correctly(optargs):
     settings = run_build_settings(optargs)
-    assert settings.code == to_path_set(CODE_VALUES)
-    assert settings.deps == to_path_set(DEPS_VALUES)
-    assert settings.ignore_undeclared == set(UNDECLARED_VALUES)
-    assert settings.ignore_unused == set(UNUSED_VALUES)
+    assert settings.code == to_path_set(OPTION_VALUES["code"])
+    assert settings.deps == to_path_set(OPTION_VALUES["deps"])
+    assert settings.ignore_undeclared == set(OPTION_VALUES["ignore-undeclared"])
+    assert settings.ignore_unused == set(OPTION_VALUES["ignore-unused"])
 
 
 @dataclass
