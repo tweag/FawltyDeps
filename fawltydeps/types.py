@@ -25,6 +25,16 @@ class UnparseablePathException(Exception):
         self.msg = f"{ctx}: {path}"
 
 
+class StdInNotProvidedException(Exception):
+    """
+    Exception type when a '-' is given in parsing code option
+    but no stdin is provided.
+    """
+
+    def __init__(self, ctx: str):
+        self.msg = f"{ctx}"
+
+
 @total_ordering
 @dataclass(frozen=True)
 class Location:
