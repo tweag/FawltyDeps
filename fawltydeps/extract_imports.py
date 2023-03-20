@@ -13,7 +13,6 @@ from fawltydeps.types import (
     ParsedImport,
     PathOrSpecial,
     UnparseablePathException,
-    StdInNotProvidedException,
 )
 from fawltydeps.utils import dirs_between, walk_dir
 
@@ -182,17 +181,16 @@ def parse_any_arg(
       - arg refers to a file: Call parse_python_file() or parse_notebook_file()
       - arg refers to a dir: Call parse_dir()
 
-    Otherwise raise UnparseablePathException or StdInNotProvidedException
-    with a suitable error message.
+    Otherwise raise UnparseablePathException with a suitable error message.
     """
     if arg == "<stdin>":
+        if stdin is None:
+            raise UnparseablePathException(ctx="Missing <stdin> handle", path=Path("."))
         logger.info("Parsing Python code from standard input")
-        if stdin:
-            return parse_code(stdin.read(), source=Location(arg))
-        raise StdInNotProvidedException(
-            ctx="There is no stdin to parse."
-            "When giving '-' as '--code' argument, provide a stdin."
-        )
+        # 'isatty' checks if the stream is interactive.
+        if stdin.isatty():
+            logger.warning("Reading code from terminal input. Ctrl+D to stop.")
+        return parse_code(stdin.read(), source=Location(arg))
     assert isinstance(arg, Path)
     if arg.is_file():
         if arg.suffix == ".py":

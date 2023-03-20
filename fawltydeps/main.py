@@ -213,32 +213,29 @@ def build_parser() -> argparse.ArgumentParser:
 
 def assign_exit_code(analysis: Analysis) -> int:
     """
-    Assign exit code base in the analysis results.
+    Assign exit code based on the analysis results.
 
     Exit codes:
     0 - success, no problems found
     1 - an exception propagates (this should not happen)
-    2 - command-line parsing error (see above)
+    2 - command-line parsing error (generated in 'main')
     3 - undeclared dependencies found
     4 - unused dependencies found
     """
-    exit_code = 0
     if analysis.is_enabled(Action.REPORT_UNDECLARED) and analysis.undeclared_deps:
-        exit_code = 3
-    elif analysis.is_enabled(Action.REPORT_UNUSED) and analysis.unused_deps:
-        exit_code = 4
+        return 3
+    if analysis.is_enabled(Action.REPORT_UNUSED) and analysis.unused_deps:
+        return 4
 
-    return exit_code
+    return 0
 
 
-def print_summary_message(
+def print_output(
     analysis: Analysis,
     exit_code: int,
     stdout: TextIO = sys.stdout,
 ) -> None:
-    """
-    Print the summary message for CLI run.
-    """
+    """Print the summary message for CLI run."""
     success_message = Analysis.success_message(
         analysis.is_enabled(Action.REPORT_UNDECLARED),
         analysis.is_enabled(Action.REPORT_UNUSED),
@@ -282,6 +279,6 @@ def main(
         return parser.error(exc.msg)  # exit code 2
 
     exit_code = assign_exit_code(analysis=analysis)
-    print_summary_message(analysis=analysis, exit_code=exit_code, stdout=stdout)
+    print_output(analysis=analysis, exit_code=exit_code, stdout=stdout)
 
     return exit_code
