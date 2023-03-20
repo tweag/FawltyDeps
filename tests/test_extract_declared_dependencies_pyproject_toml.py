@@ -1,5 +1,7 @@
 """Test extracting dependencies from pyproject.toml"""
 import logging
+from dataclasses import dataclass, field
+from typing import List
 
 import pytest
 
@@ -169,63 +171,63 @@ def test_parse_pyproject_toml__pep621_or_poetry_dependencies__yields_dependencie
     assert result == expected
 
 
-@pytest.mark.parametrize(
-    "pyproject_toml,expected,metadata_standard,field_types",
-    [
-        pytest.param(
-            """\
+@dataclass
+class PyprojectTestVector:
+    """Test vectors for FawltyDeps Settings configuration."""
+
+    id: str
+    data: str
+    metadata_standard: str = field(
+        default_factory=lambda: "Poetry"
+    )  # possible options: 'Poetry' and 'PEP621'; Python 3.7 does not support 'Literal'
+    field_types: List[str] = field(default_factory=lambda: ["main"])
+    expect: List[str] = field(default_factory=list)
+
+
+pyproject_tests_malformed_samples = [
+    PyprojectTestVector(
+        id="poetry_dependencies_as_one_element_list",
+        data="""\
             [tool.poetry]
             dependencies = ["pylint"]
             """,
-            [],
-            "Poetry",
-            ["main"],
-            id="poetry_dependencies_as_one_element_list",
-        ),
-        pytest.param(
-            """\
+    ),
+    PyprojectTestVector(
+        id="poetry_dependencies_as_str",
+        data="""\
             [tool.poetry]
             dependencies = "pylint"
             """,
-            [],
-            "Poetry",
-            ["main"],
-            id="poetry_dependencies_as_str",
-        ),
-        pytest.param(
-            """\
+    ),
+    PyprojectTestVector(
+        id="poetry_dependencies_as_list",
+        data="""\
             [tool.poetry]
             [tool.poetry.group.dev]
             dependencies = ["black > 22", "mypy"]
             """,
-            [],
-            "Poetry",
-            ["group"],
-            id="poetry_dependencies_as_list",
-        ),
-        pytest.param(
-            """\
+        field_types=["group"],
+    ),
+    PyprojectTestVector(
+        id="poetry_extra_requirements_as_str_instead_of_list",
+        data="""\
             [tool.poetry]
             [tool.poetry.extras]
             test = "pytest"
             """,
-            [],
-            "Poetry",
-            ["extra"],
-            id="poetry_extra_requirements_as_str_instead_of_list",
-        ),
-        pytest.param(
-            """\
+        field_types=["extra"],
+    ),
+    PyprojectTestVector(
+        id="poetry_extra_requirements_as_list_instead_of_dict",
+        data="""\
             [tool.poetry]
             extras = ["pytest"]
             """,
-            [],
-            "Poetry",
-            ["extra"],
-            id="poetry_extra_requirements_as_list_instead_of_dict",
-        ),
-        pytest.param(
-            """\
+        field_types=["extra"],
+    ),
+    PyprojectTestVector(
+        id="poetry_all_dependencies_malformatted",
+        data="""\
             [tool.poetry]
 
             dependencies = ["pylint"]
@@ -236,45 +238,43 @@ def test_parse_pyproject_toml__pep621_or_poetry_dependencies__yields_dependencie
             [tool.poetry.extras]
             black = "^22"
             """,
-            [],
-            "Poetry",
-            ["main", "group", "extra"],
-            id="poetry_all_dependencies_malformatted",
-        ),
-        pytest.param(
-            """\
+        field_types=["main", "group", "extra"],
+    ),
+    PyprojectTestVector(
+        id="pep621_dependencies_as_dict_instead_of_list",
+        data="""\
             [project.dependencies]
             pylint = ""
             """,
-            [],
-            "PEP621",
-            ["main"],
-            id="pep621_dependencies_as_dict_instead_of_list",
-        ),
-        pytest.param(
-            """\
+        metadata_standard="PEP621",
+    ),
+    PyprojectTestVector(
+        id="pep621_optional_dependencies_as_list_instead_of_dict",
+        data="""\
             [project]
             optional-dependencies = ["pylint"]
             """,
-            [],
-            "PEP621",
-            ["optional"],
-            id="pep621_optional_dependencies_as_list_instead_of_dict",
-        ),
-    ],
+        metadata_standard="PEP621",
+        field_types=["optional"],
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "vector", [pytest.param(v, id=v.id) for v in pyproject_tests_malformed_samples]
 )
 def test_parse_pyproject_content__malformatted_poetry_dependencies__yields_no_dependencies(
-    write_tmp_files, caplog, pyproject_toml, expected, metadata_standard, field_types
+    write_tmp_files, caplog, vector
 ):
-    tmp_path = write_tmp_files({"pyproject.toml": pyproject_toml})
+    tmp_path = write_tmp_files({"pyproject.toml": vector.data})
     path = tmp_path / "pyproject.toml"
 
     caplog.set_level(logging.ERROR)
     result = list(parse_pyproject_toml(path))
-    assert result == expected
-    for field_type in field_types:
+    assert result == vector.expect
+    for field_type in vector.field_types:
         assert (
-            f"Failed to parse {metadata_standard} {field_type} dependencies in {path}"
+            f"Failed to parse {vector.metadata_standard} {field_type} dependencies in {path}"
             in caplog.text
         )
 
