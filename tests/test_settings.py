@@ -4,9 +4,10 @@ import logging
 import random
 import string
 import sys
+from dataclasses import dataclass, field
 from itertools import chain, combinations, product
 from pathlib import Path
-from typing import Iterable, List, Optional, Set
+from typing import Any, Dict, Iterable, List, Optional, Set, Type, Union
 
 import pytest
 from hypothesis import given, strategies
@@ -15,6 +16,7 @@ from pydantic.env_settings import SettingsError  # pylint: disable=no-name-in-mo
 
 from fawltydeps.main import build_parser
 from fawltydeps.settings import Action, OutputFormat, Settings
+from fawltydeps.types import TomlData
 
 if sys.version_info >= (3, 11):
     from tomllib import TOMLDecodeError  # pylint: disable=no-member
@@ -175,208 +177,169 @@ def test_multivalued_options_are_aggregated_correctly(optargs):
     assert settings.ignore_unused == set(UNUSED_VALUES)
 
 
+@dataclass
+class SettingsTestVector:
+    """Test vectors for FawltyDeps Settings configuration."""
+
+    id: str
+    config: Optional[Union[str, TomlData]] = None
+    env: Dict[str, str] = field(default_factory=dict)
+    cmdline: Dict[str, Any] = field(default_factory=dict)
+    expect: Union[Dict[str, Any], Type[Exception]] = field(
+        default_factory=lambda: EXPECT_DEFAULTS
+    )
+
+
+settings_tests_samples = [
+    SettingsTestVector("no_config_file__uses_defaults"),
+    SettingsTestVector("empty_config_file__uses_defaults", config=""),
+    SettingsTestVector("empty_config_file_section__uses_defaults", config={}),
+    SettingsTestVector(
+        "config_file_invalid_toml__raises_TOMLDecodeError",
+        config="THIS IS BOGUS TOML",
+        expect=TOMLDecodeError,
+    ),
+    SettingsTestVector(
+        "config_file_unsupported_fields__raises_ValidationError",
+        config=dict(code="my_code_dir", not_supported=123),  # unsupported directive
+        expect=ValidationError,
+    ),
+    SettingsTestVector(
+        "config_file_invalid_values__raises_ValidationError",
+        config=dict(actions="list_imports"),  # actions is not a list
+        expect=ValidationError,
+    ),
+    SettingsTestVector(
+        "config_file__overrides_some_defaults",
+        config=dict(actions=["list_deps"], deps=["my_requirements.txt"]),
+        expect=make_settings_dict(
+            actions={Action.LIST_DEPS}, deps={Path("my_requirements.txt")}
+        ),
+    ),
+    SettingsTestVector(
+        "env_var_with_wrong_type__raises_SettingsError",
+        env=dict(actions="list_imports"),  # actions is not a list
+        expect=SettingsError,
+    ),
+    SettingsTestVector(
+        "env_var_with_invalid_value__raises_SettingsError",
+        env=dict(ignore_unused='["foo", "missing_quote]'),  # cannot parse value
+        expect=SettingsError,
+    ),
+    SettingsTestVector(
+        "env_vars__overrides_some_defaults",
+        env=dict(actions='["list_imports"]', ignore_unused='["foo", "bar"]'),
+        expect=make_settings_dict(
+            actions={Action.LIST_IMPORTS}, ignore_unused={"foo", "bar"}
+        ),
+    ),
+    SettingsTestVector(
+        "config_file_and_env_vars__overrides_separate_defaults",
+        config=dict(code=["my_code_dir"], deps=["my_requirements.txt"]),
+        env=dict(actions='["list_imports"]', ignore_unused='["foo", "bar"]'),
+        expect=make_settings_dict(
+            actions={Action.LIST_IMPORTS},
+            code={Path("my_code_dir")},
+            deps={Path("my_requirements.txt")},
+            ignore_unused={"foo", "bar"},
+        ),
+    ),
+    SettingsTestVector(
+        "config_file_and_env_vars__env_overrides_file",
+        config=dict(code="my_code_dir", deps=["my_requirements.txt"]),
+        env=dict(actions='["list_imports"]', code='["<stdin>"]'),
+        expect=make_settings_dict(
+            actions={Action.LIST_IMPORTS},
+            code={"<stdin>"},
+            deps={Path("my_requirements.txt")},
+        ),
+    ),
+    SettingsTestVector(
+        "cmd_line_unsupported_field__is_ignored",
+        cmdline=dict(unsupported=123),  # unsupported Settings field
+    ),
+    SettingsTestVector(
+        "cmd_line_invalid_value__raises_ValidationError",
+        cmdline=dict(actions="['wrong_action']"),  # invalid enum value
+        expect=ValidationError,
+    ),
+    SettingsTestVector(
+        "cmd_line_wrong_type__raises_ValidationError",
+        cmdline=dict(actions="list_imports"),  # should be list/set, not str
+        expect=ValidationError,
+    ),
+    SettingsTestVector(
+        "cmd_line__overrides_some_defaults",
+        cmdline=dict(actions={Action.LIST_IMPORTS}, ignore_unused={"foo", "bar"}),
+        expect=make_settings_dict(
+            actions={Action.LIST_IMPORTS}, ignore_unused={"foo", "bar"}
+        ),
+    ),
+    SettingsTestVector(
+        "cmd_line__overrides_config_file",
+        config=dict(code="my_code_dir", deps=["my_requirements.txt"]),
+        cmdline=dict(actions={Action.LIST_IMPORTS}, code={"<stdin>"}),
+        expect=make_settings_dict(
+            actions={Action.LIST_IMPORTS},
+            code={"<stdin>"},
+            deps={Path("my_requirements.txt")},
+        ),
+    ),
+    SettingsTestVector(
+        "cmd_line__verbose_minus_quiet__determines_verbosity",
+        cmdline=dict(verbose=3, quiet=5),
+        expect=make_settings_dict(verbosity=-2),
+    ),
+    SettingsTestVector(
+        "cmd_line__verbose__overrides_env_verbosity",
+        env=dict(verbosity="1"),
+        cmdline=dict(verbose=2),
+        expect=make_settings_dict(verbosity=2),
+    ),
+    SettingsTestVector(
+        "cmd_line__no_verbose_no_quiet__uses_underlying_verbosity",
+        config=dict(verbosity=-1),
+        expect=make_settings_dict(verbosity=-1),
+    ),
+    SettingsTestVector(
+        "cmd_line_env_var_and_config_file__cascades",
+        config=dict(
+            actions='["list_imports"]',
+            code=["my_code_dir"],
+            deps=["my_requirements.txt"],
+            verbosity=1,
+        ),
+        env=dict(actions='["list_deps"]', code='["<stdin>"]'),
+        cmdline=dict(code=["my_notebook.ipynb"], verbose=2, quiet=4),
+        expect=make_settings_dict(
+            actions={Action.LIST_DEPS},  # env overrides config file
+            code={Path("my_notebook.ipynb")},  # cmd line overrides env + config file
+            deps={Path("my_requirements.txt")},  # from config file
+            verbosity=-2,  # calculated from cmd line, overrides config file
+        ),
+    ),
+]
+
+
 @pytest.mark.parametrize(
-    "config_settings,env_settings,cmdline_settings,expect",
-    [
-        pytest.param(
-            None,  # config file disabled
-            {},
-            {},
-            EXPECT_DEFAULTS,
-            id="no_config_file__uses_defaults",
-        ),
-        pytest.param(
-            "",  # empty pyproject.toml
-            {},
-            {},
-            EXPECT_DEFAULTS,
-            id="empty_config_file__uses_defaults",
-        ),
-        pytest.param(
-            {},  # pyproject.toml with empty [tool.fawltydeps] section
-            {},
-            {},
-            EXPECT_DEFAULTS,
-            id="empty_config_file_section__uses_defaults",
-        ),
-        pytest.param(
-            "THIS IS BOGUS TOML",  # pyproject.toml with invalid TOML
-            {},
-            {},
-            TOMLDecodeError,
-            id="config_file_invalid_toml__raises_TOMLDecodeError",
-        ),
-        pytest.param(
-            dict(code="my_code_dir", not_supported=123),  # unsupported directive
-            {},
-            {},
-            ValidationError,
-            id="config_file_unsupported_fields__raises_ValidationError",
-        ),
-        pytest.param(
-            dict(actions="list_imports"),  # actions is not a list
-            {},
-            {},
-            ValidationError,
-            id="config_file_invalid_values__raises_ValidationError",
-        ),
-        pytest.param(
-            dict(actions=["list_deps"], deps=["my_requirements.txt"]),
-            {},
-            {},
-            make_settings_dict(
-                actions={Action.LIST_DEPS}, deps={Path("my_requirements.txt")}
-            ),
-            id="config_file__overrides_some_defaults",
-        ),
-        pytest.param(
-            None,
-            dict(actions="list_imports"),  # actions is not a list
-            {},
-            SettingsError,
-            id="env_var_with_wrong_type__raises_SettingsError",
-        ),
-        pytest.param(
-            None,
-            dict(ignore_unused='["foo", "missing_quote]'),  # cannot parse value
-            {},
-            SettingsError,
-            id="env_var_with_invalid_value__raises_SettingsError",
-        ),
-        pytest.param(
-            None,
-            dict(actions='["list_imports"]', ignore_unused='["foo", "bar"]'),
-            {},
-            make_settings_dict(
-                actions={Action.LIST_IMPORTS}, ignore_unused={"foo", "bar"}
-            ),
-            id="env_vars__overrides_some_defaults",
-        ),
-        pytest.param(
-            dict(code=["my_code_dir"], deps=["my_requirements.txt"]),
-            dict(actions='["list_imports"]', ignore_unused='["foo", "bar"]'),
-            {},
-            make_settings_dict(
-                actions={Action.LIST_IMPORTS},
-                code={Path("my_code_dir")},
-                deps={Path("my_requirements.txt")},
-                ignore_unused={"foo", "bar"},
-            ),
-            id="config_file_and_env_vars__overrides_separate_defaults",
-        ),
-        pytest.param(
-            dict(code="my_code_dir", deps=["my_requirements.txt"]),
-            dict(actions='["list_imports"]', code='["<stdin>"]'),
-            {},
-            make_settings_dict(
-                actions={Action.LIST_IMPORTS},
-                code={"<stdin>"},
-                deps={Path("my_requirements.txt")},
-            ),
-            id="config_file_and_env_vars__env_overrides_file",
-        ),
-        pytest.param(
-            None,
-            {},
-            dict(unsupported=123),  # unsupported Settings field
-            EXPECT_DEFAULTS,
-            id="cmd_line_unsupported_field__is_ignored",
-        ),
-        pytest.param(
-            None,
-            {},
-            dict(actions="['wrong_action']"),  # invalid enum value
-            ValidationError,
-            id="cmd_line_invalid_value__raises_ValidationError",
-        ),
-        pytest.param(
-            None,
-            {},
-            dict(actions="list_imports"),  # should be list/set, not str
-            ValidationError,
-            id="cmd_line_wrong_type__raises_ValidationError",
-        ),
-        pytest.param(
-            None,
-            {},
-            dict(actions={Action.LIST_IMPORTS}, ignore_unused={"foo", "bar"}),
-            make_settings_dict(
-                actions={Action.LIST_IMPORTS}, ignore_unused={"foo", "bar"}
-            ),
-            id="cmd_line__overrides_some_defaults",
-        ),
-        pytest.param(
-            dict(code="my_code_dir", deps=["my_requirements.txt"]),
-            {},
-            dict(actions={Action.LIST_IMPORTS}, code={"<stdin>"}),
-            make_settings_dict(
-                actions={Action.LIST_IMPORTS},
-                code={"<stdin>"},
-                deps={Path("my_requirements.txt")},
-            ),
-            id="cmd_line__overrides_config_file",
-        ),
-        pytest.param(
-            None,
-            {},
-            dict(verbose=3, quiet=5),
-            make_settings_dict(verbosity=-2),
-            id="cmd_line__verbose_minus_quiet__determines_verbosity",
-        ),
-        pytest.param(
-            None,
-            dict(verbosity="1"),
-            dict(verbose=2),
-            make_settings_dict(verbosity=2),
-            id="cmd_line__verbose__overrides_env_verbosity",
-        ),
-        pytest.param(
-            dict(verbosity=-1),
-            {},
-            {},
-            make_settings_dict(verbosity=-1),
-            id="cmd_line__no_verbose_no_quiet__uses_underlying_verbosity",
-        ),
-        pytest.param(
-            dict(
-                actions='["list_imports"]',
-                code=["my_code_dir"],
-                deps=["my_requirements.txt"],
-                verbosity=1,
-            ),
-            dict(actions='["list_deps"]', code='["<stdin>"]'),
-            dict(code=["my_notebook.ipynb"], verbose=2, quiet=4),
-            make_settings_dict(
-                actions={Action.LIST_DEPS},  # env overrides config file
-                code={
-                    Path("my_notebook.ipynb")
-                },  # cmd line overrides env + config file
-                deps={Path("my_requirements.txt")},  # from config file
-                verbosity=-2,  # calculated from cmd line, overrides config file
-            ),
-            id="cmd_line_env_var_and_config_file__cascades",
-        ),
-    ],
+    "vector", [pytest.param(v, id=v.id) for v in settings_tests_samples]
 )
 def test_settings(
-    config_settings,
-    env_settings,
-    cmdline_settings,
-    expect,
+    vector,
     setup_fawltydeps_config,
     setup_env,
 ):  # pylint: disable=too-many-arguments
-    if config_settings is None:
+    if vector.config is None:
         config_file = None
     else:
-        config_file = setup_fawltydeps_config(config_settings)
-    setup_env(**env_settings)
-    cmdline_args = argparse.Namespace(**cmdline_settings)
-    if isinstance(expect, dict):
+        config_file = setup_fawltydeps_config(vector.config)
+    setup_env(**vector.env)
+    cmdline_args = argparse.Namespace(**vector.cmdline)
+    if isinstance(vector.expect, dict):
         settings = Settings.config(config_file=config_file).create(cmdline_args)
-        assert settings.dict() == expect
+        assert settings.dict() == vector.expect
     else:  # Assume we expect an exception
-        with pytest.raises(expect):
+        with pytest.raises(vector.expect):
             Settings.config(config_file=config_file).create(cmdline_args)
 
 
