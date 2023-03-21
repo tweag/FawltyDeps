@@ -7,18 +7,7 @@ import sys
 from dataclasses import dataclass
 from dataclasses import fields as dataclass_fields
 from pathlib import Path
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    Iterable,
-    Iterator,
-    List,
-    Optional,
-    Set,
-    Tuple,
-    Type,
-)
+from typing import Any, Callable, Dict, Iterable, Iterator, List, Optional, Set, Type
 
 import pytest
 
@@ -182,7 +171,8 @@ class BaseExperiment:
     expectations: AnalysisExpectations
 
     @staticmethod
-    def init_args_from_toml(name: str, data: TomlData) -> Dict[str, Any]:
+    def _init_args_from_toml(name: str, data: TomlData) -> Dict[str, Any]:
+        """Extract members from TOML into kwargs for a subclass constructor."""
         return dict(
             name=name,
             description=data.get("description"),
@@ -192,6 +182,7 @@ class BaseExperiment:
 
     @classmethod
     def from_toml(cls, name: str, data: TomlData) -> "BaseExperiment":
+        """Create an instance from TOML data."""
         raise NotImplementedError
 
     def get_venv_dir(self, cache: pytest.Cache) -> Path:
@@ -216,20 +207,14 @@ class BaseProject:
     experiments: List[BaseExperiment]
 
     @staticmethod
-    def parse_toml(
-        toml_path: Path, ExperimentClass: Type[BaseExperiment]
-    ) -> Tuple[Dict[str, Any], TomlData]:
-        try:
-            with toml_path.open("rb") as f:
-                toml_data = tomllib.load(f)
-        except tomllib.TOMLDecodeError:
-            print(f"Error occurred while parsing file: {toml_path}")
-            raise
-
+    def _init_args_from_toml(
+        toml_data: TomlData, ExperimentClass: Type[BaseExperiment]
+    ) -> Dict[str, Any]:
+        """Extract members from TOML into kwargs for a subclass constructor."""
         # We ultimately _trust_ the .toml files read here, so we can skip all
         # the usual error checking associated with validating external data.
         project_name = toml_data["project"]["name"]
-        init_args = dict(
+        return dict(
             name=project_name,
             description=toml_data["project"].get("description"),
             experiments=[
@@ -237,9 +222,17 @@ class BaseProject:
                 for name, data in toml_data["experiments"].items()
             ],
         )
-        return init_args, toml_data
 
     @classmethod
     def collect(cls) -> Iterator["BaseProject"]:
         """Find and generate all projects in this test suite."""
         raise NotImplementedError
+
+
+def parse_toml(toml_path: Path) -> TomlData:
+    try:
+        with toml_path.open("rb") as f:
+            return tomllib.load(f)
+    except tomllib.TOMLDecodeError:
+        print(f"Error occurred while parsing file: {toml_path}")
+        raise

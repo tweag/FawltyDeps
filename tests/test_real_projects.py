@@ -22,7 +22,7 @@ from pkg_resources import Requirement
 from fawltydeps.packages import LocalPackageLookup
 from fawltydeps.types import TomlData
 
-from .project_helpers import BaseExperiment, BaseProject, JsonData
+from .project_helpers import BaseExperiment, BaseProject, JsonData, parse_toml
 
 logger = logging.getLogger(__name__)
 
@@ -87,7 +87,7 @@ class Experiment(BaseExperiment):
 
     @classmethod
     def from_toml(cls, name: str, data: TomlData) -> "Experiment":
-        return cls(args=data["args"], **cls.init_args_from_toml(name, data))
+        return cls(args=data["args"], **cls._init_args_from_toml(name, data))
 
 
 @dataclass
@@ -110,12 +110,12 @@ class ThirdPartyProject(BaseProject):
     @classmethod
     def collect(cls) -> Iterator["ThirdPartyProject"]:
         for path in filter(lambda p: p.suffix == ".toml", REAL_PROJECTS_DIR.iterdir()):
-            init_args, toml_data = cls.parse_toml(path, Experiment)
+            toml_data = parse_toml(path)
             yield cls(
                 toml_path=path,
                 url=toml_data["project"]["url"],
                 sha256=toml_data["project"]["sha256"],
-                **init_args,
+                **cls._init_args_from_toml(toml_data, Experiment),
             )
 
     def tarball_name(self) -> str:
