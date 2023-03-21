@@ -145,7 +145,7 @@ def cli_arguments_combinations(draw):
     # to point to a parser that we want fawltydeps to use.
     # Following code ensures that we do not encounter trying to match
     # explicit file with incorrect parser (square in the oval-shaped hole problem)
-    drawn_deps = draw(deps_option_strategy(dep_paths))
+    drawn_deps = [] if not dep_paths else draw(deps_option_strategy(dep_paths))
     deps_parser = []
     drawn_deps_parser = draw(deps_parser_choice_strategy)
     # a simple and not 100% accurate check if deps parser matches explicitly given file
