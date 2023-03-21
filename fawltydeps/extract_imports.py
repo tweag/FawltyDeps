@@ -9,6 +9,7 @@ from typing import Iterable, Iterator, Optional, Set, TextIO, Tuple
 import isort
 
 from fawltydeps.types import (
+    CodeSource,
     Location,
     ParsedImport,
     PathOrSpecial,
@@ -220,3 +221,31 @@ def parse_any_args(
     """
     for arg in args:
         yield from parse_any_arg(arg, stdin)
+
+
+def validate_code_source(
+    path: PathOrSpecial, base_dir: Optional[Path] = None
+) -> Optional[CodeSource]:
+    """Check if the given file path is a valid source for parsing imports.
+
+    - Return the given path as a CodeSource object iff it is a .py or .ipynb
+      file (or the "<stdin>" special case).
+    - Return None if this is a directory that must be traversed further to find
+      parseable files within.
+    - Raise UnparseablePathException if the given path cannot be parsed.
+    """
+    if path == "<stdin>":
+        return CodeSource(path, base_dir)
+    assert isinstance(path, Path)  # sanity check: SpecialPath handled above
+    if path.is_file():
+        if path.suffix in {".py", ".ipynb"}:
+            return CodeSource(path, base_dir)
+        raise UnparseablePathException(
+            ctx="Supported formats are .py and .ipynb; Cannot parse code", path=path
+        )
+    if path.is_dir():
+        logger.info("Finding Python files under %s", path)
+        return None
+    raise UnparseablePathException(
+        ctx="Code path to parse is neither dir nor file", path=path
+    )
