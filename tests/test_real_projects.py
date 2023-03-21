@@ -9,10 +9,10 @@ import hashlib
 import json
 import logging
 import subprocess
-import sys
 import tarfile
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterator, List, NamedTuple, Optional, Tuple
+from typing import Iterator, List, Optional
 from urllib.parse import urlparse
 from urllib.request import urlretrieve
 
@@ -22,12 +22,7 @@ from pkg_resources import Requirement
 from fawltydeps.packages import LocalPackageLookup
 from fawltydeps.types import TomlData
 
-from .project_helpers import AnalysisExpectations, CachedExperimentVenv, JsonData
-
-if sys.version_info >= (3, 11):
-    import tomllib  # pylint: disable=E1101
-else:
-    import tomli as tomllib
+from .project_helpers import BaseExperiment, BaseProject, JsonData
 
 logger = logging.getLogger(__name__)
 
@@ -80,39 +75,23 @@ def sha256sum(path: Path):
     return sha256.hexdigest()
 
 
-class Experiment(NamedTuple):
-    """A single experiment on a real world project
+@dataclass
+class Experiment(BaseExperiment):
+    """A single experiment to run FawltyDeps on a real world project.
 
-    Input to the experiment(`args`) is the set of
-    command line options to run `fawltydeps` command line tool.
-
-    The expected results of the experiment are encoded in the .expectation
-    member. See AnalysisExpectation for more details.
+    The given 'args' are passed as command line arguments to `fawltydeps`.
+    See BaseExperiment for details on the inherited members.
     """
 
-    name: str
-    description: Optional[str]
     args: List[str]
-    requirements: List[str]
-    expectations: AnalysisExpectations
 
     @classmethod
     def parse_from_toml(cls, name: str, data: TomlData) -> "Experiment":
-        return cls(
-            name=name,
-            description=data.get("description"),
-            args=data["args"],
-            requirements=data.get("requirements", []),
-            expectations=AnalysisExpectations.parse_from_toml(data),
-        )
-
-    def get_venv_dir(self, cache: pytest.Cache) -> Path:
-        """Get this venv's dir and create it if necessary."""
-        venv = CachedExperimentVenv(self.requirements)
-        return venv(cache)
+        return cls(args=data["args"], **cls.init_args_from_toml(name, data))
 
 
-class ThirdPartyProject(NamedTuple):
+@dataclass
+class ThirdPartyProject(BaseProject):
     """Encapsulate a 3rd-party project to be tested with FawltyDeps.
 
     This ultimately identifies a tarball containing a 3rd-party Python project,
@@ -125,42 +104,19 @@ class ThirdPartyProject(NamedTuple):
     """
 
     toml_path: Path
-    name: str
     url: str
     sha256: str
-    experiments: List[Experiment]
-    description: Optional[str] = None
 
     @classmethod
-    def parse_from_toml(cls, path: Path) -> "ThirdPartyProject":
-        try:
-            with path.open("rb") as f:
-                data = tomllib.load(f)
-        except tomllib.TOMLDecodeError:
-            print(f"Error occurred while parsing file: {path}")
-            raise
-
-        # We ultimately _trust_ the .toml files read here, so we can skip all
-        # the usual error checking associated with validating external data.
-        project_name = data["project"]["name"]
-        return cls(
-            toml_path=path,
-            name=project_name,
-            description=data["project"].get("description"),
-            url=data["project"]["url"],
-            sha256=data["project"]["sha256"],
-            experiments=[
-                Experiment.parse_from_toml(f"{project_name}:{name}", experiment_data)
-                for name, experiment_data in data["experiments"].items()
-            ],
-        )
-
-    @classmethod
-    def collect(cls) -> Iterator[Tuple["ThirdPartyProject", Experiment]]:
+    def collect(cls) -> Iterator["ThirdPartyProject"]:
         for path in filter(lambda p: p.suffix == ".toml", REAL_PROJECTS_DIR.iterdir()):
-            project = cls.parse_from_toml(path)
-            for experiment in project.experiments:
-                yield (project, experiment)
+            init_args, toml_data = cls.parse_toml(path, Experiment)
+            yield cls(
+                toml_path=path,
+                url=toml_data["project"]["url"],
+                sha256=toml_data["project"]["sha256"],
+                **init_args,
+            )
 
     def tarball_name(self) -> str:
         """The filename used for the tarball in the local cache."""
@@ -257,13 +213,22 @@ class ThirdPartyProject(NamedTuple):
 @pytest.mark.parametrize(
     "project, experiment",
     [
-        pytest.param(proj, experiment, id=experiment.name)
-        for proj, experiment in ThirdPartyProject.collect()
+        pytest.param(project, experiment, id=experiment.name)
+        for project in ThirdPartyProject.collect()
+        for experiment in project.experiments
     ],
 )
 def test_real_project(request, project, experiment):
     project_dir = project.get_project_dir(request.config.cache)
     venv_dir = experiment.get_venv_dir(request.config.cache)
+
+    print(f"Testing real project {project.name!r} under {project_dir}")
+    print(f"Project description: {project.description}")
+    print()
+    print(f"Running real project experiment: {experiment.name}")
+    print(f"Experiment description: {experiment.description}")
+    print()
+
     verify_requirements(venv_dir, experiment.requirements)
     analysis = run_fawltydeps_json(
         *experiment.args,
@@ -271,5 +236,4 @@ def test_real_project(request, project, experiment):
         cwd=project_dir,
     )
 
-    print(f"Checking experiment {experiment.name} for project under {project_dir}...")
     experiment.expectations.verify_analysis_json(analysis)
