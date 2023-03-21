@@ -176,7 +176,7 @@ def test_multivalued_options_are_aggregated_correctly(optargs):
 @pytest.mark.parametrize(
     "optname",
     set(act.dest for act in build_parser()._actions)  # pylint: disable=protected-access
-    & set(Settings.__fields__),
+    & set(Settings.__fields__.keys()),
 )
 def test_settings_members_are_absent_from_namespace_if_not_provided_at_cli(optname):
     parsed_cli = build_parser().parse_args([])
