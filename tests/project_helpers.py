@@ -7,12 +7,28 @@ import sys
 from dataclasses import dataclass
 from dataclasses import fields as dataclass_fields
 from pathlib import Path
-from typing import Any, Callable, Dict, Iterable, List, Optional, Set
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Iterable,
+    Iterator,
+    List,
+    Optional,
+    Set,
+    Tuple,
+    Type,
+)
 
 import pytest
 
 from fawltydeps.main import Analysis
 from fawltydeps.types import TomlData
+
+if sys.version_info >= (3, 11):
+    import tomllib  # pylint: disable=E1101
+else:
+    import tomli as tomllib
 
 JsonData = Dict[str, Any]
 
@@ -145,3 +161,85 @@ class AnalysisExpectations:
     def verify_analysis_json(self, analysis: JsonData) -> None:
         """Assert that the given JSON analysis matches our expectations."""
         self._verify_members(lambda member: {m["name"] for m in analysis[member]})
+
+
+@dataclass
+class BaseExperiment:
+    """A single experiment, running FawltyDeps on a test project.
+
+    An experiment is part of a bigger project (see BaseProject below) and has:
+    - A name and description, for documentation purposes.
+    - A list of requirements, to be installed into a virtualenv and made
+      available to FawltyDeps when this experiment is run
+      (see CachedExperimentVenv for details).
+    - A set of expectations on the resulting Analysis object, to be verified
+      after the FawltyDeps has been run (see AnalysisExpectations for details).
+    """
+
+    name: str
+    description: Optional[str]
+    requirements: List[str]
+    expectations: AnalysisExpectations
+
+    @staticmethod
+    def init_args_from_toml(name: str, data: TomlData) -> Dict[str, Any]:
+        return dict(
+            name=name,
+            description=data.get("description"),
+            requirements=data.get("requirements", []),
+            expectations=AnalysisExpectations.parse_from_toml(data),
+        )
+
+    @classmethod
+    def parse_from_toml(cls, name: str, data: TomlData) -> "BaseExperiment":
+        raise NotImplementedError
+
+    def get_venv_dir(self, cache: pytest.Cache) -> Path:
+        """Get this venv's dir and create it if necessary."""
+        return CachedExperimentVenv(self.requirements)(cache)
+
+
+@dataclass
+class BaseProject:
+    """Encapsulate a Python project to be tested with FawltyDeps.
+
+    This represents a project on which we want to run FawltyDeps in one or more
+    experiments. It has at least:
+    - A name and optional description, for documentation purposes.
+    - A list of experiments (see BaseExperiment above), describing one or more
+      scenarios for running FawltyDeps on this project, and what results to
+      expect in those scenarios.
+    """
+
+    name: str
+    description: Optional[str]
+    experiments: List[BaseExperiment]
+
+    @staticmethod
+    def parse_toml(
+        toml_path: Path, ExperimentClass: Type[BaseExperiment]
+    ) -> Tuple[Dict[str, Any], TomlData]:
+        try:
+            with toml_path.open("rb") as f:
+                toml_data = tomllib.load(f)
+        except tomllib.TOMLDecodeError:
+            print(f"Error occurred while parsing file: {toml_path}")
+            raise
+
+        # We ultimately _trust_ the .toml files read here, so we can skip all
+        # the usual error checking associated with validating external data.
+        project_name = toml_data["project"]["name"]
+        init_args = dict(
+            name=project_name,
+            description=toml_data["project"].get("description"),
+            experiments=[
+                ExperimentClass.parse_from_toml(f"{project_name}:{name}", data)
+                for name, data in toml_data["experiments"].items()
+            ],
+        )
+        return init_args, toml_data
+
+    @classmethod
+    def collect(cls) -> Iterator["BaseProject"]:
+        """Find and generate all projects in this test suite."""
+        raise NotImplementedError
