@@ -29,7 +29,7 @@ from fawltydeps.main import Analysis
 from fawltydeps.settings import Action, Settings
 from fawltydeps.types import TomlData
 
-from .project_helpers import BaseExperiment, BaseProject
+from .project_helpers import BaseExperiment, BaseProject, parse_toml
 
 # These are (slow) integration tests that are disabled by default.
 pytestmark = pytest.mark.integration
@@ -56,7 +56,7 @@ class Experiment(BaseExperiment):
         return cls(
             code=data.get("code", [""]),
             deps=data.get("deps", [""]),
-            **cls.init_args_from_toml(name, data),
+            **cls._init_args_from_toml(name, data),
         )
 
     def build_settings(self, project_path: Path, cache: pytest.Cache) -> Settings:
@@ -89,8 +89,8 @@ class SampleProject(BaseProject):
             toml_path = subdir / "expected.toml"
             if not toml_path.is_file():
                 continue
-            init_args, _ = cls.parse_toml(toml_path, Experiment)
-            yield cls(path=subdir, **init_args)
+            toml_data = parse_toml(toml_path)
+            yield cls(path=subdir, **cls._init_args_from_toml(toml_data, Experiment))
 
 
 @pytest.mark.parametrize(
