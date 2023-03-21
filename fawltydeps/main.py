@@ -215,6 +215,7 @@ def main() -> int:
     """Command-line entry point."""
     parser = build_parser()
     args = parser.parse_args()
+
     settings = Settings.config(config_file=args.config_file).create(args)
 
     logging.basicConfig(level=logging.WARNING - 10 * settings.verbosity)
