@@ -509,3 +509,24 @@ in a development environment (e.g. virtualenv) where your project's dependencies
 (including `scikit-learn`) are also installed. Alternatively, you can use the
 `--pyenv` option to point at a Python environment where `scikit-learn` and your
 other dependencies are installed.
+
+### How can I pass Python code to FawltyDeps via standard input?
+
+The `--code` argument accepts a single hyphen (`-`) as a special value meaning
+that code should be read from standard input. When using this you may pipe or
+redirect your Python code into FawltyDeps like this:
+
+```sh
+cat some/source/of/python/code | fawltydeps --code -
+# or
+fawltydeps --code - < some/source/of/python/code
+```
+
+You can also use this directly in the terminal to e.g. have FawltyDeps analyze
+some Python code that is in your clipboard:
+
+```sh
+fawltydeps --code -
+# FawltyDeps waits for code on stdin; paste from your clipboard,
+# then press Ctrl+D to signal EOF (end-of-file).
+```
