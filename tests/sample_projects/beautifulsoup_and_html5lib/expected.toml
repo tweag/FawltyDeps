@@ -1,0 +1,46 @@
+[project]
+# General information about a simplified project: Its name, why we test it,
+# its relation to real world projects
+name = "beautifulsoup_and_html5lib"
+description = """
+  (taken from issue #246: https://github.com/tweag/FawltyDeps/issues/246)
+  A project depends on beautifulsoup4, and - following its documentation
+  (https://beautiful-soup-4.readthedocs.io/en/latest/#installing-a-parser) -
+  also adds a dependency on html5lib. However, the project itself does not
+  directly import html5lib, only beautifulsoup4 does so (after being told so by
+  the project with a `BeautifulSoup(..., "html5lib")` call.
+
+  This is a special case of a more general problem of packages that have
+  supplemental/optional dependencies, and ask their users to install these
+  transitive dependencies as if they were direct dependencies.
+
+  As it happens, the beautifulsoup4 project has provided an "extra" since
+  v4.4.0 (July 2015) called "html5lib" that does indeed bring in html5lib as
+  an extra dependency of beautifulsoup4. As such, this problem can be side-
+  stepped for beautifulsoup4 by depending on "beautifulsoup4[html5lib]" instead
+  of just "beautifulsoup4". However, this solution is not documented by BS4
+  itself.
+
+  Furthermore, the general problem of how FawltyDeps should better deal with
+  supplemental packages remains.
+"""
+
+[experiments.original]
+description = "Use the original requirements.txt"
+deps = ["requirements.txt"]
+requirements = ["beautifulsoup4", "html5lib"]
+
+imports = ["bs4"]
+declared_deps = ["beautifulsoup4", "html5lib"]
+undeclared_deps = []
+unused_deps = ["html5lib"]
+
+[experiments.workaround]
+description = "Use the modified requirements.txt that uses the provided extra"
+deps = ["requirements.workaround.txt"]
+requirements = ["beautifulsoup4[html5lib]"]
+
+imports = ["bs4"]
+declared_deps = ["beautifulsoup4"]
+undeclared_deps = []
+unused_deps = []
