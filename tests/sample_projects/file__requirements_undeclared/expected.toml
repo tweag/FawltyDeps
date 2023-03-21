@@ -9,7 +9,10 @@ description = '''
   Identity mapping between import and dependencies is sufficient.
 '''
 
-[analysis_result]
+[experiments.default]
+description = "Default run"
+requirements = []  # rely on identity mapping
+
 # Names of imports found in the code which 
 # do not have a matching dependency declared.
 # What we expect the analysis to return.

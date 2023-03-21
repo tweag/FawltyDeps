@@ -19,7 +19,10 @@ description = '''
     to look the other way.
 '''
 
-[analysis_result]
+[experiments.default]
+description = "Run fawltydeps as shown in the blog post"
+requirements = []  # rely on identity mapping
+
 # 3rd-party imports found in the code:
 imports = [
     "requests",
