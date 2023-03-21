@@ -24,8 +24,6 @@ The name is inspired by the Monty Python-adjacent
 
 [Integration tests](#integration-tests)
 
-[Contributing](#contributing)
-
 [FAQ](#faq)
 
 ## Key Concepts
