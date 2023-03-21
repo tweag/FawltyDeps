@@ -1,0 +1,48 @@
+[project]
+# General information about a simplified project: Its name, why we test it,
+# its relation to real world projects
+name = "mixed_project"
+description = "A project with Python code and declared deps in various formats."
+
+[experiments.default]
+description = "Run fawltydeps with no options on entire project"
+requirements = []  # rely on identity mapping
+
+# Skip: 3rd-party imports found in the code:
+# imports = []
+
+# Skip: Declared dependencies found in the project configuration:
+# declared_deps = []
+
+# Import names in the code that do not have a matching dependency declared:
+undeclared_deps = ["tomli"]
+
+# Declared dependencies which were never `import`ed from the code:
+unused_deps = ["black", "jieba", "tox"]
+
+[experiments.subdir2]
+description = "Run fawltydeps on subdir2 only"
+code = ["subdir2"]
+deps = ["subdir2"]
+requirements = []  # rely on identity mapping
+
+# 3rd-party imports found in the code:
+imports = [
+    # subdir2/notebook.ipynb
+    "pandas",
+    "numpy",
+    # subdir2/script.py
+    "requests",
+    "tomli",
+    # subdir2/setup.py
+    "setuptools",
+]
+
+# Declared dependencies found in subdir2/setup.py:
+declared_deps = ["pandas", "click", "requests", "jieba"]
+
+# Import names in the code that do not have a matching dependency declared:
+undeclared_deps = ["numpy", "setuptools", "tomli"]
+
+# Declared dependencies which were never `import`ed from the code:
+unused_deps = ["click", "jieba"]
