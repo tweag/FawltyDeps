@@ -128,7 +128,7 @@ class AnalysisExpectations:
     unused_deps: Optional[Set[str]] = None
 
     @classmethod
-    def parse_from_toml(cls, data: TomlData) -> "AnalysisExpectations":
+    def from_toml(cls, data: TomlData) -> "AnalysisExpectations":
         """Read expectations from the given TOML table."""
 
         def set_or_none(data: Optional[Iterable[str]]) -> Optional[Set[str]]:
@@ -187,11 +187,11 @@ class BaseExperiment:
             name=name,
             description=data.get("description"),
             requirements=data.get("requirements", []),
-            expectations=AnalysisExpectations.parse_from_toml(data),
+            expectations=AnalysisExpectations.from_toml(data),
         )
 
     @classmethod
-    def parse_from_toml(cls, name: str, data: TomlData) -> "BaseExperiment":
+    def from_toml(cls, name: str, data: TomlData) -> "BaseExperiment":
         raise NotImplementedError
 
     def get_venv_dir(self, cache: pytest.Cache) -> Path:
@@ -233,7 +233,7 @@ class BaseProject:
             name=project_name,
             description=toml_data["project"].get("description"),
             experiments=[
-                ExperimentClass.parse_from_toml(f"{project_name}:{name}", data)
+                ExperimentClass.from_toml(f"{project_name}:{name}", data)
                 for name, data in toml_data["experiments"].items()
             ],
         )

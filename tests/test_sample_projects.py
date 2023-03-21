@@ -52,7 +52,7 @@ class Experiment(BaseExperiment):
     deps: List[str]
 
     @classmethod
-    def parse_from_toml(cls, name: str, data: TomlData) -> "Experiment":
+    def from_toml(cls, name: str, data: TomlData) -> "Experiment":
         return cls(
             code=data.get("code", [""]),
             deps=data.get("deps", [""]),

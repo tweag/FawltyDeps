@@ -86,7 +86,7 @@ class Experiment(BaseExperiment):
     args: List[str]
 
     @classmethod
-    def parse_from_toml(cls, name: str, data: TomlData) -> "Experiment":
+    def from_toml(cls, name: str, data: TomlData) -> "Experiment":
         return cls(args=data["args"], **cls.init_args_from_toml(name, data))
 
 
