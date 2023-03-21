@@ -26,6 +26,24 @@ class UnparseablePathException(Exception):
         self.msg = f"{ctx}: {path}"
 
 
+@dataclass(frozen=True, eq=True, order=True)
+class CodeSource:
+    """A Python code source to be parsed for imports statements."""
+
+    path: PathOrSpecial
+    base_dir: Optional[Path] = None
+
+
+@dataclass(frozen=True, eq=True, order=True)
+class DepsSource:
+    """A source to be parsed for declared dependencies."""
+
+    path: Path
+
+
+Source = Union[CodeSource, DepsSource]
+
+
 @total_ordering
 @dataclass(frozen=True)
 class Location:

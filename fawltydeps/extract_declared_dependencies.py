@@ -17,6 +17,7 @@ from fawltydeps.limited_eval import CannotResolve, VariableTracker
 from fawltydeps.settings import ParserChoice
 from fawltydeps.types import (
     DeclaredDependency,
+    DepsSource,
     Location,
     TomlData,
     UnparseablePathException,
@@ -389,3 +390,58 @@ def extract_declared_dependencies(
         yield from extract_declared_dependencies_from_path(
             path, parser_choice=parser_choice
         )
+
+
+def validate_deps_source(
+    path: Path,
+    parser_choice: Optional[ParserChoice] = None,
+    filter_by_parser: bool = False,
+) -> Optional[DepsSource]:
+    """Check if the given file path is a valid source for parsing declared deps.
+
+    - Return the given path as a DepsSource object iff it is a file that we know
+      how to parse.
+    - Return None if this is a directory that must be traversed further to find
+      parseable files within.
+    - Raise UnparseablePathException if the given path cannot be parsed.
+
+    The given 'parser_choice' and 'filter_by_parser' change which files we
+    consider valid sources:
+
+    - If parser_choice is None, we will consider any file path that matches one
+      of the PARSER_CHOICES above a valid file.
+    - If parser_choice is not None, and filter_by_parser is False, we assume
+      that the given file path was explicitly passed by the user, and meant to
+      be parsed with the given parser_choice, _even_ when the file path does not
+      nominally match this parser choice: We return the file path as a valid
+      source regardless of its file name/suffix.
+    - If parser_choice is not None, and filter_by_parser is True, we assume that
+      the given file path was encountered while walking a directory passed by
+      the user. In this case, we will only consider the file valid if it matches
+      the given parser choice.
+    """
+    if path.is_file():
+        choice_and_parser: Optional[Tuple[ParserChoice, ParsingStrategy]] = None
+        if parser_choice is not None:  # user wants a specific parser
+            strategy = PARSER_CHOICES[parser_choice]
+            if filter_by_parser:  # but only if the file matches
+                if strategy.applies_to_path(path):
+                    choice_and_parser = (parser_choice, strategy)
+                else:
+                    raise UnparseablePathException(
+                        ctx=f"Path does not match {parser_choice} parser", path=path
+                    )
+            else:  # user wants us to use this parser no matter what
+                choice_and_parser = (parser_choice, strategy)
+        else:  # no parser chosen, automatically determine parser for this path
+            choice_and_parser = first_applicable_parser(path)
+        if choice_and_parser is None:  # no suitable parser found
+            raise UnparseablePathException(
+                ctx="Parsing given dependencies path isn't supported", path=path
+            )
+        return DepsSource(path)
+    if path.is_dir():
+        return None
+    raise UnparseablePathException(
+        ctx="Dependencies declaration path is neither dir nor file", path=path
+    )
