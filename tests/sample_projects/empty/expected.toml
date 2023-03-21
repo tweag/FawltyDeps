@@ -1,0 +1,21 @@
+[project]
+# General information about a simplified project: Its name, why we test it,
+# its relation to real world projects
+name = "empty"
+description = "A completely empty project. No code, no deps"
+
+[experiments.default]
+description = "Run fawltydeps in an empty project"
+requirements = []  # rely on identity mapping
+
+# 3rd-party imports found in the code:
+imports = []
+
+# Declared dependencies found in the project configuration:
+declared_deps = []
+
+# Import names in the code that do not have a matching dependency declared:
+undeclared_deps = []
+
+# Declared dependencies which were never `import`ed from the code:
+unused_deps = []
