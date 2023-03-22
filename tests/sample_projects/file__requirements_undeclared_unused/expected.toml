@@ -1,0 +1,34 @@
+[project]
+# General information about a simplified project: Its name, why we test it,
+# its relation to real world projects
+name = "file__requirements"
+description = '''
+  A project with:
+  - a single python file containing the source code
+  - requirements.txt with listed dependencies. 
+'''
+
+[experiments.default]
+description = "Default run"
+# Names of imports found in the code which 
+# do not have a matching dependency declared.
+# What we expect the analysis to return.
+undeclared_deps = ["leftpad", "django"]
+
+# Names of declared dependencies which were not used in any `import` 
+# statement within the code.
+# What we expect the analysis to return.
+unused_deps = ["leftpadx", "click"]
+
+[experiments.install_deps]
+description = "install declared deps"
+install_deps = true
+undeclared_deps = ["django"]
+unused_deps = ["click"]
+
+[experiments.with_requirements_from_venv]
+description = "pass local env installed from requirements"
+requirements = ["click", "leftpadx"]
+undeclared_deps = ["django"]
+unused_deps = ["click"]
+
