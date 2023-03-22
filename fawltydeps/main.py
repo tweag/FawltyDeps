@@ -235,7 +235,7 @@ def print_output(
     exit_code: int,
     stdout: TextIO = sys.stdout,
 ) -> None:
-    """Print the summary message for CLI run."""
+    """Print the output of the given 'analysis' to 'stdout'."""
     success_message = Analysis.success_message(
         analysis.is_enabled(Action.REPORT_UNDECLARED),
         analysis.is_enabled(Action.REPORT_UNUSED),
