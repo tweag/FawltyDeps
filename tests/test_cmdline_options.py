@@ -23,7 +23,7 @@ import hypothesis.strategies as st
 from hypothesis import given
 
 from fawltydeps.utils import walk_dir
-from tests.test_cmdline import run_fawltydeps
+from fawltydeps.main import main
 
 from .utils import SAMPLE_PROJECTS_DIR
 
@@ -55,8 +55,7 @@ available_python_input = [
     str(f)
     for f in walk_dir(project_with_no_issues)
     if f.suffix == ".py"
-    # ] + [CODE_STDIN_MARKER]  TODO: uncomment after fixing #233
-]
+    ] + [CODE_STDIN_MARKER]  
 # input files currently adjusted to `project_with_no_issues`
 available_deps = [
     str(project_with_no_issues),
