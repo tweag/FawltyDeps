@@ -47,7 +47,7 @@ class CachedExperimentVenv:
                 f"{venv_path}/bin/pip install --upgrade pip",
             ]
             + [
-                f"{venv_path}/bin/pip install {shlex.quote(req)}"
+                f"{venv_path}/bin/pip install --no-deps {shlex.quote(req)}"
                 for req in self.requirements
             ]
             + [
