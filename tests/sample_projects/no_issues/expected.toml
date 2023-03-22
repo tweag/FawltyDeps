@@ -1,0 +1,24 @@
+
+[project]
+# General information about a simplified project: Its name, why we test it,
+# its relation to real world projects
+name = "no_issues"
+description = '''
+  A project where listed dependencies match imported ones.
+  Dependencies are listed in main requirement.txt file and
+  the requirements file in a subdir.
+  
+  This example was build to test command-line options in a happy case.
+  Tests are implemented in 'test_cmdline_options.py'
+'''
+
+[analysis_result]
+# Names of imports found in the code which 
+# do not have a matching dependency declared.
+# What we expect the analysis to return.
+undeclared_deps = []
+
+# Names of declared dependencies which were not used in any `import` 
+# statement within the code.
+# What we expect the analysis to return.
+unused_deps = []
