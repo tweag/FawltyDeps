@@ -15,6 +15,8 @@ from fawltydeps.types import (
     UnusedDependency,
 )
 
+SAMPLE_PROJECTS_DIR = Path(__file__).with_name("sample_projects")
+
 logger = logging.getLogger(__name__)
 
 
