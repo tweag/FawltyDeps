@@ -19,9 +19,13 @@ tests/sample_projects
     ├── expected.toml (mandatory)
     └── ... (regular Python project)
 """
+<<<<<<< HEAD
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterator, List
+=======
+import sys
+>>>>>>> ed7c85e (Hypothesis testing of actions and output formats combinations)
 
 import pytest
 
