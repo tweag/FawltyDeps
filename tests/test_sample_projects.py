@@ -50,12 +50,14 @@ class Experiment(BaseExperiment):
 
     code: List[str]
     deps: List[str]
+    install_deps: bool
 
     @classmethod
     def from_toml(cls, name: str, data: TomlData) -> "Experiment":
         return cls(
             code=data.get("code", [""]),
             deps=data.get("deps", [""]),
+            install_deps=data.get("install_deps", False),
             **cls._init_args_from_toml(name, data),
         )
 
@@ -66,6 +68,7 @@ class Experiment(BaseExperiment):
             code=[(project_path / path) for path in self.code],
             deps=[(project_path / path) for path in self.deps],
             pyenv=self.get_venv_dir(cache),
+            install_deps=self.install_deps,
         )
 
 
