@@ -21,6 +21,25 @@ from .utils import assert_unordered_equivalence, run_fawltydeps
 logger = logging.getLogger(__name__)
 
 
+def make_json_settings_dict(**kwargs):
+    """
+    Create an expected version of Settings.dict(), with customizations.
+    """
+    settings = {
+        "actions": ["check_undeclared", "check_unused"],
+        "code": ["."],
+        "deps": ["."],
+        "pyenv": None,
+        "output_format": "human_summary",
+        "ignore_undeclared": [],
+        "ignore_unused": [],
+        "deps_parser_choice": None,
+        "verbosity": 0,
+    }
+    settings.update(kwargs)
+    return settings
+
+
 def test_list_imports_detailed__from_dash__prints_imports_from_stdin():
     code = dedent(
         """\
@@ -112,17 +131,11 @@ def test_list_imports_json__from_py_file__prints_imports_from_file(write_tmp_fil
     )
 
     expect = {
-        "settings": {
-            "actions": ["list_imports"],
-            "code": [f"{tmp_path}/myfile.py"],
-            "deps": ["."],
-            "pyenv": None,
-            "output_format": "json",
-            "ignore_undeclared": [],
-            "ignore_unused": [],
-            "deps_parser_choice": None,
-            "verbosity": 0,
-        },
+        "settings": make_json_settings_dict(
+            actions=["list_imports"],
+            code=[f"{tmp_path}/myfile.py"],
+            output_format="json",
+        ),
         "imports": [
             {
                 "name": "requests",
@@ -299,17 +312,9 @@ def test_list_deps_json__dir__prints_deps_from_requirements_txt(
     )
 
     expect = {
-        "settings": {
-            "actions": ["list_deps"],
-            "code": ["."],
-            "deps": [f"{tmp_path}"],
-            "pyenv": None,
-            "output_format": "json",
-            "ignore_undeclared": [],
-            "ignore_unused": [],
-            "deps_parser_choice": None,
-            "verbosity": 0,
-        },
+        "settings": make_json_settings_dict(
+            actions=["list_deps"], deps=[f"{tmp_path}"], output_format="json"
+        ),
         "imports": None,
         "declared_deps": [
             {
@@ -563,17 +568,9 @@ def test_check_json__simple_project__can_report_both_undeclared_and_unused(
     )
 
     expect = {
-        "settings": {
-            "actions": ["check_undeclared", "check_unused"],
-            "code": [f"{tmp_path}"],
-            "deps": [f"{tmp_path}"],
-            "pyenv": None,
-            "output_format": "json",
-            "ignore_undeclared": [],
-            "ignore_unused": [],
-            "deps_parser_choice": None,
-            "verbosity": 0,
-        },
+        "settings": make_json_settings_dict(
+            code=[f"{tmp_path}"], deps=[f"{tmp_path}"], output_format="json"
+        ),
         "imports": [
             {
                 "name": "requests",
