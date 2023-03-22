@@ -4,6 +4,7 @@ import logging
 import shlex
 import subprocess
 import sys
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from dataclasses import fields as dataclass_fields
 from pathlib import Path
@@ -153,7 +154,7 @@ class AnalysisExpectations:
 
 
 @dataclass
-class BaseExperiment:
+class BaseExperiment(ABC):
     """A single experiment, running FawltyDeps on a test project.
 
     An experiment is part of a bigger project (see BaseProject below) and has:
@@ -181,6 +182,7 @@ class BaseExperiment:
         )
 
     @classmethod
+    @abstractmethod
     def from_toml(cls, name: str, data: TomlData) -> "BaseExperiment":
         """Create an instance from TOML data."""
         raise NotImplementedError
@@ -191,7 +193,7 @@ class BaseExperiment:
 
 
 @dataclass
-class BaseProject:
+class BaseProject(ABC):
     """Encapsulate a Python project to be tested with FawltyDeps.
 
     This represents a project on which we want to run FawltyDeps in one or more
@@ -224,6 +226,7 @@ class BaseProject:
         )
 
     @classmethod
+    @abstractmethod
     def collect(cls) -> Iterator["BaseProject"]:
         """Find and generate all projects in this test suite."""
         raise NotImplementedError
