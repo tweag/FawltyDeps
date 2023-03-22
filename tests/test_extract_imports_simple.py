@@ -45,7 +45,7 @@ def generate_notebook(
     def cell_template(cell_type: str, source: List[str]):
         return {
             "cell_type": cell_type,
-            "execution_count": "null",
+            "execution_count": None,
             "metadata": {"id": ""},
             "outputs": [],
             "source": source,
@@ -238,7 +238,7 @@ def test_parse_notebook_file__two_cells__extracts_from_cell_with_imports(tmp_pat
 
 def test_parse_notebook_file__two_cells__extracts_from_code_cell(tmp_path):
     code = generate_notebook(
-        [["import pandas"], ["import pytcorch"]], ["code", "markdown"]
+        [["import pandas"], ["import pytorch"]], ["code", "markdown"]
     )
     script = tmp_path / "test.ipynb"
     script.write_text(code)
