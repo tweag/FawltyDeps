@@ -15,6 +15,7 @@ Strategy setup consists of three phases:
 The strategy construction can be viewed as a reference
 to how the CLI options are expected to be used.
 """
+import io
 import string
 from functools import reduce
 from textwrap import dedent
@@ -22,8 +23,8 @@ from textwrap import dedent
 import hypothesis.strategies as st
 from hypothesis import given
 
-from fawltydeps.utils import walk_dir
 from fawltydeps.main import main
+from fawltydeps.utils import walk_dir
 
 from .utils import SAMPLE_PROJECTS_DIR
 
@@ -52,16 +53,14 @@ output_formats = ["--summary", "--detailed", "--json"]
 # TODO - create more general examples of happy path, including
 #        indicators of missing imports and dependencies
 available_python_input = [
-    str(f)
-    for f in walk_dir(project_with_no_issues)
-    if f.suffix == ".py"
-    ] + [CODE_STDIN_MARKER]  
+    str(f) for f in walk_dir(project_with_no_issues) if f.suffix == ".py"
+] + [CODE_STDIN_MARKER]
 # input files currently adjusted to `project_with_no_issues`
 available_deps = [
     str(project_with_no_issues),
     str(project_with_no_issues / "requirements.txt"),
     str(project_with_no_issues / "subdir"),
-    str(project_with_no_issues / "subdir/requirements.txt")
+    str(project_with_no_issues / "subdir/requirements.txt"),
 ]
 # currently adjusted to `project_with_no_issues` (only requirements.txt available)
 deps_parser_choice = [
@@ -92,15 +91,11 @@ output_formats_strategy = st.one_of(st.sampled_from(output_formats), st.none()).
     lambda x: [x] if x is not None else []
 )
 
-code_option_strategy = (
-    st.lists(
-        st.sampled_from(available_python_input),
-        min_size=0,
-        max_size=MAX_NUMER_OF_CODE_ARGS,
-    ).map(
-        lambda xs: ["--code"] + xs if xs else []
-    )
-)
+code_option_strategy = st.lists(
+    st.sampled_from(available_python_input),
+    min_size=0,
+    max_size=MAX_NUMER_OF_CODE_ARGS,
+).map(lambda xs: ["--code"] + xs if xs else [])
 
 deps_option_strategy = (
     st.lists(
@@ -134,7 +129,7 @@ verbosity_strategy = st.lists(
 ).map(lambda xs: [f"-{x}" for x in xs])
 
 venv_strategy = st.one_of(st.sampled_from(venvs), st.none()).map(
-    lambda x: ["--venv", x] if x is not None else []
+    lambda x: ["--pyenv", x] if x is not None else []
 )
 
 
@@ -153,8 +148,7 @@ def cli_arguments_combinations(draw):
             draw(ignored_unused_strategy),
             draw(deps_parser_choice_strategy),
             draw(verbosity_strategy),
-            # draw(venv_strategy), commented out due to
-            #                      high execution time and planned changes of `--venv`
+            draw(venv_strategy),
         ]
     )
     args = reduce(lambda x, y: x + y, draw(strategy))
@@ -176,8 +170,14 @@ def test_options_interactions__correct_options__give_success_code(cli_arguments)
     makes a valid run of fawltydeps CLI tool.
     """
     drawn_args, to_stdin = cli_arguments
-    args = [str(project_with_no_issues)] + drawn_args
+    basepath = (
+        []
+        if {"--code", "--deps"}.issubset(set(drawn_args))
+        else [str(project_with_no_issues)]
+    )
+    args = basepath + drawn_args
 
-    _, _, returncode = run_fawltydeps(*args, to_stdin=to_stdin)
+    with open("/dev/null", "w") as f_out:
+        exit_code = main(cmdline_args=args, stdin=io.StringIO(to_stdin), stdout=f_out)
 
-    assert returncode == 0
+    assert exit_code == 0

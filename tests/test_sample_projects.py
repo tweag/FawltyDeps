@@ -19,29 +19,21 @@ tests/sample_projects
     ├── expected.toml (mandatory)
     └── ... (regular Python project)
 """
-<<<<<<< HEAD
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterator, List
-=======
-import sys
->>>>>>> ed7c85e (Hypothesis testing of actions and output formats combinations)
 
 import pytest
 
 from fawltydeps.main import Analysis
 from fawltydeps.settings import Action, Settings
-<<<<<<< HEAD
 from fawltydeps.types import TomlData
-=======
 from tests.utils import SAMPLE_PROJECTS_DIR
->>>>>>> 84116a9 (Add project with no issues to project samples)
 
 from .project_helpers import BaseExperiment, BaseProject, parse_toml
 
 # These are (slow) integration tests that are disabled by default.
 pytestmark = pytest.mark.integration
-
 
 
 @dataclass
