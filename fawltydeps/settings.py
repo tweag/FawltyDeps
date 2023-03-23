@@ -136,6 +136,7 @@ class Settings(BaseSettings):  # type: ignore
     ignore_undeclared: Set[str] = set()
     ignore_unused: Set[str] = set()
     deps_parser_choice: Optional[ParserChoice] = None
+    install_deps: bool = False
     verbosity: int = 0
 
     # Class vars: these can not be overridden in the same way as above, only by

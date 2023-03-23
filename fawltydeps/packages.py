@@ -223,7 +223,7 @@ def temp_installed_requirements(
 def resolve_dependencies(
     dep_names: Iterable[str],
     pyenv_path: Optional[Path] = None,
-    pull_deps: bool = False,
+    install_deps: bool = False,
 ) -> Dict[str, Package]:
     """Associate dependencies with corresponding Package objects.
 
@@ -243,7 +243,7 @@ def resolve_dependencies(
     # consume the iterable once
     deps = list(dep_names)
 
-    if pull_deps:
+    if install_deps:
         logger.info("Installing dependencies into a new temporary Python environment.")
         if pyenv_path is not None:
             logger.info(

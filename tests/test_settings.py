@@ -32,6 +32,7 @@ EXPECT_DEFAULTS = dict(
     ignore_undeclared=set(),
     ignore_unused=set(),
     deps_parser_choice=None,
+    install_deps=False,
     verbosity=0,
 )
 
