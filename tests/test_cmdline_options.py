@@ -16,9 +16,9 @@ The strategy construction can be viewed as a reference
 to how the CLI options are expected to be used.
 """
 import io
-from pathlib import Path
 import string
 from functools import reduce
+from pathlib import Path
 from textwrap import dedent
 from typing import List
 
@@ -61,9 +61,10 @@ example_python_stdin = dedent(
 """
 )
 venvs = [str(project_with_no_issues / ".venv")]
+other = ["--generate-toml-file", "--version"]
 
 
-# Options below contain specific paths used in input and a chosen set of dependencies
+# Options below contain paths specific for an input project
 def available_python_input(project_dir: Path) -> List[str]:
     return [str(f) for f in walk_dir(project_dir) if f.suffix == ".py"] + [
         CODE_STDIN_MARKER
@@ -71,7 +72,12 @@ def available_python_input(project_dir: Path) -> List[str]:
 
 
 def available_deps(project_dir: Path) -> List[str]:
-    return [str(f) for f in walk_dir(project_dir) if f.name != "expected.toml"]
+    return [
+        str(f)
+        for f in walk_dir(project_dir)
+        if f.name != "expected.toml"
+        and f.name in {"setup.cfg", "setup.py", "requirements.txt", "pyproject.toml"}
+    ]
 
 
 # ---------------------------------------------- #
@@ -80,7 +86,6 @@ def available_deps(project_dir: Path) -> List[str]:
 # Each strategy is of type list[str]
 # ---------------------------------------------- #
 actions_strategy = st.lists(st.sampled_from(actions), min_size=0, max_size=1)
-
 output_formats_strategy = st.lists(
     st.sampled_from(output_formats), min_size=0, max_size=1
 )
@@ -110,9 +115,7 @@ ignored_unused_strategy = ignored_strategy.map(
     lambda xs: ["--ignore-unused"] + xs if xs else []
 )
 
-deps_parser_choice_strategy = st.one_of(
-    st.sampled_from(deps_parser_choice), st.none()
-).map(lambda x: ["--deps-parser-choice", x] if x is not None else [])
+deps_parser_choice_strategy = st.one_of(st.sampled_from(deps_parser_choice), st.none())
 
 verbosity_indicator = st.text(
     alphabet=["q", "v"], min_size=1, max_size=MAX_VERBOSITY_ARGS
@@ -138,16 +141,30 @@ def cli_arguments_combinations(draw):
     )
     code_paths = available_python_input(project_dir=project_dir)
     dep_paths = available_deps(project_dir=project_dir)
+
+    # Dependencies are treated differently, as there is an explicit way
+    # to point to a parser that we want fawltydeps to use.
+    # Following code ensures that we do not encounter trying to match
+    # explicit file with incorrect parser (square in the oval-shaped hole problem)
+    drawn_deps = draw(deps_option_strategy(dep_paths))
+    deps_parser = []
+    drawn_deps_parser = draw(deps_parser_choice_strategy)
+    # a simple and not 100% accurate check if deps parser matches explicitly given file
+    if drawn_deps_parser is not None and all(
+        d.endswith(drawn_deps_parser) for d in drawn_deps
+    ):
+        deps_parser = ["--deps-parser-choice", drawn_deps_parser]
+
     strategy = st.permutations(
         [
             draw(actions_strategy),
             draw(output_formats_strategy),
-            draw(deps_option_strategy(dep_paths)),
+            drawn_deps,
             draw(ignored_undeclared_strategy),
             draw(ignored_unused_strategy),
-            draw(deps_parser_choice_strategy),
+            deps_parser,
             draw(verbosity_strategy),
-            # draw(venv_strategy),
+            # draw(venv_strategy), # TODO: better handle information on Python envs
         ]
     )
     args = reduce(lambda x, y: x + y, draw(strategy))
