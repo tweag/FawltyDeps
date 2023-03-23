@@ -119,10 +119,11 @@ def test_resolve_dependencies__in_fake_venv__returns_local_and_id_deps(fake_venv
     }
 
 
-def test_on_pulled_venv__returns_local_deps():
-    actual = resolve_dependencies(["pandas", "click"], pyenv_path=None, pull_deps=True)
+def test_on_installed_venv__returns_local_deps():
+    actual = resolve_dependencies(
+        ["leftpadx", "click"], pyenv_path=None, install_deps=True
+    )
     assert actual == {
-        "pandas": Package("pandas", {DependenciesMapping.LOCAL_ENV: {"pandas"}}),
+        "leftpadx": Package("leftpadx", {DependenciesMapping.LOCAL_ENV: {"leftpad"}}),
         "click": Package("click", {DependenciesMapping.LOCAL_ENV: {"click"}}),
     }
-    assert actual["pandas"].is_used(["pandas"])

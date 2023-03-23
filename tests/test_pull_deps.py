@@ -20,7 +20,7 @@ def test_analysis_on_a_simple_project(write_tmp_files):
         code=[project_dir],
         deps=[project_dir],
     )
-    analysis = Analysis.create(settings, pull_deps=True)
+    analysis = Analysis.create(settings)
 
     print("Verifying 'imports'...")
     actual_imports = {i.name for i in analysis.imports}

@@ -34,6 +34,7 @@ def make_json_settings_dict(**kwargs):
         "ignore_undeclared": [],
         "ignore_unused": [],
         "deps_parser_choice": None,
+        "install_deps": False,
         "verbosity": 0,
     }
     settings.update(kwargs)
@@ -918,6 +919,7 @@ def test_cmdline_on_ignored_undeclared_option(
                 # ignore_undeclared = []
                 # ignore_unused = []
                 # deps_parser_choice = None
+                # install_deps = False
                 # verbosity = 0
                 """
             ).splitlines(),
