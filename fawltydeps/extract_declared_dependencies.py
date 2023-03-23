@@ -354,7 +354,14 @@ def extract_declared_dependencies_from_path(
                     ctx="Parsing given dependencies path isn't supported", path=path
                 )
             parser = choice_and_parser[1]
-        yield from parser.execute(path)
+        try:
+            yield from parser.execute(path)
+        except Exception as ext:
+            raise UnparseablePathException(
+                ctx=f"Raised {type(ext)}: {ext}.\n"
+                "Parser '{parser_choice}' failed to parse a given file",
+                path=path,
+            ) from ext
     elif path.is_dir():
         logger.debug("Extracting dependencies from files under %s", path)
         for file in walk_dir(path):
