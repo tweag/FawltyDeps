@@ -2,14 +2,13 @@
 
 import logging
 import shutil
-from pathlib import Path
 
 import pytest
 
-from fawltydeps.extract_declared_dependencies import (
-    ParserChoice,
-    extract_declared_dependencies,
-)
+from fawltydeps.extract_declared_dependencies import parse_source, parse_sources
+from fawltydeps.settings import ParserChoice, Settings
+from fawltydeps.traverse_project import find_sources
+from fawltydeps.types import DepsSource
 
 from .utils import assert_unordered_equivalence, collect_dep_names
 
@@ -23,13 +22,6 @@ PARSER_CHOICE_FILE_NAME_MISMATCH_GRID = {
     pc: [fn for _pc, fn in PARSER_CHOICE_FILE_NAME_MATCH_GRID.items() if pc != _pc]
     for pc in PARSER_CHOICE_FILE_NAME_MATCH_GRID
 }
-
-
-def mkfile(folder: Path, filename: str) -> Path:
-    """'touch' the file at the location defined by given folder and name."""
-    fp = folder / filename
-    with open(fp, "w"):
-        return fp
 
 
 @pytest.mark.parametrize(
@@ -48,16 +40,15 @@ def test_explicit_parse_strategy__mismatch_yields_appropriate_logging(
     tmp_path, caplog, parser_choice, deps_file_name, has_log
 ):
     """Logging message should be conditional on mismatch between strategy and filename."""
-    deps_paths = [mkfile(tmp_path, deps_file_name)]
+    deps_path = tmp_path / deps_file_name
+    deps_path.touch()
     caplog.set_level(logging.WARNING)
-    list(
-        extract_declared_dependencies(deps_paths, parser_choice)
-    )  # Execute here just for effect (log).
+    # Execute here just for side effect (log).
+    list(parse_source(DepsSource(deps_path), parser_choice))
     if has_log:
-        for path in deps_paths:
-            assert (
-                f"Manually applying parser '{parser_choice}' to dependencies: {path}"
-            ) in caplog.text
+        assert (
+            f"Manually applying parser '{parser_choice}' to dependencies: {deps_path}"
+        ) in caplog.text
     else:
         assert caplog.text == ""
 
@@ -82,9 +73,9 @@ def test_filepath_inference(
     exp_deps,
 ):
     """Parser choice finalization function can choose based on deps filename."""
-    deps_paths = [tmp_path / deps_file_name]
-    assert all(dp.is_file() for dp in deps_paths)  # precondition
-    obs_deps = collect_dep_names(extract_declared_dependencies(deps_paths))
+    deps_path = tmp_path / deps_file_name
+    assert deps_path.is_file()  # precondition
+    obs_deps = collect_dep_names(parse_source(DepsSource(deps_path)))
     assert_unordered_equivalence(obs_deps, exp_deps)
 
 
@@ -110,8 +101,10 @@ def test_extract_from_directory_applies_manual_parser_choice_iff_choice_applies(
     parser_choice,
     exp_deps,
 ):
+    settings = Settings(code=set(), deps={tmp_path}, deps_parser_choice=parser_choice)
+    deps_sources = list(find_sources(settings, {DepsSource}))
     obs_deps = collect_dep_names(
-        extract_declared_dependencies([tmp_path], parser_choice=parser_choice)
+        parse_sources(deps_sources, parser_choice=parser_choice)
     )
     assert_unordered_equivalence(obs_deps, exp_deps)
 
@@ -159,7 +152,7 @@ def test_extract_from_file_applies_manual_choice_even_if_mismatched(
     shutil.move(old_path, new_path)
     caplog.set_level(logging.WARNING)
     obs_deps = collect_dep_names(
-        extract_declared_dependencies([new_path], parser_choice=parser_choice)
+        parse_source(DepsSource(new_path), parser_choice=parser_choice)
     )
     assert_unordered_equivalence(obs_deps, exp_deps)
     exp_msg = f"Manually applying parser '{parser_choice}' to dependencies: {new_path}"

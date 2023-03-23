@@ -392,6 +392,46 @@ def extract_declared_dependencies(
         )
 
 
+def parse_source(
+    src: DepsSource, parser_choice: Optional[ParserChoice] = None
+) -> Iterator[DeclaredDependency]:
+    """Extract dependencies (package names) from supported file types.
+
+    Pass a path from which to discover and parse dependency declarations. Pass
+    a directory to traverse that directory tree to find and automatically parse
+    any supported files.
+
+    Generate (i.e. yield) a DeclaredDependency object for each dependency found.
+    There is no guaranteed ordering on the generated dependencies.
+    """
+    assert src.path.is_file()  # sanity check
+    if parser_choice is not None:
+        parser = PARSER_CHOICES[parser_choice]
+        if not parser.applies_to_path(src.path):
+            logger.warning(
+                f"Manually applying parser '{parser_choice}' to dependencies: {src.path}"
+            )
+    else:
+        choice_and_parser = first_applicable_parser(src.path)
+        if choice_and_parser is None:  # nothing found. SHOULD NOT HAPPEN!
+            raise UnparseablePathException(
+                ctx="Parsing given dependencies path isn't supported", path=src.path
+            )
+        parser = choice_and_parser[1]
+    yield from parser.execute(src.path)
+
+
+def parse_sources(
+    sources: Iterable[DepsSource], parser_choice: Optional[ParserChoice] = None
+) -> Iterator[DeclaredDependency]:
+    """Extract dependencies (package names) from supported file types.
+
+    Pass sources from which to parse dependency declarations.
+    """
+    for source in sources:
+        yield from parse_source(source, parser_choice=parser_choice)
+
+
 def validate_deps_source(
     path: Path,
     parser_choice: Optional[ParserChoice] = None,

@@ -4,11 +4,14 @@ from textwrap import dedent
 import pytest
 
 from fawltydeps.extract_declared_dependencies import (
-    extract_declared_dependencies,
     parse_requirements_txt,
     parse_setup_cfg,
     parse_setup_py,
+    parse_sources,
 )
+from fawltydeps.settings import Settings
+from fawltydeps.traverse_project import find_sources
+from fawltydeps.types import DepsSource
 
 from .utils import assert_unordered_equivalence, collect_dep_names, deps_factory
 
@@ -413,17 +416,17 @@ def test_parse_setup_py__multiple_entries_in_extras_require__returns_list(
     assert_unordered_equivalence(result, expected)
 
 
-def test_extract_declared_dependencies__simple_project__returns_list(
+def test_find_and_parse_sources__simple_project__returns_list(
     project_with_requirements,
 ):
     expect = ["pandas", "click", "pandas", "tensorflow"]
-    actual = collect_dep_names(
-        extract_declared_dependencies([project_with_requirements])
-    )
+    settings = Settings(code=set(), deps={project_with_requirements})
+    deps_sources = list(find_sources(settings, {DepsSource}))
+    actual = collect_dep_names(parse_sources(deps_sources))
     assert_unordered_equivalence(actual, expect)
 
 
-def test_extract_declared_dependencies__project_with_requirements_and_setup__returns_list(
+def test_find_and_parse_sources__project_with_requirements_and_setup__returns_list(
     project_with_setup_and_requirements,
 ):
     expect = [
@@ -436,13 +439,13 @@ def test_extract_declared_dependencies__project_with_requirements_and_setup__ret
         "pandas",
         "tensorflow",
     ]
-    actual = collect_dep_names(
-        extract_declared_dependencies([project_with_setup_and_requirements])
-    )
+    settings = Settings(code=set(), deps={project_with_setup_and_requirements})
+    deps_sources = list(find_sources(settings, {DepsSource}))
+    actual = collect_dep_names(parse_sources(deps_sources))
     assert_unordered_equivalence(actual, expect)
 
 
-def test_extract_declared_dependencies__parse_only_requirements_from_subdir__returns_list(
+def test_parse_sources__parse_only_requirements_from_subdir__returns_list(
     project_with_setup_and_requirements,
 ):
     "In setup.py requirements are read from dict."
@@ -451,11 +454,11 @@ def test_extract_declared_dependencies__parse_only_requirements_from_subdir__ret
         "tensorflow",
     ]
     path = project_with_setup_and_requirements / "subdir/requirements.txt"
-    actual = collect_dep_names(extract_declared_dependencies([path]))
+    actual = collect_dep_names(parse_sources([DepsSource(path)]))
     assert_unordered_equivalence(actual, expect)
 
 
-def test_extract_declared_dependencies__project_with_pyproject_setup_and_requirements__returns_list(
+def test_find_and_parse_sources__project_with_pyproject_setup_and_requirements__returns_list(
     project_with_setup_pyproject_and_requirements,
 ):
     expect = [
@@ -475,13 +478,15 @@ def test_extract_declared_dependencies__project_with_pyproject_setup_and_require
         "pydantic",
         "pylint",
     ]
-    actual = collect_dep_names(
-        extract_declared_dependencies([project_with_setup_pyproject_and_requirements])
+    settings = Settings(
+        code=set(), deps={project_with_setup_pyproject_and_requirements}
     )
+    deps_sources = list(find_sources(settings, {DepsSource}))
+    actual = collect_dep_names(parse_sources(deps_sources))
     assert_unordered_equivalence(actual, expect)
 
 
-def test_extract_declared_dependencies__project_with_pyproject__returns_list(
+def test_find_and_parse_sources__project_with_pyproject__returns_list(
     project_with_pyproject,
 ):
     expect = [
@@ -489,22 +494,26 @@ def test_extract_declared_dependencies__project_with_pyproject__returns_list(
         "pydantic",
         "pylint",
     ]
-    actual = collect_dep_names(extract_declared_dependencies([project_with_pyproject]))
+    settings = Settings(code=set(), deps={project_with_pyproject})
+    deps_sources = list(find_sources(settings, {DepsSource}))
+    actual = collect_dep_names(parse_sources(deps_sources))
     assert_unordered_equivalence(actual, expect)
 
 
-def test_extract_declared_dependencies__project_with_setup_cfg__returns_list(
+def test_find_and_parse_sources__project_with_setup_cfg__returns_list(
     project_with_setup_cfg,
 ):
     expect = [
         "pandas",
         "django",
     ]
-    actual = collect_dep_names(extract_declared_dependencies([project_with_setup_cfg]))
+    settings = Settings(code=set(), deps={project_with_setup_cfg})
+    deps_sources = list(find_sources(settings, {DepsSource}))
+    actual = collect_dep_names(parse_sources(deps_sources))
     assert_unordered_equivalence(actual, expect)
 
 
-def test_extract_declared_dependencies__project_with_setup_cfg_pyproject_requirements__returns_list(
+def test_find_and_parse_sources__project_with_setup_cfg_pyproject_requirements__returns_list(
     project_with_setup_with_cfg_pyproject_and_requirements,
 ):
     expect = [
@@ -527,11 +536,11 @@ def test_extract_declared_dependencies__project_with_setup_cfg_pyproject_require
         "pydantic",
         "pylint",
     ]
-    actual = collect_dep_names(
-        extract_declared_dependencies(
-            [project_with_setup_with_cfg_pyproject_and_requirements]
-        )
+    settings = Settings(
+        code=set(), deps={project_with_setup_with_cfg_pyproject_and_requirements}
     )
+    deps_sources = list(find_sources(settings, {DepsSource}))
+    actual = collect_dep_names(parse_sources(deps_sources))
     assert_unordered_equivalence(actual, expect)
 
 
@@ -573,5 +582,5 @@ def test_parse_requirements_per_req_options(tmp_path, deps_file_content, exp_dep
     # originally motivated by #114 (A dep can span multiple lines.)
     deps_path = tmp_path / "requirements.txt"
     deps_path.write_text(dedent(deps_file_content))
-    obs_deps = collect_dep_names(extract_declared_dependencies([deps_path]))
+    obs_deps = collect_dep_names(parse_sources([DepsSource(deps_path)]))
     assert_unordered_equivalence(obs_deps, exp_deps)
