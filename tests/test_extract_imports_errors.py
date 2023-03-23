@@ -5,11 +5,11 @@ from textwrap import dedent
 
 from fawltydeps.extract_imports import (
     parse_code,
-    parse_dir,
     parse_notebook_file,
     parse_python_file,
+    parse_source,
 )
-from fawltydeps.types import Location, ParsedImport
+from fawltydeps.types import CodeSource, Location, ParsedImport
 
 
 def test_parse_notebook_file__on_invalid_json__logs_error(tmp_path, caplog):
@@ -87,7 +87,7 @@ def test_parse_file__on_syntax_error__logs_error(tmp_path, caplog):
     assert f"Could not parse code from {script}" in caplog.text
 
 
-def test_parse_dir__on_parse_error__error_log_contains_filename(tmp_path, caplog):
+def test_parse_source__on_parse_error__error_log_contains_filename(tmp_path, caplog):
     code = dedent(
         """\
         This file is littered with Python syntax errors...
@@ -99,7 +99,8 @@ def test_parse_dir__on_parse_error__error_log_contains_filename(tmp_path, caplog
 
     expect = []
     caplog.set_level(logging.ERROR)
-    assert list(parse_dir(tmp_path)) == expect
+    source = CodeSource(script, tmp_path)
+    assert list(parse_source(source)) == expect
     assert f"Could not parse code from {script}" in caplog.text
 
 

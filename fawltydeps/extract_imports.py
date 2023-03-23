@@ -223,6 +223,61 @@ def parse_any_args(
         yield from parse_any_arg(arg, stdin)
 
 
+def parse_source(
+    src: CodeSource, stdin: Optional[TextIO] = None
+) -> Iterator[ParsedImport]:
+    """Invoke a suitable parser for the given source.
+
+    These cases are handled:
+      - src.path == "<stdin>": Read code from stdin and call parse_code()
+      - src.path is a *.py file: Call parse_python_file()
+      - src.path is a *.ipynb file: Call parse_notebook_file()
+    """
+    if src.path == "<stdin>":
+        if stdin is None:
+            raise UnparseablePathException(ctx="Missing <stdin> handle", path=Path("-"))
+        logger.info("Parsing Python code from standard input")
+        # 'isatty' checks if the stream is interactive.
+        if stdin.isatty():
+            logger.warning("Reading code from terminal input. Ctrl+D to stop.")
+        return parse_code(stdin.read(), source=Location(src.path))
+
+    # sanity checks (CodeSource invariants given that src.path != "<stdin>")
+    assert (
+        isinstance(src.path, Path)
+        and src.path.is_file()
+        and src.path.suffix in {".py", ".ipynb"}
+    )
+
+    local_context = (
+        None
+        if src.base_dir is None
+        else make_isort_config(
+            path=src.base_dir,
+            src_paths=tuple(dirs_between(src.base_dir, src.path.parent)),
+        )
+    )
+
+    if src.path.suffix == ".py":
+        logger.info("Parsing Python file %s", src.path)
+        return parse_python_file(src.path, local_context)
+    if src.path.suffix == ".ipynb":
+        logger.info("Parsing Notebook file %s", src.path)
+        return parse_notebook_file(src.path, local_context)
+    raise UnparseablePathException(  # SHOULD NOT HAPPEN!
+        ctx="Supported formats are .py and .ipynb; Cannot parse code",
+        path=src.path,
+    )
+
+
+def parse_sources(
+    sources: Iterable[CodeSource], stdin: Optional[TextIO] = None
+) -> Iterator[ParsedImport]:
+    """Parse import statements from the given sources."""
+    for source in sources:
+        yield from parse_source(source, stdin)
+
+
 def validate_code_source(
     path: PathOrSpecial, base_dir: Optional[Path] = None
 ) -> Optional[CodeSource]:
