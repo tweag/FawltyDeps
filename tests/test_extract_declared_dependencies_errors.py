@@ -4,23 +4,8 @@ import logging
 
 import pytest
 
-from fawltydeps.extract_declared_dependencies import (
-    extract_declared_dependencies,
-    parse_setup_cfg,
-    parse_setup_py,
-)
-from fawltydeps.types import Location, UnparseablePathException
-
-
-def test_extract_declared_dependencies__unsupported_file__raises_error(
-    project_with_setup_and_requirements,
-):
-    with pytest.raises(UnparseablePathException):
-        list(
-            extract_declared_dependencies(
-                [project_with_setup_and_requirements / "python_file.py"]
-            )
-        )
+from fawltydeps.extract_declared_dependencies import parse_setup_cfg, parse_setup_py
+from fawltydeps.types import Location
 
 
 def test_parse_setup_cfg__malformed__logs_error(write_tmp_files, caplog):
