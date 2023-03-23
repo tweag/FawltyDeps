@@ -15,19 +15,22 @@ import logging
 import sys
 from functools import partial
 from operator import attrgetter
-from typing import Dict, List, Optional, TextIO
+from typing import Dict, List, Optional, Set, TextIO, Type
 
 from pydantic.json import custom_pydantic_encoder  # pylint: disable=no-name-in-module
 
-from fawltydeps import extract_imports
+from fawltydeps import extract_declared_dependencies, extract_imports
 from fawltydeps.check import calculate_undeclared, calculate_unused
 from fawltydeps.cli_parser import build_parser
-from fawltydeps.extract_declared_dependencies import extract_declared_dependencies
 from fawltydeps.packages import Package, resolve_dependencies
 from fawltydeps.settings import Action, OutputFormat, Settings, print_toml_config
+from fawltydeps.traverse_project import find_sources
 from fawltydeps.types import (
+    CodeSource,
     DeclaredDependency,
+    DepsSource,
     ParsedImport,
+    Source,
     UndeclaredDependency,
     UnparseablePathException,
     UnusedDependency,
@@ -50,6 +53,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
 
         # The following members are calculated once, on-demand, by the
         # @property @calculated_once methods below:
+        self._source: Optional[Set[Source]] = None
         self._imports: Optional[List[ParsedImport]] = None
         self._declared_deps: Optional[List[DeclaredDependency]] = None
         self._resolved_deps: Optional[Dict[str, Package]] = None
@@ -62,17 +66,41 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
 
     @property
     @calculated_once
+    def sources(self) -> Set[Source]:
+        """The input sources (code and deps) found in this project."""
+        # What Source types are needed for which action?
+        source_types: Dict[Action, Set[Type[Source]]] = {
+            Action.LIST_IMPORTS: {CodeSource},
+            Action.LIST_DEPS: {DepsSource},
+            Action.REPORT_UNDECLARED: {CodeSource, DepsSource},
+            Action.REPORT_UNUSED: {CodeSource, DepsSource},
+        }
+        return set(
+            find_sources(
+                self.settings,
+                set.union(*[source_types[action] for action in self.settings.actions]),
+            )
+        )
+
+    @property
+    @calculated_once
     def imports(self) -> List[ParsedImport]:
         """The list of 3rd-party imports parsed from this project."""
-        return list(extract_imports.parse_any_args(self.settings.code, self.stdin))
+        return list(
+            extract_imports.parse_sources(
+                (src for src in self.sources if isinstance(src, CodeSource)),
+                self.stdin,
+            )
+        )
 
     @property
     @calculated_once
     def declared_deps(self) -> List[DeclaredDependency]:
         """The list of declared dependencies parsed from this project."""
         return list(
-            extract_declared_dependencies(
-                self.settings.deps, self.settings.deps_parser_choice
+            extract_declared_dependencies.parse_sources(
+                (src for src in self.sources if isinstance(src, DepsSource)),
+                self.settings.deps_parser_choice,
             )
         )
 

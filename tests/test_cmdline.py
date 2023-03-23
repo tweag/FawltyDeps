@@ -204,7 +204,9 @@ def test_list_imports__from_dir__prints_imports_from_py_and_ipynb_files_only(
         for i, n in [("my_pathlib", 1), ("pandas", 2), ("scipy", 2)]
     ] + [f"{tmp_path}/file3.ipynb[1]:1: pytorch"]
     expect_logs = [
-        f"INFO:fawltydeps.extract_imports:Parsing Python files under {tmp_path}",
+        f"INFO:fawltydeps.extract_imports:Finding Python files under {tmp_path}",
+        f"INFO:fawltydeps.extract_imports:Parsing Python file {tmp_path}/file1.py",
+        f"INFO:fawltydeps.extract_imports:Parsing Notebook file {tmp_path}/file3.ipynb",
     ]
     output, errors, returncode = run_fawltydeps_subprocess(
         "--list-imports", "--detailed", "-v", f"--code={tmp_path}"
@@ -238,7 +240,7 @@ def test_list_imports__from_missing_file__fails_with_exit_code_2(tmp_path):
 def test_list_imports__from_empty_dir__logs_but_extracts_nothing(tmp_path):
     # Enable log level INFO with -v
     expect_logs = [
-        f"INFO:fawltydeps.extract_imports:Parsing Python files under {tmp_path}",
+        f"INFO:fawltydeps.extract_imports:Finding Python files under {tmp_path}",
     ]
     output, errors, returncode = run_fawltydeps_subprocess(
         "--list-imports", f"--code={tmp_path}", "--detailed", "-v"
@@ -257,7 +259,9 @@ def test_list_imports__pick_multiple_files_dir__prints_all_imports(
         "--list-imports", "--code", f"{path_code1}", f"{path_code2}", "-v"
     )
     expect_logs = [
-        f"INFO:fawltydeps.extract_imports:Parsing Python files under {path_code1}",
+        f"INFO:fawltydeps.extract_imports:Finding Python files under {path_code1}",
+        f"INFO:fawltydeps.extract_imports:Parsing Python file {path_code1}/python_file2.py",
+        f"INFO:fawltydeps.extract_imports:Parsing Python file {path_code1}/python_file3.py",
         f"INFO:fawltydeps.extract_imports:Parsing Python file {path_code2}",
     ]
     expect = ["django", "pandas", "click"]
@@ -450,7 +454,8 @@ project_tests_samples = [
             "    {path}/code.py:1",
         ],
         expect_logs=[
-            "INFO:fawltydeps.extract_imports:Parsing Python files under {path}",
+            "INFO:fawltydeps.extract_imports:Finding Python files under {path}",
+            "INFO:fawltydeps.extract_imports:Parsing Python file {path}/code.py",
             "INFO:fawltydeps.packages:'pandas' was not resolved."
             " Assuming it can be imported as 'pandas'.",
         ],
@@ -467,7 +472,8 @@ project_tests_samples = [
             "    {path}/requirements.txt",
         ],
         expect_logs=[
-            "INFO:fawltydeps.extract_imports:Parsing Python files under {path}",
+            "INFO:fawltydeps.extract_imports:Finding Python files under {path}",
+            "INFO:fawltydeps.extract_imports:Parsing Python file {path}/code.py",
             "INFO:fawltydeps.packages:'requests' was not resolved."
             " Assuming it can be imported as 'requests'.",
             "INFO:fawltydeps.packages:'pandas' was not resolved."
@@ -490,7 +496,8 @@ project_tests_samples = [
             "    {path}/requirements.txt",
         ],
         expect_logs=[
-            "INFO:fawltydeps.extract_imports:Parsing Python files under {path}",
+            "INFO:fawltydeps.extract_imports:Finding Python files under {path}",
+            "INFO:fawltydeps.extract_imports:Parsing Python file {path}/code.py",
             "INFO:fawltydeps.packages:'pandas' was not resolved."
             " Assuming it can be imported as 'pandas'.",
         ],
@@ -511,7 +518,8 @@ project_tests_samples = [
             VERBOSE_PROMPT,
         ],
         expect_logs=[
-            "INFO:fawltydeps.extract_imports:Parsing Python files under {path}",
+            "INFO:fawltydeps.extract_imports:Finding Python files under {path}",
+            "INFO:fawltydeps.extract_imports:Parsing Python file {path}/code.py",
             "INFO:fawltydeps.packages:'pandas' was not resolved."
             " Assuming it can be imported as 'pandas'.",
         ],
@@ -627,7 +635,8 @@ def test_check_undeclared__simple_project__reports_only_undeclared(
         f"    {str(tmp_path / 'code.py')}:1",
     ]
     expect_logs = [
-        f"INFO:fawltydeps.extract_imports:Parsing Python files under {tmp_path}",
+        f"INFO:fawltydeps.extract_imports:Finding Python files under {tmp_path}",
+        f"INFO:fawltydeps.extract_imports:Parsing Python file {tmp_path}/code.py",
         "INFO:fawltydeps.packages:'pandas' was not resolved."
         " Assuming it can be imported as 'pandas'.",
     ]
