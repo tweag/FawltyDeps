@@ -1,18 +1,19 @@
 """Test that we can extract simple imports from Python code."""
 import json
 import logging
+from pathlib import Path
 from textwrap import dedent
-from typing import List, Tuple, Union
+from typing import Dict, List, Tuple, Union
 
 import pytest
 
 from fawltydeps.extract_imports import (
     parse_code,
-    parse_dir,
     parse_notebook_file,
     parse_python_file,
+    parse_sources,
 )
-from fawltydeps.types import Location, ParsedImport, PathOrSpecial
+from fawltydeps.types import CodeSource, Location, ParsedImport, PathOrSpecial
 
 
 def imports_w_linenos(
@@ -70,6 +71,21 @@ def generate_notebook(
         ],
     }
     return json.dumps(notebook, indent=2)
+
+
+@pytest.fixture
+def write_code_sources(write_tmp_files):
+    """A wrapper around write_tmp_files() that return CodeSource objects."""
+
+    def _inner(file_contents: Dict[str, str]) -> Tuple[Path, List[CodeSource]]:
+        tmp_path = write_tmp_files(file_contents)
+        sources = []
+        for filepath in file_contents.keys():
+            assert filepath.endswith((".py", ".ipynb"))
+            sources.append(CodeSource(tmp_path / filepath, tmp_path))
+        return tmp_path, sources
+
+    return _inner
 
 
 @pytest.mark.parametrize(
@@ -399,18 +415,14 @@ def test_parse_notebook_file__on_no_defined_language_info__logs_skipping_msg_and
     )
 
 
-def test_parse_dir__with_py_ipynb_and_non_py__extracts_only_from_py_and_ipynb_files(
-    write_tmp_files,
+def test_parse_sources__with_py_and_ipynb__extracts_from_all_files(
+    write_code_sources,
 ):
-    tmp_path = write_tmp_files(
+    tmp_path, code_sources = write_code_sources(
         {
             "test1.py": "from my_pathlib import Path",
             "test2.py": "import pandas",
             "test3.ipynb": generate_notebook([["import pytorch"]]),
-            "not_python.txt": """\
-                This is not code, even if it contains the
-                import word.
-                """,
         }
     )
 
@@ -419,11 +431,13 @@ def test_parse_dir__with_py_ipynb_and_non_py__extracts_only_from_py_and_ipynb_fi
         ParsedImport("pandas", Location(tmp_path / "test2.py", lineno=1)),
         ParsedImport("pytorch", Location(tmp_path / "test3.ipynb", cellno=1, lineno=1)),
     }
-    assert set(parse_dir(tmp_path)) == expect
+    assert set(parse_sources(code_sources)) == expect
 
 
-def test_parse_dir__imports__are_extracted_in_order_of_encounter(write_tmp_files):
-    tmp_path = write_tmp_files(
+def test_parse_sources__imports__are_extracted_in_order_of_encounter(
+    write_code_sources,
+):
+    tmp_path, code_sources = write_code_sources(
         {
             "first.py": """\
                 import my_sys
@@ -439,7 +453,7 @@ def test_parse_dir__imports__are_extracted_in_order_of_encounter(write_tmp_files
     expect = imports_w_linenos(
         [("my_sys", 1), ("foo", 2)], tmp_path / "first.py"
     ) + imports_w_linenos([("my_sys", 1), ("xyzzy", 2)], tmp_path / "subdir/second.py")
-    assert list(parse_dir(tmp_path)) == expect
+    assert list(parse_sources(code_sources)) == expect
 
 
 @pytest.mark.parametrize(
@@ -497,15 +511,12 @@ def test_parse_dir__imports__are_extracted_in_order_of_encounter(write_tmp_files
             [],
             id="__ignore_imports_from_uncle",
         ),
-        pytest.param(
-            {"tests/test_my_application.py": "import pytest", "pytest.ini": "[pytest]"},
-            [("pytest", "tests/test_my_application.py", 1)],
-            id="__ignore_imports_from_non_python_files",
-        ),
     ],
 )
-def test_parse_dir__ignore_first_party_imports(code, expect_data, write_tmp_files):
-    tmp_path = write_tmp_files(code)
+def test_parse_sources__ignore_first_party_imports(
+    code, expect_data, write_code_sources
+):
+    tmp_path, code_sources = write_code_sources(code)
     expect = [
         ParsedImport(
             name=e[0],
@@ -514,16 +525,4 @@ def test_parse_dir__ignore_first_party_imports(code, expect_data, write_tmp_file
         for e in expect_data
     ]
 
-    assert list(parse_dir(tmp_path)) == expect
-
-
-def test_parse_dir__files_in_dot_dirs__are_ignored(write_tmp_files):
-    tmp_path = write_tmp_files(
-        {
-            "test1.py": "import numpy",
-            ".venv/test2.py": "import pandas",
-        }
-    )
-
-    expect = {ParsedImport("numpy", Location(tmp_path / "test1.py", lineno=1))}
-    assert set(parse_dir(tmp_path)) == expect
+    assert list(parse_sources(code_sources)) == expect
