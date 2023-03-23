@@ -58,13 +58,13 @@ def make_json_settings_dict(**kwargs):
                 f"<stdin>:{n}: {i}"
                 for i, n in [("requests", 4), ("foo", 5), ("numpy", 6)]
             ],
-            "INFO:fawltydeps.extract_imports:Parsing Python code from standard input",
+            ["INFO:fawltydeps.extract_imports:Parsing Python code from standard input"],
             id="detailed",
         ),
         pytest.param(
             ["--summary"],
             ["foo", "numpy", "requests", "", VERBOSE_PROMPT],
-            "",
+            [],
             id="summary",
         ),
     ],
@@ -87,7 +87,7 @@ def test_list_imports__from_dash__prints_imports_from_stdin(
         "--list-imports", "--code=-", *cli_options, to_stdin=code
     )
     assert output.splitlines() == expect_output
-    assert errors == expect_logs
+    assert_unordered_equivalence(errors.splitlines(), expect_logs)
     assert returncode == 0
 
 
@@ -109,14 +109,14 @@ def test_list_imports__from_py_file__prints_imports_from_file(write_tmp_files):
         f"{tmp_path}/myfile.py:{n}: {i}"
         for i, n in [("requests", 4), ("foo", 5), ("numpy", 6)]
     ]
-    expect_logs = (
-        f"INFO:fawltydeps.extract_imports:Parsing Python file {tmp_path}/myfile.py"
-    )
+    expect_logs = [
+        f"INFO:fawltydeps.extract_imports:Parsing Python file {tmp_path}/myfile.py",
+    ]
     output, errors, returncode = run_fawltydeps_subprocess(
         "--list-imports", "--detailed", "-v", f"--code={tmp_path}/myfile.py"
     )
     assert output.splitlines() == expect
-    assert errors == expect_logs
+    assert_unordered_equivalence(errors.splitlines(), expect_logs)
     assert returncode == 0
 
 
@@ -169,14 +169,14 @@ def test_list_imports__from_ipynb_file__prints_imports_from_file(write_tmp_files
     )
 
     expect = [f"{tmp_path}/myfile.ipynb[1]:1: pytorch"]
-    expect_logs = (
-        f"INFO:fawltydeps.extract_imports:Parsing Notebook file {tmp_path}/myfile.ipynb"
-    )
+    expect_logs = [
+        f"INFO:fawltydeps.extract_imports:Parsing Notebook file {tmp_path}/myfile.ipynb",
+    ]
     output, errors, returncode = run_fawltydeps_subprocess(
         "--list-imports", "--detailed", "-v", f"--code={tmp_path}/myfile.ipynb"
     )
     assert output.splitlines() == expect
-    assert errors == expect_logs
+    assert_unordered_equivalence(errors.splitlines(), expect_logs)
     assert returncode == 0
 
 
@@ -203,14 +203,14 @@ def test_list_imports__from_dir__prints_imports_from_py_and_ipynb_files_only(
         f"{tmp_path}/file1.py:{n}: {i}"
         for i, n in [("my_pathlib", 1), ("pandas", 2), ("scipy", 2)]
     ] + [f"{tmp_path}/file3.ipynb[1]:1: pytorch"]
-    expect_logs = (
-        f"INFO:fawltydeps.extract_imports:Parsing Python files under {tmp_path}"
-    )
+    expect_logs = [
+        f"INFO:fawltydeps.extract_imports:Parsing Python files under {tmp_path}",
+    ]
     output, errors, returncode = run_fawltydeps_subprocess(
         "--list-imports", "--detailed", "-v", f"--code={tmp_path}"
     )
     assert output.splitlines() == expect
-    assert errors == expect_logs
+    assert_unordered_equivalence(errors.splitlines(), expect_logs)
     assert returncode == 0
 
 
@@ -237,11 +237,14 @@ def test_list_imports__from_missing_file__fails_with_exit_code_2(tmp_path):
 
 def test_list_imports__from_empty_dir__logs_but_extracts_nothing(tmp_path):
     # Enable log level INFO with -v
+    expect_logs = [
+        f"INFO:fawltydeps.extract_imports:Parsing Python files under {tmp_path}",
+    ]
     output, errors, returncode = run_fawltydeps_subprocess(
         "--list-imports", f"--code={tmp_path}", "--detailed", "-v"
     )
     assert output == ""
-    assert f"Parsing Python files under {tmp_path}" in errors
+    assert_unordered_equivalence(errors.splitlines(), expect_logs)
     assert returncode == 0
 
 
@@ -259,7 +262,7 @@ def test_list_imports__pick_multiple_files_dir__prints_all_imports(
     ]
     expect = ["django", "pandas", "click"]
     assert_unordered_equivalence(output.splitlines()[:-2], expect)
-    assert all(el in errors for el in expect_logs)
+    assert_unordered_equivalence(errors.splitlines(), expect_logs)
     assert returncode == 0
 
 
@@ -281,11 +284,12 @@ def test_list_imports__pick_multiple_files_dir_and_code__prints_all_imports(
         "--list-imports", "--code", "-", f"{path_code2}", "-v", to_stdin=code
     )
     expect_logs = [
+        "INFO:fawltydeps.extract_imports:Parsing Python code from standard input",
         f"INFO:fawltydeps.extract_imports:Parsing Python file {path_code2}",
     ]
     expect = ["django", "requests", "foo", "numpy"]
     assert_unordered_equivalence(output.splitlines()[:-2], expect)
-    assert all(el in errors for el in expect_logs)
+    assert_unordered_equivalence(errors.splitlines(), expect_logs)
     assert returncode == 0
 
 
@@ -543,19 +547,18 @@ def test_check_undeclared_and_unused(
         imports=vector.imports,
         declares=vector.declares,
     )
-    output, logs, returncode = run_fawltydeps_subprocess(
+    output, errors, returncode = run_fawltydeps_subprocess(
         *[option.format(path=tmp_path) for option in vector.options]
     )
     # Order of output is determined, as we use alphabetical ordering.
     assert output.splitlines() == [
-        v.format(path=tmp_path) for v in vector.expect_output
+        line.format(path=tmp_path) for line in vector.expect_output
     ]
-    # We do set comparison here, as the evaluation order of
-    # input is not determined. In the process of evaluation,
-    # we use sets (like in IdentityMapping fallback).
-    assert {l for l in logs.split("\n") if l != ""} == {
-        v.format(path=tmp_path) for v in vector.expect_logs
-    }
+    # Order of log messages is not important.
+    assert_unordered_equivalence(
+        errors.splitlines(),
+        [line.format(path=tmp_path) for line in vector.expect_logs],
+    )
     assert returncode == vector.expect_returncode
 
 
@@ -637,7 +640,7 @@ def test_check_undeclared__simple_project__reports_only_undeclared(
         f"{tmp_path}",
     )
     assert output.splitlines() == expect
-    assert errors == "\n".join(expect_logs)
+    assert_unordered_equivalence(errors.splitlines(), expect_logs)
     assert returncode == 3
 
 
