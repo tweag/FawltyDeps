@@ -5,6 +5,7 @@ import subprocess
 import sys
 import tempfile
 import venv
+from abc import ABC, abstractmethod
 from contextlib import contextmanager, nullcontext
 from dataclasses import dataclass, field
 from enum import Enum
@@ -105,7 +106,22 @@ class Package:
         return bool(self.import_names.intersection(imported_names))
 
 
-class LocalPackageLookup:
+class BasePackageResolver(ABC):
+    """Define the interface for doing package -> import names lookup."""
+
+    @abstractmethod
+    def lookup_package(self, package_name: str) -> Optional[Package]:
+        """Convert a package name into a Package object with available imports.
+
+        Return a Package object that encapsulates the package-name-to-import-
+        names mapping for the given package name.
+
+        Return None if this PackageResolver is unable to resolve the package.
+        """
+        raise NotImplementedError
+
+
+class LocalPackageResolver(BasePackageResolver):
     """Lookup imports exposed by packages installed in a Python environment."""
 
     def __init__(self, pyenv_path: Optional[Path] = None) -> None:
@@ -201,10 +217,10 @@ class LocalPackageLookup:
 @contextmanager
 def temp_installed_requirements(
     requirements: List[str],
-) -> Iterator[LocalPackageLookup]:
+) -> Iterator[LocalPackageResolver]:
     """Install packages into a temporary venv and provide lookup.
 
-    Provide a `LocalPackageLookup` object into the caller's context which
+    Provide a `LocalPackageResolver` object into the caller's context which
     provide dependency-to-imports mapping for the given requirements.
     The requirements are downloaded and installed into a temporary virtualenv,
     which is automatically deleted at the end of this context.
@@ -217,7 +233,24 @@ def temp_installed_requirements(
             check=True,  # fail if any of the commands fail
         )
         (venv_dir / ".installed").touch()
-        yield LocalPackageLookup(venv_dir)
+        yield LocalPackageResolver(venv_dir)
+
+
+class IdentityMapping(BasePackageResolver):
+    """An imperfect package resolver that assumes package name == import name.
+
+    This will resolve _any_ package name into a corresponding identical import
+    name (modulo normalization, see Package.normalize_name() for details).
+    """
+
+    def lookup_package(self, package_name: str) -> Optional[Package]:
+        """Convert a package name into a Package with the same import name."""
+        ret = Package.identity_mapping(package_name)
+        logger.info(
+            f"Could not find {package_name!r} in the current environment. "
+            f"Assuming it can be imported as {', '.join(sorted(ret.import_names))}"
+        )
+        return ret
 
 
 def resolve_dependencies(
@@ -227,19 +260,13 @@ def resolve_dependencies(
 ) -> Dict[str, Package]:
     """Associate dependencies with corresponding Package objects.
 
-    Use LocalPackageLookup to find Package objects for each of the given
+    Use LocalPackageResolver to find Package objects for each of the given
     dependencies inside the virtualenv given by 'pyenv_path'. When 'pyenv_path'
     is None (the default), look for packages in the current Python environment
     (i.e. equivalent to sys.path).
 
-    For dependencies that cannot be found with LocalPackageLookup,
-    fabricate an identity mapping (a pseudo-package making available an import
-    of the same name as the package, modulo normalization).
-
     Return a dict mapping dependency names to the resolved Package objects.
     """
-    ret = {}
-
     # consume the iterable once
     deps = list(dep_names)
 
@@ -251,17 +278,26 @@ def resolve_dependencies(
             )
         local_packages_context = temp_installed_requirements(deps)
     else:
-        local_packages_context = nullcontext(LocalPackageLookup(pyenv_path))  # type: ignore
+        local_packages_context = nullcontext(LocalPackageResolver(pyenv_path))  # type: ignore
 
     with local_packages_context as local_packages:
+        # This defines the "stack" of resolvers that we will use to convert
+        # dependencies into provided import names. We call .lookup_package() on
+        # each resolver in order until one of them returns a Package object. At
+        # that point we are happy, and don't consult any of the later resolvers.
+        resolvers = [
+            local_packages,
+            IdentityMapping(),
+        ]
+        ret = {}
+
         for name in deps:
             if name not in ret:
-                package = local_packages.lookup_package(name)
-                if package is None:  # fall back to identity mapping
-                    package = Package.identity_mapping(name)
-                    logger.info(
-                        f"Could not find {name!r} in the current environment. Assuming "
-                        f"it can be imported as {', '.join(sorted(package.import_names))}"
-                    )
-                ret[name] = package
-    return ret
+                for resolver in resolvers:
+                    package = resolver.lookup_package(name)
+                    if package is None:  # skip to next resolver
+                        continue
+                    ret[name] = package
+                    break  # skip to next dependency name
+
+        return ret

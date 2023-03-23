@@ -6,7 +6,7 @@ import pytest
 
 from fawltydeps.packages import (
     DependenciesMapping,
-    LocalPackageLookup,
+    LocalPackageResolver,
     Package,
     resolve_dependencies,
 )
@@ -31,7 +31,7 @@ def test_determine_package_dir__various_paths_in_venv(tmp_path, subdir):
     venv.create(tmp_path, with_pip=False)
     path = tmp_path / subdir
     expect = tmp_path / f"lib/python{major}.{minor}/site-packages"
-    assert LocalPackageLookup.determine_package_dir(path) == expect
+    assert LocalPackageResolver.determine_package_dir(path) == expect
 
 
 @pytest.mark.parametrize(
@@ -49,18 +49,18 @@ def test_determine_package_dir__various_paths_in_poetry2nix_env(
     )
     path = tmp_path / subdir
     expect = tmp_path / f"lib/python{major}.{minor}/site-packages"
-    assert LocalPackageLookup.determine_package_dir(path) == expect
+    assert LocalPackageResolver.determine_package_dir(path) == expect
 
 
 def test_local_env__empty_venv__has_no_packages(tmp_path):
     venv.create(tmp_path, with_pip=False)
-    lpl = LocalPackageLookup(tmp_path)
+    lpl = LocalPackageResolver(tmp_path)
     assert lpl.packages == {}
 
 
 def test_local_env__default_venv__contains_pip_and_setuptools(tmp_path):
     venv.create(tmp_path, with_pip=True)
-    lpl = LocalPackageLookup(tmp_path)
+    lpl = LocalPackageResolver(tmp_path)
     # We cannot do a direct comparison, as different Python/pip/setuptools
     # versions differ in exactly which packages are provided. The following
     # is a subset that we can expect across all of our supported versions.
@@ -78,7 +78,7 @@ def test_local_env__default_venv__contains_pip_and_setuptools(tmp_path):
 
 
 def test_local_env__current_venv__contains_our_test_dependencies():
-    lpl = LocalPackageLookup()
+    lpl = LocalPackageResolver()
     expect_package_names = [
         # Present in ~all venvs:
         "pip",

@@ -19,7 +19,7 @@ from urllib.request import urlretrieve
 import pytest
 from pkg_resources import Requirement
 
-from fawltydeps.packages import LocalPackageLookup
+from fawltydeps.packages import LocalPackageResolver
 from fawltydeps.types import TomlData
 
 from .project_helpers import BaseExperiment, BaseProject, JsonData, parse_toml
@@ -36,7 +36,7 @@ REAL_PROJECTS_DIR = Path(__file__).with_name("real_projects")
 
 
 def verify_requirements(venv_path: Path, requirements: List[str]) -> None:
-    lpl = LocalPackageLookup(venv_path)
+    lpl = LocalPackageResolver(venv_path)
     for req in requirements:
         if "python_version" in req:  # we don't know how to parse these (yet)
             continue  # skip checking this requirement
