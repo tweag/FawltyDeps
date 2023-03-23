@@ -11,8 +11,10 @@ description = '''
   This example was build to test command-line options in a happy case.
   Tests are implemented in 'test_cmdline_options.py'
 '''
+[experiments.default]
+description = "Default run"
+requirements = []  # rely on identity mapping
 
-[analysis_result]
 # Names of imports found in the code which 
 # do not have a matching dependency declared.
 # What we expect the analysis to return.
