@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
-from fawltydeps.packages import DependenciesMapping, LocalPackageLookup, Package
+from fawltydeps.packages import DependenciesMapping, LocalPackageResolver, Package
 from fawltydeps.types import (
     DeclaredDependency,
     Location,
@@ -35,7 +35,7 @@ def collect_dep_names(deps: Iterable[DeclaredDependency]) -> Iterable[str]:
 # - pip (exposes a single import name: pip)
 # - isort (exposes no top_level.txt, but 'isort' import name can be inferred)
 
-local_env = LocalPackageLookup()
+local_env = LocalPackageResolver()
 
 
 def imports_factory(*imports: str) -> List[ParsedImport]:

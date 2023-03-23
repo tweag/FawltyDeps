@@ -6,7 +6,7 @@ import pytest
 
 from fawltydeps.packages import (
     DependenciesMapping,
-    LocalPackageLookup,
+    LocalPackageResolver,
     Package,
     resolve_dependencies,
 )
@@ -184,7 +184,7 @@ def test_package__both_mappings():
     ],
 )
 def test_LocalPackageLookup_lookup_package(dep_name, expect_import_names):
-    lpl = LocalPackageLookup()
+    lpl = LocalPackageResolver()
     actual = lpl.lookup_package(dep_name)
     if expect_import_names is None:
         assert actual is None
