@@ -16,7 +16,7 @@ from fawltydeps.main import UNUSED_DEPS_OUTPUT_PREFIX, VERBOSE_PROMPT, Analysis,
 from fawltydeps.types import Location, UnusedDependency
 
 from .test_extract_imports_simple import generate_notebook
-from .utils import assert_unordered_equivalence, run_fawltydeps
+from .utils import assert_unordered_equivalence, run_fawltydeps, run_fawltydeps_function
 
 logger = logging.getLogger(__name__)
 
@@ -152,7 +152,7 @@ def test_list_imports_json__from_py_file__prints_imports_from_file(write_tmp_fil
         "unused_deps": None,
         "version": version(),
     }
-    output, _errors, returncode = run_fawltydeps(
+    output, returncode = run_fawltydeps_function(
         "--list-imports", "--json", f"--code={tmp_path}/myfile.py"
     )
     assert json.loads(output) == expect
@@ -333,7 +333,7 @@ def test_list_deps_json__dir__prints_deps_from_requirements_txt(
         "unused_deps": None,
         "version": version(),
     }
-    output, _errors, returncode = run_fawltydeps(
+    output, returncode = run_fawltydeps_function(
         "--list-deps", "--json", f"--deps={tmp_path}"
     )
     assert json.loads(output) == expect
@@ -605,7 +605,7 @@ def test_check_json__simple_project__can_report_both_undeclared_and_unused(
         ],
         "version": version(),
     }
-    output, _errors, returncode = run_fawltydeps(
+    output, returncode = run_fawltydeps_function(
         "--check", "--json", f"--code={tmp_path}", f"--deps={tmp_path}"
     )
     assert json.loads(output) == expect
