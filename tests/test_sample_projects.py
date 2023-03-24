@@ -26,7 +26,7 @@ from typing import Iterator, List
 import pytest
 
 from fawltydeps.main import Analysis
-from fawltydeps.settings import Action, Settings
+from fawltydeps.settings import Action, Settings, print_toml_config
 from fawltydeps.types import TomlData
 from tests.utils import SAMPLE_PROJECTS_DIR
 
@@ -110,6 +110,9 @@ def test_integration_analysis_on_sample_projects__(request, project, experiment)
     print(f"Running sample project experiment: {experiment.name}")
     print(f"Experiment description: {experiment.description}")
     print()
+    print("Experiment settings:")
     settings = experiment.build_settings(project.path, request.config.cache)
+    print_toml_config(settings)
+    print()
     analysis = Analysis.create(settings)
     experiment.expectations.verify_analysis(analysis)

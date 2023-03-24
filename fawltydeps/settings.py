@@ -442,7 +442,7 @@ def setup_cmdline_parser(
     return parser, option_group
 
 
-def print_toml_config(settings: Settings, out: TextIO) -> None:
+def print_toml_config(settings: Settings, out: TextIO = sys.stdout) -> None:
     """Serialize the given Settings object into a TOML config section."""
     # Use JSON serialization as a basis for TOML output. Load that back into
     # Python and then use Python's repr() representation below
