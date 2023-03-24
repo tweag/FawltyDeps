@@ -430,8 +430,8 @@ def test_check__simple_project_with_missing_deps__reports_undeclared(
     ]
     expect_logs = [
         f"INFO:fawltydeps.extract_imports:Parsing Python files under {tmp_path}",
-        "INFO:fawltydeps.packages:Could not find 'pandas' in the current environment."
-        " Assuming it can be imported as pandas",
+        "INFO:fawltydeps.packages:'pandas' was not resolved."
+        " Assuming it can be imported as 'pandas'.",
     ]
     output, errors, returncode = run_fawltydeps(
         "--check", "--detailed", "-v", f"--code={tmp_path}", f"--deps={tmp_path}"
@@ -456,10 +456,10 @@ def test_check__simple_project_with_extra_deps__reports_unused(
     ]
     expect_logs = [
         f"INFO:fawltydeps.extract_imports:Parsing Python files under {tmp_path}",
-        "INFO:fawltydeps.packages:Could not find 'requests' in the current environment."
-        " Assuming it can be imported as requests",
-        "INFO:fawltydeps.packages:Could not find 'pandas' in the current environment."
-        " Assuming it can be imported as pandas",
+        "INFO:fawltydeps.packages:'requests' was not resolved."
+        " Assuming it can be imported as 'requests'.",
+        "INFO:fawltydeps.packages:'pandas' was not resolved."
+        " Assuming it can be imported as 'pandas'.",
     ]
     output, errors, returncode = run_fawltydeps(
         "--check", "--detailed", "-v", f"--code={tmp_path}", f"--deps={tmp_path}"
@@ -488,8 +488,8 @@ def test_check__simple_project__can_report_both_undeclared_and_unused(
     ]
     expect_logs = [
         f"INFO:fawltydeps.extract_imports:Parsing Python files under {tmp_path}",
-        "INFO:fawltydeps.packages:Could not find 'pandas' in the current environment."
-        " Assuming it can be imported as pandas",
+        "INFO:fawltydeps.packages:'pandas' was not resolved."
+        " Assuming it can be imported as 'pandas'.",
     ]
     output, errors, returncode = run_fawltydeps(
         "--check", "--detailed", "-v", f"--code={tmp_path}", f"--deps={tmp_path}"
@@ -518,8 +518,8 @@ def test_check__simple_project__summary_report_with_verbose_logging(
     ]
     expect_logs = [
         f"INFO:fawltydeps.extract_imports:Parsing Python files under {tmp_path}",
-        "INFO:fawltydeps.packages:Could not find 'pandas' in the current environment."
-        " Assuming it can be imported as pandas",
+        "INFO:fawltydeps.packages:'pandas' was not resolved."
+        " Assuming it can be imported as 'pandas'.",
     ]
     output, errors, returncode = run_fawltydeps(
         "--check",
@@ -626,8 +626,8 @@ def test_check_undeclared__simple_project__reports_only_undeclared(
     ]
     expect_logs = [
         f"INFO:fawltydeps.extract_imports:Parsing Python files under {tmp_path}",
-        "INFO:fawltydeps.packages:Could not find 'pandas' in the current environment."
-        " Assuming it can be imported as pandas",
+        "INFO:fawltydeps.packages:'pandas' was not resolved."
+        " Assuming it can be imported as 'pandas'.",
     ]
     output, errors, returncode = run_fawltydeps(
         "--check-undeclared",
@@ -657,8 +657,8 @@ def test_check_unused__simple_project__reports_only_unused(
     ]
     expect_logs = [
         f"INFO:fawltydeps.extract_imports:Parsing Python files under {tmp_path}",
-        "INFO:fawltydeps.packages:Could not find 'pandas' in the current environment."
-        " Assuming it can be imported as pandas",
+        "INFO:fawltydeps.packages:'pandas' was not resolved."
+        " Assuming it can be imported as 'pandas'.",
     ]
     output, errors, returncode = run_fawltydeps(
         "--check-unused",
@@ -692,8 +692,8 @@ def test__no_action__defaults_to_check_action(
     ]
     expect_logs = [
         f"INFO:fawltydeps.extract_imports:Parsing Python files under {tmp_path}",
-        "INFO:fawltydeps.packages:Could not find 'pandas' in the current environment."
-        " Assuming it can be imported as pandas",
+        "INFO:fawltydeps.packages:'pandas' was not resolved."
+        " Assuming it can be imported as 'pandas'.",
     ]
     output, errors, returncode = run_fawltydeps(
         f"--code={tmp_path}", "--detailed", "-v", f"--deps={tmp_path}"
@@ -722,8 +722,8 @@ def test__no_options__defaults_to_check_action_in_current_dir(
     ]
     expect_logs = [
         "INFO:fawltydeps.extract_imports:Parsing Python files under .",
-        "INFO:fawltydeps.packages:Could not find 'pandas' in the current environment."
-        " Assuming it can be imported as pandas",
+        "INFO:fawltydeps.packages:'pandas' was not resolved."
+        " Assuming it can be imported as 'pandas'.",
     ]
     output, errors, returncode = run_fawltydeps("--detailed", "-v", cwd=tmp_path)
     assert output.splitlines() == expect
