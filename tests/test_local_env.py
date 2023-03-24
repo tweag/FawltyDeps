@@ -6,6 +6,7 @@ import pytest
 
 from fawltydeps.packages import (
     DependenciesMapping,
+    IdentityMapping,
     LocalPackageResolver,
     Package,
     resolve_dependencies,
@@ -96,10 +97,11 @@ def test_local_env__current_venv__contains_our_test_dependencies():
 
 def test_resolve_dependencies__in_empty_venv__reverts_to_id_mapping(tmp_path):
     venv.create(tmp_path, with_pip=False)
+    id_mapping = IdentityMapping()
     actual = resolve_dependencies(["pip", "setuptools"], pyenv_path=tmp_path)
     assert actual == {
-        "pip": Package.identity_mapping("pip"),
-        "setuptools": Package.identity_mapping("setuptools"),
+        "pip": id_mapping.lookup_package("pip"),
+        "setuptools": id_mapping.lookup_package("setuptools"),
     }
 
 
@@ -114,7 +116,7 @@ def test_resolve_dependencies__in_fake_venv__returns_local_and_id_deps(fake_venv
     actual = resolve_dependencies(["PIP", "pandas", "empty-pkg"], pyenv_path=venv_dir)
     assert actual == {
         "PIP": Package("pip", {DependenciesMapping.LOCAL_ENV: {"pip"}}),
-        "pandas": Package.identity_mapping("pandas"),
+        "pandas": Package("pandas", {DependenciesMapping.IDENTITY: {"pandas"}}),
         "empty-pkg": Package("empty_pkg", {DependenciesMapping.LOCAL_ENV: set()}),
     }
 

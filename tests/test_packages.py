@@ -6,6 +6,7 @@ import pytest
 
 from fawltydeps.packages import (
     DependenciesMapping,
+    IdentityMapping,
     LocalPackageResolver,
     Package,
     resolve_dependencies,
@@ -52,7 +53,8 @@ def test_package__empty_package__matches_nothing():
 def test_package__identity_mapping(
     package_name, matching_imports, non_matching_imports
 ):
-    p = Package.identity_mapping(package_name)
+    id_mapping = IdentityMapping()
+    p = id_mapping.lookup_package(package_name)
     assert p.package_name == package_name  # package name is not normalized
     assert p.is_used(matching_imports)
     assert not p.is_used(non_matching_imports)
@@ -123,7 +125,8 @@ def test_package__local_env_mapping(
 
 
 def test_package__both_mappings():
-    p = Package.identity_mapping("FooBar")
+    id_mapping = IdentityMapping()
+    p = id_mapping.lookup_package("FooBar")
     import_names = ["foo", "bar", "baz"]
     p.add_import_names(*import_names, mapping=DependenciesMapping.LOCAL_ENV)
     assert p.package_name == "FooBar"  # package name is not normalized
@@ -253,8 +256,7 @@ def test_resolve_dependencies__informs_once_when_id_mapping_is_used(caplog):
         (
             "fawltydeps.packages",
             logging.INFO,
-            "Could not find 'some-foo' in the current environment."
-            " Assuming it can be imported as some_foo",
+            "'some-foo' was not resolved. Assuming it can be imported as 'some_foo'.",
         )
     ]
     caplog.set_level(logging.INFO)

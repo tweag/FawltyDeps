@@ -81,26 +81,6 @@ class Package:
         self.mappings.setdefault(mapping, set()).update(import_names)
         self.import_names.update(import_names)
 
-    def add_identity_import(self) -> None:
-        """Add identity mapping to this package.
-
-        This builds on an assumption that a package 'foo' installed with e.g.
-        `pip install foo`, will also provide an import name 'foo'. This
-        assumption does not always hold, but sometimes we don't have much else
-        to go on...
-        """
-        self.add_import_names(
-            self.normalize_name(self.package_name),
-            mapping=DependenciesMapping.IDENTITY,
-        )
-
-    @classmethod
-    def identity_mapping(cls, package_name: str) -> "Package":
-        """Factory for conveniently creating identity-mapped package object."""
-        ret = cls(package_name)
-        ret.add_identity_import()
-        return ret
-
     def is_used(self, imported_names: Iterable[str]) -> bool:
         """Return True iff this package is among the given import names."""
         return bool(self.import_names.intersection(imported_names))
@@ -245,10 +225,12 @@ class IdentityMapping(BasePackageResolver):
 
     def lookup_package(self, package_name: str) -> Optional[Package]:
         """Convert a package name into a Package with the same import name."""
-        ret = Package.identity_mapping(package_name)
+        ret = Package(package_name)
+        import_name = Package.normalize_name(package_name)
+        ret.add_import_names(import_name, mapping=DependenciesMapping.IDENTITY)
         logger.info(
-            f"Could not find {package_name!r} in the current environment. "
-            f"Assuming it can be imported as {', '.join(sorted(ret.import_names))}"
+            f"{package_name!r} was not resolved. "
+            f"Assuming it can be imported as {import_name!r}."
         )
         return ret
 
