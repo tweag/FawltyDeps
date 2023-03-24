@@ -99,10 +99,7 @@ def test_resolve_dependencies__in_empty_venv__reverts_to_id_mapping(tmp_path):
     venv.create(tmp_path, with_pip=False)
     id_mapping = IdentityMapping()
     actual = resolve_dependencies(["pip", "setuptools"], pyenv_path=tmp_path)
-    assert actual == {
-        "pip": id_mapping.lookup_package("pip"),
-        "setuptools": id_mapping.lookup_package("setuptools"),
-    }
+    assert actual == id_mapping.lookup_packages({"pip", "setuptools"})
 
 
 def test_resolve_dependencies__in_fake_venv__returns_local_and_id_deps(fake_venv):

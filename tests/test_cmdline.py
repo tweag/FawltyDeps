@@ -465,7 +465,7 @@ def test_check__simple_project_with_extra_deps__reports_unused(
         "--check", "--detailed", "-v", f"--code={tmp_path}", f"--deps={tmp_path}"
     )
     assert output.splitlines() == expect
-    assert errors == "\n".join(expect_logs)
+    assert_unordered_equivalence(errors.splitlines(), expect_logs)
     assert returncode == 4
 
 
