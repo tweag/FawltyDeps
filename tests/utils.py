@@ -6,7 +6,12 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
-from fawltydeps.packages import DependenciesMapping, LocalPackageResolver, Package
+from fawltydeps.packages import (
+    DependenciesMapping,
+    IdentityMapping,
+    LocalPackageResolver,
+    Package,
+)
 from fawltydeps.types import (
     DeclaredDependency,
     Location,
@@ -48,13 +53,14 @@ def deps_factory(*deps: str, path: str = "foo") -> List[DeclaredDependency]:
 
 
 def resolved_factory(*deps: str) -> Dict[str, Package]:
-    def resolve_one(dep: str) -> Package:
-        from_env = local_env.lookup_package(dep)
-        if from_env is None:
-            return Package(dep, {DependenciesMapping.IDENTITY: {dep}})
-        return from_env
-
-    return {dep: resolve_one(dep) for dep in deps}
+    unresolved = set(deps)
+    resolved = local_env.lookup_packages(unresolved)
+    unresolved -= resolved.keys()
+    id_mapping = IdentityMapping()
+    resolved.update(id_mapping.lookup_packages(unresolved))
+    unresolved -= resolved.keys()
+    assert not unresolved
+    return resolved
 
 
 def undeclared_factory(*deps: str) -> List[UndeclaredDependency]:

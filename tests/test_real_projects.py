@@ -36,12 +36,13 @@ REAL_PROJECTS_DIR = Path(__file__).with_name("real_projects")
 
 
 def verify_requirements(venv_path: Path, requirements: List[str]) -> None:
-    lpl = LocalPackageResolver(venv_path)
-    for req in requirements:
-        if "python_version" in req:  # we don't know how to parse these (yet)
-            continue  # skip checking this requirement
-        pkg_name = Requirement.parse(req).unsafe_name
-        assert lpl.lookup_package(pkg_name) is not None
+    deps = {
+        Requirement.parse(req).unsafe_name
+        for req in requirements
+        if "python_version" not in req  # we don't know how to parse these (yet)
+    }
+    resolved = LocalPackageResolver(venv_path).lookup_packages(deps)
+    assert all(dep in resolved for dep in deps)
 
 
 def run_fawltydeps_json(

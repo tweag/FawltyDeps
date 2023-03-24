@@ -186,13 +186,14 @@ def test_package__both_mappings():
         ),
     ],
 )
-def test_LocalPackageLookup_lookup_package(dep_name, expect_import_names):
+def test_LocalPackageResolver_lookup_packages(dep_name, expect_import_names):
     lpl = LocalPackageResolver()
-    actual = lpl.lookup_package(dep_name)
+    actual = lpl.lookup_packages({dep_name})
     if expect_import_names is None:
-        assert actual is None
+        assert actual == {}
     else:
-        assert actual.import_names == expect_import_names
+        assert len(actual) == 1
+        assert actual[dep_name].import_names == expect_import_names
 
 
 @pytest.mark.parametrize(

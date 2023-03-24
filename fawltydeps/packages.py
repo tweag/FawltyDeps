@@ -90,13 +90,15 @@ class BasePackageResolver(ABC):
     """Define the interface for doing package -> import names lookup."""
 
     @abstractmethod
-    def lookup_package(self, package_name: str) -> Optional[Package]:
-        """Convert a package name into a Package object with available imports.
+    def lookup_packages(self, package_names: Set[str]) -> Dict[str, Package]:
+        """Convert package names into a Package objects with available imports.
 
-        Return a Package object that encapsulates the package-name-to-import-
-        names mapping for the given package name.
+        Resolve as many of the given package names as possible into their
+        corresponding import names, and return a dict that maps the resolved
+        names to their corresponding Package objects.
 
-        Return None if this PackageResolver is unable to resolve the package.
+        Return an empty dict if this PackageResolver is unable to resolve any
+        of the given packages.
         """
         raise NotImplementedError
 
@@ -176,22 +178,27 @@ class LocalPackageResolver(BasePackageResolver):
 
         return self._packages
 
-    def lookup_package(self, package_name: str) -> Optional[Package]:
-        """Convert a package name to a locally available Package object.
+    def lookup_packages(self, package_names: Set[str]) -> Dict[str, Package]:
+        """Convert package names to locally available Package objects.
 
         (Although this function generally works with _all_ locally available
         packages, we apply it only to the subset that is the dependencies of
         the current project.)
 
-        Return the Package object that encapsulates the package-name-to-import-
-        names mapping for the given package name.
+        Return a dict mapping package names to the Package objects that
+        encapsulate the package-name-to-import-names mappings.
 
-        Return None if we're unable to find any import names for the given
-        package name. This is typically because the package is missing from the
-        current environment, or because we fail to determine its provided import
-        names.
+        Only return dict entries for the packages that we manage to find in the
+        local environment. Omit any packages for which we're unable to determine
+        what imports names they provide. This applies to packages that are
+        missing from the local environment, or packages where we fail to
+        determine its provided import names.
         """
-        return self.packages.get(Package.normalize_name(package_name))
+        return {
+            name: self.packages[Package.normalize_name(name)]
+            for name in package_names
+            if Package.normalize_name(name) in self.packages
+        }
 
 
 @contextmanager
@@ -223,7 +230,8 @@ class IdentityMapping(BasePackageResolver):
     name (modulo normalization, see Package.normalize_name() for details).
     """
 
-    def lookup_package(self, package_name: str) -> Optional[Package]:
+    @staticmethod
+    def lookup_package(package_name: str) -> Package:
         """Convert a package name into a Package with the same import name."""
         ret = Package(package_name)
         import_name = Package.normalize_name(package_name)
@@ -233,6 +241,10 @@ class IdentityMapping(BasePackageResolver):
             f"Assuming it can be imported as {import_name!r}."
         )
         return ret
+
+    def lookup_packages(self, package_names: Set[str]) -> Dict[str, Package]:
+        """Convert package names into Package objects w/the same import name."""
+        return {name: self.lookup_package(name) for name in package_names}
 
 
 def resolve_dependencies(
@@ -250,7 +262,7 @@ def resolve_dependencies(
     Return a dict mapping dependency names to the resolved Package objects.
     """
     # consume the iterable once
-    deps = list(dep_names)
+    deps = set(dep_names)
 
     if install_deps:
         logger.info("Installing dependencies into a new temporary Python environment.")
@@ -258,7 +270,7 @@ def resolve_dependencies(
             logger.info(
                 f"Will not use Python environment defined by --pyenv: {pyenv_path}"
             )
-        local_packages_context = temp_installed_requirements(deps)
+        local_packages_context = temp_installed_requirements(list(deps))
     else:
         local_packages_context = nullcontext(LocalPackageResolver(pyenv_path))  # type: ignore
 
@@ -271,15 +283,16 @@ def resolve_dependencies(
             local_packages,
             IdentityMapping(),
         ]
-        ret = {}
+        ret: Dict[str, Package] = {}
 
-        for name in deps:
-            if name not in ret:
-                for resolver in resolvers:
-                    package = resolver.lookup_package(name)
-                    if package is None:  # skip to next resolver
-                        continue
-                    ret[name] = package
-                    break  # skip to next dependency name
+        for resolver in resolvers:
+            unresolved = deps - ret.keys()
+            if not unresolved:  # no unresolved deps left
+                logger.debug("No deps left to resolve!")
+                break
+            logger.debug(f"Trying to resolve {unresolved!r} with {resolver}")
+            resolved = resolver.lookup_packages(unresolved)
+            logger.debug(f"  Resolved {resolved!r} with {resolver}")
+            ret.update(resolved)
 
         return ret
