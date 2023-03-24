@@ -6,7 +6,7 @@ import sys
 import tempfile
 import venv
 from abc import ABC, abstractmethod
-from contextlib import contextmanager, nullcontext
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
@@ -201,26 +201,45 @@ class LocalPackageResolver(BasePackageResolver):
         }
 
 
-@contextmanager
-def temp_installed_requirements(
-    requirements: List[str],
-) -> Iterator[LocalPackageResolver]:
-    """Install packages into a temporary venv and provide lookup.
+class TemporaryPipInstallResolver(BasePackageResolver):
+    """Resolve packages by installing them in to a temporary venv.
 
-    Provide a `LocalPackageResolver` object into the caller's context which
-    provide dependency-to-imports mapping for the given requirements.
-    The requirements are downloaded and installed into a temporary virtualenv,
-    which is automatically deleted at the end of this context.
-    """
-    with tempfile.TemporaryDirectory() as tmpdir:
-        venv_dir = Path(tmpdir)
-        venv.create(venv_dir, clear=True, with_pip=True)
-        subprocess.run(
-            [f"{venv_dir}/bin/pip", "install", "--no-deps"] + requirements,
-            check=True,  # fail if any of the commands fail
-        )
-        (venv_dir / ".installed").touch()
-        yield LocalPackageResolver(venv_dir)
+    This provides a resolver for packages that are not installed in an existing
+    local environment. This is done by creating a temporary venv, and then
+    `pip install`ing the packages into this venv, and then resolving the
+    packages in this venv. The venv is automatically deleted before as soon as
+    the packages have been resolved."""
+
+    @staticmethod
+    @contextmanager
+    def temp_installed_requirements(requirements: List[str]) -> Iterator[Path]:
+        """Create a temporary venv and install the given requirements into it.
+
+        Provide a path to the temporary venv into the caller's context in which
+        the given requirements have been `pip install`ed. Automatically remove
+        the venv at the end of the context.
+        """
+        with tempfile.TemporaryDirectory() as tmpdir:
+            venv_dir = Path(tmpdir)
+            venv.create(venv_dir, clear=True, with_pip=True)
+            subprocess.run(
+                [f"{venv_dir}/bin/pip", "install", "--no-deps"] + requirements,
+                check=True,  # fail if any of the commands fail
+            )
+            (venv_dir / ".installed").touch()
+            yield venv_dir
+
+    def lookup_packages(self, package_names: Set[str]) -> Dict[str, Package]:
+        """Convert package names into Package objects via temporary pip install.
+
+        Use the temp_installed_requirements() above to `pip install` the given
+        package names into a temporary venv, and then use LocalPackageResolver
+        on this venv to provide the Package objects that correspond to the
+        package names.
+        """
+        with self.temp_installed_requirements(sorted(package_names)) as venv_dir:
+            local_resolver = LocalPackageResolver(venv_dir)
+            return local_resolver.lookup_packages(package_names)
 
 
 class IdentityMapping(BasePackageResolver):
@@ -270,29 +289,28 @@ def resolve_dependencies(
             logger.info(
                 f"Will not use Python environment defined by --pyenv: {pyenv_path}"
             )
-        local_packages_context = temp_installed_requirements(list(deps))
+        main_resolver: BasePackageResolver = TemporaryPipInstallResolver()
     else:
-        local_packages_context = nullcontext(LocalPackageResolver(pyenv_path))  # type: ignore
+        main_resolver = LocalPackageResolver(pyenv_path)
 
-    with local_packages_context as local_packages:
-        # This defines the "stack" of resolvers that we will use to convert
-        # dependencies into provided import names. We call .lookup_package() on
-        # each resolver in order until one of them returns a Package object. At
-        # that point we are happy, and don't consult any of the later resolvers.
-        resolvers = [
-            local_packages,
-            IdentityMapping(),
-        ]
-        ret: Dict[str, Package] = {}
+    # This defines the "stack" of resolvers that we will use to convert
+    # dependencies into provided import names. We call .lookup_package() on
+    # each resolver in order until one of them returns a Package object. At
+    # that point we are happy, and don't consult any of the later resolvers.
+    resolvers = [
+        main_resolver,
+        IdentityMapping(),
+    ]
+    ret: Dict[str, Package] = {}
 
-        for resolver in resolvers:
-            unresolved = deps - ret.keys()
-            if not unresolved:  # no unresolved deps left
-                logger.debug("No deps left to resolve!")
-                break
-            logger.debug(f"Trying to resolve {unresolved!r} with {resolver}")
-            resolved = resolver.lookup_packages(unresolved)
-            logger.debug(f"  Resolved {resolved!r} with {resolver}")
-            ret.update(resolved)
+    for resolver in resolvers:
+        unresolved = deps - ret.keys()
+        if not unresolved:  # no unresolved deps left
+            logger.debug("No dependencies left to resolve!")
+            break
+        logger.debug(f"Trying to resolve {unresolved!r} with {resolver}")
+        resolved = resolver.lookup_packages(unresolved)
+        logger.debug(f"  Resolved {resolved!r} with {resolver}")
+        ret.update(resolved)
 
-        return ret
+    return ret
