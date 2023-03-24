@@ -1,5 +1,6 @@
 """ Utilities to share among test modules """
 
+import io
 import logging
 import subprocess
 from dataclasses import dataclass, field
@@ -19,6 +20,7 @@ from fawltydeps.types import (
     UndeclaredDependency,
     UnusedDependency,
 )
+from fawltydeps.main import main
 
 SAMPLE_PROJECTS_DIR = Path(__file__).with_name("sample_projects")
 
@@ -77,6 +79,7 @@ def run_fawltydeps(
     to_stdin: Optional[str] = None,
     cwd: Optional[Path] = None,
 ) -> Tuple[str, str, int]:
+    """Run FawltyDeps as a subprocess. Designed for integration tests."""
     proc = subprocess.run(
         ["fawltydeps", f"--config-file={config_file}"] + list(args),
         input=to_stdin,
@@ -93,6 +96,34 @@ def run_fawltydeps(
         "    ----------------"
     )
     return proc.stdout.strip(), proc.stderr.strip(), proc.returncode
+
+
+def run_fawltydeps_function(
+    *args: str,
+    config_file: Path = Path("/dev/null"),
+    to_stdin: Optional[str] = None,
+    cwd: Optional[Path] = None,
+) -> Tuple[str, str, int]:
+    """Run FawltyDeps with `main` function. Designed for unit tests.
+
+    Ignores logging output and returns stdout and the exti code
+    """
+    output = io.StringIO()
+    exit_code = main(
+        cmdline_args=([str(cwd)] if cwd else [])
+        + [f"--config-file={str(config_file)}"]
+        + list(args),
+        stdin=io.StringIO(to_stdin),
+        stdout=output,
+    )
+
+    output_value = output.getvalue()
+    logger.debug(
+        f"Run `fawltydeps {' '.join(args)}` returned exit code {exit_code}\n"
+        f"    ---- STDOUT ----\n{output_value}"
+        "    ----------------"
+    )
+    return output_value, exit_code
 
 
 @dataclass
