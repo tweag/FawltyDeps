@@ -164,7 +164,7 @@ def cli_arguments_combinations(draw):
             draw(ignored_unused_strategy),
             deps_parser,
             draw(verbosity_strategy),
-            # draw(venv_strategy), # TODO: better handle information on Python envs
+            draw(venv_strategy),
         ]
     )
     args = reduce(lambda x, y: x + y, draw(strategy))
