@@ -237,6 +237,7 @@ class TemporaryPipInstallResolver(BasePackageResolver):
         on this venv to provide the Package objects that correspond to the
         package names.
         """
+        logger.info("Installing dependencies into a new temporary Python environment.")
         with self.temp_installed_requirements(sorted(package_names)) as venv_dir:
             local_resolver = LocalPackageResolver(venv_dir)
             return local_resolver.lookup_packages(package_names)
@@ -280,29 +281,21 @@ def resolve_dependencies(
 
     Return a dict mapping dependency names to the resolved Package objects.
     """
-    # consume the iterable once
-    deps = set(dep_names)
-
-    if install_deps:
-        logger.info("Installing dependencies into a new temporary Python environment.")
-        if pyenv_path is not None:
-            logger.info(
-                f"Will not use Python environment defined by --pyenv: {pyenv_path}"
-            )
-        main_resolver: BasePackageResolver = TemporaryPipInstallResolver()
-    else:
-        main_resolver = LocalPackageResolver(pyenv_path)
+    deps = set(dep_names)  # consume the iterable once
 
     # This defines the "stack" of resolvers that we will use to convert
     # dependencies into provided import names. We call .lookup_package() on
     # each resolver in order until one of them returns a Package object. At
     # that point we are happy, and don't consult any of the later resolvers.
-    resolvers = [
-        main_resolver,
-        IdentityMapping(),
-    ]
-    ret: Dict[str, Package] = {}
+    resolvers: List[BasePackageResolver] = [LocalPackageResolver(pyenv_path)]
+    if install_deps:
+        resolvers += [TemporaryPipInstallResolver()]
+    # Identity mapping being at the bottom of the resolvers stack ensures that
+    # _all_ deps are matched. TODO: If we make the identity mapping optional,
+    # we must remember to properly handle/signal unresolved dependencies.
+    resolvers += [IdentityMapping()]
 
+    ret: Dict[str, Package] = {}
     for resolver in resolvers:
         unresolved = deps - ret.keys()
         if not unresolved:  # no unresolved deps left
@@ -312,5 +305,4 @@ def resolve_dependencies(
         resolved = resolver.lookup_packages(unresolved)
         logger.debug(f"  Resolved {resolved!r} with {resolver}")
         ret.update(resolved)
-
     return ret
