@@ -32,8 +32,8 @@ from .utils import SAMPLE_PROJECTS_DIR
 
 project_with_no_issues = SAMPLE_PROJECTS_DIR / "no_issues"
 CODE_STDIN_MARKER = "-"
-MAX_NUMER_OF_CODE_ARGS = 3
-MAX_NUMER_OF_DEPS_ARGS = 2
+MAX_NUMBER_OF_CODE_ARGS = 3
+MAX_NUMBER_OF_DEPS_ARGS = 2
 MAX_IGNORE_ARGS = 2
 MAX_VERBOSITY_ARGS = 2
 
@@ -65,18 +65,17 @@ other = ["--generate-toml-file", "--version"]
 
 
 # Options below contain paths specific for an input project
-def available_python_input(project_dir: Path) -> List[str]:
-    return [str(f) for f in walk_dir(project_dir) if f.suffix == ".py"] + [
+def available_code_values(project_dir: Path) -> List[str]:
+    return [str(f) for f in walk_dir(project_dir) if f.suffix in {".py", ".ipynb"}] + [
         CODE_STDIN_MARKER
     ]
 
 
-def available_deps(project_dir: Path) -> List[str]:
+def available_deps_values(project_dir: Path) -> List[str]:
     return [
         str(f)
         for f in walk_dir(project_dir)
-        if f.name != "expected.toml"
-        and f.name in {"setup.cfg", "setup.py", "requirements.txt", "pyproject.toml"}
+        if f.name in {"setup.cfg", "setup.py", "requirements.txt", "pyproject.toml"}
     ]
 
 
@@ -95,7 +94,7 @@ def code_option_strategy(paths: List[str]):
     return st.lists(
         st.sampled_from(paths),
         min_size=0,
-        max_size=MAX_NUMER_OF_CODE_ARGS,
+        max_size=MAX_NUMBER_OF_CODE_ARGS,
     ).map(lambda xs: ["--code"] + xs if xs else [])
 
 
@@ -103,7 +102,7 @@ def deps_option_strategy(paths: List[str]):
     return st.lists(
         st.sampled_from(paths),
         min_size=0,
-        max_size=MAX_NUMER_OF_DEPS_ARGS,
+        max_size=MAX_NUMBER_OF_DEPS_ARGS,
     ).map(lambda xs: ["--deps"] + xs if xs else [])
 
 
@@ -139,8 +138,8 @@ def cli_arguments_combinations(draw):
     project_dir = draw(
         st.sampled_from([d for d in SAMPLE_PROJECTS_DIR.iterdir() if d.is_dir()])
     )
-    code_paths = available_python_input(project_dir=project_dir)
-    dep_paths = available_deps(project_dir=project_dir)
+    code_paths = available_code_values(project_dir=project_dir)
+    dep_paths = available_deps_values(project_dir=project_dir)
 
     # Dependencies are treated differently, as there is an explicit way
     # to point to a parser that we want fawltydeps to use.
@@ -180,7 +179,7 @@ def cli_arguments_combinations(draw):
 
 
 @given(cli_arguments=cli_arguments_combinations())
-def test_options_interactions__correct_options__give_success_code(cli_arguments):
+def test_options_interactions__correct_options__does_not_abort(cli_arguments):
     """Check if a combination of valid options
 
     makes a valid run of fawltydeps CLI tool.
