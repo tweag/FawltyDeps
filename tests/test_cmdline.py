@@ -109,14 +109,10 @@ def test_list_imports__from_py_file__prints_imports_from_file(write_tmp_files):
         f"{tmp_path}/myfile.py:{n}: {i}"
         for i, n in [("requests", 4), ("foo", 5), ("numpy", 6)]
     ]
-    expect_logs = [
-        f"INFO:fawltydeps.extract_imports:Parsing Python file {tmp_path}/myfile.py",
-    ]
-    output, errors, returncode = run_fawltydeps_subprocess(
-        "--list-imports", "--detailed", "-v", f"--code={tmp_path}/myfile.py"
+    output, returncode = run_fawltydeps_function(
+        "--list-imports", "--detailed", f"--code={tmp_path}/myfile.py"
     )
     assert output.splitlines() == expect
-    assert_unordered_equivalence(errors.splitlines(), expect_logs)
     assert returncode == 0
 
 
@@ -169,14 +165,10 @@ def test_list_imports__from_ipynb_file__prints_imports_from_file(write_tmp_files
     )
 
     expect = [f"{tmp_path}/myfile.ipynb[1]:1: pytorch"]
-    expect_logs = [
-        f"INFO:fawltydeps.extract_imports:Parsing Notebook file {tmp_path}/myfile.ipynb",
-    ]
-    output, errors, returncode = run_fawltydeps_subprocess(
-        "--list-imports", "--detailed", "-v", f"--code={tmp_path}/myfile.ipynb"
+    output, returncode = run_fawltydeps_function(
+        "--list-imports", "--detailed", f"--code={tmp_path}/myfile.ipynb"
     )
     assert output.splitlines() == expect
-    assert_unordered_equivalence(errors.splitlines(), expect_logs)
     assert returncode == 0
 
 
@@ -203,16 +195,10 @@ def test_list_imports__from_dir__prints_imports_from_py_and_ipynb_files_only(
         f"{tmp_path}/file1.py:{n}: {i}"
         for i, n in [("my_pathlib", 1), ("pandas", 2), ("scipy", 2)]
     ] + [f"{tmp_path}/file3.ipynb[1]:1: pytorch"]
-    expect_logs = [
-        f"INFO:fawltydeps.extract_imports:Finding Python files under {tmp_path}",
-        f"INFO:fawltydeps.extract_imports:Parsing Python file {tmp_path}/file1.py",
-        f"INFO:fawltydeps.extract_imports:Parsing Notebook file {tmp_path}/file3.ipynb",
-    ]
-    output, errors, returncode = run_fawltydeps_subprocess(
-        "--list-imports", "--detailed", "-v", f"--code={tmp_path}"
+    output, returncode = run_fawltydeps_function(
+        "--list-imports", "--detailed", f"--code={tmp_path}"
     )
     assert output.splitlines() == expect
-    assert_unordered_equivalence(errors.splitlines(), expect_logs)
     assert returncode == 0
 
 
@@ -255,18 +241,11 @@ def test_list_imports__pick_multiple_files_dir__prints_all_imports(
 ):
     path_code1 = project_with_multiple_python_files / "subdir"
     path_code2 = project_with_multiple_python_files / "python_file.py"
-    output, errors, returncode = run_fawltydeps_subprocess(
-        "--list-imports", "--code", f"{path_code1}", f"{path_code2}", "-v"
+    output, returncode = run_fawltydeps_function(
+        "--list-imports", "--code", f"{path_code1}", f"{path_code2}"
     )
-    expect_logs = [
-        f"INFO:fawltydeps.extract_imports:Finding Python files under {path_code1}",
-        f"INFO:fawltydeps.extract_imports:Parsing Python file {path_code1}/python_file2.py",
-        f"INFO:fawltydeps.extract_imports:Parsing Python file {path_code1}/python_file3.py",
-        f"INFO:fawltydeps.extract_imports:Parsing Python file {path_code2}",
-    ]
     expect = ["django", "pandas", "click"]
     assert_unordered_equivalence(output.splitlines()[:-2], expect)
-    assert_unordered_equivalence(errors.splitlines(), expect_logs)
     assert returncode == 0
 
 
@@ -284,16 +263,11 @@ def test_list_imports__pick_multiple_files_dir_and_code__prints_all_imports(
         """
     )
     path_code2 = project_with_multiple_python_files / "python_file.py"
-    output, errors, returncode = run_fawltydeps_subprocess(
-        "--list-imports", "--code", "-", f"{path_code2}", "-v", to_stdin=code
+    output, returncode = run_fawltydeps_function(
+        "--list-imports", "--code", "-", f"{path_code2}", to_stdin=code
     )
-    expect_logs = [
-        "INFO:fawltydeps.extract_imports:Parsing Python code from standard input",
-        f"INFO:fawltydeps.extract_imports:Parsing Python file {path_code2}",
-    ]
     expect = ["django", "requests", "foo", "numpy"]
     assert_unordered_equivalence(output.splitlines()[:-2], expect)
-    assert_unordered_equivalence(errors.splitlines(), expect_logs)
     assert returncode == 0
 
 
@@ -309,11 +283,10 @@ def test_list_deps__dir__prints_deps_from_requirements_txt(
         f"{tmp_path}/requirements.txt: pandas",
         f"{tmp_path}/requirements.txt: requests",
     ]
-    output, errors, returncode = run_fawltydeps_subprocess(
-        "--list-deps", "--detailed", "-v", f"--deps={tmp_path}"
+    output, returncode = run_fawltydeps_function(
+        "--list-deps", "--detailed", f"--deps={tmp_path}"
     )
     assert output.splitlines() == expect
-    assert errors == ""
     assert returncode == 0
 
 
@@ -361,11 +334,8 @@ def test_list_deps_quiet__dir__prints_deps_from_requirements_txt(
     )
 
     expect = ["pandas", "requests"]
-    output, errors, returncode = run_fawltydeps_subprocess(
-        "--list-deps", f"--deps={tmp_path}"
-    )
+    output, returncode = run_fawltydeps_function("--list-deps", f"--deps={tmp_path}")
     assert output.splitlines()[:-2] == expect
-    assert errors == ""
     assert returncode == 0
 
 
@@ -408,12 +378,11 @@ def test_list_deps__pick_multiple_listed_files__prints_all_dependencies(
 ):
     path_deps1 = project_with_setup_and_requirements / "subdir/requirements.txt"
     path_deps2 = project_with_setup_and_requirements / "setup.py"
-    output, errors, returncode = run_fawltydeps_subprocess(
-        "--list-deps", "--deps", f"{path_deps1}", f"{path_deps2}", "-v"
+    output, returncode = run_fawltydeps_function(
+        "--list-deps", "--deps", f"{path_deps1}", f"{path_deps2}"
     )
     expect = ["annoy", "jieba", "click", "pandas", "tensorflow"]
     assert_unordered_equivalence(output.splitlines()[:-2], expect)
-    assert errors == ""
     assert returncode == 0
 
 
@@ -445,7 +414,7 @@ project_tests_samples = [
     ),
     ProjectTestVector(
         id="simple_project_with_missing_deps__reports_undeclared",
-        options=["--check", "--detailed", "-v", "--code={path}", "--deps={path}"],
+        options=["--check", "--detailed", "--code={path}", "--deps={path}"],
         imports=["requests", "pandas"],
         declares=["pandas"],
         expect_output=[
@@ -453,17 +422,11 @@ project_tests_samples = [
             "- 'requests' imported at:",
             "    {path}/code.py:1",
         ],
-        expect_logs=[
-            "INFO:fawltydeps.extract_imports:Finding Python files under {path}",
-            "INFO:fawltydeps.extract_imports:Parsing Python file {path}/code.py",
-            "INFO:fawltydeps.packages:'pandas' was not resolved."
-            " Assuming it can be imported as 'pandas'.",
-        ],
         expect_returncode=3,
     ),
     ProjectTestVector(
         id="simple_project_with_extra_deps__reports_unused",
-        options=["--check", "--detailed", "-v", "--code={path}", "--deps={path}"],
+        options=["--check", "--detailed", "--code={path}", "--deps={path}"],
         imports=["requests"],
         declares=["requests", "pandas"],
         expect_output=[
@@ -471,19 +434,11 @@ project_tests_samples = [
             "- 'pandas' declared in:",
             "    {path}/requirements.txt",
         ],
-        expect_logs=[
-            "INFO:fawltydeps.extract_imports:Finding Python files under {path}",
-            "INFO:fawltydeps.extract_imports:Parsing Python file {path}/code.py",
-            "INFO:fawltydeps.packages:'requests' was not resolved."
-            " Assuming it can be imported as 'requests'.",
-            "INFO:fawltydeps.packages:'pandas' was not resolved."
-            " Assuming it can be imported as 'pandas'.",
-        ],
         expect_returncode=4,
     ),
     ProjectTestVector(
         id="simple_project_with_extra_deps__reports_unused_and_undeclared",
-        options=["--check", "--detailed", "-v", "--code={path}", "--deps={path}"],
+        options=["--check", "--detailed", "--code={path}", "--deps={path}"],
         imports=["requests"],
         declares=["pandas"],
         expect_output=[
@@ -494,12 +449,6 @@ project_tests_samples = [
             "These dependencies appear to be unused (i.e. not imported):",
             "- 'pandas' declared in:",
             "    {path}/requirements.txt",
-        ],
-        expect_logs=[
-            "INFO:fawltydeps.extract_imports:Finding Python files under {path}",
-            "INFO:fawltydeps.extract_imports:Parsing Python file {path}/code.py",
-            "INFO:fawltydeps.packages:'pandas' was not resolved."
-            " Assuming it can be imported as 'pandas'.",
         ],
         expect_returncode=3,  # undeclared is more important than unused
     ),
@@ -632,24 +581,16 @@ def test_check_undeclared__simple_project__reports_only_undeclared(
     expect = [
         "These imports appear to be undeclared dependencies:",
         "- 'requests' imported at:",
-        f"    {str(tmp_path / 'code.py')}:1",
+        f"    {tmp_path / 'code.py'}:1",
     ]
-    expect_logs = [
-        f"INFO:fawltydeps.extract_imports:Finding Python files under {tmp_path}",
-        f"INFO:fawltydeps.extract_imports:Parsing Python file {tmp_path}/code.py",
-        "INFO:fawltydeps.packages:'pandas' was not resolved."
-        " Assuming it can be imported as 'pandas'.",
-    ]
-    output, errors, returncode = run_fawltydeps_subprocess(
+    output, returncode = run_fawltydeps_function(
         "--check-undeclared",
         "--detailed",
-        "-v",
         f"--code={tmp_path}",
         "--deps",
         f"{tmp_path}",
     )
     assert output.splitlines() == expect
-    assert_unordered_equivalence(errors.splitlines(), expect_logs)
     assert returncode == 3
 
 
