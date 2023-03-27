@@ -14,10 +14,9 @@ import argparse
 import json
 import logging
 import sys
-from dataclasses import dataclass
-from functools import partial
+from functools import partial, wraps
 from operator import attrgetter
-from typing import Dict, List, Optional, TextIO
+from typing import Callable, Dict, List, Optional, TextIO, TypeVar
 
 from pydantic.json import custom_pydantic_encoder  # pylint: disable=no-name-in-module
 
@@ -47,33 +46,97 @@ VERBOSE_PROMPT = "For a more verbose report re-run with the `--detailed` option.
 UNUSED_DEPS_OUTPUT_PREFIX = "These dependencies appear to be unused (i.e. not imported)"
 
 
-@dataclass
-class Analysis:
+Instance = TypeVar("Instance")
+T = TypeVar("T")
+
+
+def calculated_once(method: Callable[[Instance], T]) -> Callable[[Instance], T]:
+    """Emulate functools.cached_property for our simple use case.
+
+    functools.cached_property does not exist in Python v3.7, so we emulate the
+    simple things we need here:
+
+    Each method that uses this decorator will store its return value in an
+    instance attribute whose name is the method name prefixed with underscore.
+    The first time the property is referenced, the method will be called, its
+    return value stored in the corresponding instance attribute, and also
+    returned to the caller. All subsequent references (as long as the stored
+    value it not None) will return the instance attribute value directly,
+    without calling the method.
+    """
+
+    @wraps(method)
+    def wrapper(self: Instance) -> T:
+        cached_attr = f"_{method.__name__}"
+        cached_value: Optional[T] = getattr(self, cached_attr, None)
+        if cached_value is not None:
+            return cached_value
+        calculated: T = method(self)
+        setattr(self, cached_attr, calculated)
+        return calculated
+
+    return wrapper
+
+
+class Analysis:  # pylint: disable=too-many-instance-attributes
     """Result from FawltyDeps analysis, to be presented to the user."""
 
-    settings: Settings
-    imports: Optional[List[ParsedImport]] = None
-    declared_deps: Optional[List[DeclaredDependency]] = None
-    resolved_deps: Optional[Dict[str, Package]] = None
-    undeclared_deps: Optional[List[UndeclaredDependency]] = None
-    unused_deps: Optional[List[UnusedDependency]] = None
-    version: str = version()
+    def __init__(self, settings: Settings, stdin: Optional[TextIO] = None):
+        self.settings = settings
+        self.stdin = stdin
+        self.version = version()
+
+        # The following members are calculated once, on-demand, by the
+        # @property @calculated_once methods below:
+        self._imports: Optional[List[ParsedImport]] = None
+        self._declared_deps: Optional[List[DeclaredDependency]] = None
+        self._resolved_deps: Optional[Dict[str, Package]] = None
+        self._undeclared_deps: Optional[List[UndeclaredDependency]] = None
+        self._unused_deps: Optional[List[UnusedDependency]] = None
 
     def is_enabled(self, *args: Action) -> bool:
         """Return True if any of the given actions are in self.settings."""
         return len(self.settings.actions.intersection(args)) > 0
 
-    @staticmethod
-    def success_message(check_undeclared: bool, check_unused: bool) -> Optional[str]:
-        """Returns the message to print when the analysis finds no errors."""
-        checking = []
-        if check_undeclared:
-            checking.append("undeclared")
-        if check_unused:
-            checking.append("unused")
-        if checking:
-            return f"No {' or '.join(checking)} dependencies detected."
-        return None
+    @property
+    @calculated_once
+    def imports(self) -> List[ParsedImport]:
+        """The list of 3rd-party imports parsed from this project."""
+        return list(extract_imports.parse_any_args(self.settings.code, self.stdin))
+
+    @property
+    @calculated_once
+    def declared_deps(self) -> List[DeclaredDependency]:
+        """The list of declared dependencies parsed from this project."""
+        return list(
+            extract_declared_dependencies(
+                self.settings.deps, self.settings.deps_parser_choice
+            )
+        )
+
+    @property
+    @calculated_once
+    def resolved_deps(self) -> Dict[str, Package]:
+        """The resolved mapping of dependency names to provided import names."""
+        return resolve_dependencies(
+            (dep.name for dep in self.declared_deps),
+            pyenv_path=self.settings.pyenv,
+            install_deps=self.settings.install_deps,
+        )
+
+    @property
+    @calculated_once
+    def undeclared_deps(self) -> List[UndeclaredDependency]:
+        """The import statements for which no declared dependency is found."""
+        return calculate_undeclared(self.imports, self.resolved_deps, self.settings)
+
+    @property
+    @calculated_once
+    def unused_deps(self) -> List[UnusedDependency]:
+        """The declared dependencies that appear to not be in use."""
+        return calculate_unused(
+            self.imports, self.declared_deps, self.resolved_deps, self.settings
+        )
 
     @classmethod
     def create(cls, settings: Settings, stdin: Optional[TextIO] = None) -> "Analysis":
@@ -87,44 +150,17 @@ class Analysis:
         this can also be called from other Python contexts without having to go
         via the command-line.
         """
-        ret = cls(settings)
-        if ret.is_enabled(
-            Action.LIST_IMPORTS, Action.REPORT_UNDECLARED, Action.REPORT_UNUSED
-        ):
-            ret.imports = list(extract_imports.parse_any_args(settings.code, stdin))
+        ret = cls(settings, stdin)
 
-        if ret.is_enabled(
-            Action.LIST_DEPS, Action.REPORT_UNDECLARED, Action.REPORT_UNUSED
-        ):
-            ret.declared_deps = list(
-                extract_declared_dependencies(
-                    settings.deps, settings.deps_parser_choice
-                )
-            )
-
-        if ret.is_enabled(Action.REPORT_UNDECLARED, Action.REPORT_UNUSED):
-            assert ret.imports is not None  # convince Mypy that these cannot
-            assert ret.declared_deps is not None  # be None at this time.
-            ret.resolved_deps = resolve_dependencies(
-                (dep.name for dep in ret.declared_deps),
-                pyenv_path=settings.pyenv,
-                install_deps=settings.install_deps,
-            )
-
+        # Compute only the properties needed to satisfy settings.actions:
+        if ret.is_enabled(Action.LIST_IMPORTS):
+            ret.imports  # pylint: disable=pointless-statement
+        if ret.is_enabled(Action.LIST_DEPS):
+            ret.declared_deps  # pylint: disable=pointless-statement
         if ret.is_enabled(Action.REPORT_UNDECLARED):
-            assert ret.imports is not None  # convince Mypy that these cannot
-            assert ret.resolved_deps is not None  # be None at this time.
-            ret.undeclared_deps = calculate_undeclared(
-                ret.imports, ret.resolved_deps, settings
-            )
-
+            ret.undeclared_deps  # pylint: disable=pointless-statement
         if ret.is_enabled(Action.REPORT_UNUSED):
-            assert ret.imports is not None  # convince Mypy that these cannot
-            assert ret.declared_deps is not None  # be None at this time.
-            assert ret.resolved_deps is not None
-            ret.unused_deps = calculate_unused(
-                ret.imports, ret.declared_deps, ret.resolved_deps, settings
-            )
+            ret.unused_deps  # pylint: disable=pointless-statement
 
         return ret
 
@@ -137,12 +173,23 @@ class Analysis:
         # Path), so order by string representation instead:
         set_sort = partial(sorted, key=str)
         encoder = partial(custom_pydantic_encoder, {frozenset: set_sort, set: set_sort})
-        json.dump(self, out, indent=2, default=encoder)
+        json_dict = {
+            "settings": self.settings,
+            # Using properties with an underscore do not trigger computations.
+            # They are populated only if the computations were already required
+            # by settings.actions.
+            "imports": self._imports,
+            "declared_deps": self._declared_deps,
+            "resolved_deps": self._resolved_deps,
+            "undeclared_deps": self._undeclared_deps,
+            "unused_deps": self._unused_deps,
+            "version": self.version,
+        }
+        json.dump(json_dict, out, indent=2, default=encoder)
 
     def print_human_readable(self, out: TextIO, details: bool = True) -> None:
         """Print a human-readable rendering of this analysis to 'out'."""
         if self.is_enabled(Action.LIST_IMPORTS):
-            assert self.imports is not None  # sanity-check / convince Mypy
             if details:
                 # Sort imports by source, then by name
                 for imp in sorted(self.imports, key=attrgetter("source", "name")):
@@ -152,7 +199,6 @@ class Analysis:
                 print("\n".join(sorted(unique_imports)), file=out)
 
         if self.is_enabled(Action.LIST_DEPS):
-            assert self.declared_deps is not None  # sanity-check / convince Mypy
             if details:
                 # Sort dependencies by location, then by name
                 for dep in sorted(
@@ -173,6 +219,18 @@ class Analysis:
             print(f"\n{UNUSED_DEPS_OUTPUT_PREFIX}:", file=out)
             for unused in sorted(self.unused_deps, key=lambda d: d.name):
                 print(f"- {unused.render(details)}", file=out)
+
+    @staticmethod
+    def success_message(check_undeclared: bool, check_unused: bool) -> Optional[str]:
+        """Returns the message to print when the analysis finds no errors."""
+        checking = []
+        if check_undeclared:
+            checking.append("undeclared")
+        if check_unused:
+            checking.append("unused")
+        if checking:
+            return f"No {' or '.join(checking)} dependencies detected."
+        return None
 
 
 def build_parser() -> argparse.ArgumentParser:
