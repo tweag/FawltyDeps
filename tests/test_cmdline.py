@@ -886,7 +886,7 @@ def test_deps_across_groups_appear_just_once_in_list_deps_detailed(tmp_path):
     deps_path = tmp_path / "pyproject.toml"
     exp_lines_from_pyproject = [f"{deps_path}: {dep}" for dep in uniq_deps]
     deps_path.write_text(dedent(deps_data))
-    output, *_ = run_fawltydeps_subprocess(
+    output, _returncode = run_fawltydeps_function(
         "--list-deps", "--detailed", f"--deps={deps_path}"
     )
     obs_lines = output.splitlines()
@@ -897,7 +897,7 @@ def test_deps_across_groups_appear_just_once_in_order_in_general_detailed(tmp_pa
     deps_data, uniq_deps = pyproject_toml_contents()
     deps_path = tmp_path / "pyproject.toml"
     deps_path.write_text(dedent(deps_data))
-    output, *_ = run_fawltydeps_subprocess("--detailed", f"{tmp_path}")
+    output, _returncode = run_fawltydeps_function("--detailed", f"{tmp_path}")
     obs_lines_absolute = output.splitlines()
     obs_lines_relevant = dropwhile(
         lambda line: not line.startswith(UNUSED_DEPS_OUTPUT_PREFIX), obs_lines_absolute
