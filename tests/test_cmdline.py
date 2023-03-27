@@ -681,9 +681,8 @@ def test_check__summary__writes_only_names_of_unused_and_undeclared(
         "",
         VERBOSE_PROMPT,
     ]
-    output, errors, returncode = run_fawltydeps_subprocess("--check", cwd=tmp_path)
+    output, returncode = run_fawltydeps_function("--check", basepath=tmp_path)
     assert output.splitlines() == expect
-    assert errors == ""
     assert returncode == 3
 
 
@@ -780,9 +779,8 @@ def test_cmdline_on_ignored_undeclared_option(
         imports=imports,
         declares=dependencies,
     )
-    output, errors, returncode = run_fawltydeps_subprocess(*args, cwd=tmp_path)
+    output, returncode = run_fawltydeps_function(*args, basepath=tmp_path)
     assert output.splitlines() == expected
-    assert errors == ""
     assert returncode == 0
 
 
