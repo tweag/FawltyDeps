@@ -34,7 +34,8 @@ fawltydeps = "fawltydeps.main:main"
 # Do not add anything here that is only needed by CI/tests/linters/developers
 python = "^3.7.2"
 importlib_metadata = "^6.0.0"
-isort = "^5.10"
+# isort 5.12.0 drops support for Python v3.7:
+isort = ">=5.10,<5.12.0"
 pip-requirements-parser = "^32.0.1"
 pydantic = "^1.10.4"
 tomli = {version = "^2.0.1", python = "<3.11"}
@@ -70,7 +71,7 @@ optional = true
 [tool.poetry.group.format.dependencies]
 black = "^22"
 colorama = "^0.4.6"
-isort = "^5.10"
+isort = ">=5.10,<5.12.0"
 codespell = "^2.2.2"
 
 [tool.poetry.group.dev]
@@ -85,7 +86,7 @@ black = "^22"
 codespell = "^2.2.2"
 colorama = "^0.4.6"
 hypothesis = "^6.68.2"
-isort = "^5.10"
+isort = ">=5.10,<5.12.0"
 mypy = "^0.991"
 nox = "^2022.11.21"
 pylint = "^2.15.8"
