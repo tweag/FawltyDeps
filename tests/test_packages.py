@@ -1,6 +1,7 @@
 """Verify behavior of package lookup and mapping to import names."""
 
 import logging
+from textwrap import dedent
 
 import pytest
 
@@ -9,6 +10,7 @@ from fawltydeps.packages import (
     IdentityMapping,
     LocalPackageResolver,
     Package,
+    UserDefinedMapping,
     resolve_dependencies,
 )
 
@@ -143,6 +145,24 @@ def test_package__both_mappings():
     assert p.import_names == {"foobar", "foo", "bar", "baz"}
 
 
+def test_user_defined_mapping(write_tmp_files):
+    tmp_path = write_tmp_files(
+        {
+            "mapping.toml": """\
+                apache-airflow = ["airflow"]
+                attrs = ["attr", "attrs"]
+            """
+        }
+    )
+    udm = UserDefinedMapping(tmp_path / "mapping.toml")
+    mapped_packages = udm.packages
+    assert set(mapped_packages.keys()) == {"apache_airflow", "attrs"}
+
+    empty_udm = UserDefinedMapping()
+    assert isinstance(empty_udm.packages, dict)
+    assert len(empty_udm.packages) == 0
+
+
 # TODO: These tests are not fully isolated, i.e. they do not control the
 # virtualenv in which they run. For now, we assume that we are running in an
 # environment where at least these packages are available:
@@ -197,11 +217,12 @@ def test_LocalPackageResolver_lookup_packages(dep_name, expect_import_names):
 
 
 @pytest.mark.parametrize(
-    "dep_names,expected",
+    "dep_names,user_mapping,expected",
     [
-        pytest.param([], {}, id="no_deps__empty_dict"),
+        pytest.param([], None, {}, id="no_deps__empty_dict"),
         pytest.param(
             ["pandas", "numpy", "other"],
+            None,
             {
                 "pandas": Package("pandas", {DependenciesMapping.IDENTITY: {"pandas"}}),
                 "numpy": Package("numpy", {DependenciesMapping.IDENTITY: {"numpy"}}),
@@ -211,6 +232,7 @@ def test_LocalPackageResolver_lookup_packages(dep_name, expect_import_names):
         ),
         pytest.param(
             ["setuptools", "pip", "isort"],
+            None,
             {
                 "setuptools": Package(
                     "setuptools",
@@ -229,7 +251,24 @@ def test_LocalPackageResolver_lookup_packages(dep_name, expect_import_names):
         ),
         pytest.param(
             ["pandas", "pip"],
+            None,
             {
+                "pip": Package("pip", {DependenciesMapping.LOCAL_ENV: {"pip"}}),
+                "pandas": Package("pandas", {DependenciesMapping.IDENTITY: {"pandas"}}),
+            },
+            id="mixed_deps__uses_mixture_of_identity_and_local_env_mapping",
+        ),
+        pytest.param(
+            ["pandas", "pip", "apache_airflow"],
+            dedent(
+                """\
+                apache-airflow = ["airflow"]
+            """
+            ),
+            {
+                "apache_airflow": Package(
+                    "apache-airflow", {DependenciesMapping.USER_DEFINED: {"airflow"}}
+                ),
                 "pip": Package("pip", {DependenciesMapping.LOCAL_ENV: {"pip"}}),
                 "pandas": Package("pandas", {DependenciesMapping.IDENTITY: {"pandas"}}),
             },
@@ -237,8 +276,17 @@ def test_LocalPackageResolver_lookup_packages(dep_name, expect_import_names):
         ),
     ],
 )
-def test_resolve_dependencies__focus_on_mappings(dep_names, expected):
-    assert resolve_dependencies(dep_names) == expected
+def test_resolve_dependencies__focus_on_mappings(
+    dep_names, user_mapping, expected, write_tmp_files
+):
+    user_mapping_path = None
+    if user_mapping is not None:
+        tmp_path = write_tmp_files({"mapping.toml": user_mapping})
+        user_mapping_path = tmp_path / "mapping.toml"
+
+    assert (
+        resolve_dependencies(dep_names, user_mapping_path=user_mapping_path) == expected
+    )
 
 
 @pytest.mark.parametrize("vector", [pytest.param(v, id=v.id) for v in test_vectors])

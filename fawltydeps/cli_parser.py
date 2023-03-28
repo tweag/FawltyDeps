@@ -164,6 +164,14 @@ def populate_parser_paths_options(parser: argparse._ActionsContainer) -> None:
             " installed."
         ),
     )
+    parser.add_argument(
+        "--mapping",
+        type=Path,
+        metavar="PATH",
+        help=(
+            "Mapping of dependencies to imports defined by the user in form of toml file."
+        ),
+    )
 
 
 def populate_parser_configuration(parser: argparse._ActionsContainer) -> None:

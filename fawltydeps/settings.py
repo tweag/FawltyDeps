@@ -122,6 +122,7 @@ class Settings(BaseSettings):  # type: ignore
     code: Set[PathOrSpecial] = {Path(".")}
     deps: Set[Path] = {Path(".")}
     pyenv: Optional[Path] = None
+    mapping: Optional[Path] = None
     ignore_undeclared: Set[str] = set()
     ignore_unused: Set[str] = set()
     deps_parser_choice: Optional[ParserChoice] = None
