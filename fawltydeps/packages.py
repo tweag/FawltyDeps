@@ -24,7 +24,14 @@ from importlib_metadata import (
     _top_level_inferred,
 )
 
+from fawltydeps.types import UnparseablePathException
 from fawltydeps.utils import hide_dataclass_fields
+
+if sys.version_info >= (3, 11):
+    import tomllib  # pylint: disable=no-member
+else:
+    import tomli as tomllib
+
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +41,7 @@ class DependenciesMapping(str, Enum):
 
     IDENTITY = "identity"
     LOCAL_ENV = "local_env"
+    USER_DEFINED = "user_defined"
 
 
 @dataclass
@@ -101,6 +109,52 @@ class BasePackageResolver(ABC):
         of the given packages.
         """
         raise NotImplementedError
+
+
+class UserDefinedMapping(BasePackageResolver):
+    """Use user-defined mapping loaded from a toml file"""
+
+    def __init__(self, mapping_path: Optional[Path] = None) -> None:
+        self.mapping_path = mapping_path
+        # We enumerate packages declared in the mapping _once_ and cache the result here:
+        self._packages: Optional[Dict[str, Package]] = None
+
+    @property
+    def packages(self) -> Dict[str, Package]:
+        """Gather mapping from a mapping file in a given path.
+
+        This enumerates the available packages  _once_, and caches the result for
+        the remainder of this object's life in _packages.
+        """
+        self._packages = {}
+
+        if self.mapping_path is None:
+            logger.debug("No user-defined mapping specified.")
+            return self._packages
+
+        if self.mapping_path.is_file():
+            logger.debug(f"Loading user-defined mapping from {self.mapping_path}")
+            with open(self.mapping_path, "rb") as mapping_file:
+                user_mapping = tomllib.load(mapping_file)
+
+            for package_name, imports in user_mapping.items():
+                package = Package(
+                    package_name, {DependenciesMapping.USER_DEFINED: set(imports)}
+                )
+                self._packages[Package.normalize_name(package_name)] = package
+
+            return self._packages
+        raise UnparseablePathException(
+            ctx="Given mapping path is not a file.", path=self.mapping_path
+        )
+
+    def lookup_packages(self, package_names: Set[str]) -> Dict[str, Package]:
+        """Convert package names to locally available Package objects."""
+        return {
+            name: self.packages[Package.normalize_name(name)]
+            for name in package_names
+            if Package.normalize_name(name) in self.packages
+        }
 
 
 class LocalPackageResolver(BasePackageResolver):
@@ -269,6 +323,7 @@ class IdentityMapping(BasePackageResolver):
 
 def resolve_dependencies(
     dep_names: Iterable[str],
+    user_mapping_path: Optional[Path] = None,
     pyenv_path: Optional[Path] = None,
     install_deps: bool = False,
 ) -> Dict[str, Package]:
@@ -287,7 +342,10 @@ def resolve_dependencies(
     # dependencies into provided import names. We call .lookup_package() on
     # each resolver in order until one of them returns a Package object. At
     # that point we are happy, and don't consult any of the later resolvers.
-    resolvers: List[BasePackageResolver] = [LocalPackageResolver(pyenv_path)]
+    resolvers: List[BasePackageResolver] = [
+        UserDefinedMapping(user_mapping_path),
+        LocalPackageResolver(pyenv_path),
+    ]
     if install_deps:
         resolvers += [TemporaryPipInstallResolver()]
     # Identity mapping being at the bottom of the resolvers stack ensures that
