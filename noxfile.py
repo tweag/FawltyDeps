@@ -65,13 +65,20 @@ def install_groups(
 @nox.session(python=python_versions)
 def tests(session):
     install_groups(session, include=["test"])
-    session.run("pytest", "-x", "--log-level=debug", *session.posargs)
+    session.run(
+        "pytest",
+        "-x",
+        "--log-level=debug",
+        "--durations=10",
+        "--hypothesis-show-statistics",
+        *session.posargs,
+    )
 
 
 @nox.session(python=python_versions)
 def integration_tests(session):
     install_groups(session, include=["test"])
-    session.run("pytest", "-x", "-m", "integration", *session.posargs)
+    session.run("pytest", "-x", "-m", "integration", "--durations=10", *session.posargs)
 
 
 @nox.session(python=python_versions)
