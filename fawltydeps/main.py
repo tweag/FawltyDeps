@@ -17,10 +17,8 @@ import sys
 from dataclasses import dataclass
 from functools import partial
 from operator import attrgetter
-from pathlib import Path
-from typing import Dict, List, Optional, TextIO, no_type_check
+from typing import Dict, List, Optional, TextIO
 
-import importlib_metadata
 from pydantic.json import custom_pydantic_encoder  # pylint: disable=no-name-in-module
 
 from fawltydeps import extract_imports
@@ -33,6 +31,7 @@ from fawltydeps.settings import (
     Settings,
     print_toml_config,
     setup_cmdline_parser,
+    version,
 )
 from fawltydeps.types import (
     DeclaredDependency,
@@ -46,17 +45,6 @@ logger = logging.getLogger(__name__)
 
 VERBOSE_PROMPT = "For a more verbose report re-run with the `--detailed` option."
 UNUSED_DEPS_OUTPUT_PREFIX = "These dependencies appear to be unused (i.e. not imported)"
-
-
-@no_type_check
-def version() -> str:
-    """Returns the version of fawltydeps."""
-
-    # This function is extracted to allow annotation with `@no_type_check`.
-    # Using `#type: ignore` on the line below leads to an
-    # "unused type ignore comment" MyPy error in python's version 3.8 and
-    # higher.
-    return str(importlib_metadata.version("fawltydeps"))
 
 
 @dataclass
@@ -191,23 +179,25 @@ def build_parser() -> argparse.ArgumentParser:
     """Create the CLI parser."""
     parser, option_group = setup_cmdline_parser(description=__doc__)
     option_group.add_argument(
+        "--generate-toml-config",
+        action="store_true",
+        default=False,
+        help="Print a TOML config section with the current settings, and exit",
+    )
+    option_group.add_argument(
         "-V",
         "--version",
         action="version",
         version=f"FawltyDeps v{version()}",
         help="Print the version number of FawltyDeps",
     )
+    # setup_cmdline_parser() removes the automatic `--help` option so that we
+    # can control exactly where it's added. Here we add it back:
     option_group.add_argument(
-        "--config-file",
-        type=Path,
-        default=Path("./pyproject.toml"),
-        help="Where to find FawltyDeps config (default: ./pyproject.toml)",
-    )
-    option_group.add_argument(
-        "--generate-toml-config",
-        action="store_true",
-        default=False,
-        help="Print a TOML config section with the current settings, and exit",
+        "-h",
+        "--help",
+        action="help",
+        help="Show this help message and exit",
     )
     return parser
 
