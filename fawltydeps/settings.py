@@ -17,8 +17,10 @@ from typing import (
     Tuple,
     Type,
     Union,
+    no_type_check,
 )
 
+import importlib_metadata
 from pydantic import BaseSettings
 from pydantic.env_settings import SettingsSourceCallable  # pylint: disable=E0611
 
@@ -30,6 +32,17 @@ else:
     import tomli as tomllib
 
 logger = logging.getLogger(__name__)
+
+
+@no_type_check
+def version() -> str:
+    """Returns the version of fawltydeps."""
+
+    # This function is extracted to allow annotation with `@no_type_check`.
+    # Using `#type: ignore` on the line below leads to an
+    # "unused type ignore comment" MyPy error in python's version 3.8 and
+    # higher.
+    return str(importlib_metadata.version("fawltydeps"))
 
 
 class PyprojectTomlSettingsSource:
@@ -303,13 +316,12 @@ def populate_output_formats(parser: argparse._ActionsContainer) -> None:
     )
 
 
-def populate_parser_options(parser: argparse._ActionsContainer) -> None:
-    """Add the other Settings members to the command-line parser.
+def populate_parser_paths_options(parser: argparse._ActionsContainer) -> None:
+    """Add the source paths (code, deps, env) Settings members to the parser.
 
-    Except where otherwise noted, these map directly onto a corresponding
-    Settings member. None of these options should specify default values
-    (and the parser-wide default value should be argparse.SUPPRESS). This
-    ensures that unspecified options are _omitted_ from the resulting
+    None of these options should specify default values
+    (and the parser-wide default value should be argparse.SUPPRESS).
+    This ensures that unspecified options are _omitted_ from the resulting
     argparse.Namespace object, which will allow the underlying defaults
     from Settings to come through when we create the Settings object in
     .create() below.
@@ -344,6 +356,15 @@ def populate_parser_options(parser: argparse._ActionsContainer) -> None:
         ),
     )
     parser.add_argument(
+        "--deps-parser-choice",
+        type=read_parser_choice,
+        choices=list(ParserChoice),
+        help=(
+            "Name of the parsing strategy to use for dependency declarations, "
+            "useful for when the file to parse doesn't match a standard name"
+        ),
+    )
+    parser.add_argument(
         "--pyenv",
         type=Path,
         metavar="PYENV_DIR",
@@ -353,6 +374,14 @@ def populate_parser_options(parser: argparse._ActionsContainer) -> None:
             " installed."
         ),
     )
+
+
+def populate_parser_configuration(parser: argparse._ActionsContainer) -> None:
+    """Add the other Settings members to the command-line parser.
+
+    Except where otherwise noted, these map directly onto a corresponding
+    Settings member. None of these options should specify default values.
+    """
     parser.add_argument(
         "--ignore-undeclared",
         nargs="+",
@@ -374,17 +403,19 @@ def populate_parser_options(parser: argparse._ActionsContainer) -> None:
         ),
     )
     parser.add_argument(
-        "--deps-parser-choice",
-        type=read_parser_choice,
-        choices=list(ParserChoice),
-        help=(
-            "Name of the parsing strategy to use for dependency declarations, "
-            "useful for when the file to parse doesn't match a standard name"
-        ),
+        "--config-file",
+        type=Path,
+        default=Path("./pyproject.toml"),
+        help="Where to find FawltyDeps config (default: ./pyproject.toml)",
     )
 
-    # The following two do not correspond directly to a Settings member,
-    # but the latter is subtracted from the former to make .verbosity.
+
+def populate_parser_options(parser: argparse._ActionsContainer) -> None:
+    """Populate other parser options that are related to Settings
+
+    The following two do not correspond directly to a Settings member,
+    but the latter is subtracted from the former to make .verbosity.
+    """
     parser.add_argument(
         "-v",
         "--verbose",
@@ -401,7 +432,7 @@ def populate_parser_options(parser: argparse._ActionsContainer) -> None:
 
 def setup_cmdline_parser(
     description: str,
-) -> Tuple[argparse.ArgumentParser, argparse._ArgumentGroup]:
+) -> Tuple[argparse.ArgumentParser, argparse._ActionsContainer]:
     """Create command-line parser object and populate it with arguments.
 
     Return the parser itself (which the caller will use to parse/collect
@@ -429,15 +460,17 @@ def setup_cmdline_parser(
     ).add_mutually_exclusive_group()
     populate_output_formats(output_format_group)
 
+    # A group for source paths options
+    source_group = parser.add_argument_group(title="Source paths options")
+    populate_parser_paths_options(source_group)
+
+    # A group for fawltydeps configuration options
+    config_group = parser.add_argument_group(title="Configuration options")
+    populate_parser_configuration(config_group)
+
     # A different group for the other options.
     option_group = parser.add_argument_group(title="Other options")
     populate_parser_options(option_group)
-    option_group.add_argument(
-        "-h",
-        "--help",
-        action="help",
-        help="Show this help message and exit",
-    )
 
     return parser, option_group
 
