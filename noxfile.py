@@ -86,9 +86,17 @@ def lint(session):
     install_groups(session, include=["lint"])
     session.run("mypy")
     session.run("pylint", "fawltydeps")
+    test_extra_pylint_disable = [
+        "invalid-name",
+        "missing-function-docstring",
+        "protected-access",
+        "redefined-outer-name",
+        "too-many-arguments",
+        "too-many-lines",
+    ]
     session.run(
         "pylint",
-        "--disable=missing-function-docstring,invalid-name,redefined-outer-name,too-many-lines,too-many-arguments",
+        f"--disable={','.join(test_extra_pylint_disable)}",
         "tests",
     )
 
