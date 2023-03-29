@@ -10,7 +10,6 @@ minimal computation involved in setting the install_requires and extras_require
 arguments.
 """
 
-import argparse
 import json
 import logging
 import sys
@@ -22,15 +21,10 @@ from pydantic.json import custom_pydantic_encoder  # pylint: disable=no-name-in-
 
 from fawltydeps import extract_imports
 from fawltydeps.check import calculate_undeclared, calculate_unused
+from fawltydeps.cli import build_parser
 from fawltydeps.extract_declared_dependencies import extract_declared_dependencies
 from fawltydeps.packages import Package, resolve_dependencies
-from fawltydeps.settings import (
-    Action,
-    OutputFormat,
-    Settings,
-    print_toml_config,
-    setup_cmdline_parser,
-)
+from fawltydeps.settings import Action, OutputFormat, Settings, print_toml_config
 from fawltydeps.types import (
     DeclaredDependency,
     ParsedImport,
@@ -233,33 +227,6 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
         return None
 
 
-def build_parser() -> argparse.ArgumentParser:
-    """Create the CLI parser."""
-    parser, option_group = setup_cmdline_parser(description=__doc__)
-    option_group.add_argument(
-        "--generate-toml-config",
-        action="store_true",
-        default=False,
-        help="Print a TOML config section with the current settings, and exit",
-    )
-    option_group.add_argument(
-        "-V",
-        "--version",
-        action="version",
-        version=f"FawltyDeps v{version()}",
-        help="Print the version number of FawltyDeps",
-    )
-    # setup_cmdline_parser() removes the automatic `--help` option so that we
-    # can control exactly where it's added. Here we add it back:
-    option_group.add_argument(
-        "-h",
-        "--help",
-        action="help",
-        help="Show this help message and exit",
-    )
-    return parser
-
-
 def assign_exit_code(analysis: Analysis) -> int:
     """
     Assign exit code based on the analysis results.
@@ -312,7 +279,7 @@ def main(
     stdout: TextIO = sys.stdout,
 ) -> int:
     """Command-line entry point."""
-    parser = build_parser()
+    parser = build_parser(description=__doc__)
     args = parser.parse_args(cmdline_args)
     settings = Settings.config(config_file=args.config_file).create(args)
 
