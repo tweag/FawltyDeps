@@ -59,7 +59,7 @@ def install_groups(
 
     session.install("-r", str(requirements_txt))
     if include_self:
-        session.install(".")
+        session.install("-e", ".")
 
 
 @nox.session(python=python_versions)
