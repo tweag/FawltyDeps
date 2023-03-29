@@ -228,7 +228,7 @@ def populate_parser_other_options(parser: argparse._ActionsContainer) -> None:
         version=f"FawltyDeps v{version()}",
         help="Print the version number of FawltyDeps",
     )
-    # setup_cmdline_parser() removes the automatic `--help` option so that we
+    # build_parser() removes the automatic `--help` option so that we
     # can control exactly where it's added. Here we add it back:
     parser.add_argument(
         "-h",
@@ -250,7 +250,7 @@ def build_parser(
     parser = argparse.ArgumentParser(
         description=description,
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        add_help=False,  # instead, add --help in the "Options" group below
+        add_help=False,  # instead, add --help in populate_parser_other_options()
         argument_default=argparse.SUPPRESS,
     )
 

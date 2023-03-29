@@ -21,7 +21,7 @@ from pydantic.json import custom_pydantic_encoder  # pylint: disable=no-name-in-
 
 from fawltydeps import extract_imports
 from fawltydeps.check import calculate_undeclared, calculate_unused
-from fawltydeps.cli import build_parser
+from fawltydeps.cli_parser import build_parser
 from fawltydeps.extract_declared_dependencies import extract_declared_dependencies
 from fawltydeps.packages import Package, resolve_dependencies
 from fawltydeps.settings import Action, OutputFormat, Settings, print_toml_config
