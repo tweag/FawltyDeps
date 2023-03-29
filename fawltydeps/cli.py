@@ -171,7 +171,15 @@ def populate_parser_configuration(parser: argparse._ActionsContainer) -> None:
 
     Except where otherwise noted, these map directly onto a corresponding
     Settings member. None of these options should specify default values.
+    Verbosity-related options do not correspond directly to a Settings member,
+    but the latter is subtracted from the former to make .verbosity.
     """
+    parser.add_argument(
+        "--config-file",
+        type=Path,
+        default=Path("./pyproject.toml"),
+        help="Where to find FawltyDeps config (default: ./pyproject.toml)",
+    )
     parser.add_argument(
         "--ignore-undeclared",
         nargs="+",
@@ -192,20 +200,6 @@ def populate_parser_configuration(parser: argparse._ActionsContainer) -> None:
             " dependencies, e.g. --ignore-unused pylint black"
         ),
     )
-    parser.add_argument(
-        "--config-file",
-        type=Path,
-        default=Path("./pyproject.toml"),
-        help="Where to find FawltyDeps config (default: ./pyproject.toml)",
-    )
-
-
-def populate_parser_options(parser: argparse._ActionsContainer) -> None:
-    """Populate other parser options that are related to Settings
-
-    The following two do not correspond directly to a Settings member,
-    but the latter is subtracted from the former to make .verbosity.
-    """
     parser.add_argument(
         "-v",
         "--verbose",
@@ -287,6 +281,5 @@ def setup_cmdline_parser(
 
     # A different group for the other options.
     option_group = parser.add_argument_group(title="Other options")
-    populate_parser_options(option_group)
 
     return parser, option_group

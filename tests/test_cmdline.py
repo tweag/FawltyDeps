@@ -912,10 +912,10 @@ def test_cmdline_on_ignored_undeclared_option(
                 # (default values are commented)
                 [tool.fawltydeps]
                 actions = ['list_imports']
+                output_format = 'human_detailed'
                 # code = ['.']
                 deps = ['foobar']
                 # pyenv = None
-                output_format = 'human_detailed'
                 # ignore_undeclared = []
                 # ignore_unused = []
                 # deps_parser_choice = None
