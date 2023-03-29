@@ -167,10 +167,9 @@ def populate_parser_paths_options(parser: argparse._ActionsContainer) -> None:
 
 
 def populate_parser_configuration(parser: argparse._ActionsContainer) -> None:
-    """Add the other Settings members to the command-line parser.
+    """Add configuration Settings members to the command-line parser.
 
-    Except where otherwise noted, these map directly onto a corresponding
-    Settings member. None of these options should specify default values.
+    Only `config-file` may specify default values.
     Verbosity-related options do not correspond directly to a Settings member,
     but the latter is subtracted from the former to make .verbosity.
     """
@@ -215,6 +214,7 @@ def populate_parser_configuration(parser: argparse._ActionsContainer) -> None:
 
 
 def populate_parser_other_options(parser: argparse._ActionsContainer) -> None:
+    """Add options not related to the Settings object"""
     parser.add_argument(
         "--generate-toml-config",
         action="store_true",
