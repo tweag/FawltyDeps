@@ -118,10 +118,10 @@ class Settings(BaseSettings):  # type: ignore
     """
 
     actions: Set[Action] = {Action.REPORT_UNDECLARED, Action.REPORT_UNUSED}
+    output_format: OutputFormat = OutputFormat.HUMAN_SUMMARY
     code: Set[PathOrSpecial] = {Path(".")}
     deps: Set[Path] = {Path(".")}
     pyenv: Optional[Path] = None
-    output_format: OutputFormat = OutputFormat.HUMAN_SUMMARY
     ignore_undeclared: Set[str] = set()
     ignore_unused: Set[str] = set()
     deps_parser_choice: Optional[ParserChoice] = None
