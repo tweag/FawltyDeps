@@ -6,7 +6,7 @@ and part is for general purpose.
 
 import argparse
 from pathlib import Path
-from typing import Any, Optional, Sequence, Tuple
+from typing import Any, Optional, Sequence
 
 from fawltydeps.settings import (
     Action,
@@ -214,16 +214,14 @@ def populate_parser_configuration(parser: argparse._ActionsContainer) -> None:
     )
 
 
-def build_parser(description: str = "") -> argparse.ArgumentParser:
-    """Create the CLI parser."""
-    parser, option_group = setup_cmdline_parser(description=description)
-    option_group.add_argument(
+def populate_parser_other_options(parser: argparse._ActionsContainer) -> None:
+    parser.add_argument(
         "--generate-toml-config",
         action="store_true",
         default=False,
         help="Print a TOML config section with the current settings, and exit",
     )
-    option_group.add_argument(
+    parser.add_argument(
         "-V",
         "--version",
         action="version",
@@ -232,18 +230,17 @@ def build_parser(description: str = "") -> argparse.ArgumentParser:
     )
     # setup_cmdline_parser() removes the automatic `--help` option so that we
     # can control exactly where it's added. Here we add it back:
-    option_group.add_argument(
+    parser.add_argument(
         "-h",
         "--help",
         action="help",
         help="Show this help message and exit",
     )
-    return parser
 
 
-def setup_cmdline_parser(
-    description: str,
-) -> Tuple[argparse.ArgumentParser, argparse._ActionsContainer]:
+def build_parser(
+    description: str = "",
+) -> argparse.ArgumentParser:
     """Create command-line parser object and populate it with arguments.
 
     Return the parser itself (which the caller will use to parse/collect
@@ -281,5 +278,6 @@ def setup_cmdline_parser(
 
     # A different group for the other options.
     option_group = parser.add_argument_group(title="Other options")
+    populate_parser_other_options(option_group)
 
-    return parser, option_group
+    return parser
