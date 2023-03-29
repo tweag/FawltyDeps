@@ -17,10 +17,8 @@ from typing import (
     Tuple,
     Type,
     Union,
-    no_type_check,
 )
 
-import importlib_metadata
 from pydantic import BaseSettings
 from pydantic.env_settings import SettingsSourceCallable  # pylint: disable=E0611
 
@@ -32,17 +30,6 @@ else:
     import tomli as tomllib
 
 logger = logging.getLogger(__name__)
-
-
-@no_type_check
-def version() -> str:
-    """Returns the version of fawltydeps."""
-
-    # This function is extracted to allow annotation with `@no_type_check`.
-    # Using `#type: ignore` on the line below leads to an
-    # "unused type ignore comment" MyPy error in python's version 3.8 and
-    # higher.
-    return str(importlib_metadata.version("fawltydeps"))
 
 
 class PyprojectTomlSettingsSource:
