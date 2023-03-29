@@ -3,7 +3,20 @@
 import os
 from dataclasses import is_dataclass
 from pathlib import Path
-from typing import Iterator
+from typing import Iterator, no_type_check
+
+import importlib_metadata
+
+
+@no_type_check
+def version() -> str:
+    """Returns the version of fawltydeps."""
+
+    # This function is extracted to allow annotation with `@no_type_check`.
+    # Using `#type: ignore` on the line below leads to an
+    # "unused type ignore comment" MyPy error in python's version 3.8 and
+    # higher.
+    return str(importlib_metadata.version("fawltydeps"))
 
 
 def walk_dir(path: Path) -> Iterator[Path]:

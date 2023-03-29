@@ -31,7 +31,6 @@ from fawltydeps.settings import (
     Settings,
     print_toml_config,
     setup_cmdline_parser,
-    version,
 )
 from fawltydeps.types import (
     DeclaredDependency,
@@ -40,6 +39,7 @@ from fawltydeps.types import (
     UnparseablePathException,
     UnusedDependency,
 )
+from fawltydeps.utils import version
 
 logger = logging.getLogger(__name__)
 
