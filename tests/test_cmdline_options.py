@@ -91,6 +91,8 @@ output_formats_strategy = st.lists(
 
 
 def code_option_strategy(paths: List[str]):
+    if not paths:
+        return st.just([])
     return st.lists(
         st.sampled_from(paths),
         min_size=0,
@@ -99,6 +101,8 @@ def code_option_strategy(paths: List[str]):
 
 
 def deps_option_strategy(paths: List[str]):
+    if not paths:
+        return st.just([])
     return st.lists(
         st.sampled_from(paths),
         min_size=0,
@@ -145,7 +149,7 @@ def cli_arguments_combinations(draw):
     # to point to a parser that we want fawltydeps to use.
     # Following code ensures that we do not encounter trying to match
     # explicit file with incorrect parser (square in the oval-shaped hole problem)
-    drawn_deps = [] if not dep_paths else draw(deps_option_strategy(dep_paths))
+    drawn_deps = draw(deps_option_strategy(dep_paths))
     deps_parser = []
     drawn_deps_parser = draw(deps_parser_choice_strategy)
     # a simple and not 100% accurate check if deps parser matches explicitly given file
@@ -170,10 +174,9 @@ def cli_arguments_combinations(draw):
 
     # only `code` option changes to_stdin
     code = draw(code_option_strategy(code_paths))
-    if code is not None:
-        if "-" in code:
-            to_stdin = example_python_stdin
-        args += code
+    if "-" in code:
+        to_stdin = example_python_stdin
+    args += code
 
     return (project_dir, args, to_stdin)
 
