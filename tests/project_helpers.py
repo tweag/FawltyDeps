@@ -239,3 +239,17 @@ def parse_toml(toml_path: Path) -> TomlData:
     except tomllib.TOMLDecodeError:
         print(f"Error occurred while parsing file: {toml_path}")
         raise
+
+
+def sha256sum(path: Path):
+    """Calculate the SHA256 checksum of the given file.
+
+    Read the file in 64kB blocks while calculating the checksum, and return
+    the hex-encoded digest.
+    """
+    sha256 = hashlib.sha256()
+    BLOCK_SIZE = 64 * 1024
+    with path.open("rb") as f:
+        for block in iter(lambda: f.read(BLOCK_SIZE), b""):
+            sha256.update(block)
+    return sha256.hexdigest()
