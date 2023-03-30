@@ -5,7 +5,6 @@ We download/extract pinned releases several 3rd-party Python projects, and run
 FawltyDeps on them, with hardcoded expectations per project on what FawltyDeps
 should find/report.
 """
-import hashlib
 import json
 import logging
 import subprocess
@@ -22,7 +21,13 @@ from pkg_resources import Requirement
 from fawltydeps.packages import LocalPackageResolver
 from fawltydeps.types import TomlData
 
-from .project_helpers import BaseExperiment, BaseProject, JsonData, parse_toml
+from .project_helpers import (
+    BaseExperiment,
+    BaseProject,
+    JsonData,
+    parse_toml,
+    sha256sum,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -60,20 +65,6 @@ def run_fawltydeps_json(
     # Check if return code does not indicate error (see main.main for the full list)
     assert proc.returncode in {0, 3, 4}
     return json.loads(proc.stdout)  # type: ignore
-
-
-def sha256sum(path: Path):
-    """Calculate the SHA256 checksum of the given file.
-
-    Read the file in 64kB blocks while calculating the checksum, and return
-    the hex-encoded digest.
-    """
-    sha256 = hashlib.sha256()
-    BLOCK_SIZE = 64 * 1024
-    with path.open("rb") as f:
-        for block in iter(lambda: f.read(BLOCK_SIZE), b""):
-            sha256.update(block)
-    return sha256.hexdigest()
 
 
 @dataclass
