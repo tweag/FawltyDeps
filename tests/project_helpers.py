@@ -9,6 +9,8 @@ from dataclasses import dataclass
 from dataclasses import fields as dataclass_fields
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, Iterator, List, Optional, Set, Type
+from urllib.parse import urlparse
+from urllib.request import urlretrieve
 
 import pytest
 
@@ -22,7 +24,89 @@ else:
 
 JsonData = Dict[str, Any]
 
+PACKAGES_TOML_PATH = Path(__file__).with_name("python_packages.toml")
+
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class TarballPackage:
+    """Encapsulate a Python tarball package.
+
+    This object fields are expected to be populated either from:
+    - A single toml file containing multiple tarballs info
+    - Multiple TOML files in REAL_PROJECTS_DIR
+    The tarballs are downloaded and cached by the methods below.
+    """
+
+    url: str
+    sha256: str
+    name: Optional[str] = None
+
+    @classmethod
+    def collect_from_toml(cls, path: Path) -> Iterator["TarballPackage"]:
+        """Parse information on all available tarball packages in a toml file."""
+        tarballs = parse_toml(path)
+        for info in tarballs.values():
+            yield cls(url=info["url"], sha256=info["sha256"])
+
+    @classmethod
+    def get_tarballs(cls, cache: pytest.Cache, path: Path = PACKAGES_TOML_PATH):
+        """Get (or download) tarballs of packages defined in the toml file."""
+        for tarball_package in cls.collect_from_toml(path):
+            tarball_package.get(cache)
+
+    def tarball_name(self) -> str:
+        """The filename used for the tarball in the local cache."""
+        # We cache tarballs using the filename part of the given URL.
+        # However, tarballs produced from tags at GitHub typically only use the
+        # version number in the filename. Prefix the project name in that case:
+        filename = Path(urlparse(self.url).path).name
+        if self.name and self.name not in filename:
+            filename = f"{self.name}-{filename}"
+        return filename
+
+    def is_cached(self, path: Optional[Path]) -> bool:
+        """Return True iff the given path contains this package's tarball."""
+        return path is not None and path.is_file() and sha256sum(path) == self.sha256
+
+    def get(self, cache: pytest.Cache) -> Path:
+        """Get this package's tarball. Download if not already cached.
+
+        The cached tarball is keyed by its filename and integrity checked with
+        SHA256. Thus a changed URL with the same filename and sha256 checksum
+        will still be able to reuse a previously downloaded tarball.
+
+        """
+        # Cannot store Path objects in the pytest cache, only str.
+        cached_str = cache.get(self.cache_key, None)
+        if self.is_cached(cached_str and Path(cached_str)):
+            return Path(cached_str)  # already cached
+
+        # Must (re)download
+        tarball_path = self.tarball_path(cache)
+        logger.info(f"Downloading {self.url!r} to {tarball_path}...")
+        urlretrieve(self.url, tarball_path)
+        if not self.is_cached(tarball_path):
+            logger.error(f"Failed integrity check after downloading {self.url!r}!")
+            logger.error(f"    Downloaded file: {tarball_path}")
+            logger.error(f"    Retrieved SHA256 {sha256sum(tarball_path)}")
+            logger.error(f"     Expected SHA256 {self.sha256}")
+            assert False
+        cache.set(self.cache_key, str(tarball_path))
+        return tarball_path
+
+    @property
+    def cache_key(self) -> str:
+        return f"fawltydeps/{self.tarball_name()}"
+
+    def tarball_path(self, cache: pytest.Cache) -> Path:
+        return self.cache_dir(cache) / self.tarball_name()
+
+    @classmethod
+    def cache_dir(cls, cache: pytest.Cache) -> Path:
+        """Return the directory of the cache used for tarball packages."""
+        return Path(cache.mkdir("fawltydeps"))
 
 
 @dataclass
