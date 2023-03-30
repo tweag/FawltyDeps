@@ -8,7 +8,7 @@ import sys
 from dataclasses import replace
 from pathlib import Path
 from tempfile import NamedTemporaryFile
-from typing import Callable, Iterable, Iterator, NamedTuple, Optional, Set, Tuple
+from typing import Callable, Iterable, Iterator, NamedTuple, Optional, Tuple
 
 from pip_requirements_parser import RequirementsFile  # type: ignore
 from pkg_resources import Requirement
@@ -22,7 +22,6 @@ from fawltydeps.types import (
     TomlData,
     UnparseablePathException,
 )
-from fawltydeps.utils import walk_dir
 
 if sys.version_info >= (3, 11):
     import tomllib  # pylint: disable=E1101
@@ -327,69 +326,6 @@ PARSER_CHOICES = {
         lambda path: path.name == "setup.py", parse_setup_py
     ),
 }
-
-
-def extract_declared_dependencies_from_path(
-    path: Path, parser_choice: Optional[ParserChoice] = None
-) -> Iterator[DeclaredDependency]:
-    """Extract dependencies (package names) from supported file types.
-
-    Pass a path from which to discover and parse dependency declarations. Pass
-    a directory to traverse that directory tree to find and automatically parse
-    any supported files.
-
-    Generate (i.e. yield) a DeclaredDependency object for each dependency found.
-    There is no guaranteed ordering on the generated dependencies.
-    """
-    if path.is_file():
-        if parser_choice is not None:
-            parser = PARSER_CHOICES[parser_choice]
-            if not parser.applies_to_path(path):
-                logger.warning(
-                    f"Manually applying parser '{parser_choice}' to dependencies: {path}"
-                )
-        else:
-            choice_and_parser = first_applicable_parser(path)
-            if choice_and_parser is None:  # nothing found
-                raise UnparseablePathException(
-                    ctx="Parsing given dependencies path isn't supported", path=path
-                )
-            parser = choice_and_parser[1]
-        try:
-            yield from parser.execute(path)
-        except Exception as ext:
-            raise UnparseablePathException(
-                ctx=f"Raised {type(ext)}: {ext}.\n"
-                "Parser '{parser_choice}' failed to parse a given file",
-                path=path,
-            ) from ext
-    elif path.is_dir():
-        logger.debug("Extracting dependencies from files under %s", path)
-        for file in walk_dir(path):
-            choice_and_parser = first_applicable_parser(file)
-            if choice_and_parser is None:  # nothing found
-                continue
-            if parser_choice is None or choice_and_parser[0] == parser_choice:
-                logger.debug(f"Extracting dependencies: {file}")
-                yield from choice_and_parser[1].execute(file)
-    else:
-        raise UnparseablePathException(
-            ctx="Dependencies declaration path is neither dir nor file", path=path
-        )
-
-
-def extract_declared_dependencies(
-    paths: Set[Path], parser_choice: Optional[ParserChoice] = None
-) -> Iterator[DeclaredDependency]:
-    """Extract dependencies (package names) from supported file types.
-
-    Pass a list of paths from which to discover and parse dependency declarations.
-    """
-
-    for path in paths:
-        yield from extract_declared_dependencies_from_path(
-            path, parser_choice=parser_choice
-        )
 
 
 def parse_source(
