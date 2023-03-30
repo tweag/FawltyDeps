@@ -1,0 +1,19 @@
+[setuptools]
+url = "https://files.pythonhosted.org/packages/25/f3/d68c20919bc774c6cb127f1762f2f2f999d700a58198556e883dd3700e58/setuptools-67.6.0.tar.gz"
+sha256 = "2ee892cd5f29f3373097f5a814697e397cf3ce313616df0af11231e2ad118077"
+
+[leftpadx]
+url = "https://files.pythonhosted.org/packages/7a/d9/c2cf76bdf9248440defed8c52b7cb770b0f9069e630d6dc3ceb8efd00bc8/leftpadx-0.0.1.tar.gz"
+sha256 = "84f421e3ff2e8cde20526a1af98119a36a50482845cac2bc26d3e955dc3ade87"
+
+[wheel]
+url = "https://files.pythonhosted.org/packages/fc/ef/0335f7217dd1e8096a9e8383e1d472aa14717878ffe07c4772e68b6e8735/wheel-0.40.0.tar.gz"
+sha256 = "cd1196f3faee2b31968d626e1731c94f99cbdb67cf5a46e4f5656cbee7738873"
+
+[flit-core]
+url = "https://files.pythonhosted.org/packages/10/e5/be08751d07b30889af130cec20955c987a74380a10058e6e8856e4010afc/flit_core-3.8.0.tar.gz"
+sha256 = "b305b30c99526df5e63d6022dd2310a0a941a187bd3884f4c8ef0418df6c39f3"
+
+[click]
+url = "https://files.pythonhosted.org/packages/59/87/84326af34517fca8c58418d148f2403df25303e02736832403587318e9e8/click-8.1.3.tar.gz"
+sha256 = "7682dc8afb30297001674575ea00d1814d808d6a36af415a82bd481d37ba7b8e"
