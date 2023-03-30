@@ -4,7 +4,7 @@ import ast
 import json
 import logging
 from pathlib import Path
-from typing import Iterable, Iterator, Optional, Set, TextIO, Tuple
+from typing import Iterable, Iterator, Optional, TextIO, Tuple
 
 import isort
 
@@ -15,7 +15,7 @@ from fawltydeps.types import (
     PathOrSpecial,
     UnparseablePathException,
 )
-from fawltydeps.utils import dirs_between, walk_dir
+from fawltydeps.utils import dirs_between
 
 logger = logging.getLogger(__name__)
 
@@ -152,75 +152,6 @@ def parse_python_file(
     yield from parse_code(
         path.read_text(), source=Location(path), local_context=local_context
     )
-
-
-def parse_dir(path: Path) -> Iterator[ParsedImport]:
-    """Extract import statements from Python files in the given directory.
-
-    Generate (i.e. yield) the module names that are imported in the order
-    they appear in each file, but the order in which files are parsed is
-    unspecified. Modules that are imported multiple times (in the same file or
-    across several files) will be yielded multiple times.
-    """
-    for file in walk_dir(path):
-        local_context = make_isort_config(
-            path=path, src_paths=tuple(dirs_between(path, file.parent))
-        )
-        if file.suffix == ".py":
-            yield from parse_python_file(file, local_context=local_context)
-        elif file.suffix == ".ipynb":
-            yield from parse_notebook_file(file, local_context=local_context)
-
-
-def parse_any_arg(
-    arg: PathOrSpecial, stdin: Optional[TextIO] = None
-) -> Iterator[ParsedImport]:
-    """Interpret the given command-line argument and invoke a suitable parser.
-
-    These cases are handled:
-      - arg == "-": Read code from stdin and pass to parse_code()
-      - arg refers to a file: Call parse_python_file() or parse_notebook_file()
-      - arg refers to a dir: Call parse_dir()
-
-    Otherwise raise UnparseablePathException with a suitable error message.
-    """
-    if arg == "<stdin>":
-        if stdin is None:
-            raise UnparseablePathException(ctx="Missing <stdin> handle", path=Path("."))
-        logger.info("Parsing Python code from standard input")
-        # 'isatty' checks if the stream is interactive.
-        if stdin.isatty():
-            logger.warning("Reading code from terminal input. Ctrl+D to stop.")
-        return parse_code(stdin.read(), source=Location(arg))
-    assert isinstance(arg, Path)
-    if arg.is_file():
-        if arg.suffix == ".py":
-            logger.info("Parsing Python file %s", arg)
-            return parse_python_file(arg)
-        if arg.suffix == ".ipynb":
-            logger.info("Parsing Notebook file %s", arg)
-            return parse_notebook_file(arg)
-        raise UnparseablePathException(
-            ctx="Supported formats are .py and .ipynb; Cannot parse code",
-            path=arg,
-        )
-    if arg.is_dir():
-        logger.info("Parsing Python files under %s", arg)
-        return parse_dir(arg)
-    raise UnparseablePathException(
-        ctx="Code path to parse is neither dir nor file", path=arg
-    )
-
-
-def parse_any_args(
-    args: Set[PathOrSpecial], stdin: Optional[TextIO] = None
-) -> Iterator[ParsedImport]:
-    """Interpret given set of command line arguments.
-
-    Pass a list of paths from which to discover and parse imports from the code.
-    """
-    for arg in args:
-        yield from parse_any_arg(arg, stdin)
 
 
 def parse_source(
