@@ -40,7 +40,7 @@ The name is inspired by the Monty Python-adjacent
 
 The library is distributed with PyPI, so simply:
 
-```
+```sh
 pip install fawltydeps
 ```
 
@@ -52,7 +52,7 @@ Consider adding `fawltydeps` to your development dependencies, to help you catch
 
 To check the project in the current directory run:
 
-```
+```sh
 fawltydeps
 ```
 
@@ -80,7 +80,7 @@ dependency declarations (see list of supported files below) under the current
 directory. If you want FawltyDeps to look elsewhere, you can pass a different
 directory (aka `basepath`) as a positional argument:
 
-```
+```sh
 fawltydeps my_project/
 ```
 
@@ -89,7 +89,7 @@ dependencies, you may use the `--code` and `--deps` options documented in the
 next section. In short, giving the `basepath` positional argument is equivalent
 to passing both the `--code` and the `--deps` options, like this:
 
-```
+```sh
 fawltydeps --code my_project/ --deps my_project/
 ```
 
@@ -107,7 +107,7 @@ If no `--code` option is passed, FawltyDeps will find all Python code under the
 `basepath`, if given, or the current directory (i.e. same as `--code=.`).
 To include both code from stdin (`import foo`) and a file path (`file.py`), use:
 
-```
+```sh
 echo "import foo" | fawltydeps --list-imports --code - file.py
 ```
 
@@ -132,13 +132,18 @@ be explicit about where to find the declared dependencies.
 If no `--deps` option is passed, FawltyDeps will look for the above files under
 the `basepath`, if given, or the current directory (i.e. same as `--deps .`).
 
-### Resolving dependencies via your Python environment
+### Resolving dependencies
 
 When FawltyDeps looks for undeclared and unused dependencies, it needs to match
 `import` statements in your code with corresponding package dependencies
 declared in your project configuration.
 
-To solve this, FawltyDeps looks at the packages installed in your _current
+To solve this, FawltyDeps adopts several strategies: mapping provided by the user,
+identity mapping, and most powerful of all - using your python environment.
+
+#### Python environment mapping
+
+FawltyDeps looks at the packages installed in your _current
 Python environment_ and what import names each of them provide in order to
 correctly match your dependencies against your imports.
 
@@ -150,7 +155,7 @@ If you instead want FawltyDeps to look into a _different_ Python environment for
 mapping dependencies to import names, you can use the `--pyenv` option,
 for example:
 
-```
+```sh
 fawltydeps --code my_package/ --deps pyproject.toml --pyenv .venv/
 ```
 
@@ -160,6 +165,8 @@ This will tell FawltyDeps:
 - to parse dependencies from `pyprojects.toml`, and
 - to use the Python environment at `.venv/` to map dependency names in
   `pyproject.toml` into import names used in your code under `my_package/`
+
+#### Identity mapping
 
 When FawltyDeps is unable to find an installed package that corresponds to a
 declared dependency, FawltyDeps will fall back to an "identity mapping", where
@@ -172,6 +179,29 @@ produce results (albeit sometimes inaccurate) when the current Python
 environment does not contain all of your declared dependencies. Please see
 FAQ below about [why FawltyDeps must run in the same Python environment as your
 project dependencies](#why-must-fawltydeps-run-in-the-same-python-environment-as-my-project-dependencies).
+
+#### User-defined mapping
+
+You may define your mapping by providing a toml file with package to imports mapping,
+`my_mapping.toml`:
+
+```toml
+my-package = ["mpkg"]
+scikit-learn = ["sklearn"]
+multiple-modules = ["module1", "module2"]
+```
+
+To use your mapping, run:
+
+```sh
+fawltydeps --mapping my_mapping.toml
+```
+
+FawltyDeps will parse `my_mapping.toml` file and use extracted mapping for matching dependencies to imports.
+
+Caution when using your mapping is advised. The user-defined mapping takes precedence over all other resolving strategies.
+If the mapping file has some stale mapping entries, they will not be resolved by
+Python environment resolver (which in general is the most accurate).
 
 ### Ignoring irrelevant results
 
@@ -385,7 +415,7 @@ To see how these tests work, look at the existing files in that directory.
 You can run a detailed report to see the exact location (file and line number), in which
 the undeclared dependencies were imported:
 
-```
+```sh
 fawltydeps --detailed
 ```
 
@@ -401,7 +431,7 @@ in the FawltyDeps analysis, even if they only contain tools that were not meant
 to be `import`ed, but rather meant to be run by, say, in a pre-commit hook or a
 CI script. In such cases you may use either:
 
-```
+```sh
 fawltydeps --ignore-unused black pylint
 ```
 
@@ -412,7 +442,7 @@ or add an equivalent directive to the FawltyDeps configuration in your
 
 You can run:
 
-```
+```sh
 fawltydeps --generate-toml-config
 ```
 
@@ -426,7 +456,7 @@ previous question, you could add `--generate-toml-config` to the command line
 (i.e. run `fawltydeps --ignore-unused black pylint --generate-toml-config`),
 to get this:
 
-```
+```toml
 [tool.fawltydeps]
 # Default options are commented...
 ignore_unused = ["black", "pylint"]
@@ -444,7 +474,7 @@ This collects dependencies and import statements for one package at a time.
 
 Having:
 
-```.
+```sh
 ├ lib1
 | ├ pyproject.toml
 | ├ ....
@@ -455,7 +485,7 @@ Having:
 
 run for each `libX`:
 
-```
+```sh
 fawltydeps libX
 ```
 
