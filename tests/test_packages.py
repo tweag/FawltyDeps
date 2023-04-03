@@ -145,7 +145,9 @@ def test_package__both_mappings():
     assert p.import_names == {"foobar", "foo", "bar", "baz"}
 
 
-def test_user_defined_mapping(write_tmp_files):
+def test_user_defined_mapping__well_formated_input_file__parses_correctly(
+    write_tmp_files,
+):
     tmp_path = write_tmp_files(
         {
             "mapping.toml": """\
@@ -158,6 +160,8 @@ def test_user_defined_mapping(write_tmp_files):
     mapped_packages = udm.packages
     assert set(mapped_packages.keys()) == {"apache_airflow", "attrs"}
 
+
+def test_user_defined_mapping__no_input_file__creates_empty_object():
     empty_udm = UserDefinedMapping()
     assert isinstance(empty_udm.packages, dict)
     assert len(empty_udm.packages) == 0
@@ -272,7 +276,16 @@ def test_LocalPackageResolver_lookup_packages(dep_name, expect_import_names):
                 "pip": Package("pip", {DependenciesMapping.LOCAL_ENV: {"pip"}}),
                 "pandas": Package("pandas", {DependenciesMapping.IDENTITY: {"pandas"}}),
             },
-            id="mixed_deps__uses_mixture_of_identity_and_local_env_mapping",
+            id="mixed_deps__uses_mixture_of_user_defined_identity_and_local_env_mapping",
+        ),
+        pytest.param(
+            ["pandas", "pip"],
+            dedent("""apache-airflow = ["airflow"]"""),
+            {
+                "pip": Package("pip", {DependenciesMapping.LOCAL_ENV: {"pip"}}),
+                "pandas": Package("pandas", {DependenciesMapping.IDENTITY: {"pandas"}}),
+            },
+            id="mixed_deps__unaffected_by_nonmatching_user_defined_mapping",
         ),
     ],
 )
@@ -285,7 +298,8 @@ def test_resolve_dependencies__focus_on_mappings(
         user_mapping_path = tmp_path / "mapping.toml"
 
     assert (
-        resolve_dependencies(dep_names, user_mapping_path=user_mapping_path) == expected
+        resolve_dependencies(dep_names, custom_mapping_path=user_mapping_path)
+        == expected
     )
 
 
