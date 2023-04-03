@@ -1,8 +1,8 @@
 """Common utilities"""
 
-from functools import wraps
 import os
 from dataclasses import is_dataclass
+from functools import wraps
 from pathlib import Path
 from typing import Callable, Iterator, Optional, TypeVar, no_type_check
 
