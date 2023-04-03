@@ -28,7 +28,7 @@ EXPECT_DEFAULTS = dict(
     code={Path(".")},
     deps={Path(".")},
     pyenv=None,
-    mapping=None,
+    custom_mapping=None,
     output_format=OutputFormat.HUMAN_SUMMARY,
     ignore_undeclared=set(),
     ignore_unused=set(),
@@ -230,12 +230,12 @@ settings_tests_samples = [
         config=dict(
             actions=["list_deps"],
             deps=["my_requirements.txt"],
-            mapping="mapping.toml",
+            custom_mapping="mapping.toml",
         ),
         expect=make_settings_dict(
             actions={Action.LIST_DEPS},
             deps={Path("my_requirements.txt")},
-            mapping=Path("mapping.toml"),
+            custom_mapping=Path("mapping.toml"),
         ),
     ),
     SettingsTestVector(
