@@ -13,9 +13,9 @@ arguments.
 import json
 import logging
 import sys
-from functools import partial, wraps
+from functools import partial
 from operator import attrgetter
-from typing import Callable, Dict, List, Optional, TextIO, TypeVar
+from typing import Dict, List, Optional, TextIO
 
 from pydantic.json import custom_pydantic_encoder  # pylint: disable=no-name-in-module
 
@@ -32,44 +32,12 @@ from fawltydeps.types import (
     UnparseablePathException,
     UnusedDependency,
 )
-from fawltydeps.utils import version
+from fawltydeps.utils import calculated_once, version
 
 logger = logging.getLogger(__name__)
 
 VERBOSE_PROMPT = "For a more verbose report re-run with the `--detailed` option."
 UNUSED_DEPS_OUTPUT_PREFIX = "These dependencies appear to be unused (i.e. not imported)"
-
-
-Instance = TypeVar("Instance")
-T = TypeVar("T")
-
-
-def calculated_once(method: Callable[[Instance], T]) -> Callable[[Instance], T]:
-    """Emulate functools.cached_property for our simple use case.
-
-    functools.cached_property does not exist in Python v3.7, so we emulate the
-    simple things we need here:
-
-    Each method that uses this decorator will store its return value in an
-    instance attribute whose name is the method name prefixed with underscore.
-    The first time the property is referenced, the method will be called, its
-    return value stored in the corresponding instance attribute, and also
-    returned to the caller. All subsequent references (as long as the stored
-    value it not None) will return the instance attribute value directly,
-    without calling the method.
-    """
-
-    @wraps(method)
-    def wrapper(self: Instance) -> T:
-        cached_attr = f"_{method.__name__}"
-        cached_value: Optional[T] = getattr(self, cached_attr, None)
-        if cached_value is not None:
-            return cached_value
-        calculated: T = method(self)
-        setattr(self, cached_attr, calculated)
-        return calculated
-
-    return wrapper
 
 
 class Analysis:  # pylint: disable=too-many-instance-attributes
