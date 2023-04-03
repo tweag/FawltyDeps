@@ -24,7 +24,7 @@ from importlib_metadata import (
     _top_level_inferred,
 )
 
-from fawltydeps.types import UnparseablePathException
+from fawltydeps.types import TomlData, UnparseablePathException
 from fawltydeps.utils import calculated_once, hide_dataclass_fields
 
 if sys.version_info >= (3, 11):
@@ -114,12 +114,17 @@ class BasePackageResolver(ABC):
 class UserDefinedMapping(BasePackageResolver):
     """Use user-defined mapping loaded from a toml file"""
 
-    def __init__(self, mapping_path: Path) -> None:
+    def __init__(
+        self,
+        mapping_path: Optional[Path] = None,
+        custom_mapping: Optional[TomlData] = None,
+    ) -> None:
         self.mapping_path = mapping_path
-        if not self.mapping_path.is_file():
+        if self.mapping_path and not self.mapping_path.is_file():
             raise UnparseablePathException(
                 ctx="Given mapping path is not a file.", path=self.mapping_path
             )
+        self.custom_mapping = custom_mapping
         # We enumerate packages declared in the mapping _once_ and cache the result here:
         self._packages: Optional[Dict[str, Package]] = None
 
@@ -131,10 +136,18 @@ class UserDefinedMapping(BasePackageResolver):
         This enumerates the available packages  _once_, and caches the result for
         the remainder of this object's life in _packages.
         """
+        user_mapping: TomlData = {}
 
-        logger.debug(f"Loading user-defined mapping from {self.mapping_path}")
-        with open(self.mapping_path, "rb") as mapping_file:
-            user_mapping = tomllib.load(mapping_file)
+        if self.mapping_path is not None:
+            logger.debug(f"Loading user-defined mapping from {self.mapping_path}")
+            with open(self.mapping_path, "rb") as mapping_file:
+                toml_data = tomllib.load(mapping_file)
+                user_mapping = {**user_mapping, **toml_data}
+
+        if self.custom_mapping is not None:
+            logger.debug("Loading user-defined mapping from custom mapping.")
+            # Custom mapping overrides mapping from file
+            user_mapping = {**user_mapping, **self.custom_mapping}
 
         return {
             Package.normalize_name(name): Package(
@@ -320,6 +333,7 @@ class IdentityMapping(BasePackageResolver):
 def resolve_dependencies(
     dep_names: Iterable[str],
     custom_mapping_path: Optional[Path] = None,
+    custom_mapping: Optional[Dict[str, List[str]]] = None,
     pyenv_path: Optional[Path] = None,
     install_deps: bool = False,
 ) -> Dict[str, Package]:
@@ -339,8 +353,12 @@ def resolve_dependencies(
     # each resolver in order until one of them returns a Package object. At
     # that point we are happy, and don't consult any of the later resolvers.
     resolvers: List[BasePackageResolver] = []
-    if custom_mapping_path:
-        resolvers.append(UserDefinedMapping(custom_mapping_path))
+    if custom_mapping_path or custom_mapping:
+        resolvers.append(
+            UserDefinedMapping(
+                mapping_path=custom_mapping_path, custom_mapping=custom_mapping
+            )
+        )
 
     resolvers.append(LocalPackageResolver(pyenv_path))
     if install_deps:
