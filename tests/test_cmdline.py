@@ -36,6 +36,7 @@ def make_json_settings_dict(**kwargs):
         "code": ["."],
         "deps": ["."],
         "pyenv": None,
+        "custom_mapping_file": None,
         "custom_mapping": None,
         "output_format": "human_summary",
         "ignore_undeclared": [],
@@ -895,6 +896,7 @@ def test_cmdline_on_ignored_undeclared_option(
                 # code = ['.']
                 deps = ['foobar']
                 # pyenv = None
+                # custom_mapping_file = None
                 # custom_mapping = None
                 # ignore_undeclared = []
                 # ignore_unused = []

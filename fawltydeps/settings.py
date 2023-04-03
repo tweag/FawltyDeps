@@ -6,7 +6,7 @@ import sys
 from enum import Enum
 from functools import total_ordering
 from pathlib import Path
-from typing import ClassVar, List, Optional, Set, TextIO, Tuple, Type, Union
+from typing import ClassVar, Dict, List, Optional, Set, TextIO, Tuple, Type, Union
 
 from pydantic import BaseSettings
 from pydantic.env_settings import SettingsSourceCallable  # pylint: disable=E0611
@@ -122,7 +122,8 @@ class Settings(BaseSettings):  # type: ignore
     code: Set[PathOrSpecial] = {Path(".")}
     deps: Set[Path] = {Path(".")}
     pyenv: Optional[Path] = None
-    custom_mapping: Optional[Path] = None
+    custom_mapping_file: Optional[Path] = None
+    custom_mapping: Optional[Dict[str, List[str]]] = None
     ignore_undeclared: Set[str] = set()
     ignore_unused: Set[str] = set()
     deps_parser_choice: Optional[ParserChoice] = None
@@ -214,9 +215,6 @@ class Settings(BaseSettings):  # type: ignore
         # any pre-configured verbosity value
         if {"verbose", "quiet"}.intersection(args_dict.keys()):
             ret["verbosity"] = args_dict.get("verbose", 0) - args_dict.get("quiet", 0)
-
-        if "custom_mapping" in args_dict.keys():
-            ret["custom_mapping"] = args_dict.get("custom_mapping")
 
         return cls(**ret)
 

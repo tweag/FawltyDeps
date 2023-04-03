@@ -28,6 +28,7 @@ EXPECT_DEFAULTS = dict(
     code={Path(".")},
     deps={Path(".")},
     pyenv=None,
+    custom_mapping_file=None,
     custom_mapping=None,
     output_format=OutputFormat.HUMAN_SUMMARY,
     ignore_undeclared=set(),
@@ -226,16 +227,16 @@ settings_tests_samples = [
         ),
     ),
     SettingsTestVector(
-        "config_file_with_mapping__overrides_some_defaults",
+        "config_file_with_mapping_file__overrides_some_defaults",
         config=dict(
             actions=["list_deps"],
             deps=["my_requirements.txt"],
-            custom_mapping="mapping.toml",
+            custom_mapping_file="mapping.toml",
         ),
         expect=make_settings_dict(
             actions={Action.LIST_DEPS},
             deps={Path("my_requirements.txt")},
-            custom_mapping=Path("mapping.toml"),
+            custom_mapping_file=Path("mapping.toml"),
         ),
     ),
     SettingsTestVector(
