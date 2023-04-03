@@ -13,8 +13,9 @@ from fawltydeps.packages import (
     UserDefinedMapping,
     resolve_dependencies,
 )
+from fawltydeps.types import UnparseablePathException
 
-from .utils import test_vectors
+from .utils import SAMPLE_PROJECTS_DIR, test_vectors
 
 
 def test_package__empty_package__matches_nothing():
@@ -161,10 +162,9 @@ def test_user_defined_mapping__well_formated_input_file__parses_correctly(
     assert set(mapped_packages.keys()) == {"apache_airflow", "attrs"}
 
 
-def test_user_defined_mapping__no_input_file__creates_empty_object():
-    empty_udm = UserDefinedMapping()
-    assert isinstance(empty_udm.packages, dict)
-    assert len(empty_udm.packages) == 0
+def test_user_defined_mapping__input_is_no_file__raises_unparsable_path_exeption():
+    with pytest.raises(UnparseablePathException):
+        UserDefinedMapping(SAMPLE_PROJECTS_DIR)
 
 
 # TODO: These tests are not fully isolated, i.e. they do not control the
