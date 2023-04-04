@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
+from fawltydeps.main import main
 from fawltydeps.packages import (
     DependenciesMapping,
     IdentityMapping,
@@ -20,7 +21,6 @@ from fawltydeps.types import (
     UndeclaredDependency,
     UnusedDependency,
 )
-from fawltydeps.main import main
 
 SAMPLE_PROJECTS_DIR = Path(__file__).with_name("sample_projects")
 
@@ -103,7 +103,7 @@ def run_fawltydeps_function(
     config_file: Path = Path("/dev/null"),
     to_stdin: Optional[str] = None,
     cwd: Optional[Path] = None,
-) -> Tuple[str, str, int]:
+) -> Tuple[str, int]:
     """Run FawltyDeps with `main` function. Designed for unit tests.
 
     Ignores logging output and returns stdout and the exti code
@@ -123,6 +123,7 @@ def run_fawltydeps_function(
         f"    ---- STDOUT ----\n{output_value}"
         "    ----------------"
     )
+    output.close()
     return output_value, exit_code
 
 

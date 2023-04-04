@@ -5,9 +5,9 @@ overall behavior of the command line interface, rather than testing our
 core exhaustively (which is what the other unit tests are for.
 """
 
-from dataclasses import dataclass, field
 import json
 import logging
+from dataclasses import dataclass, field
 from itertools import dropwhile
 from textwrap import dedent
 from typing import List
@@ -406,22 +406,24 @@ class ProjectTestVector:
     declares: List[str] = field(default_factory=list)
 
     expect_output: List[str] = field(default_factory=list)
-    expect_logs: str = ""
+    expect_logs: List[str] = field(default_factory=list)
     expect_returncode: int = 0
 
 
+full_success_message = (
+    Analysis.success_message(check_undeclared=True, check_unused=True) or ""
+)
+
 project_tests_samples = [
     ProjectTestVector(
-        "simple_project_imports_match_dependencies__prints_verbose_option",
+        id="simple_project_imports_match_dependencies__prints_verbose_option",
         options=["--check", "--code={path}", "--deps={path}"],
         imports=["requests", "pandas"],
         declares=["requests", "pandas"],
-        expect_output=[
-            Analysis.success_message(check_undeclared=True, check_unused=True)
-        ],
+        expect_output=[full_success_message],
     ),
     ProjectTestVector(
-        "simple_project_with_missing_deps__reports_undeclared",
+        id="simple_project_with_missing_deps__reports_undeclared",
         options=["--check", "--detailed", "-v", "--code={path}", "--deps={path}"],
         imports=["requests", "pandas"],
         declares=["pandas"],
@@ -438,7 +440,7 @@ project_tests_samples = [
         expect_returncode=3,
     ),
     ProjectTestVector(
-        "simple_project_with_extra_deps__reports_unused",
+        id="simple_project_with_extra_deps__reports_unused",
         options=["--check", "--detailed", "-v", "--code={path}", "--deps={path}"],
         imports=["requests"],
         declares=["requests", "pandas"],
@@ -457,7 +459,7 @@ project_tests_samples = [
         expect_returncode=4,
     ),
     ProjectTestVector(
-        "simple_project_with_extra_deps__reports_unused",
+        id="simple_project_with_extra_deps__reports_unused_and_undeclared",
         options=["--check", "--detailed", "-v", "--code={path}", "--deps={path}"],
         imports=["requests"],
         declares=["pandas"],
@@ -478,7 +480,7 @@ project_tests_samples = [
         expect_returncode=3,  # undeclared is more important than unused
     ),
     ProjectTestVector(
-        "simple_project__summary_report_with_verbose_logging",
+        id="simple_project__summary_report_with_verbose_logging",
         options=["--check", "--summary", "--verbose", "--code={path}", "--deps={path}"],
         imports=["requests"],
         declares=["pandas"],
@@ -499,7 +501,7 @@ project_tests_samples = [
         expect_returncode=3,  # undeclared is more important than unused
     ),
     ProjectTestVector(
-        "simple_project__summary_report_with_quiet_logging",
+        id="simple_project__summary_report_with_quiet_logging",
         options=["--check", "--detailed", "--code={path}", "--deps={path}"],
         imports=["requests"],
         declares=["pandas"],
@@ -629,16 +631,12 @@ def test_check_unused__simple_project__reports_only_unused(
     )
 
     expect = [
+        "",
         "These dependencies appear to be unused (i.e. not imported):",
         "- 'pandas' declared in:",
         f"    {tmp_path / 'requirements.txt'}",
     ]
-    expect_logs = [
-        f"INFO:fawltydeps.extract_imports:Parsing Python files under {tmp_path}",
-        "INFO:fawltydeps.packages:'pandas' was not resolved."
-        " Assuming it can be imported as 'pandas'.",
-    ]
-    output, errors, returncode = run_fawltydeps(
+    output, returncode = run_fawltydeps_function(
         "--check-unused",
         "--detailed",
         "-v",
@@ -647,7 +645,6 @@ def test_check_unused__simple_project__reports_only_unused(
         f"{tmp_path}",
     )
     assert output.splitlines() == expect
-    assert errors == "\n".join(expect_logs)
     assert returncode == 4
 
 
@@ -660,6 +657,7 @@ def test__no_action__defaults_to_check_action(
     )
 
     expect = [
+        "",
         "These imports appear to be undeclared dependencies:",
         "- 'requests' imported at:",
         f"    {tmp_path / 'code.py'}:1",
@@ -668,16 +666,10 @@ def test__no_action__defaults_to_check_action(
         "- 'pandas' declared in:",
         f"    {tmp_path / 'requirements.txt'}",
     ]
-    expect_logs = [
-        f"INFO:fawltydeps.extract_imports:Parsing Python files under {tmp_path}",
-        "INFO:fawltydeps.packages:'pandas' was not resolved."
-        " Assuming it can be imported as 'pandas'.",
-    ]
-    output, errors, returncode = run_fawltydeps(
+    output, returncode = run_fawltydeps_function(
         f"--code={tmp_path}", "--detailed", "-v", f"--deps={tmp_path}"
     )
     assert output.splitlines() == expect
-    assert errors == "\n".join(expect_logs)
     assert returncode == 3
 
 
@@ -690,22 +682,17 @@ def test__no_options__defaults_to_check_action_in_current_dir(
     )
 
     expect = [
+        "",
         "These imports appear to be undeclared dependencies:",
         "- 'requests' imported at:",
-        "    code.py:1",
+        f"    {tmp_path / 'code.py'}:1",
         "",
         "These dependencies appear to be unused (i.e. not imported):",
         "- 'pandas' declared in:",
-        "    requirements.txt",
+        f"    {tmp_path / 'requirements.txt'}",
     ]
-    expect_logs = [
-        "INFO:fawltydeps.extract_imports:Parsing Python files under .",
-        "INFO:fawltydeps.packages:'pandas' was not resolved."
-        " Assuming it can be imported as 'pandas'.",
-    ]
-    output, errors, returncode = run_fawltydeps("--detailed", "-v", cwd=tmp_path)
+    output, returncode = run_fawltydeps_function("--detailed", "-v", cwd=tmp_path)
     assert output.splitlines() == expect
-    assert errors == "\n".join(expect_logs)
     assert returncode == 3
 
 
@@ -743,13 +730,13 @@ def test_check__simple_project_in_fake_venv__resolves_imports_vs_deps(
     # should satisfy our comparison
     venv_dir = fake_venv({"pandas": {"requests"}})
 
-    output, errors, returncode = run_fawltydeps(
+    output, returncode = run_fawltydeps_function(
         "--detailed", f"--code={tmp_path}", f"--deps={tmp_path}", f"--pyenv={venv_dir}"
     )
     assert output.splitlines() == [
-        Analysis.success_message(check_undeclared=True, check_unused=True)
+        "",
+        Analysis.success_message(check_undeclared=True, check_unused=True),
     ]
-    assert errors == ""
     assert returncode == 0
 
 
