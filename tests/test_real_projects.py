@@ -104,7 +104,7 @@ class ThirdPartyProject(BaseProject):
             yield cls(
                 toml_path=path,
                 tarball=TarballPackage(
-                    name=project_info["name"],
+                    filename_must_include=project_info["name"],
                     url=toml_data["project"]["url"],
                     sha256=toml_data["project"]["sha256"],
                 ),
