@@ -6,7 +6,7 @@ import sys
 from enum import Enum
 from functools import total_ordering
 from pathlib import Path
-from typing import ClassVar, Dict, List, Optional, Set, TextIO, Tuple, Type, Union
+from typing import ClassVar, List, Optional, Set, TextIO, Tuple, Type, Union
 
 from pydantic import BaseSettings
 from pydantic.env_settings import SettingsSourceCallable  # pylint: disable=E0611
@@ -123,7 +123,7 @@ class Settings(BaseSettings):  # type: ignore
     deps: Set[Path] = {Path(".")}
     pyenv: Optional[Path] = None
     custom_mapping_file: Optional[Path] = None
-    custom_mapping: Optional[Dict[str, List[str]]] = None
+    custom_mapping: Optional[TomlData] = None
     ignore_undeclared: Set[str] = set()
     ignore_unused: Set[str] = set()
     deps_parser_choice: Optional[ParserChoice] = None

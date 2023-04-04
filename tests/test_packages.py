@@ -167,6 +167,11 @@ def test_user_defined_mapping__input_is_no_file__raises_unparsable_path_exeption
         UserDefinedMapping(SAMPLE_PROJECTS_DIR)
 
 
+def test_ser_defined_mapping__no_input__returns_empty_mapping():
+    udm = UserDefinedMapping()
+    assert len(udm.packages) == 0
+
+
 # TODO: These tests are not fully isolated, i.e. they do not control the
 # virtualenv in which they run. For now, we assume that we are running in an
 # environment where at least these packages are available:
