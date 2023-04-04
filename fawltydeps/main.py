@@ -229,7 +229,7 @@ def print_output(
     if analysis.settings.output_format == OutputFormat.JSON:
         analysis.print_json(stdout)
     elif analysis.settings.output_format == OutputFormat.HUMAN_DETAILED:
-        analysis.print_human_readable(sys.stdout, details=True)
+        analysis.print_human_readable(stdout, details=True)
         if exit_code == 0 and success_message:
             print(f"\n{success_message}", file=stdout)
     elif analysis.settings.output_format == OutputFormat.HUMAN_SUMMARY:
