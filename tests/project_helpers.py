@@ -41,7 +41,9 @@ class TarballPackage:
 
     url: str
     sha256: str
-    name: Optional[str] = None
+    # If the following is given, we'll make sure the cached tarball has this
+    # somewhere in its filename (helps with version-only tarballs from GitHub).
+    filename_must_include: Optional[str] = None
 
     @classmethod
     def collect_from_toml(cls, path: Path) -> Iterator["TarballPackage"]:
@@ -62,8 +64,8 @@ class TarballPackage:
         # However, tarballs produced from tags at GitHub typically only use the
         # version number in the filename. Prefix the project name in that case:
         filename = Path(urlparse(self.url).path).name
-        if self.name and self.name not in filename:
-            filename = f"{self.name}-{filename}"
+        if self.filename_must_include and self.filename_must_include not in filename:
+            filename = f"{self.filename_must_include}-{filename}"
         return filename
 
     def is_cached(self, path: Optional[Path]) -> bool:
