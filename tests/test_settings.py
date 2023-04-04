@@ -240,6 +240,34 @@ settings_tests_samples = [
         ),
     ),
     SettingsTestVector(
+        "config_file_with_mapping__overrides_some_defaults",
+        config=dict(
+            actions=["list_deps"],
+            deps=["my_requirements.txt"],
+            custom_mapping={"package": ["foo", "bar"]},
+        ),
+        expect=make_settings_dict(
+            actions={Action.LIST_DEPS},
+            deps={Path("my_requirements.txt")},
+            custom_mapping={"package": ["foo", "bar"]},
+        ),
+    ),
+    SettingsTestVector(
+        "config_file_with_mapping_and_cli__overrides_some_defaults",
+        config=dict(
+            actions=["list_deps"],
+            deps=["my_requirements.txt"],
+            custom_mapping={"package": ["foo", "bar"]},
+        ),
+        cmdline=dict(custom_mapping_file="mapping.toml"),  # should be list/set, not str
+        expect=make_settings_dict(
+            actions={Action.LIST_DEPS},
+            deps={Path("my_requirements.txt")},
+            custom_mapping={"package": ["foo", "bar"]},
+            custom_mapping_file=Path("mapping.toml"),
+        ),
+    ),
+    SettingsTestVector(
         "env_var_with_wrong_type__raises_SettingsError",
         env=dict(actions="list_imports"),  # actions is not a list
         expect=SettingsError,

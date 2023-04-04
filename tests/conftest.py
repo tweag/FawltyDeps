@@ -273,10 +273,16 @@ def setup_fawltydeps_config(write_tmp_files):
 
     def _inner(contents: Union[str, TomlData]):
         if isinstance(contents, dict):
-            contents = "".join(
-                ["[tool.fawltydeps]\n"]
-                + [f"{k} = {v!r}\n" for k, v in contents.items()]
-            )
+            header = ["[tool.fawltydeps]\n"]
+            entries = []
+            for k, v in contents.items():
+                if isinstance(v, dict):
+                    entries += [f"[tool.fawltydeps.{k}]\n"] + [
+                        f"{kk} = {vv!r}\n" for kk, vv in v.items()
+                    ]
+                else:
+                    entries += [f"{k} = {v!r}\n"]
+            contents = "".join(header + entries)
         tmp_path = write_tmp_files({"pyproject.toml": contents})
         return tmp_path / "pyproject.toml"
 
