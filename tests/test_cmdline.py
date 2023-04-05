@@ -533,10 +533,16 @@ def test_check_undeclared_and_unused(
     output, logs, returncode = run_fawltydeps(
         *[option.format(path=tmp_path) for option in vector.options]
     )
+    # Order of output is determined, as we use alphabetical ordering.
     assert output.splitlines() == [
         v.format(path=tmp_path) for v in vector.expect_output
     ]
-    assert logs == "\n".join([v.format(path=tmp_path) for v in vector.expect_logs])
+    # We do set comparison here, as the evaluation order of
+    # input is not determined. In the process of evaluation,
+    # we use sets (like in IdentityMapping fallback).
+    assert {l for l in logs.split("\n") if l != ""} == {
+        v.format(path=tmp_path) for v in vector.expect_logs
+    }
     assert returncode == vector.expect_returncode
 
 
