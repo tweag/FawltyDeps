@@ -259,7 +259,7 @@ settings_tests_samples = [
             deps=["my_requirements.txt"],
             custom_mapping={"package": ["foo", "bar"]},
         ),
-        cmdline=dict(custom_mapping_file="mapping.toml"),  # should be list/set, not str
+        cmdline=dict(custom_mapping_file="mapping.toml"),
         expect=make_settings_dict(
             actions={Action.LIST_DEPS},
             deps={Path("my_requirements.txt")},

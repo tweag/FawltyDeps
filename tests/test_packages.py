@@ -167,7 +167,7 @@ def test_user_defined_mapping__input_is_no_file__raises_unparsable_path_exeption
         UserDefinedMapping(SAMPLE_PROJECTS_DIR)
 
 
-def test_ser_defined_mapping__no_input__returns_empty_mapping():
+def test_user_defined_mapping__no_input__returns_empty_mapping():
     udm = UserDefinedMapping()
     assert len(udm.packages) == 0
 
@@ -269,11 +269,13 @@ def test_LocalPackageResolver_lookup_packages(dep_name, expect_import_names):
         ),
         pytest.param(
             ["pandas", "pip", "apache_airflow"],
-            dedent(
-                """\
+            {
+                "file": dedent(
+                    """\
                 apache-airflow = ["airflow"]
             """
-            ),
+                )
+            },
             {
                 "apache_airflow": Package(
                     "apache-airflow", {DependenciesMapping.USER_DEFINED: {"airflow"}}
@@ -281,29 +283,64 @@ def test_LocalPackageResolver_lookup_packages(dep_name, expect_import_names):
                 "pip": Package("pip", {DependenciesMapping.LOCAL_ENV: {"pip"}}),
                 "pandas": Package("pandas", {DependenciesMapping.IDENTITY: {"pandas"}}),
             },
-            id="mixed_deps__uses_mixture_of_user_defined_identity_and_local_env_mapping",
+            id="mixed_deps__uses_mixture_of_user_defined_from_file_identity_and_local_env_mapping",
         ),
         pytest.param(
             ["pandas", "pip"],
-            dedent("""apache-airflow = ["airflow"]"""),
+            {"file": dedent("""apache-airflow = ["airflow"]""")},
             {
                 "pip": Package("pip", {DependenciesMapping.LOCAL_ENV: {"pip"}}),
                 "pandas": Package("pandas", {DependenciesMapping.IDENTITY: {"pandas"}}),
             },
             id="mixed_deps__unaffected_by_nonmatching_user_defined_mapping",
         ),
+        pytest.param(
+            ["pandas", "pip", "apache_airflow"],
+            {"configuration": {"apache-airflow": ["airflow"]}},
+            {
+                "apache_airflow": Package(
+                    "apache-airflow", {DependenciesMapping.USER_DEFINED: {"airflow"}}
+                ),
+                "pip": Package("pip", {DependenciesMapping.LOCAL_ENV: {"pip"}}),
+                "pandas": Package("pandas", {DependenciesMapping.IDENTITY: {"pandas"}}),
+            },
+            id="mixed_deps__user_defined_from_config_identity_and_local_env_mapping",
+        ),
+        pytest.param(
+            ["pandas", "pip", "apache_airflow"],
+            {
+                "file": dedent("""apache-airflow = ["airflow"]"""),
+                "configuration": {"apache-airflow": ["foo", "bar"]},
+            },
+            {
+                "apache_airflow": Package(
+                    "apache-airflow",
+                    {DependenciesMapping.USER_DEFINED: {"airflow", "foo", "bar"}},
+                ),
+                "pip": Package("pip", {DependenciesMapping.LOCAL_ENV: {"pip"}}),
+                "pandas": Package("pandas", {DependenciesMapping.IDENTITY: {"pandas"}}),
+            },
+            id="mixed_deps__uses_mixture_of_user_defined_identity_and_local_env_mapping",
+        ),
     ],
 )
 def test_resolve_dependencies__focus_on_mappings(
     dep_names, user_mapping, expected, write_tmp_files
 ):
-    user_mapping_path = None
+    custom_mapping_file = None
+    custom_mapping = None
     if user_mapping is not None:
-        tmp_path = write_tmp_files({"mapping.toml": user_mapping})
-        user_mapping_path = tmp_path / "mapping.toml"
+        custom_mapping = user_mapping.get("configuration")
+        if "file" in user_mapping:
+            tmp_path = write_tmp_files({"mapping.toml": user_mapping["file"]})
+            custom_mapping_file = tmp_path / "mapping.toml"
 
     assert (
-        resolve_dependencies(dep_names, custom_mapping_file=user_mapping_path)
+        resolve_dependencies(
+            dep_names,
+            custom_mapping_file=custom_mapping_file,
+            custom_mapping=custom_mapping,
+        )
         == expected
     )
 
