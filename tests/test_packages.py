@@ -1,7 +1,6 @@
 """Verify behavior of package lookup and mapping to import names."""
 
 import logging
-from typing import Dict, List, Optional
 
 import pytest
 
