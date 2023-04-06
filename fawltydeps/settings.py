@@ -236,12 +236,26 @@ def print_toml_config(settings: Settings, out: TextIO = sys.stdout) -> None:
         logger.critical(f"Sanity check failed: {settings!r} is missing a field!")
         raise
 
+    def _option_to_toml(name, value, dictionary_options=["custom_mapping"]):
+        """Serialize options to toml configuration entries
+
+        Options that are of dictionary type must be given a section entry.
+        Assumption: dictionaries options are not nested.
+        """
+        comment_char = "# " if has_default_value[name] else ""
+        if name in dictionary_options:
+            toml_option = f"{comment_char}[tool.fawltydeps.{name}]"
+            if value is not None:
+                toml_option += [
+                    f"\n{comment_char}{k} = {v!r}" for k, v in value.items()
+                ]
+        else:
+            toml_option = f"{comment_char}{name} = {value!r}"
+        return toml_option
+
     lines = [
         "# Copy this TOML section into your pyproject.toml to configure FawltyDeps",
         "# (default values are commented)",
         "[tool.fawltydeps]",
-    ] + [
-        f"{'# ' if has_default_value[name] else ''}{name} = {value!r}"
-        for name, value in simple_settings.items()
-    ]
+    ] + [_option_to_toml(name, value) for name, value in simple_settings.items()]
     print("\n".join(lines), file=out)

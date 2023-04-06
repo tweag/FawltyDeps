@@ -897,7 +897,7 @@ def test_cmdline_on_ignored_undeclared_option(
                 deps = ['foobar']
                 # pyenv = None
                 # custom_mapping_file = None
-                # custom_mapping = None
+                # [tool.fawltydeps.custom_mapping]
                 # ignore_undeclared = []
                 # ignore_unused = []
                 # deps_parser_choice = None

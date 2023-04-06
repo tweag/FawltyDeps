@@ -194,10 +194,19 @@ multiple-modules = ["module1", "module2"]
 To use your mapping, run:
 
 ```sh
-fawltydeps --mapping my_mapping.toml
+fawltydeps --custom-mapping-file my_mapping.toml
 ```
 
 FawltyDeps will parse `my_mapping.toml` file and use extracted mapping for matching dependencies to imports.
+
+You may also use put the custom mapping in the configuration file of your project, like `pyproject.toml` with the same toml structure like for `my_mapping.toml` above. Just add a section:
+
+```toml
+[tools.fawltydeps.custom_mapping]
+my-package = ["mpkg"]
+scikit-learn = ["sklearn"]
+multiple-modules = ["module1", "module2"]
+```
 
 Caution when using your mapping is advised. The user-defined mapping takes precedence over all other resolving strategies.
 If the mapping file has some stale mapping entries, they will not be resolved by
