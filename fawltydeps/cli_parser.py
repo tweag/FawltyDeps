@@ -167,7 +167,7 @@ def populate_parser_paths_options(parser: argparse._ActionsContainer) -> None:
     parser.add_argument(
         "--custom-mapping-file",
         type=Path,
-        metavar="PATH",
+        metavar="FILE_PATH",
         help=(
             "Path to toml file containing mapping of dependencies to imports defined by the user."
         ),
