@@ -48,11 +48,15 @@ user_defined_mapping = "\n".join(
 
 user_mappings = st.one_of(st.none(), st.just(user_defined_mapping))
 
+# Generate random boolean values
+identity_mappings = st.booleans()
+
 
 def generate_expected_resolved_deps(
     locally_installed_deps: Optional[Dict[str, List[str]]] = None,
     non_locally_installed_deps: Optional[List[str]] = None,
     user_defined_deps: Optional[Dict[str, List[str]]] = None,
+    identity_mapping: bool = True,
 ):
     ret = {}
     if locally_installed_deps:
@@ -76,12 +80,20 @@ def generate_expected_resolved_deps(
             }
         )
     if non_locally_installed_deps:
-        ret.update(
-            {
-                dep: Package(dep, {DependenciesMapping.IDENTITY: {dep}})
-                for dep in non_locally_installed_deps
-            }
-        )
+        if identity_mapping:
+            ret.update(
+                {
+                    dep: Package(dep, {DependenciesMapping.IDENTITY: {dep}})
+                    for dep in non_locally_installed_deps
+                }
+            )
+        else:
+            ret.update(
+                {
+                    dep: Package(dep, {DependenciesMapping.UNRESOLVED: set()})
+                    for dep in non_locally_installed_deps
+                }
+            )
     return ret
 
 
@@ -89,6 +101,7 @@ def generate_expected_resolved_deps(
 # fixture only runs once for all the test cases, it will be writing the same
 # content
 @given(
+    identity_mapping=identity_mappings,
     user_mapping=user_mappings,
     non_installed_deps=non_locally_installed_strategy,
     user_deps=user_defined_strategy,
@@ -100,6 +113,7 @@ def test_resolve_dependencies__generates_expected_mappings(
     installed_deps,
     non_installed_deps,
     user_mapping,
+    identity_mapping,
     write_tmp_files,
 ):
 
@@ -121,9 +135,11 @@ def test_resolve_dependencies__generates_expected_mappings(
         locally_installed_deps=installed_deps,
         non_locally_installed_deps=non_installed_deps,
         user_defined_deps=user_deps,
+        identity_mapping=identity_mapping,
     )
     obtained = resolve_dependencies(
         dep_names,
         custom_mapping_path=user_mapping_path,
+        identity_mapping=identity_mapping,
     )
     assert obtained == expected
