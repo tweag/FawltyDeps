@@ -42,6 +42,7 @@ class DependenciesMapping(str, Enum):
     IDENTITY = "identity"
     LOCAL_ENV = "local_env"
     USER_DEFINED = "user_defined"
+    UNRESOLVED = "unresolved"
 
 
 @dataclass
@@ -317,11 +318,32 @@ class IdentityMapping(BasePackageResolver):
         return {name: self.lookup_package(name) for name in package_names}
 
 
+class NoMapping(BasePackageResolver):
+    """A default package resolver for packages unresolved with other means.
+
+    This will resolve _any_ package name into a corresponding identical import
+    name (modulo normalization, see Package.normalize_name() for details).
+    """
+
+    @staticmethod
+    def lookup_package(package_name: str) -> Package:
+        """Convert a package name into a Package with no import names."""
+        ret = Package(package_name)
+        ret.add_import_names(mapping=DependenciesMapping.UNRESOLVED)
+        logger.info(f"{package_name!r} was not resolved.")
+        return ret
+
+    def lookup_packages(self, package_names: Set[str]) -> Dict[str, Package]:
+        """Convert package names into Package objects without import names."""
+        return {name: self.lookup_package(name) for name in package_names}
+
+
 def resolve_dependencies(
     dep_names: Iterable[str],
     custom_mapping_path: Optional[Path] = None,
     pyenv_path: Optional[Path] = None,
     install_deps: bool = False,
+    identity_mapping: bool = True,
 ) -> Dict[str, Package]:
     """Associate dependencies with corresponding Package objects.
 
@@ -340,15 +362,17 @@ def resolve_dependencies(
     # that point we are happy, and don't consult any of the later resolvers.
     resolvers: List[BasePackageResolver] = []
     if custom_mapping_path:
-        resolvers.append(UserDefinedMapping(custom_mapping_path))
+        resolvers += [UserDefinedMapping(custom_mapping_path)]
 
-    resolvers.append(LocalPackageResolver(pyenv_path))
+    resolvers += [LocalPackageResolver(pyenv_path)]
     if install_deps:
         resolvers += [TemporaryPipInstallResolver()]
     # Identity mapping being at the bottom of the resolvers stack ensures that
     # _all_ deps are matched. TODO: If we make the identity mapping optional,
     # we must remember to properly handle/signal unresolved dependencies.
-    resolvers += [IdentityMapping()]
+    if identity_mapping:
+        resolvers += [IdentityMapping()]
+    resolvers += [NoMapping()]
 
     ret: Dict[str, Package] = {}
     for resolver in resolvers:
