@@ -332,7 +332,7 @@ class IdentityMapping(BasePackageResolver):
 
 def resolve_dependencies(
     dep_names: Iterable[str],
-    custom_mapping_path: Optional[Path] = None,
+    custom_mapping_file: Optional[Path] = None,
     custom_mapping: Optional[Dict[str, List[str]]] = None,
     pyenv_path: Optional[Path] = None,
     install_deps: bool = False,
@@ -353,10 +353,10 @@ def resolve_dependencies(
     # each resolver in order until one of them returns a Package object. At
     # that point we are happy, and don't consult any of the later resolvers.
     resolvers: List[BasePackageResolver] = []
-    if custom_mapping_path or custom_mapping:
+    if custom_mapping_file or custom_mapping:
         resolvers.append(
             UserDefinedMapping(
-                mapping_path=custom_mapping_path, custom_mapping=custom_mapping
+                mapping_path=custom_mapping_file, custom_mapping=custom_mapping
             )
         )
 

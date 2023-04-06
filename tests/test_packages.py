@@ -303,7 +303,7 @@ def test_resolve_dependencies__focus_on_mappings(
         user_mapping_path = tmp_path / "mapping.toml"
 
     assert (
-        resolve_dependencies(dep_names, custom_mapping_path=user_mapping_path)
+        resolve_dependencies(dep_names, custom_mapping_file=user_mapping_path)
         == expected
     )
 
