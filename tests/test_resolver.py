@@ -14,10 +14,11 @@ from fawltydeps.packages import (
     resolve_dependencies,
 )
 
+from .project_helpers import TarballPackage
 from .utils import default_sys_path_env_for_tests, ignore_package_debug_info
 
 # The deps in each category should be disjoint
-other_deps = ["pandas", "numpy", "other"]
+other_deps = {"leftpadx": ["leftpad"]}
 user_defined_mapping = {"apache-airflow": ["airflow", "foo", "bar"]}
 
 
@@ -66,10 +67,11 @@ def user_mapping_to_file_content(user_mapping: Dict[str, List[str]]) -> str:
 
 def generate_expected_resolved_deps(
     locally_installed_deps: Optional[Dict[str, Set[str]]] = None,
-    other_deps: Optional[List[str]] = None,
+    other_deps: Optional[Dict[str, List[str]]] = None,
     user_defined_deps: Optional[List[str]] = None,
     user_mapping_file: Optional[Path] = None,
     user_mapping_from_config: Optional[Dict[str, List[str]]] = None,
+    install_deps: bool = False,
 ) -> Dict[str, Package]:
     """
     Returns a dict of resolved packages.
@@ -94,7 +96,15 @@ def generate_expected_resolved_deps(
         resolved_packages = user_mapping.lookup_packages(set(user_defined_deps))
         ret.update(resolved_packages)
     if other_deps:
-        ret.update({dep: Package(dep, {dep}, IdentityMapping) for dep in other_deps})
+        if install_deps:
+            ret.update(
+                {
+                    dep: Package(dep, set(imports), LocalPackageResolver)
+                    for dep, imports in other_deps.items()
+                }
+            )
+        else:
+            ret.update({dep: Package(dep, {dep}, IdentityMapping) for dep in other_deps})
     return ret
 
 
@@ -105,15 +115,23 @@ def generate_expected_resolved_deps(
 @given(
     user_mapping=user_mapping_strategy(user_defined_mapping),
     installed_deps=dict_subset_strategy(default_sys_path_env_for_tests),
-    other_deps=st.lists(st.sampled_from(other_deps), unique=True),
+    other_deps=dict_subset_strategy(other_deps),
+    install_deps=st.booleans(),
 )
-@settings(suppress_health_check=[HealthCheck.function_scoped_fixture])
+@settings(
+    suppress_health_check=[HealthCheck.function_scoped_fixture],
+    deadline=5000,
+    max_examples=50,
+)
 def test_resolve_dependencies__generates_expected_mappings(
     installed_deps,
     other_deps,
     user_mapping,
     isolate_default_resolver,
     tmp_path,
+    install_deps,
+    request,
+    monkeypatch,
 ):
 
     user_deps, user_file_mapping, user_config_mapping = user_mapping
@@ -134,7 +152,7 @@ def test_resolve_dependencies__generates_expected_mappings(
         == set()
     )
 
-    dep_names = list(installed_deps.keys()) + user_deps + other_deps
+    dep_names = list(installed_deps.keys()) + user_deps + list(other_deps.keys())
 
     if user_file_mapping:
         custom_mapping_file = tmp_path / "mapping.toml"
@@ -142,12 +160,20 @@ def test_resolve_dependencies__generates_expected_mappings(
     else:
         custom_mapping_file = None
 
+    if install_deps:
+        cache_dir = TarballPackage.cache_dir(request.config.cache)
+        TarballPackage.get_tarballs(request.config.cache)
+        # set the test's env variables so that pip would install from the local repo
+        monkeypatch.setenv("PIP_NO_INDEX", "True")
+        monkeypatch.setenv("PIP_FIND_LINKS", str(cache_dir))
+
     expected = generate_expected_resolved_deps(
         user_defined_deps=user_deps,
         user_mapping_from_config=user_config_mapping,
         user_mapping_file=custom_mapping_file,
         locally_installed_deps=installed_deps,
         other_deps=other_deps,
+        install_deps=install_deps,
     )
 
     isolate_default_resolver(installed_deps)
@@ -157,6 +183,7 @@ def test_resolve_dependencies__generates_expected_mappings(
         if custom_mapping_file
         else None,
         custom_mapping=user_config_mapping,
+        install_deps=install_deps,
     )
 
     assert ignore_package_debug_info(actual) == ignore_package_debug_info(expected)
