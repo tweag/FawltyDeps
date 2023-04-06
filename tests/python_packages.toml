@@ -17,3 +17,7 @@ sha256 = "b305b30c99526df5e63d6022dd2310a0a941a187bd3884f4c8ef0418df6c39f3"
 [click]
 url = "https://files.pythonhosted.org/packages/59/87/84326af34517fca8c58418d148f2403df25303e02736832403587318e9e8/click-8.1.3.tar.gz"
 sha256 = "7682dc8afb30297001674575ea00d1814d808d6a36af415a82bd481d37ba7b8e"
+
+[leftpadx-wheel]
+url = "https://files.pythonhosted.org/packages/37/ca/41e9d0964799b00ad00c6254e6c0bc1a26c604456ab659e13cf91e5bdd81/leftpadx-0.0.1-py3-none-any.whl"
+sha256 = "512084949099fab88042be250a6da55dcf933ac3af8feffddefd52dace66160c"
