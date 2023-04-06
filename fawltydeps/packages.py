@@ -136,26 +136,44 @@ class UserDefinedMapping(BasePackageResolver):
         This enumerates the available packages  _once_, and caches the result for
         the remainder of this object's life in _packages.
         """
-        user_mapping: TomlData = {}
+        custom_mapping_from_file: Dict[str, List[str]] = {}
 
         if self.mapping_path is not None:
             logger.debug(f"Loading user-defined mapping from {self.mapping_path}")
             with open(self.mapping_path, "rb") as mapping_file:
-                toml_data = tomllib.load(mapping_file)
-                user_mapping = {**user_mapping, **toml_data}
+                custom_mapping_from_file = tomllib.load(mapping_file)
 
-        if self.custom_mapping is not None:
-            logger.debug("Loading user-defined mapping from custom mapping.")
-            # Custom mapping overrides mapping from file
-            user_mapping = {**user_mapping, **self.custom_mapping}
-
-        return {
+        mapping = {
             Package.normalize_name(name): Package(
                 name,
                 {DependenciesMapping.USER_DEFINED: set(imports)},
             )
-            for name, imports in user_mapping.items()
+            for name, imports in custom_mapping_from_file.items()
         }
+
+        if self.custom_mapping is not None:
+            logger.debug("Loading user-defined mapping from custom mapping.")
+
+            for name, imports in self.custom_mapping.items():
+                normalised_name = Package.normalize_name(name)
+                if normalised_name in mapping:
+                    logger.info(
+                        "Mapping for %s already found in %s. Import names "
+                        "from the configuration file are appended to ones "
+                        "found in the mapping file.",
+                        normalised_name,
+                        self.mapping_path,
+                    )
+                    mapping[normalised_name].add_import_names(
+                        *imports, mapping=DependenciesMapping.USER_DEFINED
+                    )
+                else:
+                    mapping[normalised_name] = Package(
+                        name,
+                        {DependenciesMapping.USER_DEFINED: set(imports)},
+                    )
+
+        return mapping
 
     def lookup_packages(self, package_names: Set[str]) -> Dict[str, Package]:
         """Convert package names to locally available Package objects."""
