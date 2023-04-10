@@ -232,15 +232,32 @@ def print_toml_config(settings: Settings, out: TextIO = sys.stdout) -> None:
         Options that are of dictionary type must be given a section entry.
         Assumption: dictionaries options are not nested.
         """
-        comment_char = "# " if has_default_value[name] else ""
+        toml_value_map = {
+            "None": "...",  # always commented, see sanity check below
+            "False": "false",
+            "True": "true",
+            # add more values here for which repr(value) is not valid TOML
+        }
+
+        if value is None:
+            # sanity check: None values are represented in TOML by omission,
+            # hence make sure these are always commented (i.e. equal to default)
+            assert has_default_value[name]
+
+        prefix = "# " if has_default_value[name] else ""
+
         if name in dictionary_options:
-            toml_option = f"{comment_char}[tool.fawltydeps.{name}]"
+            toml_option = f"{prefix}[tool.fawltydeps.{name}]"
             if value is not None:
                 toml_option += "".join(
-                    [f"\n{comment_char}{k} = {v!r}" for k, v in value.items()]
+                    [
+                        f"\n{prefix}{k} = {toml_value_map.get(str(v), repr(v))}"
+                        for k, v in value.items()
+                    ]
                 )
         else:
-            toml_option = f"{comment_char}{name} = {value!r}"
+            toml_value = toml_value_map.get(str(value), repr(value))
+            toml_option = f"{prefix}{name} = {toml_value}"
         return toml_option
 
     lines = (
