@@ -33,6 +33,20 @@ class CodeSource:
     path: PathOrSpecial
     base_dir: Optional[Path] = None
 
+    def __post_init__(self) -> None:
+        if self.path != "<stdin>":
+            assert isinstance(self.path, Path)
+            if not self.path.is_file():
+                raise UnparseablePathException(
+                    ctx="Code path to parse is neither dir nor file",
+                    path=self.path,
+                )
+            if self.path.suffix not in {".py", ".ipynb"}:
+                raise UnparseablePathException(
+                    ctx="Supported formats are .py and .ipynb; Cannot parse code",
+                    path=self.path,
+                )
+
 
 @dataclass(frozen=True, eq=True, order=True)
 class DepsSource:

@@ -173,12 +173,7 @@ def parse_source(
             logger.warning("Reading code from terminal input. Ctrl+D to stop.")
         return parse_code(stdin.read(), source=Location(src.path))
 
-    # sanity checks (CodeSource invariants given that src.path != "<stdin>")
-    assert (
-        isinstance(src.path, Path)
-        and src.path.is_file()
-        and src.path.suffix in {".py", ".ipynb"}
-    )
+    assert isinstance(src.path, Path)  # sanity check / silence mypy
 
     local_context = (
         None
@@ -195,10 +190,7 @@ def parse_source(
     if src.path.suffix == ".ipynb":
         logger.info("Parsing Notebook file %s", src.path)
         return parse_notebook_file(src.path, local_context)
-    raise UnparseablePathException(  # SHOULD NOT HAPPEN!
-        ctx="Supported formats are .py and .ipynb; Cannot parse code",
-        path=src.path,
-    )
+    raise RuntimeError("MISMATCH BETWEEN CODE PATH AND CODE PARSERS!")
 
 
 def parse_sources(
@@ -223,15 +215,7 @@ def validate_code_source(
     if path == "<stdin>":
         return CodeSource(path, base_dir)
     assert isinstance(path, Path)  # sanity check: SpecialPath handled above
-    if path.is_file():
-        if path.suffix in {".py", ".ipynb"}:
-            return CodeSource(path, base_dir)
-        raise UnparseablePathException(
-            ctx="Supported formats are .py and .ipynb; Cannot parse code", path=path
-        )
     if path.is_dir():
         logger.info("Finding Python files under %s", path)
         return None
-    raise UnparseablePathException(
-        ctx="Code path to parse is neither dir nor file", path=path
-    )
+    return CodeSource(path, base_dir)
