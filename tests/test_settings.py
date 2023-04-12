@@ -268,6 +268,14 @@ settings_tests_samples = [
         ),
     ),
     SettingsTestVector(
+        "config_file_with_mapping_and_cli__cli_mapping_overrides_config",
+        config=dict(custom_mapping_file="foo.toml"),
+        cmdline=dict(custom_mapping_file="mapping.toml"),
+        expect=make_settings_dict(
+            custom_mapping_file=Path("mapping.toml"),
+        ),
+    ),
+    SettingsTestVector(
         "env_var_with_wrong_type__raises_SettingsError",
         env=dict(actions="list_imports"),  # actions is not a list
         expect=SettingsError,
