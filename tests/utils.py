@@ -73,7 +73,7 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
     return [UnusedDependency(dep, [Location(Path("foo"))]) for dep in deps]
 
 
-def run_fawltydeps(
+def run_fawltydeps_subprocess(
     *args: str,
     config_file: Path = Path("/dev/null"),
     to_stdin: Optional[str] = None,

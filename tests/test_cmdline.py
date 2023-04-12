@@ -18,7 +18,11 @@ from fawltydeps.main import UNUSED_DEPS_OUTPUT_PREFIX, VERBOSE_PROMPT, Analysis,
 from fawltydeps.types import Location, UnusedDependency
 
 from .test_extract_imports_simple import generate_notebook
-from .utils import assert_unordered_equivalence, run_fawltydeps, run_fawltydeps_function
+from .utils import (
+    assert_unordered_equivalence,
+    run_fawltydeps_function,
+    run_fawltydeps_subprocess,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -78,7 +82,7 @@ def test_list_imports__from_dash__prints_imports_from_stdin(
         """
     )
 
-    output, errors, returncode = run_fawltydeps(
+    output, errors, returncode = run_fawltydeps_subprocess(
         "--list-imports", "--code=-", *cli_options, to_stdin=code
     )
     assert output.splitlines() == expect_output
@@ -107,7 +111,7 @@ def test_list_imports__from_py_file__prints_imports_from_file(write_tmp_files):
     expect_logs = (
         f"INFO:fawltydeps.extract_imports:Parsing Python file {tmp_path}/myfile.py"
     )
-    output, errors, returncode = run_fawltydeps(
+    output, errors, returncode = run_fawltydeps_subprocess(
         "--list-imports", "--detailed", "-v", f"--code={tmp_path}/myfile.py"
     )
     assert output.splitlines() == expect
@@ -167,7 +171,7 @@ def test_list_imports__from_ipynb_file__prints_imports_from_file(write_tmp_files
     expect_logs = (
         f"INFO:fawltydeps.extract_imports:Parsing Notebook file {tmp_path}/myfile.ipynb"
     )
-    output, errors, returncode = run_fawltydeps(
+    output, errors, returncode = run_fawltydeps_subprocess(
         "--list-imports", "--detailed", "-v", f"--code={tmp_path}/myfile.ipynb"
     )
     assert output.splitlines() == expect
@@ -201,7 +205,7 @@ def test_list_imports__from_dir__prints_imports_from_py_and_ipynb_files_only(
     expect_logs = (
         f"INFO:fawltydeps.extract_imports:Parsing Python files under {tmp_path}"
     )
-    output, errors, returncode = run_fawltydeps(
+    output, errors, returncode = run_fawltydeps_subprocess(
         "--list-imports", "--detailed", "-v", f"--code={tmp_path}"
     )
     assert output.splitlines() == expect
@@ -212,7 +216,9 @@ def test_list_imports__from_dir__prints_imports_from_py_and_ipynb_files_only(
 def test_list_imports__from_unsupported_file__fails_with_exit_code_2(tmp_path):
     filepath = tmp_path / "test.NOT_SUPPORTED"
     filepath.write_text("import pandas")
-    _output, errors, returncode = run_fawltydeps("--list-imports", f"--code={filepath}")
+    _output, errors, returncode = run_fawltydeps_subprocess(
+        "--list-imports", f"--code={filepath}"
+    )
     assert (
         f"Supported formats are .py and .ipynb; Cannot parse code: {filepath}" in errors
     )
@@ -221,7 +227,7 @@ def test_list_imports__from_unsupported_file__fails_with_exit_code_2(tmp_path):
 
 def test_list_imports__from_missing_file__fails_with_exit_code_2(tmp_path):
     missing_path = tmp_path / "MISSING.py"
-    _output, errors, returncode = run_fawltydeps(
+    _output, errors, returncode = run_fawltydeps_subprocess(
         "--list-imports", f"--code={missing_path}"
     )
     assert f"Code path to parse is neither dir nor file: {missing_path}" in errors
@@ -230,7 +236,7 @@ def test_list_imports__from_missing_file__fails_with_exit_code_2(tmp_path):
 
 def test_list_imports__from_empty_dir__logs_but_extracts_nothing(tmp_path):
     # Enable log level INFO with -v
-    output, errors, returncode = run_fawltydeps(
+    output, errors, returncode = run_fawltydeps_subprocess(
         "--list-imports", f"--code={tmp_path}", "--detailed", "-v"
     )
     assert output == ""
@@ -243,7 +249,7 @@ def test_list_imports__pick_multiple_files_dir__prints_all_imports(
 ):
     path_code1 = project_with_multiple_python_files / "subdir"
     path_code2 = project_with_multiple_python_files / "python_file.py"
-    output, errors, returncode = run_fawltydeps(
+    output, errors, returncode = run_fawltydeps_subprocess(
         "--list-imports", "--code", f"{path_code1}", f"{path_code2}", "-v"
     )
     expect_logs = [
@@ -270,7 +276,7 @@ def test_list_imports__pick_multiple_files_dir_and_code__prints_all_imports(
         """
     )
     path_code2 = project_with_multiple_python_files / "python_file.py"
-    output, errors, returncode = run_fawltydeps(
+    output, errors, returncode = run_fawltydeps_subprocess(
         "--list-imports", "--code", "-", f"{path_code2}", "-v", to_stdin=code
     )
     expect_logs = [
@@ -294,7 +300,7 @@ def test_list_deps__dir__prints_deps_from_requirements_txt(
         f"{tmp_path}/requirements.txt: pandas",
         f"{tmp_path}/requirements.txt: requests",
     ]
-    output, errors, returncode = run_fawltydeps(
+    output, errors, returncode = run_fawltydeps_subprocess(
         "--list-deps", "--detailed", "-v", f"--deps={tmp_path}"
     )
     assert output.splitlines() == expect
@@ -346,7 +352,9 @@ def test_list_deps_quiet__dir__prints_deps_from_requirements_txt(
     )
 
     expect = ["pandas", "requests"]
-    output, errors, returncode = run_fawltydeps("--list-deps", f"--deps={tmp_path}")
+    output, errors, returncode = run_fawltydeps_subprocess(
+        "--list-deps", f"--deps={tmp_path}"
+    )
     assert output.splitlines()[:-2] == expect
     assert errors == ""
     assert returncode == 0
@@ -356,7 +364,9 @@ def test_list_deps__unsupported_file__fails_with_exit_code_2(tmp_path):
     filepath = tmp_path / "test.NOT_SUPPORTED"
     filepath.write_text("pandas\n")
 
-    _, errors, returncode = run_fawltydeps("--list-deps", f"--deps={filepath}")
+    _, errors, returncode = run_fawltydeps_subprocess(
+        "--list-deps", f"--deps={filepath}"
+    )
     assert returncode == 2
     assert f"Parsing given dependencies path isn't supported: {filepath}" in errors
 
@@ -364,7 +374,9 @@ def test_list_deps__unsupported_file__fails_with_exit_code_2(tmp_path):
 def test_list_deps__missing_path__fails_with_exit_code_2(tmp_path):
     missing_path = tmp_path / "MISSING_PATH"
 
-    _, errors, returncode = run_fawltydeps("--list-deps", f"--deps={missing_path}")
+    _, errors, returncode = run_fawltydeps_subprocess(
+        "--list-deps", f"--deps={missing_path}"
+    )
     assert returncode == 2
     assert (
         f"Dependencies declaration path is neither dir nor file: {missing_path}"
@@ -374,7 +386,7 @@ def test_list_deps__missing_path__fails_with_exit_code_2(tmp_path):
 
 def test_list_deps__empty_dir__verbosely_logs_but_extracts_nothing(tmp_path):
     # Enable log level INFO with -v
-    output, errors, returncode = run_fawltydeps(
+    output, errors, returncode = run_fawltydeps_subprocess(
         "--list-deps", f"--deps={tmp_path}", "--detailed", "-v"
     )
     assert output == ""
@@ -387,7 +399,7 @@ def test_list_deps__pick_multiple_listed_files__prints_all_dependencies(
 ):
     path_deps1 = project_with_setup_and_requirements / "subdir/requirements.txt"
     path_deps2 = project_with_setup_and_requirements / "setup.py"
-    output, errors, returncode = run_fawltydeps(
+    output, errors, returncode = run_fawltydeps_subprocess(
         "--list-deps", "--deps", f"{path_deps1}", f"{path_deps2}", "-v"
     )
     expect = ["annoy", "jieba", "click", "pandas", "tensorflow"]
@@ -530,7 +542,7 @@ def test_check_undeclared_and_unused(
         imports=vector.imports,
         declares=vector.declares,
     )
-    output, logs, returncode = run_fawltydeps(
+    output, logs, returncode = run_fawltydeps_subprocess(
         *[option.format(path=tmp_path) for option in vector.options]
     )
     # Order of output is determined, as we use alphabetical ordering.
@@ -615,7 +627,7 @@ def test_check_undeclared__simple_project__reports_only_undeclared(
         "INFO:fawltydeps.packages:'pandas' was not resolved."
         " Assuming it can be imported as 'pandas'.",
     ]
-    output, errors, returncode = run_fawltydeps(
+    output, errors, returncode = run_fawltydeps_subprocess(
         "--check-undeclared",
         "--detailed",
         "-v",
@@ -716,7 +728,7 @@ def test__quiet_check__writes_only_names_of_unused_and_undeclared(
         "",
         VERBOSE_PROMPT,
     ]
-    output, errors, returncode = run_fawltydeps("--check", cwd=tmp_path)
+    output, errors, returncode = run_fawltydeps_subprocess("--check", cwd=tmp_path)
     assert output.splitlines() == expect
     assert errors == ""
     assert returncode == 3
@@ -815,7 +827,7 @@ def test_cmdline_on_ignored_undeclared_option(
         imports=imports,
         declares=dependencies,
     )
-    output, errors, returncode = run_fawltydeps(*args, cwd=tmp_path)
+    output, errors, returncode = run_fawltydeps_subprocess(*args, cwd=tmp_path)
     assert output.splitlines() == expected
     assert errors == ""
     assert returncode == 0
@@ -909,7 +921,9 @@ def test_cmdline_args_in_combination_with_config_file(
         declares=["pandas"],
     )
     setup_fawltydeps_config(config)
-    output, *_ = run_fawltydeps("--config-file=pyproject.toml", *args, cwd=tmp_path)
+    output, *_ = run_fawltydeps_subprocess(
+        "--config-file=pyproject.toml", *args, cwd=tmp_path
+    )
     assert output.splitlines() == expect
 
 
@@ -918,7 +932,9 @@ def test_deps_across_groups_appear_just_once_in_list_deps_detailed(tmp_path):
     deps_path = tmp_path / "pyproject.toml"
     exp_lines_from_pyproject = [f"{deps_path}: {dep}" for dep in uniq_deps]
     deps_path.write_text(dedent(deps_data))
-    output, *_ = run_fawltydeps("--list-deps", "--detailed", f"--deps={deps_path}")
+    output, *_ = run_fawltydeps_subprocess(
+        "--list-deps", "--detailed", f"--deps={deps_path}"
+    )
     obs_lines = output.splitlines()
     assert_unordered_equivalence(obs_lines, exp_lines_from_pyproject)
 
@@ -927,7 +943,7 @@ def test_deps_across_groups_appear_just_once_in_order_in_general_detailed(tmp_pa
     deps_data, uniq_deps = pyproject_toml_contents()
     deps_path = tmp_path / "pyproject.toml"
     deps_path.write_text(dedent(deps_data))
-    output, *_ = run_fawltydeps("--detailed", f"{tmp_path}")
+    output, *_ = run_fawltydeps_subprocess("--detailed", f"{tmp_path}")
     obs_lines_absolute = output.splitlines()
     obs_lines_relevant = dropwhile(
         lambda line: not line.startswith(UNUSED_DEPS_OUTPUT_PREFIX), obs_lines_absolute
