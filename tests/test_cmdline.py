@@ -897,12 +897,12 @@ def test_cmdline_on_ignored_undeclared_option(
                 deps = ['foobar']
                 # pyenv = None
                 # custom_mapping_file = None
-                # [tool.fawltydeps.custom_mapping]
                 # ignore_undeclared = []
                 # ignore_unused = []
                 # deps_parser_choice = None
                 # install_deps = False
                 # verbosity = 0
+                # [tool.fawltydeps.custom_mapping]
                 """
             ).splitlines(),
             id="generate_toml_config_with_combo_of_config_and_cmdline_options",

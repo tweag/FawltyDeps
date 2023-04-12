@@ -24,7 +24,7 @@ from importlib_metadata import (
     _top_level_inferred,
 )
 
-from fawltydeps.types import TomlData, UnparseablePathException
+from fawltydeps.types import CustomMapping, UnparseablePathException
 from fawltydeps.utils import calculated_once, hide_dataclass_fields
 
 if sys.version_info >= (3, 11):
@@ -117,7 +117,7 @@ class UserDefinedMapping(BasePackageResolver):
     def __init__(
         self,
         mapping_path: Optional[Path] = None,
-        custom_mapping: Optional[TomlData] = None,
+        custom_mapping: Optional[CustomMapping] = None,
     ) -> None:
         self.mapping_path = mapping_path
         if self.mapping_path and not self.mapping_path.is_file():
@@ -156,7 +156,7 @@ class UserDefinedMapping(BasePackageResolver):
         }
 
         if self.custom_mapping is not None:
-            logger.debug("Loading user-defined mapping from custom mapping.")
+            logger.debug("Applying user-defined mapping from settings.")
 
             for name, imports in self.custom_mapping.items():
                 normalised_name = Package.normalize_name(name)
@@ -355,7 +355,7 @@ class IdentityMapping(BasePackageResolver):
 def resolve_dependencies(
     dep_names: Iterable[str],
     custom_mapping_file: Optional[Path] = None,
-    custom_mapping: Optional[Dict[str, List[str]]] = None,
+    custom_mapping: Optional[CustomMapping] = None,
     pyenv_path: Optional[Path] = None,
     install_deps: bool = False,
 ) -> Dict[str, Package]:

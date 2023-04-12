@@ -1,6 +1,8 @@
-"""Test configuration-based run of FawltyDeps tool.
+"""Test configuration-based run of FawltyDeps (i.e. without command-line args).
 
-Use only pyproject.toml contents to determine setting of the run.
+Run FawltyDeps in a subprocess, using only pyproject.toml to determine its
+settings. Specify imports and declared dependencies that occur in the relevant
+project, and verify that we get the expected exit code.
 """
 
 from dataclasses import dataclass, field
@@ -9,7 +11,9 @@ from typing import List
 
 import pytest
 
-from .utils import run_fawltydeps
+from .utils import run_fawltydeps_subprocess
+
+pytestmark = pytest.mark.integration
 
 
 @dataclass
@@ -70,5 +74,5 @@ def test_run_with_pyproject_toml_settings(
     path = tmp_path / "pyproject.toml"
     path.write_text(dedent(vector.toml_contents))
 
-    _, _, exit_code = run_fawltydeps(config_file=str(path), cwd=tmp_path)
+    _, _, exit_code = run_fawltydeps_subprocess(config_file=str(path), cwd=tmp_path)
     assert exit_code == vector.expect

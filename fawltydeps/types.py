@@ -16,6 +16,7 @@ else:
 SpecialPath = Literal["<stdin>"]
 PathOrSpecial = Union[SpecialPath, Path]
 TomlData = Dict[str, Any]  # type: ignore
+CustomMapping = Dict[str, List[str]]
 
 
 class UnparseablePathException(Exception):

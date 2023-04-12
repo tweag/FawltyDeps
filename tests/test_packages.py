@@ -147,17 +147,19 @@ def test_package__both_mappings():
 
 
 def test_user_defined_mapping__well_formated_input_file__parses_correctly(
-    write_tmp_files,
+    tmp_path,
 ):
-    tmp_path = write_tmp_files(
-        {
-            "mapping.toml": """\
+    custom_mapping_file = tmp_path / "mapping.toml"
+    tmp_path = custom_mapping_file.write_text(
+        dedent(
+            """\
                 apache-airflow = ["airflow"]
                 attrs = ["attr", "attrs"]
             """
-        }
+        )
     )
-    udm = UserDefinedMapping(tmp_path / "mapping.toml")
+
+    udm = UserDefinedMapping(custom_mapping_file)
     mapped_packages = udm.packages
     assert set(mapped_packages.keys()) == {"apache_airflow", "attrs"}
 
@@ -270,11 +272,9 @@ def test_LocalPackageResolver_lookup_packages(dep_name, expect_import_names):
         pytest.param(
             ["pandas", "pip", "apache_airflow"],
             {
-                "file": dedent(
-                    """\
+                "file": """\
                 apache-airflow = ["airflow"]
-            """
-                )
+                """
             },
             {
                 "apache_airflow": Package(
@@ -309,7 +309,7 @@ def test_LocalPackageResolver_lookup_packages(dep_name, expect_import_names):
         pytest.param(
             ["pandas", "pip", "apache_airflow"],
             {
-                "file": dedent("""apache-airflow = ["airflow"]"""),
+                "file": """apache-airflow = ["airflow"]""",
                 "configuration": {"apache-airflow": ["foo", "bar"]},
             },
             {
@@ -325,15 +325,15 @@ def test_LocalPackageResolver_lookup_packages(dep_name, expect_import_names):
     ],
 )
 def test_resolve_dependencies__focus_on_mappings(
-    dep_names, user_mapping, expected, write_tmp_files
+    dep_names, user_mapping, expected, tmp_path
 ):
     custom_mapping_file = None
     custom_mapping = None
     if user_mapping is not None:
         custom_mapping = user_mapping.get("configuration")
         if "file" in user_mapping:
-            tmp_path = write_tmp_files({"mapping.toml": user_mapping["file"]})
             custom_mapping_file = tmp_path / "mapping.toml"
+            custom_mapping_file.write_text(dedent(user_mapping["file"]))
 
     assert (
         resolve_dependencies(
