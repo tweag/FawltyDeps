@@ -102,15 +102,15 @@ def run_fawltydeps_function(
     *args: str,
     config_file: Path = Path("/dev/null"),
     to_stdin: Optional[str] = None,
-    cwd: Optional[Path] = None,
+    basepath: Optional[Path] = None,
 ) -> Tuple[str, int]:
     """Run FawltyDeps with `main` function. Designed for unit tests.
 
-    Ignores logging output and returns stdout and the exti code
+    Ignores logging output and returns stdout and the exit code
     """
     output = io.StringIO()
     exit_code = main(
-        cmdline_args=([str(cwd)] if cwd else [])
+        cmdline_args=([str(basepath)] if basepath else [])
         + [f"--config-file={str(config_file)}"]
         + list(args),
         stdin=io.StringIO(to_stdin),
@@ -124,7 +124,7 @@ def run_fawltydeps_function(
         "    ----------------"
     )
     output.close()
-    return output_value, exit_code
+    return output_value.strip(), exit_code
 
 
 @dataclass
