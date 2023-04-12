@@ -131,7 +131,11 @@ class UserDefinedMapping(BasePackageResolver):
     @property
     @calculated_once
     def packages(self) -> Dict[str, Package]:
-        """Gather mapping from a mapping file in a given path.
+        """Gather a custom mapping given by a user.
+
+        Mapping may come from two sources:
+        * _mapping_path_ which is a file in a given path, which is parsed to a ditionary
+        * _custom_mapping_ which is a dictionary of package to imports mapping.
 
         This enumerates the available packages  _once_, and caches the result for
         the remainder of this object's life in _packages.
