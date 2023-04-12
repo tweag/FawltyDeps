@@ -199,10 +199,10 @@ fawltydeps --custom-mapping-file my_mapping.toml
 
 FawltyDeps will parse `my_mapping.toml` file and use extracted mapping for matching dependencies to imports.
 
-You may also use put the custom mapping in the configuration file of your project, like `pyproject.toml` with the same toml structure like for `my_mapping.toml` above. Just add a section:
+You may also place the custom mapping in the `pyproject.toml` file of your project, inside a `[tool.fawltydeps.custom_mapping]` section, like this:
 
 ```toml
-[tools.fawltydeps.custom_mapping]
+[tool.fawltydeps.custom_mapping]
 my-package = ["mpkg"]
 scikit-learn = ["sklearn"]
 multiple-modules = ["module1", "module2"]

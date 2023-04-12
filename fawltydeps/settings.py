@@ -6,12 +6,12 @@ import sys
 from enum import Enum
 from functools import total_ordering
 from pathlib import Path
-from typing import ClassVar, Dict, List, Optional, Set, TextIO, Tuple, Type, Union
+from typing import ClassVar, List, Optional, Set, TextIO, Tuple, Type, Union
 
 from pydantic import BaseSettings
 from pydantic.env_settings import SettingsSourceCallable  # pylint: disable=E0611
 
-from fawltydeps.types import PathOrSpecial, TomlData
+from fawltydeps.types import CustomMapping, PathOrSpecial, TomlData
 
 if sys.version_info >= (3, 11):
     import tomllib  # pylint: disable=no-member
@@ -123,7 +123,7 @@ class Settings(BaseSettings):  # type: ignore
     deps: Set[Path] = {Path(".")}
     pyenv: Optional[Path] = None
     custom_mapping_file: Optional[Path] = None
-    custom_mapping: Optional[Dict[str, List[str]]] = None
+    custom_mapping: Optional[CustomMapping] = None
     ignore_undeclared: Set[str] = set()
     ignore_unused: Set[str] = set()
     deps_parser_choice: Optional[ParserChoice] = None
@@ -236,7 +236,9 @@ def print_toml_config(settings: Settings, out: TextIO = sys.stdout) -> None:
         logger.critical(f"Sanity check failed: {settings!r} is missing a field!")
         raise
 
-    def _option_to_toml(name, value, dictionary_options=["custom_mapping"]):
+    dictionary_options = {"custom_mapping"}
+
+    def _option_to_toml(name, value) -> str:  # type: ignore
         """Serialize options to toml configuration entries
 
         Options that are of dictionary type must be given a section entry.
@@ -246,16 +248,31 @@ def print_toml_config(settings: Settings, out: TextIO = sys.stdout) -> None:
         if name in dictionary_options:
             toml_option = f"{comment_char}[tool.fawltydeps.{name}]"
             if value is not None:
-                toml_option += [
-                    f"\n{comment_char}{k} = {v!r}" for k, v in value.items()
-                ]
+                toml_option += "".join(
+                    [f"\n{comment_char}{k} = {v!r}" for k, v in value.items()]
+                )
         else:
             toml_option = f"{comment_char}{name} = {value!r}"
         return toml_option
 
-    lines = [
-        "# Copy this TOML section into your pyproject.toml to configure FawltyDeps",
-        "# (default values are commented)",
-        "[tool.fawltydeps]",
-    ] + [_option_to_toml(name, value) for name, value in simple_settings.items()]
+    lines = (
+        [
+            "# Copy this TOML section into your pyproject.toml to configure FawltyDeps",
+            "# (default values are commented)",
+            "[tool.fawltydeps]",
+        ]
+        + [
+            _option_to_toml(name, value)
+            for name, value in simple_settings.items()
+            # First handle non-dictionary options, as we don't want them to end
+            # up inside the config section resulting from a dictionary option.
+            if name not in dictionary_options
+        ]
+        + [
+            _option_to_toml(name, value)
+            for name, value in simple_settings.items()
+            # Export dictionary options as separate TOML  config sections
+            if name in dictionary_options
+        ]
+    )
     print("\n".join(lines), file=out)

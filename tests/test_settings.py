@@ -15,7 +15,7 @@ from pydantic import ValidationError
 from pydantic.env_settings import SettingsError  # pylint: disable=no-name-in-module
 
 from fawltydeps.main import build_parser
-from fawltydeps.settings import Action, OutputFormat, Settings, print_toml_config
+from fawltydeps.settings import Action, OutputFormat, Settings
 from fawltydeps.types import TomlData
 
 if sys.version_info >= (3, 11):
