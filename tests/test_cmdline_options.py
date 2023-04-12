@@ -8,7 +8,7 @@ Strategy setup consists of three phases:
 1. Collect available CLI options
 2. Create an atomic strategy for each of those options
     Each atomic strategy returns list[str] that are appended
-    to the list of arguments to `run_fawltydeps` function.
+    to the list of arguments to `run_fawltydeps_subprocess` function.
 3. Create a composite strategy that samples from each atomic
     strategy and combine results into a new strategy used in the actual tests.
 
