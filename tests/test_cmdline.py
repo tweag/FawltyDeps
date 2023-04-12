@@ -637,7 +637,6 @@ def test_check_unused__simple_project__reports_only_unused(
     )
 
     expect = [
-        "",
         "These dependencies appear to be unused (i.e. not imported):",
         "- 'pandas' declared in:",
         f"    {tmp_path / 'requirements.txt'}",
@@ -663,7 +662,6 @@ def test__no_action__defaults_to_check_action(
     )
 
     expect = [
-        "",
         "These imports appear to be undeclared dependencies:",
         "- 'requests' imported at:",
         f"    {tmp_path / 'code.py'}:1",
@@ -688,7 +686,6 @@ def test__no_options__defaults_to_check_action_in_current_dir(
     )
 
     expect = [
-        "",
         "These imports appear to be undeclared dependencies:",
         "- 'requests' imported at:",
         f"    {tmp_path / 'code.py'}:1",
@@ -697,7 +694,7 @@ def test__no_options__defaults_to_check_action_in_current_dir(
         "- 'pandas' declared in:",
         f"    {tmp_path / 'requirements.txt'}",
     ]
-    output, returncode = run_fawltydeps_function("--detailed", "-v", cwd=tmp_path)
+    output, returncode = run_fawltydeps_function("--detailed", "-v", basepath=tmp_path)
     assert output.splitlines() == expect
     assert returncode == 3
 
@@ -740,7 +737,6 @@ def test_check__simple_project_in_fake_venv__resolves_imports_vs_deps(
         "--detailed", f"--code={tmp_path}", f"--deps={tmp_path}", f"--pyenv={venv_dir}"
     )
     assert output.splitlines() == [
-        "",
         Analysis.success_message(check_undeclared=True, check_unused=True),
     ]
     assert returncode == 0
