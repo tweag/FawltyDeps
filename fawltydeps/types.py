@@ -2,6 +2,7 @@
 
 import sys
 from dataclasses import asdict, dataclass, field, replace
+from enum import Enum
 from functools import total_ordering
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
@@ -24,6 +25,18 @@ class UnparseablePathException(Exception):
 
     def __init__(self, ctx: str, path: Path):
         self.msg = f"{ctx}: {path}"
+
+
+class ParserChoice(Enum):
+    """Enumerate the choices of dependency declaration parsers."""
+
+    REQUIREMENTS_TXT = "requirements.txt"
+    SETUP_PY = "setup.py"
+    SETUP_CFG = "setup.cfg"
+    PYPROJECT_TOML = "pyproject.toml"
+
+    def __str__(self) -> str:
+        return self.value
 
 
 @dataclass(frozen=True, eq=True, order=True)

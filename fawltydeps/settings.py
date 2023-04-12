@@ -11,7 +11,7 @@ from typing import ClassVar, List, Optional, Set, TextIO, Tuple, Type, Union
 from pydantic import BaseSettings
 from pydantic.env_settings import SettingsSourceCallable  # pylint: disable=E0611
 
-from fawltydeps.types import CustomMapping, PathOrSpecial, TomlData
+from fawltydeps.types import CustomMapping, ParserChoice, PathOrSpecial, TomlData
 
 if sys.version_info >= (3, 11):
     import tomllib  # pylint: disable=no-member
@@ -74,18 +74,6 @@ class OutputFormat(OrderedEnum):
     HUMAN_SUMMARY = "human_summary"
     HUMAN_DETAILED = "human_detailed"
     JSON = "json"
-
-
-class ParserChoice(Enum):
-    """Enumerate the choices of dependency declaration parsers."""
-
-    REQUIREMENTS_TXT = "requirements.txt"
-    SETUP_PY = "setup.py"
-    SETUP_CFG = "setup.cfg"
-    PYPROJECT_TOML = "pyproject.toml"
-
-    def __str__(self) -> str:
-        return self.value
 
 
 def read_parser_choice(filename: str) -> ParserChoice:
