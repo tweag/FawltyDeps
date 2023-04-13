@@ -5,7 +5,11 @@ import shutil
 
 import pytest
 
-from fawltydeps.extract_declared_dependencies import parse_source, parse_sources
+from fawltydeps.extract_declared_dependencies import (
+    parse_source,
+    parse_sources,
+    validate_deps_source,
+)
 from fawltydeps.settings import ParserChoice, Settings
 from fawltydeps.traverse_project import find_sources
 from fawltydeps.types import DepsSource
@@ -44,7 +48,7 @@ def test_explicit_parse_strategy__mismatch_yields_appropriate_logging(
     deps_path.touch()
     caplog.set_level(logging.WARNING)
     # Execute here just for side effect (log).
-    list(parse_source(DepsSource(deps_path), parser_choice))
+    list(parse_source(DepsSource(deps_path, parser_choice)))
     if has_log:
         assert (
             f"Manually applying parser '{parser_choice}' to dependencies: {deps_path}"
@@ -75,7 +79,9 @@ def test_filepath_inference(
     """Parser choice finalization function can choose based on deps filename."""
     deps_path = tmp_path / deps_file_name
     assert deps_path.is_file()  # precondition
-    obs_deps = collect_dep_names(parse_source(DepsSource(deps_path)))
+    src = validate_deps_source(deps_path)
+    assert src is not None
+    obs_deps = collect_dep_names(parse_source(src))
     assert_unordered_equivalence(obs_deps, exp_deps)
 
 
@@ -103,9 +109,7 @@ def test_extract_from_directory_applies_manual_parser_choice_iff_choice_applies(
 ):
     settings = Settings(code=set(), deps={tmp_path}, deps_parser_choice=parser_choice)
     deps_sources = list(find_sources(settings, {DepsSource}))
-    obs_deps = collect_dep_names(
-        parse_sources(deps_sources, parser_choice=parser_choice)
-    )
+    obs_deps = collect_dep_names(parse_sources(deps_sources))
     assert_unordered_equivalence(obs_deps, exp_deps)
 
 
@@ -151,9 +155,7 @@ def test_extract_from_file_applies_manual_choice_even_if_mismatched(
     new_path = tmp_path / fn2
     shutil.move(old_path, new_path)
     caplog.set_level(logging.WARNING)
-    obs_deps = collect_dep_names(
-        parse_source(DepsSource(new_path), parser_choice=parser_choice)
-    )
+    obs_deps = collect_dep_names(parse_source(DepsSource(new_path, parser_choice)))
     assert_unordered_equivalence(obs_deps, exp_deps)
     exp_msg = f"Manually applying parser '{parser_choice}' to dependencies: {new_path}"
     assert exp_msg in caplog.text
