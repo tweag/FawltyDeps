@@ -159,14 +159,14 @@ def test_user_defined_mapping__well_formated_input_file__parses_correctly(
         )
     )
 
-    udm = UserDefinedMapping(custom_mapping_file)
+    udm = UserDefinedMapping({custom_mapping_file})
     mapped_packages = udm.packages
     assert set(mapped_packages.keys()) == {"apache_airflow", "attrs"}
 
 
 def test_user_defined_mapping__input_is_no_file__raises_unparsable_path_exeption():
     with pytest.raises(UnparseablePathException):
-        UserDefinedMapping(SAMPLE_PROJECTS_DIR)
+        UserDefinedMapping({SAMPLE_PROJECTS_DIR})
 
 
 def test_user_defined_mapping__no_input__returns_empty_mapping():
@@ -327,18 +327,19 @@ def test_LocalPackageResolver_lookup_packages(dep_name, expect_import_names):
 def test_resolve_dependencies__focus_on_mappings(
     dep_names, user_mapping, expected, tmp_path
 ):
-    custom_mapping_file = None
+    custom_mapping_files = None
     custom_mapping = None
     if user_mapping is not None:
         custom_mapping = user_mapping.get("configuration")
         if "file" in user_mapping:
             custom_mapping_file = tmp_path / "mapping.toml"
             custom_mapping_file.write_text(dedent(user_mapping["file"]))
+            custom_mapping_files = {custom_mapping_file}
 
     assert (
         resolve_dependencies(
             dep_names,
-            custom_mapping_file=custom_mapping_file,
+            custom_mapping_file=custom_mapping_files,
             custom_mapping=custom_mapping,
         )
         == expected

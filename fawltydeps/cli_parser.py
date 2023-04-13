@@ -166,6 +166,8 @@ def populate_parser_paths_options(parser: argparse._ActionsContainer) -> None:
     )
     parser.add_argument(
         "--custom-mapping-file",
+        nargs="+",
+        action="union",
         type=Path,
         metavar="FILE_PATH",
         help=(

@@ -231,12 +231,12 @@ settings_tests_samples = [
         config=dict(
             actions=["list_deps"],
             deps=["my_requirements.txt"],
-            custom_mapping_file="mapping.toml",
+            custom_mapping_file=["mapping.toml"],
         ),
         expect=make_settings_dict(
             actions={Action.LIST_DEPS},
             deps={Path("my_requirements.txt")},
-            custom_mapping_file=Path("mapping.toml"),
+            custom_mapping_file={Path("mapping.toml")},
         ),
     ),
     SettingsTestVector(
@@ -259,20 +259,20 @@ settings_tests_samples = [
             deps=["my_requirements.txt"],
             custom_mapping={"package": ["foo", "bar"]},
         ),
-        cmdline=dict(custom_mapping_file="mapping.toml"),
+        cmdline=dict(custom_mapping_file=["mapping.toml"]),
         expect=make_settings_dict(
             actions={Action.LIST_DEPS},
             deps={Path("my_requirements.txt")},
             custom_mapping={"package": ["foo", "bar"]},
-            custom_mapping_file=Path("mapping.toml"),
+            custom_mapping_file={Path("mapping.toml")},
         ),
     ),
     SettingsTestVector(
         "config_file_with_mapping_and_cli__cli_mapping_overrides_config",
-        config=dict(custom_mapping_file="foo.toml"),
-        cmdline=dict(custom_mapping_file="mapping.toml"),
+        config=dict(custom_mapping_file=["foo.toml"]),
+        cmdline=dict(custom_mapping_file=["mapping.toml"]),
         expect=make_settings_dict(
-            custom_mapping_file=Path("mapping.toml"),
+            custom_mapping_file={Path("mapping.toml")},
         ),
     ),
     SettingsTestVector(
