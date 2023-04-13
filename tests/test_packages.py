@@ -164,6 +164,34 @@ def test_user_defined_mapping__well_formated_input_file__parses_correctly(
     assert set(mapped_packages.keys()) == {"apache_airflow", "attrs"}
 
 
+def test_user_defined_mapping__well_formated_input_2files__parses_correctly(
+    tmp_path,
+):
+    custom_mapping_file = tmp_path / "mapping.toml"
+    custom_mapping_file.write_text(
+        dedent(
+            """\
+                apache-airflow = ["airflow"]
+                attrs = ["attr", "attrs"]
+            """
+        )
+    )
+    custom_mapping_file2 = tmp_path / "mapping2.toml"
+    custom_mapping_file2.write_text(
+        dedent(
+            """\
+                apache-airflow = ["baz"]
+                foo = ["bar"]
+            """
+        )
+    )
+
+    udm = UserDefinedMapping(mapping_paths={custom_mapping_file, custom_mapping_file2})
+    mapped_packages = udm.packages
+    assert set(mapped_packages.keys()) == {"apache_airflow", "attrs", "foo"}
+    assert mapped_packages["apache_airflow"].import_names == {"airflow", "baz"}
+
+
 def test_user_defined_mapping__input_is_no_file__raises_unparsable_path_exeption():
     with pytest.raises(UnparseablePathException):
         UserDefinedMapping({SAMPLE_PROJECTS_DIR})

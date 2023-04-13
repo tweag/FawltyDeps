@@ -24,7 +24,7 @@ from importlib_metadata import (
     _top_level_inferred,
 )
 
-from fawltydeps.types import CustomMapping, UnparseablePathException
+from fawltydeps.types import CustomMapping, UnparseablePathException, add_mapping_dicts
 from fawltydeps.utils import calculated_once, hide_dataclass_fields
 
 if sys.version_info >= (3, 11):
@@ -142,20 +142,22 @@ class UserDefinedMapping(BasePackageResolver):
         This enumerates the available packages  _once_, and caches the result for
         the remainder of this object's life in _packages.
         """
-        custom_mapping_from_file: Dict[str, List[str]] = {}
+        custom_mapping_from_files: Dict[str, List[str]] = {}
 
         if self.mapping_paths is not None:
             logger.debug(f"Loading user-defined mapping from {self.mapping_paths}")
             for path in self.mapping_paths:
                 with open(path, "rb") as mapping_file:
-                    custom_mapping_from_file = tomllib.load(mapping_file)
+                    custom_mapping_from_files = add_mapping_dicts(
+                        custom_mapping_from_files, tomllib.load(mapping_file)
+                    )
 
         mapping = {
             Package.normalize_name(name): Package(
                 name,
                 {DependenciesMapping.USER_DEFINED: set(imports)},
             )
-            for name, imports in custom_mapping_from_file.items()
+            for name, imports in custom_mapping_from_files.items()
         }
 
         if self.custom_mapping is not None:
