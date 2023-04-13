@@ -116,14 +116,16 @@ class UserDefinedMapping(BasePackageResolver):
 
     def __init__(
         self,
-        mapping_path: Optional[Path] = None,
+        mapping_paths: Optional[Set[Path]] = None,
         custom_mapping: Optional[CustomMapping] = None,
     ) -> None:
-        self.mapping_path = mapping_path
-        if self.mapping_path and not self.mapping_path.is_file():
-            raise UnparseablePathException(
-                ctx="Given mapping path is not a file.", path=self.mapping_path
-            )
+        self.mapping_paths = mapping_paths
+        if self.mapping_paths:
+            for path in self.mapping_paths:
+                if not path.is_file():
+                    raise UnparseablePathException(
+                        ctx="Given mapping path is not a file.", path=path
+                    )
         self.custom_mapping = custom_mapping
         # We enumerate packages declared in the mapping _once_ and cache the result here:
         self._packages: Optional[Dict[str, Package]] = None
@@ -134,7 +136,7 @@ class UserDefinedMapping(BasePackageResolver):
         """Gather a custom mapping given by a user.
 
         Mapping may come from two sources:
-        * _mapping_path_ which is a file in a given path, which is parsed to a ditionary
+        * _mapping_paths_ which is a set of files in a given path, which is parsed to a ditionary
         * _custom_mapping_ which is a dictionary of package to imports mapping.
 
         This enumerates the available packages  _once_, and caches the result for
@@ -142,10 +144,11 @@ class UserDefinedMapping(BasePackageResolver):
         """
         custom_mapping_from_file: Dict[str, List[str]] = {}
 
-        if self.mapping_path is not None:
-            logger.debug(f"Loading user-defined mapping from {self.mapping_path}")
-            with open(self.mapping_path, "rb") as mapping_file:
-                custom_mapping_from_file = tomllib.load(mapping_file)
+        if self.mapping_paths is not None:
+            logger.debug(f"Loading user-defined mapping from {self.mapping_paths}")
+            for path in self.mapping_paths:
+                with open(path, "rb") as mapping_file:
+                    custom_mapping_from_file = tomllib.load(mapping_file)
 
         mapping = {
             Package.normalize_name(name): Package(
@@ -166,7 +169,7 @@ class UserDefinedMapping(BasePackageResolver):
                         "from the configuration file are appended to ones "
                         "found in the mapping file.",
                         normalised_name,
-                        self.mapping_path,
+                        self.mapping_paths,
                     )
                     mapping[normalised_name].add_import_names(
                         *imports, mapping=DependenciesMapping.USER_DEFINED
@@ -354,7 +357,7 @@ class IdentityMapping(BasePackageResolver):
 
 def resolve_dependencies(
     dep_names: Iterable[str],
-    custom_mapping_file: Optional[Path] = None,
+    custom_mapping_file: Optional[Set[Path]] = None,
     custom_mapping: Optional[CustomMapping] = None,
     pyenv_path: Optional[Path] = None,
     install_deps: bool = False,
@@ -378,7 +381,7 @@ def resolve_dependencies(
     if custom_mapping_file or custom_mapping:
         resolvers.append(
             UserDefinedMapping(
-                mapping_path=custom_mapping_file, custom_mapping=custom_mapping
+                mapping_paths=custom_mapping_file, custom_mapping=custom_mapping
             )
         )
 
