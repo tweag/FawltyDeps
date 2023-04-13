@@ -8,6 +8,7 @@ from fawltydeps.extract_declared_dependencies import (
     parse_setup_cfg,
     parse_setup_py,
     parse_sources,
+    validate_deps_source,
 )
 from fawltydeps.settings import Settings
 from fawltydeps.traverse_project import find_sources
@@ -454,7 +455,7 @@ def test_parse_sources__parse_only_requirements_from_subdir__returns_list(
         "tensorflow",
     ]
     path = project_with_setup_and_requirements / "subdir/requirements.txt"
-    actual = collect_dep_names(parse_sources([DepsSource(path)]))
+    actual = collect_dep_names(parse_sources([validate_deps_source(path)]))
     assert_unordered_equivalence(actual, expect)
 
 
@@ -582,5 +583,5 @@ def test_parse_requirements_per_req_options(tmp_path, deps_file_content, exp_dep
     # originally motivated by #114 (A dep can span multiple lines.)
     deps_path = tmp_path / "requirements.txt"
     deps_path.write_text(dedent(deps_file_content))
-    obs_deps = collect_dep_names(parse_sources([DepsSource(deps_path)]))
+    obs_deps = collect_dep_names(parse_sources([validate_deps_source(deps_path)]))
     assert_unordered_equivalence(obs_deps, exp_deps)

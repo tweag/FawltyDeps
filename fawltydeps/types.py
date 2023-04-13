@@ -63,9 +63,17 @@ class CodeSource:
 
 @dataclass(frozen=True, eq=True, order=True)
 class DepsSource:
-    """A source to be parsed for declared dependencies."""
+    """A source to be parsed for declared dependencies.
+
+    Also include which declared dependencies parser we have chosen to use for
+    this file.
+    """
 
     path: Path
+    parser_choice: ParserChoice
+
+    def __post_init__(self) -> None:
+        assert self.path.is_file()  # sanity check
 
 
 Source = Union[CodeSource, DepsSource]
