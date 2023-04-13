@@ -36,12 +36,12 @@ class Location:
     something read from a non-file like stdin), and carry as much or as little
     information as is appropriate about the _source_ of the associated data.
 
-    Examples include:
-     - Referring to a specific line (+ column?) in a file of Python source code
-     - Referring to a line number in anonymous Python code read from stdin
-     - Referring to a file of dependency information (e.g. pyproject.toml),
-       where a specific line number is not available (for any reason)
-     - Referring to a specific cell in a Jupyter notebook.
+    Examples include referring to:
+     - a specific line (+ column?) in a file of Python source code,
+     - a line number in anonymous Python code read from stdin,
+     - a file of dependency information (e.g. pyproject.toml) where a specific
+       line number is not available (for any reason),
+     - a specific cell in a Jupyter notebook.
 
     Instances have a string representation that reflect the level of detail
     provided, and they are sortable.
