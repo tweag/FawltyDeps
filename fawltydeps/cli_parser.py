@@ -256,6 +256,7 @@ def build_parser(
     caller can add its own additional command-line arguments.
     """
     parser = argparse.ArgumentParser(
+        prog=__name__.split(".", maxsplit=1)[0],  # use top-level package name
         description=description,
         formatter_class=argparse.RawDescriptionHelpFormatter,
         add_help=False,  # instead, add --help in populate_parser_other_options()
