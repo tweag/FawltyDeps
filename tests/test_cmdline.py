@@ -369,7 +369,7 @@ def test_list_deps__empty_dir__verbosely_logs_but_extracts_nothing(tmp_path):
         "--list-deps", f"--deps={tmp_path}", "--detailed", "--verbose"
     )
     assert output == ""
-    assert errors == ""
+    assert errors == ""  # TODO: Should there be a INFO-level log message here?
     assert returncode == 0
 
 
