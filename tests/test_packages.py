@@ -146,50 +146,77 @@ def test_package__both_mappings():
     assert p.import_names == {"foobar", "foo", "bar", "baz"}
 
 
-def test_user_defined_mapping__well_formated_input_file__parses_correctly(
-    tmp_path,
-):
-    custom_mapping_file = tmp_path / "mapping.toml"
-    tmp_path = custom_mapping_file.write_text(
-        dedent(
-            """\
+@pytest.mark.parametrize(
+    "mapping_files_content,custom_mapping,expect",
+    [
+        pytest.param(
+            [
+                """\
                 apache-airflow = ["airflow"]
                 attrs = ["attr", "attrs"]
             """
-        )
-    )
-
-    udm = UserDefinedMapping({custom_mapping_file})
-    mapped_packages = udm.packages
-    assert set(mapped_packages.keys()) == {"apache_airflow", "attrs"}
-
-
-def test_user_defined_mapping__well_formated_input_2files__parses_correctly(
-    tmp_path,
-):
-    custom_mapping_file = tmp_path / "mapping.toml"
-    custom_mapping_file.write_text(
-        dedent(
-            """\
+            ],
+            None,
+            {"apache_airflow": ["airflow"], "attrs": ["attr", "attrs"]},
+            id="well_formated_input_file__parses_correctly",
+        ),
+        pytest.param(
+            [
+                """\
                 apache-airflow = ["airflow"]
                 attrs = ["attr", "attrs"]
-            """
-        )
-    )
-    custom_mapping_file2 = tmp_path / "mapping2.toml"
-    custom_mapping_file2.write_text(
-        dedent(
-            """\
+                """,
+                """\
                 apache-airflow = ["baz"]
                 foo = ["bar"]
-            """
-        )
-    )
+                """,
+            ],
+            None,
+            {
+                "apache_airflow": ["airflow", "baz"],
+                "attrs": ["attr", "attrs"],
+                "foo": ["bar"],
+            },
+            id="well_formated_input_2files__parses_correctly",
+        ),
+        pytest.param(
+            [
+                """\
+                apache-airflow = ["airflow"]
+                attrs = ["attr", "attrs"]
+                """,
+                """\
+                apache-airflow = ["baz"]
+                foo = ["bar"]
+                """,
+            ],
+            {"apache-airflow": ["unicorn"]},
+            {
+                "apache_airflow": ["airflow", "baz", "unicorn"],
+                "attrs": ["attr", "attrs"],
+                "foo": ["bar"],
+            },
+            id="well_formated_input_2files_and_config__parses_correctly",
+        ),
+    ],
+)
+def test_user_defined_mapping__well_formated_input_file__parses_correctly(
+    mapping_files_content,
+    custom_mapping,
+    expect,
+    tmp_path,
+):
+    custom_mapping_files = set()
+    for i, mapping in enumerate(mapping_files_content):
+        custom_mapping_file = tmp_path / f"mapping{i}.toml"
+        custom_mapping_file.write_text(dedent(mapping))
+        custom_mapping_files.add(custom_mapping_file)
 
-    udm = UserDefinedMapping(mapping_paths={custom_mapping_file, custom_mapping_file2})
-    mapped_packages = udm.packages
-    assert set(mapped_packages.keys()) == {"apache_airflow", "attrs", "foo"}
-    assert mapped_packages["apache_airflow"].import_names == {"airflow", "baz"}
+    udm = UserDefinedMapping(
+        mapping_paths=custom_mapping_files, custom_mapping=custom_mapping
+    )
+    mapped_packages = {k: sorted(list(v.import_names)) for k, v in udm.packages.items()}
+    assert mapped_packages == expect
 
 
 def test_user_defined_mapping__input_is_no_file__raises_unparsable_path_exeption():
