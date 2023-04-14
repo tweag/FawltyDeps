@@ -653,14 +653,16 @@ def test__no_options__defaults_to_check_action_in_current_dir(
     expect = [
         "These imports appear to be undeclared dependencies:",
         "- 'requests' imported at:",
-        f"    {tmp_path / 'code.py'}:1",
+        "    code.py:1",
         "",
         "These dependencies appear to be unused (i.e. not imported):",
         "- 'pandas' declared in:",
-        f"    {tmp_path / 'requirements.txt'}",
+        "    requirements.txt",
     ]
-    output, returncode = run_fawltydeps_function("--detailed", basepath=tmp_path)
+    expect_logs = []
+    output, errors, returncode = run_fawltydeps_subprocess("--detailed", cwd=tmp_path)
     assert output.splitlines() == expect
+    assert_unordered_equivalence(errors.splitlines(), expect_logs)
     assert returncode == 3
 
 
