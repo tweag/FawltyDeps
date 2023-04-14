@@ -53,7 +53,7 @@ def make_json_settings_dict(**kwargs):
     "cli_options,expect_output,expect_logs",
     [
         pytest.param(
-            ["--detailed", "-v"],
+            ["--detailed", "--verbose"],
             [
                 f"<stdin>:{n}: {i}"
                 for i, n in [("requests", 4), ("foo", 5), ("numpy", 6)]
@@ -224,12 +224,12 @@ def test_list_imports__from_missing_file__fails_with_exit_code_2(tmp_path):
 
 
 def test_list_imports__from_empty_dir__logs_but_extracts_nothing(tmp_path):
-    # Enable log level INFO with -v
+    # Enable log level INFO with --verbose
     expect_logs = [
         f"INFO:fawltydeps.extract_imports:Finding Python files under {tmp_path}",
     ]
     output, errors, returncode = run_fawltydeps_subprocess(
-        "--list-imports", f"--code={tmp_path}", "--detailed", "-v"
+        "--list-imports", f"--code={tmp_path}", "--detailed", "--verbose"
     )
     assert output == ""
     assert_unordered_equivalence(errors.splitlines(), expect_logs)
@@ -343,7 +343,7 @@ def test_list_deps__unsupported_file__fails_with_exit_code_2(tmp_path):
     filepath = tmp_path / "test.NOT_SUPPORTED"
     filepath.write_text("pandas\n")
 
-    _, errors, returncode = run_fawltydeps_subprocess(
+    _output, errors, returncode = run_fawltydeps_subprocess(
         "--list-deps", f"--deps={filepath}"
     )
     assert returncode == 2
@@ -353,7 +353,7 @@ def test_list_deps__unsupported_file__fails_with_exit_code_2(tmp_path):
 def test_list_deps__missing_path__fails_with_exit_code_2(tmp_path):
     missing_path = tmp_path / "MISSING_PATH"
 
-    _, errors, returncode = run_fawltydeps_subprocess(
+    _output, errors, returncode = run_fawltydeps_subprocess(
         "--list-deps", f"--deps={missing_path}"
     )
     assert returncode == 2
@@ -364,9 +364,9 @@ def test_list_deps__missing_path__fails_with_exit_code_2(tmp_path):
 
 
 def test_list_deps__empty_dir__verbosely_logs_but_extracts_nothing(tmp_path):
-    # Enable log level INFO with -v
+    # Enable log level INFO with --verbose
     output, errors, returncode = run_fawltydeps_subprocess(
-        "--list-deps", f"--deps={tmp_path}", "--detailed", "-v"
+        "--list-deps", f"--deps={tmp_path}", "--detailed", "--verbose"
     )
     assert output == ""
     assert errors == ""
