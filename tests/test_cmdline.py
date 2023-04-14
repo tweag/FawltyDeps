@@ -610,7 +610,6 @@ def test_check_unused__simple_project__reports_only_unused(
     output, returncode = run_fawltydeps_function(
         "--check-unused",
         "--detailed",
-        "-v",
         f"--code={tmp_path}",
         "--deps",
         f"{tmp_path}",
@@ -637,7 +636,7 @@ def test__no_action__defaults_to_check_action(
         f"    {tmp_path / 'requirements.txt'}",
     ]
     output, returncode = run_fawltydeps_function(
-        f"--code={tmp_path}", "--detailed", "-v", f"--deps={tmp_path}"
+        f"--code={tmp_path}", "--detailed", f"--deps={tmp_path}"
     )
     assert output.splitlines() == expect
     assert returncode == 3
@@ -660,7 +659,7 @@ def test__no_options__defaults_to_check_action_in_current_dir(
         "- 'pandas' declared in:",
         f"    {tmp_path / 'requirements.txt'}",
     ]
-    output, returncode = run_fawltydeps_function("--detailed", "-v", basepath=tmp_path)
+    output, returncode = run_fawltydeps_function("--detailed", basepath=tmp_path)
     assert output.splitlines() == expect
     assert returncode == 3
 
