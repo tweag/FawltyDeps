@@ -271,7 +271,7 @@ def test_list_imports__pick_multiple_files_dir_and_code__prints_all_imports(
     assert returncode == 0
 
 
-def test_list_deps__dir__prints_deps_from_requirements_txt(
+def test_list_deps_detailed__dir__prints_deps_from_requirements_txt(
     project_with_code_and_requirements_txt,
 ):
     tmp_path = project_with_code_and_requirements_txt(
@@ -325,7 +325,7 @@ def test_list_deps_json__dir__prints_deps_from_requirements_txt(
     assert returncode == 0
 
 
-def test_list_deps_quiet__dir__prints_deps_from_requirements_txt(
+def test_list_deps_summary__dir__prints_deps_from_requirements_txt(
     project_with_code_and_requirements_txt,
 ):
     tmp_path = project_with_code_and_requirements_txt(
@@ -665,7 +665,7 @@ def test__no_options__defaults_to_check_action_in_current_dir(
     assert returncode == 3
 
 
-def test__quiet_check__writes_only_names_of_unused_and_undeclared(
+def test_check__summary__writes_only_names_of_unused_and_undeclared(
     project_with_code_and_requirements_txt,
 ):
     tmp_path = project_with_code_and_requirements_txt(
@@ -688,7 +688,7 @@ def test__quiet_check__writes_only_names_of_unused_and_undeclared(
     assert returncode == 3
 
 
-def test_check__simple_project_in_fake_venv__resolves_imports_vs_deps(
+def test_check_detailed__simple_project_in_fake_venv__resolves_imports_vs_deps(
     fake_venv, project_with_code_and_requirements_txt
 ):
     tmp_path = project_with_code_and_requirements_txt(
