@@ -873,10 +873,12 @@ def test_cmdline_args_in_combination_with_config_file(
         declares=["pandas"],
     )
     setup_fawltydeps_config(config)
-    output, *_ = run_fawltydeps_subprocess(
+    output, errors, returncode = run_fawltydeps_subprocess(
         "--config-file=pyproject.toml", *args, cwd=tmp_path
     )
     assert output.splitlines() == expect
+    assert errors == ""
+    assert returncode in {0, 3, 4}
 
 
 def test_deps_across_groups_appear_just_once_in_list_deps_detailed(tmp_path):
