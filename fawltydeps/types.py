@@ -223,15 +223,3 @@ def render_problematic_dependency(
             f"\n    {loc}" for loc in sorted(unique_locations)
         )
     return ret
-
-
-def add_mapping_dicts(
-    mapping1: CustomMapping, mapping2: CustomMapping, normalised_name: bool = True
-) -> CustomMapping:
-    result = mapping1.copy()
-    for key, value in mapping2.items():
-        if key in result:
-            result[key].extend(value)
-        else:
-            result[key] = value
-    return result
