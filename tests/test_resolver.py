@@ -115,9 +115,10 @@ def generate_expected_resolved_deps(
     return ret
 
 
-# Suppressing the warning on function scoped fixtures: even if the tmp writing
-# fixture only runs once for all the test cases, it will be writing the same
-# content
+# Suppressing the warning on function scoped fixtures: the write_tmp_files
+# fixture only runs once for all the test cases. But this is not a problem,
+# as the fixture-generated content does not have to be reset between test examples.
+# The test function only reads the file content and filters needed input.
 @given(
     user_config_mapping=user_config_mapping_strategy,
     user_file_mapping=user_file_mapping_strategy,
