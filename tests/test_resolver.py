@@ -1,6 +1,5 @@
 """Verify behavior of packages resolver"""
 
-import tempfile
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -60,7 +59,7 @@ user_mapping_in_config = {
 }
 
 # Either all the user-defined mapping (in a file or config dict) is included
-# or none of it 
+# or none of it
 user_file_mapping_strategy = st.one_of(st.none(), st.just(user_mapping_in_file))
 user_config_mapping_strategy = st.one_of(st.none(), st.just(user_mapping_in_config))
 
@@ -75,7 +74,7 @@ def generate_expected_resolved_deps(
     locally_installed_deps: Optional[Dict[str, List[str]]] = None,
     other_deps: Optional[List[str]] = None,
     user_defined_deps: Optional[List[str]] = None,
-    user_mapping_from_file: Optional[Dict[str, List[str]]] = None,
+    user_mapping_file: Optional[Path] = None,
     user_mapping_from_config: Optional[Dict[str, List[str]]] = None,
 ):
     """
@@ -97,16 +96,12 @@ def generate_expected_resolved_deps(
             }
         )
     if user_defined_deps:
-        with tempfile.NamedTemporaryFile(mode="w+", delete=True) as temp_file:
-            if user_mapping_from_file is not None:
-                temp_file.write(user_mapping_to_file_content(user_mapping_from_file))
-                temp_file.flush()
-                temp_file_paths = set([Path(temp_file.name)])
-            else:
-                temp_file_paths = None
-            user_mapping = UserDefinedMapping(temp_file_paths, user_mapping_from_config)
-            resolved_packages = user_mapping.lookup_packages(set(user_defined_deps))
-            ret.update(resolved_packages)
+        user_mapping = UserDefinedMapping(
+            set([user_mapping_file]) if user_mapping_file else None,
+            user_mapping_from_config,
+        )
+        resolved_packages = user_mapping.lookup_packages(set(user_defined_deps))
+        ret.update(resolved_packages)
     if other_deps:
         ret.update(
             {
@@ -159,14 +154,16 @@ def test_resolve_dependencies__generates_expected_mappings(
     expected = generate_expected_resolved_deps(
         user_defined_deps=user_deps,
         user_mapping_from_config=user_config_mapping,
-        user_mapping_from_file=user_file_mapping,
+        user_mapping_file=custom_mapping_file,
         locally_installed_deps=installed_deps,
         other_deps=other_deps,
     )
 
     obtained = resolve_dependencies(
         dep_names,
-        custom_mapping_files=set([custom_mapping_file]) if custom_mapping_file else None,
+        custom_mapping_files=set([custom_mapping_file])
+        if custom_mapping_file
+        else None,
         custom_mapping=user_config_mapping,
     )
 
