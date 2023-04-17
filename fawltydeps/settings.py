@@ -251,12 +251,12 @@ def print_toml_config(settings: Settings, out: TextIO = sys.stdout) -> None:
             if value is not None:
                 toml_option += "".join(
                     [
-                        f"\n{prefix}{k} = {toml_value_map.get(str(v), repr(v))}"
+                        f"\n{prefix}{k} = {toml_value_map.get(repr(v), repr(v))}"
                         for k, v in value.items()
                     ]
                 )
         else:
-            toml_value = toml_value_map.get(str(value), repr(value))
+            toml_value = toml_value_map.get(repr(value), repr(value))
             toml_option = f"{prefix}{name} = {toml_value}"
         return toml_option
 
