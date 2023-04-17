@@ -333,7 +333,7 @@ def test_LocalPackageResolver_lookup_packages(dep_name, expect_import_names):
             },
             {
                 "apache_airflow": Package(
-                    "apache-airflow", {DependenciesMapping.USER_DEFINED: {"airflow"}}
+                    "apache_airflow", {DependenciesMapping.USER_DEFINED: {"airflow"}}
                 ),
                 "pip": Package("pip", {DependenciesMapping.LOCAL_ENV: {"pip"}}),
                 "pandas": Package("pandas", {DependenciesMapping.IDENTITY: {"pandas"}}),
@@ -354,7 +354,7 @@ def test_LocalPackageResolver_lookup_packages(dep_name, expect_import_names):
             {"configuration": {"apache-airflow": ["airflow"]}},
             {
                 "apache_airflow": Package(
-                    "apache-airflow", {DependenciesMapping.USER_DEFINED: {"airflow"}}
+                    "apache_airflow", {DependenciesMapping.USER_DEFINED: {"airflow"}}
                 ),
                 "pip": Package("pip", {DependenciesMapping.LOCAL_ENV: {"pip"}}),
                 "pandas": Package("pandas", {DependenciesMapping.IDENTITY: {"pandas"}}),
@@ -369,7 +369,7 @@ def test_LocalPackageResolver_lookup_packages(dep_name, expect_import_names):
             },
             {
                 "apache_airflow": Package(
-                    "apache-airflow",
+                    "apache_airflow",
                     {DependenciesMapping.USER_DEFINED: {"airflow", "foo", "bar"}},
                 ),
                 "pip": Package("pip", {DependenciesMapping.LOCAL_ENV: {"pip"}}),

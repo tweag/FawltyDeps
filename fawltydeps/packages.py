@@ -9,6 +9,7 @@ from abc import ABC, abstractmethod
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from enum import Enum
+from itertools import chain
 from pathlib import Path
 from typing import Dict, Iterable, Iterator, List, Optional, Set
 
@@ -24,7 +25,7 @@ from importlib_metadata import (
     _top_level_inferred,
 )
 
-from fawltydeps.types import CustomMapping, UnparseablePathException, add_mapping_dicts
+from fawltydeps.types import CustomMapping, UnparseablePathException
 from fawltydeps.utils import calculated_once, hide_dataclass_fields
 
 if sys.version_info >= (3, 11):
@@ -130,6 +131,26 @@ class UserDefinedMapping(BasePackageResolver):
         # We enumerate packages declared in the mapping _once_ and cache the result here:
         self._packages: Optional[Dict[str, Package]] = None
 
+    @staticmethod
+    def add_mapping_dicts(
+        mapping1: CustomMapping, mapping2: CustomMapping
+    ) -> CustomMapping:
+        """Add mapping dictionaries and normalise key (package) names."""
+        result: CustomMapping = {}
+        for key, value in chain(mapping1.items(), mapping2.items()):
+            normalised_name = Package.normalize_name(key)
+            if normalised_name in result:
+                logger.info(
+                    "Mapping for %s already found. Import names "
+                    "from the second mapping are appended to ones "
+                    "found in the first mapping.",
+                    normalised_name,
+                )
+                result[normalised_name].extend(value)
+            else:
+                result[normalised_name] = value
+        return result
+
     @property
     @calculated_once
     def packages(self) -> Dict[str, Package]:
@@ -148,41 +169,28 @@ class UserDefinedMapping(BasePackageResolver):
             logger.debug(f"Loading user-defined mapping from {self.mapping_paths}")
             for path in self.mapping_paths:
                 with open(path, "rb") as mapping_file:
-                    custom_mapping_from_files = add_mapping_dicts(
+                    custom_mapping_from_files = self.add_mapping_dicts(
                         custom_mapping_from_files, tomllib.load(mapping_file)
                     )
 
-        mapping = {
-            Package.normalize_name(name): Package(
-                name,
-                {DependenciesMapping.USER_DEFINED: set(imports)},
-            )
-            for name, imports in custom_mapping_from_files.items()
-        }
+        custom_mapping = custom_mapping_from_files
 
         if self.custom_mapping is not None:
             logger.debug("Applying user-defined mapping from settings.")
 
-            for name, imports in self.custom_mapping.items():
-                normalised_name = Package.normalize_name(name)
-                if normalised_name in mapping:
-                    logger.info(
-                        "Mapping for %s already found in %s. Import names "
-                        "from the configuration file are appended to ones "
-                        "found in the mapping file.",
-                        normalised_name,
-                        self.mapping_paths,
-                    )
-                    mapping[normalised_name].add_import_names(
-                        *imports, mapping=DependenciesMapping.USER_DEFINED
-                    )
-                else:
-                    mapping[normalised_name] = Package(
-                        name,
-                        {DependenciesMapping.USER_DEFINED: set(imports)},
-                    )
+            custom_mapping = self.add_mapping_dicts(
+                self.custom_mapping, custom_mapping_from_files
+            )
 
-        return mapping
+        # package name is normalised at this stage, `add_mapping_dicts` was called on
+        # input files and mapping from the configuration
+        return {
+            name: Package(
+                name,
+                {DependenciesMapping.USER_DEFINED: set(imports)},
+            )
+            for name, imports in custom_mapping.items()
+        }
 
     def lookup_packages(self, package_names: Set[str]) -> Dict[str, Package]:
         """Convert package names to locally available Package objects."""
