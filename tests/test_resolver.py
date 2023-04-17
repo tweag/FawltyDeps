@@ -143,6 +143,37 @@ def test_resolve_dependencies__generates_expected_mappings(
         )
     )
 
+    # The following should be true as the different categories of deps should be
+    # disjoint. A change to these deps that does not respect this condition
+    # will break the following assert.
+    assert (
+        set.intersection(
+            set(locally_installed_deps.keys()) if locally_installed_deps else set(),
+            (set(user_defined_deps) if user_defined_deps else set()),
+            (set(other_deps) if other_deps else set()),
+        )
+        == set()
+    )
+
+    # The following should be true as the user mapping defined above is disjoint
+    # from the locally installed deps. A change that does not respect this
+    # condition will break the following assert.
+    if installed_deps:
+        if user_file_mapping:
+            assert (
+                set.intersection(
+                    set(installed_deps.keys()), set(user_file_mapping.keys())
+                )
+                == set()
+            )
+        if user_config_mapping:
+            assert (
+                set.intersection(
+                    set(installed_deps.keys()), set(user_config_mapping.keys())
+                )
+                == set()
+            )
+
     dep_names = list(installed_deps.keys()) + user_deps + other_deps
 
     if user_file_mapping:
