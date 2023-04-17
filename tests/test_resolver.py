@@ -76,6 +76,13 @@ def generate_expected_resolved_deps(
     user_mapping_from_file: Optional[Dict[str, List[str]]] = None,
     user_mapping_from_config: Optional[Dict[str, List[str]]] = None,
 ):
+    """
+    Returns a dict of resolved packages.
+
+    This function does not actually resolve its input dependencies.
+    It just constructs a valid dict of resolved dependencies that respects
+    the category of the dependencies in each argument.
+    """
     ret = {}
     if locally_installed_deps:
         ret.update(
