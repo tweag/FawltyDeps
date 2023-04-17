@@ -59,6 +59,8 @@ user_mapping_in_config = {
     dep: imports[1:] for dep, imports in user_defined_mapping.items()
 }
 
+# Either all the user-defined mapping (in a file or config dict) is included
+# or none of it 
 user_file_mapping_strategy = st.one_of(st.none(), st.just(user_mapping_in_file))
 user_config_mapping_strategy = st.one_of(st.none(), st.just(user_mapping_in_config))
 
