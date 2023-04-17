@@ -27,11 +27,10 @@ def dict_subset_strategy(input_dict):
 
 # The deps in each category should be disjoint
 
-# non locally installed deps
-non_locally_installed_deps = ["pandas", "numpy", "other"]
-non_locally_installed_strategy = st.lists(
-    st.sampled_from(non_locally_installed_deps), unique=True
-)
+# deps that cannot be resolved by a user-defined mapping and are not locally
+# installed
+other_deps = ["pandas", "numpy", "other"]
+other_deps_strategy = st.lists(st.sampled_from(other_deps), unique=True)
 
 # locally installed deps
 locally_installed_deps = {
@@ -72,7 +71,7 @@ def user_mapping_to_file_content(user_mapping: Dict[str, List[str]]) -> str:
 
 def generate_expected_resolved_deps(
     locally_installed_deps: Optional[Dict[str, List[str]]] = None,
-    non_locally_installed_deps: Optional[List[str]] = None,
+    other_deps: Optional[List[str]] = None,
     user_defined_deps: Optional[List[str]] = None,
     user_mapping_from_file: Optional[Dict[str, List[str]]] = None,
     user_mapping_from_config: Optional[Dict[str, List[str]]] = None,
@@ -99,11 +98,11 @@ def generate_expected_resolved_deps(
             user_mapping = UserDefinedMapping(temp_file_paths, user_mapping_from_config)
             resolved_packages = user_mapping.lookup_packages(set(user_defined_deps))
             ret.update(resolved_packages)
-    if non_locally_installed_deps:
+    if other_deps:
         ret.update(
             {
                 dep: Package(dep, {DependenciesMapping.IDENTITY: {dep}})
-                for dep in non_locally_installed_deps
+                for dep in other_deps
             }
         )
     return ret
@@ -115,22 +114,22 @@ def generate_expected_resolved_deps(
 @given(
     user_config_mapping=user_config_mapping_strategy,
     user_file_mapping=user_file_mapping_strategy,
-    non_installed_deps=non_locally_installed_strategy,
     user_deps=user_defined_strategy,
     installed_deps=locally_installed_strategy,
+    other_deps=other_deps_strategy,
 )
 @settings(suppress_health_check=[HealthCheck.function_scoped_fixture])
 def test_resolve_dependencies__generates_expected_mappings(
     user_deps,
     installed_deps,
-    non_installed_deps,
+    other_deps,
     user_config_mapping,
     user_file_mapping,
     tmp_path,
 ):
 
-    # The case where there are user-defined deps but no user-defined mapping
-    # provided is not valid
+    # The case where the resolved output is expected to contain user-mapped
+    # deps, but a user-defined mapping is not provided, is not valid
     assume(
         not (
             len(user_deps) > 0
@@ -139,7 +138,7 @@ def test_resolve_dependencies__generates_expected_mappings(
         )
     )
 
-    dep_names = list(installed_deps.keys()) + user_deps + non_installed_deps
+    dep_names = list(installed_deps.keys()) + user_deps + other_deps
 
     if user_file_mapping:
         custom_mapping_file = tmp_path / "mapping.toml"
@@ -148,11 +147,11 @@ def test_resolve_dependencies__generates_expected_mappings(
         custom_mapping_file = None
 
     expected = generate_expected_resolved_deps(
-        locally_installed_deps=installed_deps,
-        non_locally_installed_deps=non_installed_deps,
         user_defined_deps=user_deps,
         user_mapping_from_config=user_config_mapping,
         user_mapping_from_file=user_file_mapping,
+        locally_installed_deps=installed_deps,
+        other_deps=other_deps,
     )
 
     obtained = resolve_dependencies(
