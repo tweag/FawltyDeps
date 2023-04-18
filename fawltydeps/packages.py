@@ -257,6 +257,8 @@ class LocalPackageResolver(BasePackageResolver):
             # that map to zero import names.
             context = DistributionFinder.Context(path=paths)  # type: ignore
             for dist in MetadataPathFinder().find_distributions(context):  # type: ignore
+                parent_dir = dist.locate_file("")
+                logger.debug(f"Found {dist.name} {dist.version} under {parent_dir}")
                 imports = set(
                     _top_level_declared(dist)  # type: ignore
                     or _top_level_inferred(dist)  # type: ignore
