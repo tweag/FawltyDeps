@@ -206,7 +206,7 @@ class LocalPackageResolver(BasePackageResolver):
         if pyenv_path is not None:
             self.pyenv_path = self.determine_package_dir(pyenv_path)
             if self.pyenv_path is None:
-                raise ValueError(f"Not a Python env: {pyenv_path}/bin/python missing!")
+                raise ValueError(f"Could not find a Python env at {pyenv_path}!")
         else:
             self.pyenv_path = None
         # We enumerate packages for pyenv_path _once_ and cache the result here:
@@ -223,6 +223,8 @@ class LocalPackageResolver(BasePackageResolver):
         """
         # We define a "valid Python environment" as a directory that contains
         # a bin/python file, and a lib/pythonX.Y/site-packages subdirectory.
+        # This matches both a system-wide installation (like what you'd find in
+        # /usr or /usr/local), as well as a virtualenv, a poetry2nix env, etc.
         # From there, the returned directory is that site-packages subdir.
         # Note that we must also accept lib/pythonX.Y/site-packages for python
         # versions X.Y that are different from the current Python version.
@@ -230,6 +232,13 @@ class LocalPackageResolver(BasePackageResolver):
             for site_packages in path.glob("lib/python?.*/site-packages"):
                 if site_packages.is_dir():
                     return site_packages
+
+        # Workaround for projects using PEP582:
+        if path.name == "__pypackages__":
+            for site_packages in path.glob("?.*/lib"):
+                if site_packages.is_dir():
+                    return site_packages
+
         # Given path is not a python environment, but it might be _inside_ one.
         # Try again with parent directory
         return None if path.parent == path else cls.determine_package_dir(path.parent)

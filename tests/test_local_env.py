@@ -16,14 +16,24 @@ from .project_helpers import TarballPackage
 
 major, minor = sys.version_info[:2]
 
-# When the user gives us a --pyenv arg, what are the the possible paths inside
-# that Python environment that they might point at (that we should accept)
+# When the user gives us a --pyenv arg that points to a (non-PEP582) Python
+# environment, what are the the possible paths inside that Python environment
+# that they might point at (and that we should accept)?
 env_subdirs = [
     "",
     "bin",
     "lib",
     f"lib/python{major}.{minor}",
     f"lib/python{major}.{minor}/site-packages",
+]
+
+# When the user gives us a --pyenv arg that points to a PEP582 __pypackages__
+# dir, what are the the possible paths inside that __pypackages__ dir that they
+# might point at (and that we should accept)?
+pep582_subdirs = [
+    "__pypackages__",
+    f"__pypackages__/{major}.{minor}",
+    f"__pypackages__/{major}.{minor}/lib",
 ]
 
 
@@ -52,6 +62,21 @@ def test_determine_package_dir__various_paths_in_poetry2nix_env(
     )
     path = tmp_path / subdir
     expect = tmp_path / f"lib/python{major}.{minor}/site-packages"
+    assert LocalPackageResolver.determine_package_dir(path) == expect
+
+
+@pytest.mark.parametrize(
+    "subdir", [pytest.param(d, id=f"pep582:{d}") for d in pep582_subdirs]
+)
+def test_determine_package_dir__various_paths_in_pypackages(write_tmp_files, subdir):
+    # A directory structure that resembles a minimal PEP582 __pypackages__ dir:
+    tmp_path = write_tmp_files(
+        {
+            f"__pypackages__/{major}.{minor}/lib/some_package.py": "",
+        }
+    )
+    path = tmp_path / subdir
+    expect = tmp_path / f"__pypackages__/{major}.{minor}/lib"
     assert LocalPackageResolver.determine_package_dir(path) == expect
 
 
