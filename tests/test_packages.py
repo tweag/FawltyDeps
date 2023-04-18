@@ -382,7 +382,7 @@ def test_LocalPackageResolver_lookup_packages(dep_name, expect_import_names):
 def test_resolve_dependencies__focus_on_mappings(
     dep_names, user_mapping, expected, tmp_path
 ):
-    custom_mapping_files = None
+    custom_mapping_files = set()
     custom_mapping = None
     if user_mapping is not None:
         custom_mapping = user_mapping.get("configuration")
@@ -394,7 +394,7 @@ def test_resolve_dependencies__focus_on_mappings(
     assert (
         resolve_dependencies(
             dep_names,
-            custom_mapping_file=custom_mapping_files,
+            custom_mapping_files=custom_mapping_files,
             custom_mapping=custom_mapping,
         )
         == expected

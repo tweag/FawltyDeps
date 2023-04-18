@@ -109,7 +109,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
         """The resolved mapping of dependency names to provided import names."""
         return resolve_dependencies(
             (dep.name for dep in self.declared_deps),
-            custom_mapping_file=self.settings.custom_mapping_file,
+            custom_mapping_files=self.settings.custom_mapping_file,
             custom_mapping=self.settings.custom_mapping,
             pyenv_path=self.settings.pyenv,
             install_deps=self.settings.install_deps,
