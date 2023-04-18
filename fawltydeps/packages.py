@@ -120,25 +120,22 @@ class UserDefinedMapping(BasePackageResolver):
         mapping_paths: Optional[Set[Path]] = None,
         custom_mapping: Optional[CustomMapping] = None,
     ) -> None:
-        self.mapping_paths = mapping_paths
-        if self.mapping_paths:
-            for path in self.mapping_paths:
-                if not path.is_file():
-                    raise UnparseablePathException(
-                        ctx="Given mapping path is not a file.", path=path
-                    )
+        self.mapping_paths = mapping_paths or set()
+        for path in self.mapping_paths:
+            if not path.is_file():
+                raise UnparseablePathException(
+                    ctx="Given mapping path is not a file.", path=path
+                )
         self.custom_mapping = custom_mapping
         # We enumerate packages declared in the mapping _once_ and cache the result here:
         self._packages: Optional[Dict[str, Package]] = None
 
     @staticmethod
-    def add_mapping_dicts(
-        mapping1: CustomMapping, mapping2: CustomMapping
-    ) -> CustomMapping:
-        """Add mapping dictionaries and normalise key (package) names."""
+    def accumulate_mappings(custom_mappings: Iterable[CustomMapping]) -> CustomMapping:
+        """Merge mapping dictionaries and normalise key (package) names."""
         result: CustomMapping = {}
-        for key, value in chain(mapping1.items(), mapping2.items()):
-            normalised_name = Package.normalize_name(key)
+        for name, imports in chain.from_iterable(cm.items() for cm in custom_mappings):
+            normalised_name = Package.normalize_name(name)
             if normalised_name in result:
                 logger.info(
                     "Mapping for %s already found. Import names "
@@ -146,9 +143,7 @@ class UserDefinedMapping(BasePackageResolver):
                     "found in the first mapping.",
                     normalised_name,
                 )
-                result[normalised_name].extend(value)
-            else:
-                result[normalised_name] = value
+            result.setdefault(normalised_name, []).extend(imports)
         return result
 
     @property
@@ -157,33 +152,28 @@ class UserDefinedMapping(BasePackageResolver):
         """Gather a custom mapping given by a user.
 
         Mapping may come from two sources:
-        * _mapping_paths_ which is a set of files in a given path, which is parsed to a ditionary
-        * _custom_mapping_ which is a dictionary of package to imports mapping.
+        * custom_mapping: an already-parsed CustomMapping, i.e. a dict mapping
+          package names to imports.
+        * mapping_paths: set of file paths, where each file contains a TOML-
+          formatted CustomMapping.
 
         This enumerates the available packages  _once_, and caches the result for
         the remainder of this object's life in _packages.
         """
-        custom_mapping_from_files: Dict[str, List[str]] = {}
 
-        if self.mapping_paths is not None:
-            logger.debug(f"Loading user-defined mapping from {self.mapping_paths}")
-            for path in self.mapping_paths:
-                with open(path, "rb") as mapping_file:
-                    custom_mapping_from_files = self.add_mapping_dicts(
-                        custom_mapping_from_files, tomllib.load(mapping_file)
-                    )
+        def _custom_mappings() -> Iterator[CustomMapping]:
+            if self.custom_mapping is not None:
+                logger.debug("Applying user-defined mapping from settings.")
+                yield self.custom_mapping
 
-        custom_mapping = custom_mapping_from_files
+            if self.mapping_paths is not None:
+                for path in self.mapping_paths:
+                    logger.debug(f"Loading user-defined mapping from {path}")
+                    with open(path, "rb") as mapping_file:
+                        yield tomllib.load(mapping_file)
 
-        if self.custom_mapping is not None:
-            logger.debug("Applying user-defined mapping from settings.")
+        custom_mapping = self.accumulate_mappings(_custom_mappings())
 
-            custom_mapping = self.add_mapping_dicts(
-                self.custom_mapping, custom_mapping_from_files
-            )
-
-        # package name is normalised at this stage, `add_mapping_dicts` was called on
-        # input files and mapping from the configuration
         return {
             name: Package(
                 name,
@@ -367,7 +357,7 @@ class IdentityMapping(BasePackageResolver):
 
 def resolve_dependencies(
     dep_names: Iterable[str],
-    custom_mapping_file: Optional[Set[Path]] = None,
+    custom_mapping_files: Optional[Set[Path]] = None,
     custom_mapping: Optional[CustomMapping] = None,
     pyenv_path: Optional[Path] = None,
     install_deps: bool = False,
@@ -388,12 +378,11 @@ def resolve_dependencies(
     # each resolver in order until one of them returns a Package object. At
     # that point we are happy, and don't consult any of the later resolvers.
     resolvers: List[BasePackageResolver] = []
-    if custom_mapping_file or custom_mapping:
-        resolvers.append(
-            UserDefinedMapping(
-                mapping_paths=custom_mapping_file, custom_mapping=custom_mapping
-            )
+    resolvers.append(
+        UserDefinedMapping(
+            mapping_paths=custom_mapping_files or set(), custom_mapping=custom_mapping
         )
+    )
 
     resolvers.append(LocalPackageResolver(pyenv_path))
     if install_deps:
