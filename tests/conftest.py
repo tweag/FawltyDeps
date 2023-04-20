@@ -4,7 +4,7 @@ import venv
 from pathlib import Path
 from tempfile import mkdtemp
 from textwrap import dedent
-from typing import Dict, Iterable, Set, Union
+from typing import Dict, Iterable, Set, Tuple, Union
 
 import pytest
 
@@ -26,7 +26,7 @@ def write_tmp_files(tmp_path: Path):
 
 @pytest.fixture
 def fake_venv(tmp_path):
-    def create_one_fake_venv(fake_packages: Dict[str, Set[str]]) -> Path:
+    def create_one_fake_venv(fake_packages: Dict[str, Set[str]]) -> Tuple[Path, Path]:
         venv_dir = Path(mkdtemp(prefix="fake_venv.", dir=tmp_path))
         venv.create(venv_dir, with_pip=False)
 
@@ -47,7 +47,7 @@ def fake_venv(tmp_path):
             for name in import_names:
                 (site_dir / f"{name}.py").touch()
 
-        return venv_dir
+        return venv_dir, site_dir
 
     return create_one_fake_venv
 

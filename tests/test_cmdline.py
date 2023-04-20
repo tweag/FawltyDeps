@@ -697,7 +697,7 @@ def test_check_detailed__simple_project_in_fake_venv__resolves_imports_vs_deps(
     )
     # A venv where the "pandas" package provides a "requests" import name
     # should satisfy our comparison
-    venv_dir = fake_venv({"pandas": {"requests"}})
+    venv_dir, _ = fake_venv({"pandas": {"requests"}})
 
     output, returncode = run_fawltydeps_function(
         "--detailed", f"--code={tmp_path}", f"--deps={tmp_path}", f"--pyenv={venv_dir}"
