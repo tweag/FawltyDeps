@@ -7,13 +7,14 @@ from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 
 from fawltydeps.packages import (
-    DependenciesMapping,
+    IdentityMapping,
+    LocalPackageResolver,
     Package,
     UserDefinedMapping,
     resolve_dependencies,
 )
 
-from .utils import default_sys_path_env_for_tests
+from .utils import default_sys_path_env_for_tests, ignore_package_debug_info
 
 # The deps in each category should be disjoint
 other_deps = ["pandas", "numpy", "other"]
@@ -64,12 +65,12 @@ def user_mapping_to_file_content(user_mapping: Dict[str, List[str]]) -> str:
 
 
 def generate_expected_resolved_deps(
-    locally_installed_deps: Optional[Dict[str, List[str]]] = None,
+    locally_installed_deps: Optional[Dict[str, Set[str]]] = None,
     other_deps: Optional[List[str]] = None,
     user_defined_deps: Optional[List[str]] = None,
     user_mapping_file: Optional[Path] = None,
     user_mapping_from_config: Optional[Dict[str, List[str]]] = None,
-):
+) -> Dict[str, Package]:
     """
     Returns a dict of resolved packages.
 
@@ -81,7 +82,7 @@ def generate_expected_resolved_deps(
     if locally_installed_deps:
         ret.update(
             {
-                dep: Package(dep, {DependenciesMapping.LOCAL_ENV: set(imports)})
+                dep: Package(dep, imports, LocalPackageResolver)
                 for dep, imports in locally_installed_deps.items()
             }
         )
@@ -93,12 +94,7 @@ def generate_expected_resolved_deps(
         resolved_packages = user_mapping.lookup_packages(set(user_defined_deps))
         ret.update(resolved_packages)
     if other_deps:
-        ret.update(
-            {
-                dep: Package(dep, {DependenciesMapping.IDENTITY: {dep}})
-                for dep in other_deps
-            }
-        )
+        ret.update({dep: Package(dep, {dep}, IdentityMapping) for dep in other_deps})
     return ret
 
 
@@ -155,12 +151,14 @@ def test_resolve_dependencies__generates_expected_mappings(
     )
 
     isolate_default_resolver(installed_deps)
-    obtained = resolve_dependencies(
-        dep_names,
-        custom_mapping_files=set([custom_mapping_file])
-        if custom_mapping_file
-        else None,
-        custom_mapping=user_config_mapping,
+    actual = ignore_package_debug_info(
+        resolve_dependencies(
+            dep_names,
+            custom_mapping_files=set([custom_mapping_file])
+            if custom_mapping_file
+            else None,
+            custom_mapping=user_config_mapping,
+        )
     )
 
-    assert obtained == expected
+    assert actual == expected

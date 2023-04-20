@@ -22,7 +22,7 @@ from pydantic.json import custom_pydantic_encoder  # pylint: disable=no-name-in-
 from fawltydeps import extract_declared_dependencies, extract_imports
 from fawltydeps.check import calculate_undeclared, calculate_unused
 from fawltydeps.cli_parser import build_parser
-from fawltydeps.packages import Package, resolve_dependencies
+from fawltydeps.packages import BasePackageResolver, Package, resolve_dependencies
 from fawltydeps.settings import Action, OutputFormat, Settings, print_toml_config
 from fawltydeps.traverse_project import find_sources
 from fawltydeps.types import (
@@ -163,8 +163,12 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
         # However, not all elements that we store in a set are automatically
         # orderable (e.g. PathOrSpecial don't know how to order SpecialPath vs
         # Path), so order by string representation instead:
-        set_sort = partial(sorted, key=str)
-        encoder = partial(custom_pydantic_encoder, {frozenset: set_sort, set: set_sort})
+        custom_type_encoders = {
+            frozenset: partial(sorted, key=str),
+            set: partial(sorted, key=str),
+            type(BasePackageResolver): lambda klass: klass.__name__,
+        }
+        encoder = partial(custom_pydantic_encoder, custom_type_encoders)
         json_dict = {
             "settings": self.settings,
             # Using properties with an underscore do not trigger computations.
