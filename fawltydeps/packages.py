@@ -8,9 +8,8 @@ import venv
 from abc import ABC, abstractmethod
 from contextlib import contextmanager
 from dataclasses import dataclass, replace
-from itertools import chain
 from pathlib import Path
-from typing import Dict, Iterable, Iterator, List, Optional, Set, Type, Union
+from typing import Dict, Iterable, Iterator, List, Optional, Set, Tuple, Type, Union
 
 # importlib_metadata is gradually graduating into the importlib.metadata stdlib
 # module, however we rely on internal functions and recent (and upcoming)
@@ -89,6 +88,40 @@ class BasePackageResolver(ABC):
         raise NotImplementedError
 
 
+def accumulate_mappings(
+    resolved_with: Type[BasePackageResolver],
+    custom_mappings: Iterable[Tuple[CustomMapping, str]],
+) -> Dict[str, Package]:
+    """Merge CustomMappings (w/associated descriptions) into a dict of Packages.
+
+    Each resulting package object maps a (normalized) package name to a mapping
+    dict where the provided imports are keyed by their associated description.
+    The keys in the returned dict are also normalized package names.
+    """
+    result: Dict[str, Package] = {}
+    for custom_mapping, debug_key in custom_mappings:
+        for name, imports in custom_mapping.items():
+            normalized_name = Package.normalize_name(name)
+            if normalized_name not in result:  # create new Package instance
+                result[normalized_name] = Package(
+                    package_name=normalized_name,
+                    import_names=set(imports),
+                    resolved_with=resolved_with,
+                    debug_info={debug_key: set(imports)},
+                )
+            else:  # replace existing Package instance with "augmented" version
+                prev = result[normalized_name]
+                debug_info = prev.debug_info
+                assert isinstance(debug_info, dict)
+                debug_info.setdefault(debug_key, set()).update(imports)
+                result[normalized_name] = replace(
+                    prev,
+                    import_names=set.union(prev.import_names, imports),
+                    debug_info=debug_info,
+                )
+    return result
+
+
 class UserDefinedMapping(BasePackageResolver):
     """Use user-defined mapping loaded from a toml file"""
 
@@ -107,22 +140,6 @@ class UserDefinedMapping(BasePackageResolver):
         # We enumerate packages declared in the mapping _once_ and cache the result here:
         self._packages: Optional[Dict[str, Package]] = None
 
-    @staticmethod
-    def accumulate_mappings(custom_mappings: Iterable[CustomMapping]) -> CustomMapping:
-        """Merge mapping dictionaries and normalise key (package) names."""
-        result: CustomMapping = {}
-        for name, imports in chain.from_iterable(cm.items() for cm in custom_mappings):
-            normalised_name = Package.normalize_name(name)
-            if normalised_name in result:
-                logger.info(
-                    "Mapping for %s already found. Import names "
-                    "from the second mapping are appended to ones "
-                    "found in the first mapping.",
-                    normalised_name,
-                )
-            result.setdefault(normalised_name, []).extend(imports)
-        return result
-
     @property
     @calculated_once
     def packages(self) -> Dict[str, Package]:
@@ -138,23 +155,18 @@ class UserDefinedMapping(BasePackageResolver):
         the remainder of this object's life in _packages.
         """
 
-        def _custom_mappings() -> Iterator[CustomMapping]:
+        def _custom_mappings() -> Iterator[Tuple[CustomMapping, str]]:
             if self.custom_mapping is not None:
                 logger.debug("Applying user-defined mapping from settings.")
-                yield self.custom_mapping
+                yield self.custom_mapping, "from settings"
 
             if self.mapping_paths is not None:
                 for path in self.mapping_paths:
                     logger.debug(f"Loading user-defined mapping from {path}")
                     with open(path, "rb") as mapping_file:
-                        yield tomllib.load(mapping_file)
+                        yield tomllib.load(mapping_file), str(path)
 
-        custom_mapping = self.accumulate_mappings(_custom_mappings())
-
-        return {
-            name: Package(name, set(imports), UserDefinedMapping)
-            for name, imports in custom_mapping.items()
-        }
+        return accumulate_mappings(self.__class__, _custom_mappings())
 
     def lookup_packages(self, package_names: Set[str]) -> Dict[str, Package]:
         """Convert package names to locally available Package objects."""

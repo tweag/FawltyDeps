@@ -141,7 +141,12 @@ def test_package__local_env_mapping(
             """
             ],
             None,
-            {"apache_airflow": {"airflow"}, "attrs": {"attr", "attrs"}},
+            {
+                "apache_airflow": Package(
+                    "apache_airflow", {"airflow"}, UserDefinedMapping
+                ),
+                "attrs": Package("attrs", {"attr", "attrs"}, UserDefinedMapping),
+            },
             id="well_formated_input_file__parses_correctly",
         ),
         pytest.param(
@@ -157,9 +162,11 @@ def test_package__local_env_mapping(
             ],
             None,
             {
-                "apache_airflow": {"airflow", "baz"},
-                "attrs": {"attr", "attrs"},
-                "foo": {"bar"},
+                "apache_airflow": Package(
+                    "apache_airflow", {"airflow", "baz"}, UserDefinedMapping
+                ),
+                "attrs": Package("attrs", {"attr", "attrs"}, UserDefinedMapping),
+                "foo": Package("foo", {"bar"}, UserDefinedMapping),
             },
             id="well_formated_input_2files__parses_correctly",
         ),
@@ -176,9 +183,11 @@ def test_package__local_env_mapping(
             ],
             {"apache-airflow": ["unicorn"]},
             {
-                "apache_airflow": {"airflow", "baz", "unicorn"},
-                "attrs": {"attr", "attrs"},
-                "foo": {"bar"},
+                "apache_airflow": Package(
+                    "apache_airflow", {"airflow", "baz", "unicorn"}, UserDefinedMapping
+                ),
+                "attrs": Package("attrs", {"attr", "attrs"}, UserDefinedMapping),
+                "foo": Package("foo", {"bar"}, UserDefinedMapping),
             },
             id="well_formated_input_2files_and_config__parses_correctly",
         ),
@@ -199,8 +208,8 @@ def test_user_defined_mapping__well_formated_input_file__parses_correctly(
     udm = UserDefinedMapping(
         mapping_paths=custom_mapping_files, custom_mapping=custom_mapping
     )
-    mapped_packages = {k: v.import_names for k, v in udm.packages.items()}
-    assert mapped_packages == expect
+    actual = ignore_package_debug_info(udm.packages)
+    assert actual == expect
 
 
 def test_user_defined_mapping__input_is_no_file__raises_unparsable_path_exeption():

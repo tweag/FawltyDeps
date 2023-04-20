@@ -151,14 +151,12 @@ def test_resolve_dependencies__generates_expected_mappings(
     )
 
     isolate_default_resolver(installed_deps)
-    actual = ignore_package_debug_info(
-        resolve_dependencies(
-            dep_names,
-            custom_mapping_files=set([custom_mapping_file])
-            if custom_mapping_file
-            else None,
-            custom_mapping=user_config_mapping,
-        )
+    actual = resolve_dependencies(
+        dep_names,
+        custom_mapping_files=set([custom_mapping_file])
+        if custom_mapping_file
+        else None,
+        custom_mapping=user_config_mapping,
     )
 
-    assert actual == expected
+    assert ignore_package_debug_info(actual) == ignore_package_debug_info(expected)
