@@ -130,7 +130,7 @@ def test_resolve_dependencies__in_empty_venv__reverts_to_id_mapping(tmp_path):
 
 
 def test_resolve_dependencies__in_fake_venv__returns_local_and_id_deps(fake_venv):
-    venv_dir = fake_venv(
+    venv_dir, _ = fake_venv(
         {
             "pip": {"pip"},
             "setuptools": {"setuptools", "pkg_resources"},
