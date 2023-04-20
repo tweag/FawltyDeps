@@ -6,7 +6,6 @@ from textwrap import dedent
 import pytest
 
 from fawltydeps.packages import (
-    DependenciesMapping,
     IdentityMapping,
     LocalPackageResolver,
     Package,
@@ -15,11 +14,16 @@ from fawltydeps.packages import (
 )
 from fawltydeps.types import UnparseablePathException, UnresolvedDependenciesError
 
-from .utils import SAMPLE_PROJECTS_DIR, default_sys_path_env_for_tests, test_vectors
+from .utils import (
+    SAMPLE_PROJECTS_DIR,
+    default_sys_path_env_for_tests,
+    ignore_package_debug_info,
+    test_vectors,
+)
 
 
 def test_package__empty_package__matches_nothing():
-    p = Package("foobar")  # no mappings
+    p = Package("foobar", set(), IdentityMapping)  # no import names
     assert p.package_name == "foobar"
     assert not p.is_used(["foobar"])
 
@@ -68,49 +72,49 @@ def test_package__identity_mapping(
     [
         pytest.param(
             "foobar",
-            ["foobar"],
+            {"foobar"},
             ["foobar", "and", "other", "names"],
             ["only", "other", "names", "foo_bar", "Foobar", "FooBar", "FOOBAR"],
             id="simple_name_mapped_to_itself__matches_itself_only",
         ),
         pytest.param(
             "FooBar",
-            ["FooBar"],
+            {"FooBar"},
             ["FooBar", "and", "other", "names"],
             ["only", "other", "names", "foo_bar", "foobar", "FOOBAR"],
             id="mixed_case_name_mapped_to_itself__matches_exact_spelling_only",
         ),
         pytest.param(
             "typing-extensions",
-            ["typing_extensions"],
+            {"typing_extensions"},
             ["typing_extensions", "and", "other", "names"],
             ["typing-extensions", "typingextensions"],
             id="hyphen_name_mapped_to_underscore_name__matches_only_underscore_name",
         ),
         pytest.param(
             "Foo-Bar",
-            ["blorp"],
+            {"blorp"},
             ["blorp", "and", "other", "names"],
             ["Foo-Bar", "foo-bar", "foobar", "FooBar", "FOOBAR", "Blorp", "BLORP"],
             id="weird_name_mapped_diff_name__matches_diff_name_only",
         ),
         pytest.param(
             "foobar",
-            ["foo", "bar", "baz"],
+            {"foo", "bar", "baz"},
             ["foo", "and", "other", "names"],
             ["foobar", "and", "other", "names"],
             id="name_with_three_imports__matches_first_import",
         ),
         pytest.param(
             "foobar",
-            ["foo", "bar", "baz"],
+            {"foo", "bar", "baz"},
             ["bar", "and", "other", "names"],
             ["foobar", "and", "other", "names"],
             id="name_with_three_imports__matches_second_import",
         ),
         pytest.param(
             "foobar",
-            ["foo", "bar", "baz"],
+            {"foo", "bar", "baz"},
             ["baz", "and", "other", "names"],
             ["foobar", "and", "other", "names"],
             id="name_with_three_imports__matches_third_import",
@@ -120,18 +124,17 @@ def test_package__identity_mapping(
 def test_package__local_env_mapping(
     package_name, import_names, matching_imports, non_matching_imports
 ):
-    p = Package(package_name)
-    p.add_import_names(*import_names, mapping=DependenciesMapping.LOCAL_ENV)
+    p = Package(package_name, import_names, LocalPackageResolver)
     assert p.package_name == package_name  # package name is not normalized
     assert p.is_used(matching_imports)
     assert not p.is_used(non_matching_imports)
 
 
-def test_package__both_mappings():
+def test_package__import_names_from_multiple_sources():
     id_mapping = IdentityMapping()
     p = id_mapping.lookup_package("FooBar")
     import_names = ["foo", "bar", "baz"]
-    p.add_import_names(*import_names, mapping=DependenciesMapping.LOCAL_ENV)
+    p.add_import_names(*import_names, info=None)
     assert p.package_name == "FooBar"  # package name is not normalized
     assert p.is_used(["foobar"])  # but identity-mapped import name _is_.
     assert p.is_used(["foo"])
@@ -139,11 +142,7 @@ def test_package__both_mappings():
     assert p.is_used(["baz"])
     assert not p.is_used(["fooba"])
     assert not p.is_used(["foobarbaz"])
-    assert p.mappings == {
-        DependenciesMapping.IDENTITY: {"foobar"},
-        DependenciesMapping.LOCAL_ENV: {"foo", "bar", "baz"},
-    }
-    assert p.import_names == {"foobar", "foo", "bar", "baz"}
+    assert set(p.import_names) == {"foobar", "foo", "bar", "baz"}
 
 
 @pytest.mark.parametrize(
@@ -157,7 +156,7 @@ def test_package__both_mappings():
             """
             ],
             None,
-            {"apache_airflow": ["airflow"], "attrs": ["attr", "attrs"]},
+            {"apache_airflow": {"airflow"}, "attrs": {"attr", "attrs"}},
             id="well_formated_input_file__parses_correctly",
         ),
         pytest.param(
@@ -173,9 +172,9 @@ def test_package__both_mappings():
             ],
             None,
             {
-                "apache_airflow": ["airflow", "baz"],
-                "attrs": ["attr", "attrs"],
-                "foo": ["bar"],
+                "apache_airflow": {"airflow", "baz"},
+                "attrs": {"attr", "attrs"},
+                "foo": {"bar"},
             },
             id="well_formated_input_2files__parses_correctly",
         ),
@@ -192,9 +191,9 @@ def test_package__both_mappings():
             ],
             {"apache-airflow": ["unicorn"]},
             {
-                "apache_airflow": ["airflow", "baz", "unicorn"],
-                "attrs": ["attr", "attrs"],
-                "foo": ["bar"],
+                "apache_airflow": {"airflow", "baz", "unicorn"},
+                "attrs": {"attr", "attrs"},
+                "foo": {"bar"},
             },
             id="well_formated_input_2files_and_config__parses_correctly",
         ),
@@ -215,7 +214,7 @@ def test_user_defined_mapping__well_formated_input_file__parses_correctly(
     udm = UserDefinedMapping(
         mapping_paths=custom_mapping_files, custom_mapping=custom_mapping
     )
-    mapped_packages = {k: sorted(list(v.import_names)) for k, v in udm.packages.items()}
+    mapped_packages = {k: v.import_names for k, v in udm.packages.items()}
     assert mapped_packages == expect
 
 
@@ -281,7 +280,8 @@ def test_LocalPackageResolver_lookup_packages(
 def test_resolve_dependencies(vector, isolate_default_resolver):
     dep_names = [dd.name for dd in vector.declared_deps]
     isolate_default_resolver(default_sys_path_env_for_tests)
-    assert resolve_dependencies(dep_names) == vector.expect_resolved_deps
+    actual = ignore_package_debug_info(resolve_dependencies(dep_names))
+    assert actual == vector.expect_resolved_deps
 
 
 def test_resolve_dependencies__informs_once_when_id_mapping_is_used(
@@ -290,8 +290,8 @@ def test_resolve_dependencies__informs_once_when_id_mapping_is_used(
     dep_names = ["some-foo", "pip", "some-foo"]
     isolate_default_resolver(default_sys_path_env_for_tests)
     expect = {
-        "pip": Package("pip", {DependenciesMapping.LOCAL_ENV: {"pip"}}),
-        "some-foo": Package("some-foo", {DependenciesMapping.IDENTITY: {"some_foo"}}),
+        "pip": Package("pip", {"pip"}, LocalPackageResolver),
+        "some-foo": Package("some-foo", {"some_foo"}, IdentityMapping),
     }
     expect_log = [
         (
@@ -301,7 +301,8 @@ def test_resolve_dependencies__informs_once_when_id_mapping_is_used(
         )
     ]
     caplog.set_level(logging.INFO)
-    assert resolve_dependencies(dep_names) == expect
+    actual = ignore_package_debug_info(resolve_dependencies(dep_names))
+    assert actual == expect
     assert caplog.record_tuples == expect_log
 
 

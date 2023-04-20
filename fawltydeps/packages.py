@@ -7,11 +7,10 @@ import tempfile
 import venv
 from abc import ABC, abstractmethod
 from contextlib import contextmanager
-from dataclasses import dataclass, field
-from enum import Enum
+from dataclasses import dataclass, replace
 from itertools import chain
 from pathlib import Path
-from typing import Dict, Iterable, Iterator, List, Optional, Set
+from typing import Dict, Iterable, Iterator, List, Optional, Set, Type, Union
 
 # importlib_metadata is gradually graduating into the importlib.metadata stdlib
 # module, however we rely on internal functions and recent (and upcoming)
@@ -30,23 +29,16 @@ from fawltydeps.types import (
     UnparseablePathException,
     UnresolvedDependenciesError,
 )
-from fawltydeps.utils import calculated_once, hide_dataclass_fields
+from fawltydeps.utils import calculated_once
 
 if sys.version_info >= (3, 11):
     import tomllib  # pylint: disable=no-member
 else:
     import tomli as tomllib
 
+PackageDebugInfo = Union[None, str, Dict[str, Set[str]]]
 
 logger = logging.getLogger(__name__)
-
-
-class DependenciesMapping(str, Enum):
-    """Types of dependency and imports mapping"""
-
-    IDENTITY = "identity"
-    LOCAL_ENV = "local_env"
-    USER_DEFINED = "user_defined"
 
 
 @dataclass
@@ -59,17 +51,9 @@ class Package:
     """
 
     package_name: str
-    mappings: Dict[DependenciesMapping, Set[str]] = field(default_factory=dict)
-    import_names: Set[str] = field(default_factory=set)
-
-    def __post_init__(self) -> None:
-        # The .import_names member is entirely redundant, as it can always be
-        # calculated from a union of self.mappings.values(). However, it is
-        # still used often enough (.is_used() is called once per declared
-        # dependency) that it makes sense to pre-calculate it, and rather hide
-        # the redundancy from our JSON output
-        self.import_names = {name for names in self.mappings.values() for name in names}
-        hide_dataclass_fields(self, "import_names")
+    import_names: Set[str]
+    resolved_with: Type["BasePackageResolver"]
+    debug_info: PackageDebugInfo = None
 
     @staticmethod
     def normalize_name(package_name: str) -> str:
@@ -84,15 +68,17 @@ class Package:
         return package_name.lower().replace("-", "_")
 
     def add_import_names(
-        self, *import_names: str, mapping: DependenciesMapping
+        self, *import_names: str, info: PackageDebugInfo = None
     ) -> None:
         """Add import names provided by this package.
 
-        Import names must be associated with a DependenciesMapping enum value,
-        as keeping track of this is extremely helpful when debugging.
+        Import names may be associated with a piece of extra information that
+        provides some details about its source (keeping track of this is
+        extremely helpful when debugging).
         """
-        self.mappings.setdefault(mapping, set()).update(import_names)
         self.import_names.update(import_names)
+        if info is not None:
+            self.debug_info = info
 
     def is_used(self, imported_names: Iterable[str]) -> bool:
         """Return True iff this package is among the given import names."""
@@ -179,10 +165,7 @@ class UserDefinedMapping(BasePackageResolver):
         custom_mapping = self.accumulate_mappings(_custom_mappings())
 
         return {
-            name: Package(
-                name,
-                {DependenciesMapping.USER_DEFINED: set(imports)},
-            )
+            name: Package(name, set(imports), UserDefinedMapping)
             for name, imports in custom_mapping.items()
         }
 
@@ -285,8 +268,12 @@ class LocalPackageResolver(BasePackageResolver):
                 _top_level_declared(dist)  # type: ignore
                 or _top_level_inferred(dist)  # type: ignore
             )
-            package = Package(dist.name, {DependenciesMapping.LOCAL_ENV: imports})
-            ret[normalized_name] = package
+            ret[normalized_name] = Package(
+                package_name=dist.name,
+                import_names=imports,
+                resolved_with=self.__class__,
+                debug_info={str(parent_dir): imports},
+            )
 
         return ret
 
@@ -351,8 +338,15 @@ class TemporaryPipInstallResolver(BasePackageResolver):
         """
         logger.info("Installing dependencies into a new temporary Python environment.")
         with self.temp_installed_requirements(sorted(package_names)) as venv_dir:
-            local_resolver = LocalPackageResolver(venv_dir)
-            return local_resolver.lookup_packages(package_names)
+            resolver = LocalPackageResolver(venv_dir)
+            return {
+                name: replace(
+                    package,
+                    resolved_with=self.__class__,
+                    debug_info="Provided by temporary `pip install`",
+                )
+                for name, package in resolver.lookup_packages(package_names).items()
+            }
 
 
 class IdentityMapping(BasePackageResolver):
@@ -365,14 +359,12 @@ class IdentityMapping(BasePackageResolver):
     @staticmethod
     def lookup_package(package_name: str) -> Package:
         """Convert a package name into a Package with the same import name."""
-        ret = Package(package_name)
         import_name = Package.normalize_name(package_name)
-        ret.add_import_names(import_name, mapping=DependenciesMapping.IDENTITY)
         logger.info(
             f"{package_name!r} was not resolved. "
             f"Assuming it can be imported as {import_name!r}."
         )
-        return ret
+        return Package(package_name, {import_name}, IdentityMapping)
 
     def lookup_packages(self, package_names: Set[str]) -> Dict[str, Package]:
         """Convert package names into Package objects w/the same import name."""
