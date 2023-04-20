@@ -3,7 +3,7 @@
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from hypothesis import HealthCheck, assume, given, settings
+from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 
 from fawltydeps.packages import (
@@ -13,25 +13,8 @@ from fawltydeps.packages import (
     resolve_dependencies,
 )
 
-
-def dict_subset_strategy(input_dict):
-    """Returns a hypothesis strategy to choose items from a dict."""
-    keys_strategy = st.lists(st.sampled_from(list(input_dict.keys())), unique=True)
-
-    def build_dict(keys):
-        return {key: input_dict[key] for key in keys}
-
-    return keys_strategy.map(build_dict)
-
-
 # The deps in each category should be disjoint
-
-# deps that cannot be resolved by a user-defined mapping and are not locally
-# installed
 other_deps = ["pandas", "numpy", "other"]
-other_deps_strategy = st.lists(st.sampled_from(other_deps), unique=True)
-
-# locally installed deps
 locally_installed_deps = {
     "setuptools": [
         "_distutils_hack",
@@ -41,27 +24,39 @@ locally_installed_deps = {
     "pip": ["pip"],
     "isort": ["isort"],
 }
-
-locally_installed_strategy = dict_subset_strategy(locally_installed_deps)
-
-# user-defined deps
 user_defined_mapping = {"apache-airflow": ["airflow", "foo", "bar"]}
 
-user_defined_deps = list(user_defined_mapping)
-user_defined_strategy = st.lists(st.sampled_from(user_defined_deps), unique=True)
-# splitting the user-defined mapping dict into 2 disjoint dicts:
-# one to be defined in a file and the other to be defined in the config
-user_mapping_in_file = {
-    dep: [imports[0]] for dep, imports in user_defined_mapping.items()
-}
-user_mapping_in_config = {
-    dep: imports[1:] for dep, imports in user_defined_mapping.items()
-}
 
-# Either all the user-defined mapping (in a file or config dict) is included
-# or none of it
-user_file_mapping_strategy = st.one_of(st.none(), st.just(user_mapping_in_file))
-user_config_mapping_strategy = st.one_of(st.none(), st.just(user_mapping_in_config))
+@st.composite
+def dict_subset_strategy(draw, input_dict):
+    """Returns a hypothesis strategy to choose items from a dict."""
+    keys = draw(st.lists(st.sampled_from(list(input_dict.keys())), unique=True))
+    return {k: input_dict[k] for k in keys}
+
+
+@st.composite
+def user_mapping_strategy(draw, user_mapping):
+    def sample_dict_keys_and_values_strategy(input_dict: Dict[str, List[str]]):
+        """Returns a hypothesis strategy to choose keys and values from a dict."""
+        keys = draw(st.lists(st.sampled_from(list(input_dict.keys())), unique=True))
+        return {
+            key: draw(st.lists(st.sampled_from(input_dict[key]), unique=True))
+            for key in keys
+        }
+
+    user_mapping_in_file = sample_dict_keys_and_values_strategy(user_mapping)
+    user_mapping_in_config = sample_dict_keys_and_values_strategy(user_mapping)
+
+    user_deps = []
+    if user_mapping_in_config or user_mapping_in_file:
+        drawn_deps = list(
+            set.union(
+                set(user_mapping_in_file.keys()), set(user_mapping_in_config.keys())
+            )
+        )
+        user_deps = draw(st.lists(st.sampled_from(drawn_deps), min_size=1, unique=True))
+
+    return user_deps, user_mapping_in_file, user_mapping_in_config
 
 
 def user_mapping_to_file_content(user_mapping: Dict[str, List[str]]) -> str:
@@ -117,62 +112,35 @@ def generate_expected_resolved_deps(
 # as the fixture-generated content does not have to be reset between test examples.
 # The test function only reads the file content and filters needed input.
 @given(
-    user_config_mapping=user_config_mapping_strategy,
-    user_file_mapping=user_file_mapping_strategy,
-    user_deps=user_defined_strategy,
-    installed_deps=locally_installed_strategy,
-    other_deps=other_deps_strategy,
+    user_mapping=user_mapping_strategy(user_defined_mapping),
+    installed_deps=dict_subset_strategy(locally_installed_deps),
+    other_deps=st.lists(st.sampled_from(other_deps), unique=True),
 )
 @settings(suppress_health_check=[HealthCheck.function_scoped_fixture])
 def test_resolve_dependencies__generates_expected_mappings(
-    user_deps,
     installed_deps,
     other_deps,
-    user_config_mapping,
-    user_file_mapping,
+    user_mapping,
     tmp_path,
 ):
 
-    # The case where the resolved output is expected to contain user-mapped
-    # deps, but a user-defined mapping is not provided, is not valid
-    assume(
-        not (
-            len(user_deps) > 0
-            and user_config_mapping is None
-            and user_file_mapping is None
-        )
-    )
+    user_deps, user_file_mapping, user_config_mapping = user_mapping
 
     # The following should be true as the different categories of deps should be
     # disjoint. A change to these deps that does not respect this condition
     # will break the following assert.
     assert (
         set.intersection(
-            set(locally_installed_deps.keys()) if locally_installed_deps else set(),
-            (set(user_defined_deps) if user_defined_deps else set()),
-            (set(other_deps) if other_deps else set()),
+            set(installed_deps.keys()) if installed_deps else set(),
+            set(user_deps) if user_deps else set(),
+        )
+        == set()
+        and set.intersection(
+            set(installed_deps.keys()) if installed_deps else set(),
+            set(other_deps) if other_deps else set(),
         )
         == set()
     )
-
-    # The following should be true as the user mapping defined above is disjoint
-    # from the locally installed deps. A change that does not respect this
-    # condition will break the following assert.
-    if installed_deps:
-        if user_file_mapping:
-            assert (
-                set.intersection(
-                    set(installed_deps.keys()), set(user_file_mapping.keys())
-                )
-                == set()
-            )
-        if user_config_mapping:
-            assert (
-                set.intersection(
-                    set(installed_deps.keys()), set(user_config_mapping.keys())
-                )
-                == set()
-            )
 
     dep_names = list(installed_deps.keys()) + user_deps + other_deps
 
