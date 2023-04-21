@@ -105,19 +105,18 @@ def test_local_env__default_venv__contains_pip_and_setuptools(tmp_path):
         assert import_names.issubset(p.mappings[DependenciesMapping.LOCAL_ENV])
 
 
-def test_local_env__current_venv__contains_our_test_dependencies():
+def test_local_env__current_venv__contains_prepared_packages(isolate_default_resolver):
+    isolate_default_resolver(
+        {
+            "pip": {"pip"},
+            "setuptools": {"setuptools", "pkg_resources"},
+            "isort": {"isort"},
+            "pydantic": {"pydantic"},
+            "pytest": {"pytest"},
+        }
+    )
     lpl = LocalPackageResolver()
-    expect_package_names = [
-        # Present in ~all venvs:
-        "pip",
-        "setuptools",
-        # FawltyDeps main deps
-        "isort",
-        "pydantic",
-        # Test dependencies
-        "hypothesis",
-        "pytest",
-    ]
+    expect_package_names = ["pip", "setuptools", "isort", "pydantic", "pytest"]
     for package_name in expect_package_names:
         assert package_name in lpl.packages
 

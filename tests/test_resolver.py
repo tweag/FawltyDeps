@@ -1,7 +1,7 @@
 """Verify behavior of packages resolver"""
 
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Set
 
 from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
@@ -13,22 +13,15 @@ from fawltydeps.packages import (
     resolve_dependencies,
 )
 
+from .utils import default_sys_path_env_for_tests
+
 # The deps in each category should be disjoint
 other_deps = ["pandas", "numpy", "other"]
-locally_installed_deps = {
-    "setuptools": [
-        "_distutils_hack",
-        "pkg_resources",
-        "setuptools",
-    ],
-    "pip": ["pip"],
-    "isort": ["isort"],
-}
 user_defined_mapping = {"apache-airflow": ["airflow", "foo", "bar"]}
 
 
 @st.composite
-def dict_subset_strategy(draw, input_dict: Dict[str, List[str]]):
+def dict_subset_strategy(draw, input_dict: Dict[str, Set[str]]):
     """Returns a hypothesis strategy to choose items from a dict."""
     if not input_dict:
         return {}
@@ -89,7 +82,7 @@ def generate_expected_resolved_deps(
         ret.update(
             {
                 dep: Package(
-                    dep,
+                    Package.normalize_name(dep),
                     {DependenciesMapping.LOCAL_ENV: set(imports)},
                 )
                 for dep, imports in locally_installed_deps.items()
@@ -118,7 +111,7 @@ def generate_expected_resolved_deps(
 # The test function only reads the file content and filters needed input.
 @given(
     user_mapping=user_mapping_strategy(user_defined_mapping),
-    installed_deps=dict_subset_strategy(locally_installed_deps),
+    installed_deps=dict_subset_strategy(default_sys_path_env_for_tests),
     other_deps=st.lists(st.sampled_from(other_deps), unique=True),
 )
 @settings(suppress_health_check=[HealthCheck.function_scoped_fixture])
@@ -126,6 +119,7 @@ def test_resolve_dependencies__generates_expected_mappings(
     installed_deps,
     other_deps,
     user_mapping,
+    isolate_default_resolver,
     tmp_path,
 ):
 
@@ -163,6 +157,7 @@ def test_resolve_dependencies__generates_expected_mappings(
         other_deps=other_deps,
     )
 
+    isolate_default_resolver(installed_deps)
     obtained = resolve_dependencies(
         dep_names,
         custom_mapping_files=set([custom_mapping_file])

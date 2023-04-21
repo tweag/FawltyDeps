@@ -4,7 +4,7 @@ import venv
 from pathlib import Path
 from tempfile import mkdtemp
 from textwrap import dedent
-from typing import Dict, Iterable, Set, Tuple, Union
+from typing import Callable, Dict, Iterable, Set, Tuple, Union
 
 import pytest
 
@@ -50,6 +50,40 @@ def fake_venv(tmp_path):
         return venv_dir, site_dir
 
     return create_one_fake_venv
+
+
+@pytest.fixture
+def isolate_default_resolver(
+    fake_venv: Callable[[Dict[str, Set[str]]], Tuple[Path, Path]], monkeypatch
+):
+    """Put a fake_venv at the start of sys.path to yield predictable Packages.
+
+    Call the returned function to place a fake venv with the specified package
+    mappings at the start of sys.path.
+
+    Rationale:
+    When testing resolve_dependencies() or anything that depends on
+    LocalPackageResolver() with default/empty pyenv, it is important to realize
+    that local packages will be resolved via sys.path. This is hard to fully
+    isolate/mock in tests, but we can do the following to approximate isolation:
+    - Use fake_venv() and pytest.monkeypatch.syspath_prepend(path) to make sure
+      packages that we expect to find in the default environment are always
+      found in this fake venv. This is achieved by using this fixture.
+    - Populate this fake_venv with package that we expect to find in the default
+      environment. These will then be resolved through the fake_venv to yield
+      predictable import names and mapping descriptions.
+    - Tests must make sure packages that they expect NOT to find in the default
+      environment are chosen/spelled in ways to ensure they are indeed never
+      found elsewhere in sys.path, as we are not able to isolate the resolver
+      from sys.path.
+    """
+
+    def inner(fake_packages: Dict[str, Set[str]]) -> Path:
+        _venv_dir, package_dir = fake_venv(fake_packages)
+        monkeypatch.syspath_prepend(package_dir)
+        return package_dir
+
+    return inner
 
 
 @pytest.fixture

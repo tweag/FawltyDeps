@@ -8,12 +8,7 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 from fawltydeps.main import main
-from fawltydeps.packages import (
-    DependenciesMapping,
-    IdentityMapping,
-    LocalPackageResolver,
-    Package,
-)
+from fawltydeps.packages import DependenciesMapping, Package
 from fawltydeps.types import (
     DeclaredDependency,
     Location,
@@ -35,16 +30,6 @@ def collect_dep_names(deps: Iterable[DeclaredDependency]) -> Iterable[str]:
     return (dep.name for dep in deps)
 
 
-# TODO: These tests are not fully isolated, i.e. they do not control the
-# virtualenv in which they run. For now, we assume that we are running in an
-# environment where at least these packages are available:
-# - setuptools (exposes multiple import names, including pkg_resources)
-# - pip (exposes a single import name: pip)
-# - isort (exposes no top_level.txt, but 'isort' import name can be inferred)
-
-local_env = LocalPackageResolver()
-
-
 def imports_factory(*imports: str) -> List[ParsedImport]:
     return [ParsedImport(imp, Location("<stdin>")) for imp in imports]
 
@@ -54,15 +39,26 @@ def deps_factory(*deps: str, path: str = "foo") -> List[DeclaredDependency]:
     return [DeclaredDependency(name=dep, source=Location(Path(path))) for dep in deps]
 
 
+# There are the packages/imports we expect to be able to resolve via the default
+# LocalPackageResolver. See the isolate_default_resolver() fixture for how we
+# make this come true.
+default_sys_path_env_for_tests = {
+    "pip": {"pip"},
+    "setuptools": {"setuptools", "pkg_resources", "_distutils_hack"},
+    "isort": {"isort"},
+    "typing-extensions": {"typing_extensions"},
+}
+
+
 def resolved_factory(*deps: str) -> Dict[str, Package]:
-    unresolved = set(deps)
-    resolved = local_env.lookup_packages(unresolved)
-    unresolved -= resolved.keys()
-    id_mapping = IdentityMapping()
-    resolved.update(id_mapping.lookup_packages(unresolved))
-    unresolved -= resolved.keys()
-    assert not unresolved
-    return resolved
+    def make_package(dep: str) -> Package:
+        imports = default_sys_path_env_for_tests.get(dep, None)
+        if imports is not None:  # exists in local env
+            return Package(dep, {DependenciesMapping.LOCAL_ENV: imports})
+        # fall back to identity mapping
+        return Package(dep, {DependenciesMapping.IDENTITY: {dep}})
+
+    return {dep: make_package(dep) for dep in deps}
 
 
 def undeclared_factory(*deps: str) -> List[UndeclaredDependency]:

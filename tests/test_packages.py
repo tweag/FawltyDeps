@@ -15,7 +15,7 @@ from fawltydeps.packages import (
 )
 from fawltydeps.types import UnparseablePathException, UnresolvedDependenciesError
 
-from .utils import SAMPLE_PROJECTS_DIR, test_vectors
+from .utils import SAMPLE_PROJECTS_DIR, default_sys_path_env_for_tests, test_vectors
 
 
 def test_package__empty_package__matches_nothing():
@@ -229,14 +229,6 @@ def test_user_defined_mapping__no_input__returns_empty_mapping():
     assert len(udm.packages) == 0
 
 
-# TODO: These tests are not fully isolated, i.e. they do not control the
-# virtualenv in which they run. For now, we assume that we are running in an
-# environment where at least these packages are available:
-# - setuptools (exposes multiple import names, including pkg_resources)
-# - pip (exposes a single import name: pip)
-# - isort (exposes no top_level.txt, but 'isort' import name can be inferred)
-
-
 @pytest.mark.parametrize(
     "dep_name,expect_import_names",
     [
@@ -272,7 +264,10 @@ def test_user_defined_mapping__no_input__returns_empty_mapping():
         ),
     ],
 )
-def test_LocalPackageResolver_lookup_packages(dep_name, expect_import_names):
+def test_LocalPackageResolver_lookup_packages(
+    isolate_default_resolver, dep_name, expect_import_names
+):
+    isolate_default_resolver(default_sys_path_env_for_tests)
     lpl = LocalPackageResolver()
     actual = lpl.lookup_packages({dep_name})
     if expect_import_names is None:
@@ -283,13 +278,17 @@ def test_LocalPackageResolver_lookup_packages(dep_name, expect_import_names):
 
 
 @pytest.mark.parametrize("vector", [pytest.param(v, id=v.id) for v in test_vectors])
-def test_resolve_dependencies(vector):
+def test_resolve_dependencies(vector, isolate_default_resolver):
     dep_names = [dd.name for dd in vector.declared_deps]
+    isolate_default_resolver(default_sys_path_env_for_tests)
     assert resolve_dependencies(dep_names) == vector.expect_resolved_deps
 
 
-def test_resolve_dependencies__informs_once_when_id_mapping_is_used(caplog):
+def test_resolve_dependencies__informs_once_when_id_mapping_is_used(
+    caplog, isolate_default_resolver
+):
     dep_names = ["some-foo", "pip", "some-foo"]
+    isolate_default_resolver(default_sys_path_env_for_tests)
     expect = {
         "pip": Package("pip", {DependenciesMapping.LOCAL_ENV: {"pip"}}),
         "some-foo": Package("some-foo", {DependenciesMapping.IDENTITY: {"some_foo"}}),
