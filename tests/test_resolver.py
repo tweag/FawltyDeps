@@ -81,10 +81,7 @@ def generate_expected_resolved_deps(
     if locally_installed_deps:
         ret.update(
             {
-                dep: Package(
-                    Package.normalize_name(dep),
-                    {DependenciesMapping.LOCAL_ENV: set(imports)},
-                )
+                dep: Package(dep, {DependenciesMapping.LOCAL_ENV: set(imports)})
                 for dep, imports in locally_installed_deps.items()
             }
         )

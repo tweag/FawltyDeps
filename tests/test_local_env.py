@@ -121,6 +121,21 @@ def test_local_env__current_venv__contains_prepared_packages(isolate_default_res
         assert package_name in lpl.packages
 
 
+def test_local_env__prefers_first_package_found_in_sys_path(isolate_default_resolver):
+    # Add the same package twice, The one that ends up _first_ in sys.path is
+    # the one that Python would end up importing, and it is therefore also the
+    # one that we should resolve to.
+
+    site_dir1 = isolate_default_resolver({"other": {"skipped"}})
+    site_dir2 = isolate_default_resolver({"other": {"actual"}})
+    assert site_dir1 != site_dir2
+    assert sys.path[0] == str(site_dir2)
+    actual = LocalPackageResolver().lookup_packages({"other"})
+    assert actual == {
+        "other": Package("other", {DependenciesMapping.LOCAL_ENV: {"actual"}}),
+    }
+
+
 def test_resolve_dependencies__in_empty_venv__reverts_to_id_mapping(tmp_path):
     venv.create(tmp_path, with_pip=False)
     id_mapping = IdentityMapping()
