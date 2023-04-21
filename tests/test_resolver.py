@@ -59,11 +59,11 @@ def user_mapping_to_file_content(user_mapping: Dict[str, List[str]]) -> str:
 
 
 def generate_expected_resolved_deps(
-    locally_installed_deps: Optional[Dict[str, List[str]]] = None,
-    other_deps: Optional[List[str]] = None,
-    user_defined_deps: Optional[List[str]] = None,
-    user_mapping_file: Optional[Path] = None,
-    user_mapping_from_config: Optional[Dict[str, List[str]]] = None,
+    locally_installed_deps: Dict[str, List[str]],
+    other_deps: List[str],
+    user_defined_deps: List[str],
+    user_mapping_file: List[Path],
+    user_mapping_from_config: Dict[str, List[str]],
 ):
     """
     Returns a dict of resolved packages.
@@ -126,13 +126,13 @@ def test_resolve_dependencies__generates_expected_mappings(
     # will break the following assert.
     assert (
         set.intersection(
-            set(installed_deps.keys()) if installed_deps else set(),
-            set(user_deps) if user_deps else set(),
+            set(installed_deps.keys()),
+            set(user_deps),
         )
         == set()
         and set.intersection(
-            set(installed_deps.keys()) if installed_deps else set(),
-            set(other_deps) if other_deps else set(),
+            set(installed_deps.keys()),
+            set(other_deps),
         )
         == set()
     )
