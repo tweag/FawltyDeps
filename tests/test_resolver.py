@@ -49,16 +49,7 @@ def user_mapping_strategy(draw, user_mapping):
     user_mapping_in_file = draw(sample_dict_keys_and_values_strategy(user_mapping))
     user_mapping_in_config = draw(sample_dict_keys_and_values_strategy(user_mapping))
 
-    user_deps = []
-    if user_mapping_in_config or user_mapping_in_file:
-        drawn_deps = list(
-            set.union(
-                set(user_mapping_in_file.keys()), set(user_mapping_in_config.keys())
-            )
-        )
-        user_deps = draw(st.lists(st.sampled_from(drawn_deps), min_size=1, unique=True))
-
-    return user_deps, user_mapping_in_file, user_mapping_in_config
+    return user_mapping_in_file, user_mapping_in_config
 
 
 def user_mapping_to_file_content(user_mapping: Dict[str, List[str]]) -> str:
@@ -125,7 +116,10 @@ def test_resolve_dependencies__generates_expected_mappings(
     user_mapping,
     tmp_path,
 ):
-    user_deps, user_file_mapping, user_config_mapping = user_mapping
+    user_file_mapping, user_config_mapping = user_mapping
+    user_deps = list(
+        set.union(set(user_file_mapping.keys()), set(user_config_mapping.keys()))
+    )
 
     # The following should be true as the different categories of deps should be
     # disjoint. A change to these deps that does not respect this condition
