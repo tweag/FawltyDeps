@@ -35,17 +35,19 @@ def dict_subset_strategy(draw, input_dict):
 
 
 @st.composite
-def user_mapping_strategy(draw, user_mapping):
-    def sample_dict_keys_and_values_strategy(input_dict: Dict[str, List[str]]):
-        """Returns a hypothesis strategy to choose keys and values from a dict."""
-        keys = draw(st.lists(st.sampled_from(list(input_dict.keys())), unique=True))
-        return {
-            key: draw(st.lists(st.sampled_from(input_dict[key]), unique=True))
-            for key in keys
-        }
+def sample_dict_keys_and_values_strategy(draw, input_dict: Dict[str, List[str]]):
+    """Returns a hypothesis strategy to choose keys and values from a dict."""
+    keys = draw(st.lists(st.sampled_from(list(input_dict.keys())), unique=True))
+    return {
+        key: draw(st.lists(st.sampled_from(input_dict[key]), unique=True))
+        for key in keys
+    }
 
-    user_mapping_in_file = sample_dict_keys_and_values_strategy(user_mapping)
-    user_mapping_in_config = sample_dict_keys_and_values_strategy(user_mapping)
+
+@st.composite
+def user_mapping_strategy(draw, user_mapping):
+    user_mapping_in_file = draw(sample_dict_keys_and_values_strategy(user_mapping))
+    user_mapping_in_config = draw(sample_dict_keys_and_values_strategy(user_mapping))
 
     user_deps = []
     if user_mapping_in_config or user_mapping_in_file:
@@ -123,7 +125,6 @@ def test_resolve_dependencies__generates_expected_mappings(
     user_mapping,
     tmp_path,
 ):
-
     user_deps, user_file_mapping, user_config_mapping = user_mapping
 
     # The following should be true as the different categories of deps should be
