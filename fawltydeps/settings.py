@@ -109,7 +109,7 @@ class Settings(BaseSettings):  # type: ignore
     output_format: OutputFormat = OutputFormat.HUMAN_SUMMARY
     code: Set[PathOrSpecial] = {Path(".")}
     deps: Set[Path] = {Path(".")}
-    pyenv: Optional[Path] = None
+    pyenvs: Set[Path] = set()
     custom_mapping_file: Set[Path] = set()
     custom_mapping: Optional[CustomMapping] = None
     ignore_undeclared: Set[str] = set()

@@ -166,6 +166,12 @@ This will tell FawltyDeps:
 - to use the Python environment at `.venv/` to map dependency names in
   `pyproject.toml` into import names used in your code under `my_package/`
 
+You can use `--pyenv` multiple times to have FawltyDeps look for packages in
+multiple Python environments. When mapping a dependency into import names,
+FawltyDeps will then use the union of all imports provided by all matching
+packages across those Python environments as valid import names for that
+dependency.
+
 #### Identity mapping
 
 When FawltyDeps is unable to find an installed package that corresponds to a
@@ -270,9 +276,10 @@ Here is a complete list of configuration directives we support:
   Defaults to the current directory, i.e. like `code = ["."]`.
 - `deps`: Files or directories containing the declared dependencies.
   Defaults to the current directory, i.e. like `deps = ["."]`.
-- `pyenv`: The path to the Python environment to use for resolving project
-  dependencies to provided import names. Defaults to the Python environment
-  where FawltyDeps is installed.
+- `pyenvs`: Python environments (directories like `.venv`, `__pypackages__`, or
+  similar) to use for resolving project dependencies into provided import names.
+  Defaults to an empty list, i.e. like `pyenvs = []`, which is interpreted as
+  using the Python environment where FawltyDeps is installed (aka. `sys.path`).
 - `output_format`: Which output format to use by default. One of `human_summary`,
   `human_detailed`, or `json`.
   The default corresponds to `output_format = "human_summary"`.

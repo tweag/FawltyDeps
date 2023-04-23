@@ -27,7 +27,7 @@ EXPECT_DEFAULTS = dict(
     actions={Action.REPORT_UNDECLARED, Action.REPORT_UNUSED},
     code={Path(".")},
     deps={Path(".")},
-    pyenv=None,
+    pyenvs=set(),
     custom_mapping_file=set(),
     custom_mapping=None,
     output_format=OutputFormat.HUMAN_SUMMARY,
@@ -273,6 +273,14 @@ settings_tests_samples = [
         cmdline=dict(custom_mapping_file=["mapping.toml"]),
         expect=make_settings_dict(
             custom_mapping_file={Path("mapping.toml")},
+        ),
+    ),
+    SettingsTestVector(
+        "config_file_with_pyenvs_and_cli__cli_pyenvs_overrides_config",
+        config=dict(pyenvs=["foo", "bar"]),
+        cmdline=dict(pyenvs=["baz", "xyzzy"]),
+        expect=make_settings_dict(
+            pyenvs={Path("baz"), Path("xyzzy")},
         ),
     ),
     SettingsTestVector(

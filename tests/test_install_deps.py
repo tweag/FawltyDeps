@@ -11,9 +11,7 @@ from fawltydeps.packages import (
 
 def test_resolve_dependencies_install_deps__via_local_cache(local_pypi):
     debug_info = "Provided by temporary `pip install`"
-    actual = resolve_dependencies(
-        ["leftpadx", "click"], pyenv_path=None, install_deps=True
-    )
+    actual = resolve_dependencies(["leftpadx", "click"], install_deps=True)
     assert actual == {
         "leftpadx": Package(
             "leftpadx", {"leftpad"}, TemporaryPipInstallResolver, debug_info
@@ -30,9 +28,7 @@ def test_resolve_dependencies_install_deps__handle_pip_install_failure(
     # For now, IdentityMapping "saves the day" and supplies a Package object.
     # Soon, this should result in an unresolved package error instead.
     caplog.set_level(logging.WARNING)
-    actual = resolve_dependencies(
-        ["does_not_exist"], pyenv_path=None, install_deps=True
-    )
+    actual = resolve_dependencies(["does_not_exist"], install_deps=True)
     assert actual == {
         "does_not_exist": Package(
             "does_not_exist", {"does_not_exist"}, IdentityMapping
@@ -47,7 +43,7 @@ def test_resolve_dependencies_install_deps__pip_install_some_packages(
     debug_info = "Provided by temporary `pip install`"
     caplog.set_level(logging.WARNING)
     actual = resolve_dependencies(
-        ["click", "does_not_exist", "leftpadx"], pyenv_path=None, install_deps=True
+        ["click", "does_not_exist", "leftpadx"], install_deps=True
     )
     # pip install is able to install "leftpadx", but "package_does_not_exist"
     # falls through to IdentityMapping.

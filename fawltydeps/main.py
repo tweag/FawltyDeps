@@ -112,7 +112,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
             (dep.name for dep in self.declared_deps),
             custom_mapping_files=self.settings.custom_mapping_file,
             custom_mapping=self.settings.custom_mapping,
-            pyenv_path=self.settings.pyenv,
+            pyenv_paths=self.settings.pyenvs,
             install_deps=self.settings.install_deps,
         )
 

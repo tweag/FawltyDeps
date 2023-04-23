@@ -176,7 +176,7 @@ def test_local_env__multiple_pyenvs__merges_imports_for_same_package(fake_venv):
 def test_resolve_dependencies__in_empty_venv__reverts_to_id_mapping(tmp_path):
     venv.create(tmp_path, with_pip=False)
     id_mapping = IdentityMapping()
-    actual = resolve_dependencies(["pip", "setuptools"], pyenv_path=tmp_path)
+    actual = resolve_dependencies(["pip", "setuptools"], pyenv_paths={tmp_path})
     assert actual == id_mapping.lookup_packages({"pip", "setuptools"})
 
 
@@ -188,7 +188,9 @@ def test_resolve_dependencies__in_fake_venv__returns_local_and_id_deps(fake_venv
             "empty_pkg": set(),
         }
     )
-    actual = resolve_dependencies(["PIP", "pandas", "empty-pkg"], pyenv_path=venv_dir)
+    actual = resolve_dependencies(
+        ["PIP", "pandas", "empty-pkg"], pyenv_paths={venv_dir}
+    )
     assert actual == {
         "PIP": Package(
             "pip", {"pip"}, LocalPackageResolver, {str(site_packages): {"pip"}}
@@ -196,5 +198,33 @@ def test_resolve_dependencies__in_fake_venv__returns_local_and_id_deps(fake_venv
         "pandas": Package("pandas", {"pandas"}, IdentityMapping),
         "empty-pkg": Package(
             "empty_pkg", set(), LocalPackageResolver, {str(site_packages): set()}
+        ),
+    }
+
+
+def test_resolve_dependencies__in_2_fake_venvs__returns_local_and_id_deps(fake_venv):
+    venv_dir1, site_dir1 = fake_venv({"some_module": {"first_import"}})
+    venv_dir2, site_dir2 = fake_venv(
+        {"some_module": {"second_import"}, "other-module": {"other_module"}}
+    )
+    actual = resolve_dependencies(
+        ["some_module", "pandas", "other_module"], pyenv_paths={venv_dir1, venv_dir2}
+    )
+    assert actual == {
+        "some_module": Package(
+            "some_module",
+            {"first_import", "second_import"},
+            LocalPackageResolver,
+            {
+                str(site_dir1): {"first_import"},
+                str(site_dir2): {"second_import"},
+            },
+        ),
+        "pandas": Package("pandas", {"pandas"}, IdentityMapping),
+        "other_module": Package(
+            "other_module",
+            {"other_module"},
+            LocalPackageResolver,
+            {str(site_dir2): {"other_module"}},
         ),
     }
