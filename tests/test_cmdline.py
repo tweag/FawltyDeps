@@ -35,7 +35,7 @@ def make_json_settings_dict(**kwargs):
         "actions": ["check_undeclared", "check_unused"],
         "code": ["."],
         "deps": ["."],
-        "pyenv": None,
+        "pyenvs": [],
         "custom_mapping_file": [],
         "custom_mapping": None,
         "output_format": "human_summary",
@@ -710,6 +710,25 @@ def test_check_detailed__simple_project_in_fake_venv__resolves_imports_vs_deps(
     assert returncode == 0
 
 
+def test_check_detailed__simple_project_w_2_fake_venv__resolves_imports_vs_deps(
+    fake_venv, project_with_code_and_requirements_txt
+):
+    tmp_path = project_with_code_and_requirements_txt(
+        imports=["some_import", "other_import", "yet_another"],
+        declares=["something", "other"],
+    )
+    venv_dir1, _ = fake_venv({"something": {"some_import"}})
+    venv_dir2, _ = fake_venv({"something": {"other_import"}, "other": {"yet_another"}})
+
+    output, returncode = run_fawltydeps_function(
+        "--detailed", f"{tmp_path}", "--pyenv", f"{venv_dir1}", f"{venv_dir2}"
+    )
+    assert output.splitlines() == [
+        Analysis.success_message(check_undeclared=True, check_unused=True),
+    ]
+    assert returncode == 0
+
+
 @pytest.mark.parametrize(
     "args,imports,dependencies,expected",
     [
@@ -849,7 +868,7 @@ def test_cmdline_on_ignored_undeclared_option(
                 output_format = 'human_detailed'
                 # code = ['.']
                 deps = ['foobar']
-                # pyenv = ...
+                # pyenvs = []
                 # custom_mapping_file = []
                 # ignore_undeclared = []
                 # ignore_unused = []
@@ -873,7 +892,7 @@ def test_cmdline_on_ignored_undeclared_option(
                 # output_format = 'human_summary'
                 # code = ['.']
                 # deps = ['.']
-                pyenv = 'None'
+                pyenvs = ['None']
                 # custom_mapping_file = []
                 # ignore_undeclared = []
                 # ignore_unused = []

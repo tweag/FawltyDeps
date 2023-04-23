@@ -432,15 +432,13 @@ def resolve_dependencies(
     dep_names: Iterable[str],
     custom_mapping_files: Optional[Set[Path]] = None,
     custom_mapping: Optional[CustomMapping] = None,
-    pyenv_path: Optional[Path] = None,
+    pyenv_paths: AbstractSet[Path] = frozenset(),
     install_deps: bool = False,
 ) -> Dict[str, Package]:
     """Associate dependencies with corresponding Package objects.
 
-    Use LocalPackageResolver to find Package objects for each of the given
-    dependencies inside the virtualenv given by 'pyenv_path'. When 'pyenv_path'
-    is None (the default), look for packages in the current Python environment
-    (i.e. equivalent to sys.path).
+    Setup a list of resolvers according to the given settings/arguments, and
+    use these to find Package objects for each of the given dependencies.
 
     Return a dict mapping dependency names to the resolved Package objects.
     """
@@ -457,9 +455,7 @@ def resolve_dependencies(
         )
     )
 
-    resolvers.append(
-        LocalPackageResolver(set() if pyenv_path is None else {pyenv_path})
-    )
+    resolvers.append(LocalPackageResolver(pyenv_paths))
     if install_deps:
         resolvers += [TemporaryPipInstallResolver()]
     # Identity mapping being at the bottom of the resolvers stack ensures that

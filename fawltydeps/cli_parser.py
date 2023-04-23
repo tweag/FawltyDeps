@@ -156,12 +156,15 @@ def populate_parser_paths_options(parser: argparse._ActionsContainer) -> None:
     )
     parser.add_argument(
         "--pyenv",
+        dest="pyenvs",
+        nargs="+",
+        action="union",
         type=Path,
         metavar="PYENV_DIR",
         help=(
-            "Where to find a Python environment that has the project dependencies"
-            " installed, defaults to the Python environment where FawltyDeps is"
-            " installed."
+            "Where to find Python environments that have project dependencies"
+            " installed. When empty (the default), fall back to the Python"
+            " environment where FawltyDeps is installed."
         ),
     )
     parser.add_argument(

@@ -66,7 +66,7 @@ class Experiment(BaseExperiment):
             actions={Action.REPORT_UNDECLARED, Action.REPORT_UNUSED},
             code=[(project_path / path) for path in self.code],
             deps=[(project_path / path) for path in self.deps],
-            pyenv=self.get_venv_dir(cache),
+            pyenvs={self.get_venv_dir(cache)},
             install_deps=self.install_deps,
         )
 
