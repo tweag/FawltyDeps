@@ -28,30 +28,35 @@ user_defined_mapping = {"apache-airflow": ["airflow", "foo", "bar"]}
 
 
 @st.composite
-def dict_subset_strategy(draw, input_dict):
+def dict_subset_strategy(draw, input_dict: Dict[str, List[str]]):
     """Returns a hypothesis strategy to choose items from a dict."""
+    if not input_dict:
+        return {}
     keys = draw(st.lists(st.sampled_from(list(input_dict.keys())), unique=True))
     return {k: input_dict[k] for k in keys}
 
 
 @st.composite
-def user_mapping_strategy(draw, user_mapping):
-    def sample_dict_keys_and_values_strategy(input_dict: Dict[str, List[str]]):
-        """Returns a hypothesis strategy to choose keys and values from a dict."""
-        keys = draw(st.lists(st.sampled_from(list(input_dict.keys())), unique=True))
-        return {
-            key: draw(st.lists(st.sampled_from(input_dict[key]), unique=True))
-            for key in keys
-        }
+def sample_dict_keys_and_values_strategy(draw, input_dict: Dict[str, List[str]]):
+    """Returns a hypothesis strategy to choose keys and values from a dict."""
+    keys = draw(st.lists(st.sampled_from(list(input_dict.keys())), unique=True))
+    return {
+        key: draw(st.lists(st.sampled_from(input_dict[key]), unique=True))
+        for key in keys
+    }
 
-    user_mapping_in_file = sample_dict_keys_and_values_strategy(user_mapping)
-    user_mapping_in_config = sample_dict_keys_and_values_strategy(user_mapping)
+
+@st.composite
+def user_mapping_strategy(draw, user_mapping: Dict[str, List[str]]):
+    user_mapping_in_file = draw(sample_dict_keys_and_values_strategy(user_mapping))
+    user_mapping_in_config = draw(sample_dict_keys_and_values_strategy(user_mapping))
 
     user_deps = []
     if user_mapping_in_config or user_mapping_in_file:
         drawn_deps = list(
             set.union(
-                set(user_mapping_in_file.keys()), set(user_mapping_in_config.keys())
+                set(user_mapping_in_file.keys()),
+                set(user_mapping_in_config.keys()),
             )
         )
         user_deps = draw(st.lists(st.sampled_from(drawn_deps), min_size=1, unique=True))
