@@ -67,11 +67,11 @@ def user_mapping_to_file_content(user_mapping: Dict[str, List[str]]) -> str:
 
 
 def generate_expected_resolved_deps(
-    locally_installed_deps: Optional[Dict[str, Set[str]]] = None,
-    other_deps: Optional[Dict[str, List[str]]] = None,
-    user_defined_deps: Optional[List[str]] = None,
+    locally_installed_deps: Dict[str, List[str]],
+    other_deps: Dict[str, List[str]],
+    user_defined_deps: List[str],
+    user_mapping_from_config: Dict[str, List[str]],
     user_mapping_file: Optional[Path] = None,
-    user_mapping_from_config: Optional[Dict[str, List[str]]] = None,
     install_deps: bool = False,
 ) -> Dict[str, Package]:
     """
