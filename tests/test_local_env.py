@@ -12,8 +12,6 @@ from fawltydeps.packages import (
     resolve_dependencies,
 )
 
-from .project_helpers import TarballPackage
-
 major, minor = sys.version_info[:2]
 
 # When the user gives us a --pyenv arg that points to a (non-PEP582) Python
@@ -166,17 +164,12 @@ def test_resolve_dependencies__in_fake_venv__returns_local_and_id_deps(fake_venv
     }
 
 
-def test_on_installed_venv__returns_local_deps(request, monkeypatch):
-    cache_dir = TarballPackage.cache_dir(request.config.cache)
-    TarballPackage.get_tarballs(request.config.cache)
-    # set the test's env variables so that pip would install from the local repo
-    monkeypatch.setenv("PIP_NO_INDEX", "True")
-    monkeypatch.setenv("PIP_FIND_LINKS", str(cache_dir))
-    debug_info = "Provided by temporary `pip install`"
-
+@pytest.mark.usefixtures("local_pypi")
+def test_on_installed_venv__returns_local_deps():
     actual = resolve_dependencies(
         ["leftpadx", "click"], pyenv_path=None, install_deps=True
     )
+    debug_info = "Provided by temporary `pip install`"
     assert actual == {
         "leftpadx": Package(
             "leftpadx", {"leftpad"}, TemporaryPipInstallResolver, debug_info

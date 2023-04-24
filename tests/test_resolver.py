@@ -3,22 +3,23 @@
 from pathlib import Path
 from typing import Dict, List, Optional, Set
 
+import pytest
 from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 
 from fawltydeps.packages import (
     IdentityMapping,
     LocalPackageResolver,
+    TemporaryPipInstallResolver,
     Package,
     UserDefinedMapping,
     resolve_dependencies,
 )
 
-from .project_helpers import TarballPackage
 from .utils import default_sys_path_env_for_tests, ignore_package_debug_info
 
 # The deps in each category should be disjoint
-other_deps = {"leftpadx": ["leftpad"]}
+other_deps = {"leftpadx": {"leftpad"}}
 user_defined_mapping = {"apache-airflow": ["airflow", "foo", "bar"]}
 
 
@@ -99,12 +100,14 @@ def generate_expected_resolved_deps(
         if install_deps:
             ret.update(
                 {
-                    dep: Package(dep, set(imports), LocalPackageResolver)
+                    dep: Package(dep, set(imports), TemporaryPipInstallResolver)
                     for dep, imports in other_deps.items()
                 }
             )
         else:
-            ret.update({dep: Package(dep, {dep}, IdentityMapping) for dep in other_deps})
+            ret.update(
+                {dep: Package(dep, {dep}, IdentityMapping) for dep in other_deps}
+            )
     return ret
 
 
@@ -112,6 +115,7 @@ def generate_expected_resolved_deps(
 # fixture only runs once for all the test cases. But this is not a problem,
 # as the fixture-generated content does not have to be reset between test examples.
 # The test function only reads the file content and filters needed input.
+@pytest.mark.usefixtures("local_pypi")
 @given(
     user_mapping=user_mapping_strategy(user_defined_mapping),
     installed_deps=dict_subset_strategy(default_sys_path_env_for_tests),
@@ -130,8 +134,6 @@ def test_resolve_dependencies__generates_expected_mappings(
     isolate_default_resolver,
     tmp_path,
     install_deps,
-    request,
-    monkeypatch,
 ):
 
     user_deps, user_file_mapping, user_config_mapping = user_mapping
@@ -159,13 +161,6 @@ def test_resolve_dependencies__generates_expected_mappings(
         custom_mapping_file.write_text(user_mapping_to_file_content(user_file_mapping))
     else:
         custom_mapping_file = None
-
-    if install_deps:
-        cache_dir = TarballPackage.cache_dir(request.config.cache)
-        TarballPackage.get_tarballs(request.config.cache)
-        # set the test's env variables so that pip would install from the local repo
-        monkeypatch.setenv("PIP_NO_INDEX", "True")
-        monkeypatch.setenv("PIP_FIND_LINKS", str(cache_dir))
 
     expected = generate_expected_resolved_deps(
         user_defined_deps=user_deps,
