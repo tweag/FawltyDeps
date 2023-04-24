@@ -10,6 +10,17 @@ import pytest
 
 from fawltydeps.types import TomlData
 
+from .project_helpers import TarballPackage
+
+
+@pytest.fixture
+def local_pypi(request, monkeypatch):
+    cache_dir = TarballPackage.cache_dir(request.config.cache)
+    TarballPackage.get_tarballs(request.config.cache)
+    # set the test's env variables so that pip would install from the local repo
+    monkeypatch.setenv("PIP_NO_INDEX", "True")
+    monkeypatch.setenv("PIP_FIND_LINKS", str(cache_dir))
+
 
 @pytest.fixture
 def write_tmp_files(tmp_path: Path):
