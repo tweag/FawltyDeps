@@ -904,6 +904,30 @@ def test_cmdline_on_ignored_undeclared_option(
             ).splitlines(),
             id="generate_toml_config_with_a_setting_set_to_str_None",
         ),
+        pytest.param(
+            {"pyenvs": ["foo", "bar"]},
+            ["--pyenv", "baz", "xyzzy", "--generate-toml-config"],
+            dedent(
+                """\
+                # Copy this TOML section into your pyproject.toml to configure FawltyDeps
+                # (default values are commented)
+                [tool.fawltydeps]
+                # actions = ['check_undeclared', 'check_unused']
+                # output_format = 'human_summary'
+                # code = ['.']
+                # deps = ['.']
+                pyenvs = ['baz', 'xyzzy']
+                # custom_mapping_file = []
+                # ignore_undeclared = []
+                # ignore_unused = []
+                # deps_parser_choice = ...
+                # install_deps = false
+                # verbosity = 0
+                # [tool.fawltydeps.custom_mapping]
+                """
+            ).splitlines(),
+            id="generate_toml_config_with_multiple_pyenvs",
+        ),
     ],
 )
 def test_cmdline_args_in_combination_with_config_file(
