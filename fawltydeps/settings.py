@@ -4,12 +4,13 @@ import json
 import logging
 import sys
 from enum import Enum
-from functools import total_ordering
+from functools import partial, total_ordering
 from pathlib import Path
 from typing import ClassVar, List, Optional, Set, TextIO, Tuple, Type, Union
 
 from pydantic import BaseSettings
 from pydantic.env_settings import SettingsSourceCallable  # pylint: disable=E0611
+from pydantic.json import custom_pydantic_encoder  # pylint: disable=no-name-in-module
 
 from fawltydeps.types import CustomMapping, ParserChoice, PathOrSpecial, TomlData
 
@@ -211,7 +212,9 @@ def print_toml_config(settings: Settings, out: TextIO = sys.stdout) -> None:
     """Serialize the given Settings object into a TOML config section."""
     # Use JSON serialization as a basis for TOML output. Load that back into
     # Python and then use Python's repr() representation below
-    simple_settings = json.loads(settings.json())
+    set_sort = partial(sorted, key=str)
+    encoder = partial(custom_pydantic_encoder, {frozenset: set_sort, set: set_sort})
+    simple_settings = json.loads(json.dumps(settings, default=encoder))
     defaults = {
         name: field.default for name, field in settings.__class__.__fields__.items()
     }
