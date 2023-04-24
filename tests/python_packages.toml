@@ -21,3 +21,7 @@ sha256 = "7682dc8afb30297001674575ea00d1814d808d6a36af415a82bd481d37ba7b8e"
 [leftpadx-wheel]
 url = "https://files.pythonhosted.org/packages/37/ca/41e9d0964799b00ad00c6254e6c0bc1a26c604456ab659e13cf91e5bdd81/leftpadx-0.0.1-py3-none-any.whl"
 sha256 = "512084949099fab88042be250a6da55dcf933ac3af8feffddefd52dace66160c"
+
+[sqlobject-wheel]
+url = "https://files.pythonhosted.org/packages/11/80/e3e7d7135af3419896b58d4858228f2b597dc65d54fde7e9960ebed45a90/SQLObject-3.10.1-py2.py3-none-any.whl"
+sha256 = "534d1eaa21636b0a1cef697b842f4f7ae0f832de133295e764edac7857a64ffa"

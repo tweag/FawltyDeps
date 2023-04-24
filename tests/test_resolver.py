@@ -19,7 +19,7 @@ from fawltydeps.packages import (
 from .utils import default_sys_path_env_for_tests, ignore_package_debug_info
 
 # The deps in each category should be disjoint
-other_deps = {"leftpadx": {"leftpad"}}
+other_deps = {"leftpadx": ["leftpad"], "SQLObject": ["sqlobject"]}
 user_defined_mapping = {"apache-airflow": ["airflow", "foo", "bar"]}
 
 
@@ -106,7 +106,7 @@ def generate_expected_resolved_deps(
             )
         else:
             ret.update(
-                {dep: Package(dep, {dep}, IdentityMapping) for dep in other_deps}
+                {dep: Package(dep, {Package.normalize_name(dep)}, IdentityMapping) for dep in other_deps}
             )
     return ret
 
