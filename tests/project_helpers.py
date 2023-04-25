@@ -151,7 +151,7 @@ class CachedExperimentVenv:
         the hash and create the venv.
         """
         dummy_script = self.venv_script_lines(Path("/dev/null"))
-        py_version = f"{sys.version_info.major},{sys.version_info.major}"
+        py_version = f"{sys.version_info.major},{sys.version_info.minor}"
         script_and_version_bytes = ("".join(dummy_script) + py_version).encode()
         return hashlib.sha256(script_and_version_bytes).hexdigest()
 
