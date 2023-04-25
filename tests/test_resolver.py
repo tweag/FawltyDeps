@@ -10,8 +10,8 @@ from hypothesis import strategies as st
 from fawltydeps.packages import (
     IdentityMapping,
     LocalPackageResolver,
-    TemporaryPipInstallResolver,
     Package,
+    TemporaryPipInstallResolver,
     UserDefinedMapping,
     resolve_dependencies,
 )
@@ -19,7 +19,7 @@ from fawltydeps.packages import (
 from .utils import default_sys_path_env_for_tests, ignore_package_debug_info
 
 # The deps in each category should be disjoint
-other_deps = {"leftpadx": ["leftpad"], "SQLObject": ["sqlobject"]}
+other_deps = {"leftpadx": {"leftpad"}, "SQLObject": {"sqlobject"}}
 user_defined_mapping = {"apache-airflow": ["airflow", "foo", "bar"]}
 
 
@@ -85,7 +85,7 @@ def generate_expected_resolved_deps(
     if locally_installed_deps:
         ret.update(
             {
-                dep: Package(dep, imports, LocalPackageResolver)
+                dep: Package(dep, set(imports), LocalPackageResolver)
                 for dep, imports in locally_installed_deps.items()
             }
         )
@@ -106,7 +106,10 @@ def generate_expected_resolved_deps(
             )
         else:
             ret.update(
-                {dep: Package(dep, {Package.normalize_name(dep)}, IdentityMapping) for dep in other_deps}
+                {
+                    dep: Package(dep, {Package.normalize_name(dep)}, IdentityMapping)
+                    for dep in other_deps
+                }
             )
     return ret
 
@@ -134,6 +137,8 @@ def test_resolve_dependencies__generates_expected_mappings(
     isolate_default_resolver,
     tmp_path,
     install_deps,
+    request,
+    mocker,
 ):
 
     user_deps, user_file_mapping, user_config_mapping = user_mapping
@@ -172,6 +177,15 @@ def test_resolve_dependencies__generates_expected_mappings(
     )
 
     isolate_default_resolver(installed_deps)
+
+    # patch TemporaryPipInstallResolver so that it's called with the cache
+    # option in the resolver
+    tmp_pip_install_resolver = TemporaryPipInstallResolver(cache=request.config.cache)
+    mocker.patch(
+        "fawltydeps.packages.TemporaryPipInstallResolver",
+        return_value=tmp_pip_install_resolver,
+    )
+
     actual = resolve_dependencies(
         dep_names,
         custom_mapping_files=set([custom_mapping_file])
