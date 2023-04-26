@@ -23,7 +23,9 @@ logger = logging.getLogger(__name__)
 
 
 def assert_unordered_equivalence(actual: Iterable[Any], expected: Iterable[Any]):
-    assert sorted(actual) == sorted(expected)
+    actual_s = sorted(actual)
+    expected_s = sorted(expected)
+    assert actual_s == expected_s, f"{actual_s!r} != {expected_s!r}"
 
 
 def collect_dep_names(deps: Iterable[DeclaredDependency]) -> Iterable[str]:
