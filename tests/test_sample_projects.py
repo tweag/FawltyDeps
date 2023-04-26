@@ -21,7 +21,7 @@ tests/sample_projects
 """
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterator, List
+from typing import Iterator, List, Optional
 
 import pytest
 
@@ -43,12 +43,18 @@ class Experiment(BaseExperiment):
     Input to the experiment consists of the following members:
     - code: Settings.code paths relative to the sample project root
     - deps: Settings.deps paths relative to the sample project root
+    - pyenvs: Settings.pyenvs paths relative to the sample project root.
+              If not given (or None), a cached venv with the requirements from
+              BaseExperiment.requirements installed will be used instead.
+    - install_deps: Whether or not to include the TemporaryPipInstall resolver
+                    when resolving dependencies (default: False)
 
     See BaseExperiment for details on the inherited members.
     """
 
     code: List[str]
     deps: List[str]
+    pyenvs: Optional[List[str]]
     install_deps: bool
 
     @classmethod
@@ -56,17 +62,22 @@ class Experiment(BaseExperiment):
         return cls(
             code=data.get("code", [""]),
             deps=data.get("deps", [""]),
+            pyenvs=data.get("pyenvs", None),
             install_deps=data.get("install_deps", False),
             **cls._init_args_from_toml(name, data),
         )
 
     def build_settings(self, project_path: Path, cache: pytest.Cache) -> Settings:
         """Construct a Settings object appropriate for this experiment."""
+        if self.pyenvs is None:  # use cached venv
+            pyenvs = {self.get_venv_dir(cache)}
+        else:  # use given pyenvs relative to project directory
+            pyenvs = {(project_path / path) for path in self.pyenvs}
         return Settings(
             actions={Action.REPORT_UNDECLARED, Action.REPORT_UNUSED},
-            code=[(project_path / path) for path in self.code],
-            deps=[(project_path / path) for path in self.deps],
-            pyenvs={self.get_venv_dir(cache)},
+            code={(project_path / path) for path in self.code},
+            deps={(project_path / path) for path in self.deps},
+            pyenvs=pyenvs,
             install_deps=self.install_deps,
         )
 
@@ -103,7 +114,7 @@ class SampleProject(BaseProject):
         for experiment in project.experiments
     ],
 )
-def test_integration_analysis_on_sample_projects__(request, project, experiment):
+def test_sample_projects(request, project, experiment):
     print(f"Testing sample project: {project.name} under {project.path}")
     print(f"Project description: {project.description}")
     print()
