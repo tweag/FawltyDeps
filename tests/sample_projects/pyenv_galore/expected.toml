@@ -11,19 +11,7 @@ description = """
 
 [experiments.default]
 description = "Run fawltydeps in an empty project with Python envs present."
-
-# TODO: Auto-detect all Python environments in this project, and use those to
-# eliminate the discovery of code/deps within those environments. For now:
-# explcitly disable code/deps, and list all Python environments in project.
-code = []
-deps = []
-pyenvs = [
-    "poetry2nix_result",
-    "__pypackages__",
-    ".venv",
-    "another-venv",
-]
-# TODO: pyenvs = [""]  # Find all Python environments inside project
+pyenvs = [""]  # Find all Python environments in project
 
 # 3rd-party imports found in the code:
 imports = []

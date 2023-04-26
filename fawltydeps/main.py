@@ -30,6 +30,7 @@ from fawltydeps.types import (
     DeclaredDependency,
     DepsSource,
     ParsedImport,
+    PyEnvSource,
     Source,
     UndeclaredDependency,
     UnparseablePathException,
@@ -73,8 +74,8 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
         source_types: Dict[Action, Set[Type[Source]]] = {
             Action.LIST_IMPORTS: {CodeSource},
             Action.LIST_DEPS: {DepsSource},
-            Action.REPORT_UNDECLARED: {CodeSource, DepsSource},
-            Action.REPORT_UNUSED: {CodeSource, DepsSource},
+            Action.REPORT_UNDECLARED: {CodeSource, DepsSource, PyEnvSource},
+            Action.REPORT_UNUSED: {CodeSource, DepsSource, PyEnvSource},
         }
         return set(
             find_sources(
@@ -112,7 +113,9 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
             (dep.name for dep in self.declared_deps),
             custom_mapping_files=self.settings.custom_mapping_file,
             custom_mapping=self.settings.custom_mapping,
-            pyenv_paths=self.settings.pyenvs,
+            pyenv_paths={
+                src.path for src in self.sources if isinstance(src, PyEnvSource)
+            },
             install_deps=self.settings.install_deps,
         )
 
