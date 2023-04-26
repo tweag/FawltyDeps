@@ -1,0 +1,38 @@
+[project]
+# General information about a simplified project: Its name, why we test it,
+# its relation to real world projects
+name = "pyenv_galore"
+description = """
+    An empty project with a variety of Python environments.
+    When FawltyDeps is run here, the Python environments should be auto-detected
+    and any code or dependency files within should NOT be picked up by .code or
+    .deps.
+"""
+
+[experiments.default]
+description = "Run fawltydeps in an empty project with Python envs present."
+
+# TODO: Auto-detect all Python environments in this project, and use those to
+# eliminate the discovery of code/deps within those environments. For now:
+# explcitly disable code/deps, and list all Python environments in project.
+code = []
+deps = []
+pyenvs = [
+    "poetry2nix_result",
+    "__pypackages__",
+    ".venv",
+    "another-venv",
+]
+# TODO: pyenvs = [""]  # Find all Python environments inside project
+
+# 3rd-party imports found in the code:
+imports = []
+
+# Declared dependencies found in the project configuration:
+declared_deps = []
+
+# Import names in the code that do not have a matching dependency declared:
+undeclared_deps = []
+
+# Declared dependencies which were never `import`ed from the code:
+unused_deps = []
