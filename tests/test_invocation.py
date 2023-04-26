@@ -52,7 +52,7 @@ def test_invocation_with_version(run_fawltydeps):
 @pytest.mark.parametrize("run_fawltydeps", invocation_methods)
 def test_invocation_with_help(run_fawltydeps):
     if run_fawltydeps is run_fawltydeps_function:
-        pytest.skip("run_fawltydeps_function() does not capture --version output")
+        pytest.skip("run_fawltydeps_function() does not capture --help output")
     output, *_, exit_code = run_fawltydeps("--help")
     assert output.startswith("usage: fawltydeps")
     assert exit_code == 0
