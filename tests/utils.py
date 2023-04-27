@@ -2,10 +2,11 @@
 
 import io
 import logging
+import os
 import subprocess
 from dataclasses import dataclass, field, replace
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Tuple
+from typing import Any, Dict, Iterable, Iterator, List, Optional, Tuple
 
 from fawltydeps.main import main
 from fawltydeps.packages import IdentityMapping, LocalPackageResolver, Package
@@ -20,6 +21,19 @@ from fawltydeps.types import (
 SAMPLE_PROJECTS_DIR = Path(__file__).with_name("sample_projects")
 
 logger = logging.getLogger(__name__)
+
+
+def walk_dir(path: Path) -> Iterator[Path]:
+    """Walk a directory structure and yield Path objects for each file within.
+
+    Wrapper around os.walk() that yields Path objects for files found (directly
+    or transitively) under the given directory. Directories whose name start
+    with a dot are skipped.
+    """
+    for root, dirs, files in os.walk(path):
+        dirs[:] = [d for d in dirs if not d.startswith(".")]
+        for filename in files:
+            yield Path(root, filename)
 
 
 def assert_unordered_equivalence(actual: Iterable[Any], expected: Iterable[Any]):
