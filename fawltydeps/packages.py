@@ -251,7 +251,7 @@ class LocalPackageResolver(BasePackageResolver):
         # Note that packages_distributions() is not able to return packages
         # that map to zero import names.
         context = DistributionFinder.Context(path=paths)  # type: ignore
-        for dist in MetadataPathFinder().find_distributions(context):  # type: ignore
+        for dist in MetadataPathFinder().find_distributions(context):
             normalized_name = Package.normalize_name(dist.name)
             parent_dir = dist.locate_file("")
             if normalized_name in ret:

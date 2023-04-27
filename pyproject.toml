@@ -33,7 +33,7 @@ fawltydeps = "fawltydeps.main:main"
 # These are the main dependencies for fawltydeps at runtime.
 # Do not add anything here that is only needed by CI/tests/linters/developers
 python = "^3.7.2"
-importlib_metadata = "^6.0.0"
+importlib_metadata = "=6.6.0"
 # isort 5.12.0 drops support for Python v3.7:
 isort = ">=5.10,<5.12.0"
 pip-requirements-parser = "^32.0.1"
