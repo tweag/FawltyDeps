@@ -26,9 +26,8 @@ import hypothesis.strategies as st
 from hypothesis import given
 
 from fawltydeps.main import main
-from fawltydeps.utils import walk_dir
 
-from .utils import SAMPLE_PROJECTS_DIR
+from .utils import SAMPLE_PROJECTS_DIR, walk_dir
 
 project_with_no_issues = SAMPLE_PROJECTS_DIR / "no_issues"
 CODE_STDIN_MARKER = "-"
