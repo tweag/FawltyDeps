@@ -130,21 +130,6 @@ def test_package__local_env_mapping(
     assert not p.is_used(non_matching_imports)
 
 
-def test_package__import_names_from_multiple_sources():
-    id_mapping = IdentityMapping()
-    p = id_mapping.lookup_package("FooBar")
-    import_names = ["foo", "bar", "baz"]
-    p.add_import_names(*import_names, info=None)
-    assert p.package_name == "FooBar"  # package name is not normalized
-    assert p.is_used(["foobar"])  # but identity-mapped import name _is_.
-    assert p.is_used(["foo"])
-    assert p.is_used(["bar"])
-    assert p.is_used(["baz"])
-    assert not p.is_used(["fooba"])
-    assert not p.is_used(["foobarbaz"])
-    assert set(p.import_names) == {"foobar", "foo", "bar", "baz"}
-
-
 @pytest.mark.parametrize(
     "mapping_files_content,custom_mapping,expect",
     [

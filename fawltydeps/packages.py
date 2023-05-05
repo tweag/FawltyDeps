@@ -41,7 +41,7 @@ PackageDebugInfo = Union[None, str, Dict[str, Set[str]]]
 logger = logging.getLogger(__name__)
 
 
-@dataclass
+@dataclass(frozen=True)
 class Package:
     """Encapsulate an installable Python package.
 
@@ -66,19 +66,6 @@ class Package:
         (e.g. typing_extension).
         """
         return package_name.lower().replace("-", "_")
-
-    def add_import_names(
-        self, *import_names: str, info: PackageDebugInfo = None
-    ) -> None:
-        """Add import names provided by this package.
-
-        Import names may be associated with a piece of extra information that
-        provides some details about its source (keeping track of this is
-        extremely helpful when debugging).
-        """
-        self.import_names.update(import_names)
-        if info is not None:
-            self.debug_info = info
 
     def is_used(self, imported_names: Iterable[str]) -> bool:
         """Return True iff this package is among the given import names."""
