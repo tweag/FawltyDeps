@@ -13,7 +13,7 @@ from fawltydeps.packages import (
     UserDefinedMapping,
     resolve_dependencies,
 )
-from fawltydeps.types import UnparseablePathException
+from fawltydeps.types import UnparseablePathException, UnresolvedDependenciesError
 
 from .utils import SAMPLE_PROJECTS_DIR, test_vectors
 
@@ -304,3 +304,13 @@ def test_resolve_dependencies__informs_once_when_id_mapping_is_used(caplog):
     caplog.set_level(logging.INFO)
     assert resolve_dependencies(dep_names) == expect
     assert caplog.record_tuples == expect_log
+
+
+@pytest.mark.skip(
+    "This test waits for making IdentityMappig optional or not used as a fallback"
+)
+def test_resolve_dependencies__unresolved_dependencies__UnresolvedDependenciesError_raised():
+    dep_names = ["foo", "bar"]
+
+    with pytest.raises(UnresolvedDependenciesError):
+        resolve_dependencies(dep_names)
