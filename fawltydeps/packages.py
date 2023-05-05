@@ -25,7 +25,11 @@ from importlib_metadata import (
     _top_level_inferred,
 )
 
-from fawltydeps.types import CustomMapping, UnparseablePathException
+from fawltydeps.types import (
+    CustomMapping,
+    UnparseablePathException,
+    UnresolvedDependenciesError,
+)
 from fawltydeps.utils import calculated_once, hide_dataclass_fields
 
 if sys.version_info >= (3, 11):
@@ -413,4 +417,9 @@ def resolve_dependencies(
         resolved = resolver.lookup_packages(unresolved)
         logger.debug(f"  Resolved {resolved!r} with {resolver}")
         ret.update(resolved)
+
+    unresolved = deps - ret.keys()
+    if unresolved:
+        raise UnresolvedDependenciesError(names=unresolved)
+
     return ret

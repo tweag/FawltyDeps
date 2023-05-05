@@ -5,7 +5,7 @@ from dataclasses import asdict, dataclass, field, replace
 from enum import Enum
 from functools import total_ordering
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Set, Tuple, Union
 
 from fawltydeps.utils import hide_dataclass_fields
 
@@ -25,6 +25,13 @@ class UnparseablePathException(Exception):
 
     def __init__(self, ctx: str, path: Path):
         self.msg = f"{ctx}: {path}"
+
+
+class UnresolvedDependenciesError(Exception):
+    """Exception type when not all dependencies were are resolved"""
+
+    def __init__(self, names: Set[str]):
+        self.msg = f"Unresolved dependnencies: {names}"
 
 
 class ParserChoice(Enum):
