@@ -33,6 +33,7 @@ from fawltydeps.types import (
     Source,
     UndeclaredDependency,
     UnparseablePathException,
+    UnresolvedDependenciesError,
     UnusedDependency,
 )
 from fawltydeps.utils import calculated_once, version
@@ -234,6 +235,7 @@ def assign_exit_code(analysis: Analysis) -> int:
     2 - command-line parsing error (generated in 'main')
     3 - undeclared dependencies found
     4 - unused dependencies found
+    5 - unresolved packages found error (generated in 'main')
     """
     if analysis.is_enabled(Action.REPORT_UNDECLARED) and analysis.undeclared_deps:
         return 3
@@ -290,6 +292,13 @@ def main(
         analysis = Analysis.create(settings, stdin)
     except UnparseablePathException as exc:
         return parser.error(exc.msg)  # exit code 2
+    except UnresolvedDependenciesError as exc:
+        logger.error(
+            "%s \nIf you use '--install-deps' option "
+            "please make sure that you have all your dependencies installed.",
+            str(exc.msg),
+        )
+        return 5
 
     exit_code = assign_exit_code(analysis=analysis)
     print_output(analysis=analysis, exit_code=exit_code, stdout=stdout)
