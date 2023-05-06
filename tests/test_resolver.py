@@ -86,7 +86,9 @@ def generate_expected_resolved_deps(
     if locally_installed_deps:
         ret.update(
             {
-                dep: Package(dep, set(imports), LocalPackageResolver)
+                dep: Package(
+                    Package.normalize_name(dep), set(imports), LocalPackageResolver
+                )
                 for dep, imports in locally_installed_deps.items()
             }
         )
@@ -101,7 +103,11 @@ def generate_expected_resolved_deps(
         if install_deps:
             ret.update(
                 {
-                    dep: Package(dep, set(imports), TemporaryPipInstallResolver)
+                    dep: Package(
+                        Package.normalize_name(dep),
+                        set(imports),
+                        TemporaryPipInstallResolver,
+                    )
                     for dep, imports in other_deps.items()
                 }
             )

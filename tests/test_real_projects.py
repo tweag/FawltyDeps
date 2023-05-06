@@ -44,7 +44,7 @@ def verify_requirements(venv_path: Path, requirements: List[str]) -> None:
         for req in requirements
         if "python_version" not in req  # we don't know how to parse these (yet)
     }
-    resolved = LocalPackageResolver(venv_path).lookup_packages(deps)
+    resolved = LocalPackageResolver({venv_path}).lookup_packages(deps)
     assert all(dep in resolved for dep in deps)
 
 
