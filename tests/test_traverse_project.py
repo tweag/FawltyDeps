@@ -6,8 +6,13 @@ from typing import Optional, Set, Type
 import pytest
 
 from fawltydeps.settings import ParserChoice, Settings
-from fawltydeps.traverse_project import CodeSource, DepsSource, find_sources
-from fawltydeps.types import PathOrSpecial, UnparseablePathException
+from fawltydeps.traverse_project import find_sources
+from fawltydeps.types import (
+    CodeSource,
+    DepsSource,
+    PathOrSpecial,
+    UnparseablePathException,
+)
 
 from .test_sample_projects import SAMPLE_PROJECTS_DIR
 
@@ -21,6 +26,7 @@ class TraverseProjectVector:
     # The following sets contain paths that are all relative to cwd
     code: Set[str] = dataclasses.field(default_factory=lambda: {"."})
     deps: Set[str] = dataclasses.field(default_factory=lambda: {"."})
+    pyenvs: Set[str] = dataclasses.field(default_factory=lambda: {"."})
     deps_parser_choice: Optional[ParserChoice] = None
     expect_imports_src: Set[str] = dataclasses.field(default_factory=set)
     expect_deps_src: Set[str] = dataclasses.field(default_factory=set)
@@ -36,6 +42,7 @@ find_sources_vectors = [
         "blog_post_example",
         code=set(),
         deps=set(),
+        pyenvs=set(),
     ),
     #
     # Testing 'code' alone:
@@ -45,6 +52,7 @@ find_sources_vectors = [
         "blog_post_example",
         code={"missing.py"},
         deps=set(),
+        pyenvs=set(),
         expect_raised=UnparseablePathException,
     ),
     TraverseProjectVector(
@@ -52,6 +60,7 @@ find_sources_vectors = [
         "blog_post_example",
         code={"README.md"},
         deps=set(),
+        pyenvs=set(),
         expect_raised=UnparseablePathException,
     ),
     TraverseProjectVector(
@@ -59,6 +68,7 @@ find_sources_vectors = [
         "empty",
         code={"<stdin>"},
         deps=set(),
+        pyenvs=set(),
         expect_imports_src={"<stdin>"},
     ),
     TraverseProjectVector(
@@ -66,6 +76,7 @@ find_sources_vectors = [
         "blog_post_example",
         code={"my_script.py"},
         deps=set(),
+        pyenvs=set(),
         expect_imports_src={"my_script.py"},
     ),
     TraverseProjectVector(
@@ -73,6 +84,7 @@ find_sources_vectors = [
         "mixed_project",
         code={"subdir1/notebook.ipynb"},
         deps=set(),
+        pyenvs=set(),
         expect_imports_src={"subdir1/notebook.ipynb"},
     ),
     TraverseProjectVector(
@@ -80,6 +92,7 @@ find_sources_vectors = [
         "mixed_project",
         code={"subdir1/notebook.ipynb", "subdir2/script.py"},
         deps=set(),
+        pyenvs=set(),
         expect_imports_src={"subdir1/notebook.ipynb", "subdir2/script.py"},
     ),
     TraverseProjectVector(
@@ -87,6 +100,7 @@ find_sources_vectors = [
         "mixed_project",
         code={"<stdin>", "subdir1/notebook.ipynb", "subdir2/script.py"},
         deps=set(),
+        pyenvs=set(),
         expect_imports_src={"<stdin>", "subdir1/notebook.ipynb", "subdir2/script.py"},
     ),
     TraverseProjectVector(
@@ -94,6 +108,7 @@ find_sources_vectors = [
         "mixed_project",
         code={"subdir1"},
         deps=set(),
+        pyenvs=set(),
         expect_imports_src={"subdir1/notebook.ipynb", "subdir1/script.py"},
     ),
     TraverseProjectVector(
@@ -101,6 +116,7 @@ find_sources_vectors = [
         "mixed_project",
         code={"subdir1", "<stdin>"},
         deps=set(),
+        pyenvs=set(),
         expect_imports_src={"subdir1/notebook.ipynb", "subdir1/script.py", "<stdin>"},
     ),
     TraverseProjectVector(
@@ -108,6 +124,7 @@ find_sources_vectors = [
         "mixed_project",
         code={"subdir1", "subdir2"},
         deps=set(),
+        pyenvs=set(),
         expect_imports_src={
             "subdir1/notebook.ipynb",
             "subdir1/script.py",
@@ -121,6 +138,7 @@ find_sources_vectors = [
         "mixed_project",
         code={".", "subdir2"},
         deps=set(),
+        pyenvs=set(),
         expect_imports_src={
             "main.py",
             "subdir1/notebook.ipynb",
@@ -135,6 +153,7 @@ find_sources_vectors = [
         "mixed_project",
         code={"subdir1", "subdir2/notebook.ipynb"},
         deps=set(),
+        pyenvs=set(),
         expect_imports_src={
             "subdir1/notebook.ipynb",
             "subdir1/script.py",
@@ -149,6 +168,7 @@ find_sources_vectors = [
         "blog_post_example",
         code=set(),
         deps={"missing_requirements.txt"},
+        pyenvs=set(),
         expect_raised=UnparseablePathException,
     ),
     TraverseProjectVector(
@@ -156,6 +176,7 @@ find_sources_vectors = [
         "blog_post_example",
         code=set(),
         deps={"README.md"},
+        pyenvs=set(),
         expect_raised=UnparseablePathException,
     ),
     TraverseProjectVector(
@@ -163,6 +184,7 @@ find_sources_vectors = [
         "blog_post_example",
         code=set(),
         deps={"requirements.txt"},
+        pyenvs=set(),
         expect_deps_src={"requirements.txt"},
     ),
     TraverseProjectVector(
@@ -170,6 +192,7 @@ find_sources_vectors = [
         "mixed_project",
         code=set(),
         deps={"pyproject.toml"},
+        pyenvs=set(),
         expect_deps_src={"pyproject.toml"},
     ),
     TraverseProjectVector(
@@ -177,6 +200,7 @@ find_sources_vectors = [
         "mixed_project",
         code=set(),
         deps={"pyproject.toml", "subdir1/setup.cfg"},
+        pyenvs=set(),
         expect_deps_src={"pyproject.toml", "subdir1/setup.cfg"},
     ),
     TraverseProjectVector(
@@ -184,6 +208,7 @@ find_sources_vectors = [
         "mixed_project",
         code=set(),
         deps={"subdir1"},
+        pyenvs=set(),
         expect_deps_src={"subdir1/setup.cfg"},
     ),
     TraverseProjectVector(
@@ -191,6 +216,7 @@ find_sources_vectors = [
         "mixed_project",
         code=set(),
         deps={"subdir1", "subdir2"},
+        pyenvs=set(),
         expect_deps_src={"subdir1/setup.cfg", "subdir2/setup.py"},
     ),
     TraverseProjectVector(
@@ -198,6 +224,7 @@ find_sources_vectors = [
         "mixed_project",
         code=set(),
         deps={".", "subdir2"},
+        pyenvs=set(),
         expect_deps_src={"pyproject.toml", "subdir1/setup.cfg", "subdir2/setup.py"},
     ),
     TraverseProjectVector(
@@ -205,6 +232,7 @@ find_sources_vectors = [
         "mixed_project",
         code=set(),
         deps={"subdir1", "subdir2/setup.py"},
+        pyenvs=set(),
         expect_deps_src={"subdir1/setup.cfg", "subdir2/setup.py"},
     ),
     #
@@ -215,6 +243,7 @@ find_sources_vectors = [
         "mixed_project",
         code=set(),
         deps={"pyproject.toml", "subdir1/setup.cfg"},
+        pyenvs=set(),
         deps_parser_choice=ParserChoice.REQUIREMENTS_TXT,
         expect_deps_src={"pyproject.toml", "subdir1/setup.cfg"},
     ),
@@ -223,6 +252,7 @@ find_sources_vectors = [
         "mixed_project",
         code=set(),
         deps={"."},
+        pyenvs=set(),
         deps_parser_choice=ParserChoice.SETUP_CFG,
         expect_deps_src={"subdir1/setup.cfg"},
     ),
@@ -231,6 +261,7 @@ find_sources_vectors = [
         "mixed_project",
         code=set(),
         deps={"subdir2"},
+        pyenvs=set(),
         deps_parser_choice=ParserChoice.REQUIREMENTS_TXT,
         expect_deps_src=set(),
     ),
@@ -248,6 +279,7 @@ find_sources_vectors = [
         "blog_post_example",
         code={"my_script.py"},
         deps={"requirements.txt", "dev-requirements.txt"},
+        pyenvs=set(),
         expect_imports_src={"my_script.py"},
         expect_deps_src={"requirements.txt", "dev-requirements.txt"},
     ),
@@ -256,6 +288,7 @@ find_sources_vectors = [
         "mixed_project",
         code={"subdir1"},
         deps={"subdir1"},
+        pyenvs=set(),
         expect_imports_src={"subdir1/notebook.ipynb", "subdir1/script.py"},
         expect_deps_src={"subdir1/setup.cfg"},
     ),
@@ -264,6 +297,7 @@ find_sources_vectors = [
         "mixed_project",
         code={"subdir2"},
         deps={"subdir2"},
+        pyenvs=set(),
         expect_imports_src={
             "subdir2/notebook.ipynb",
             "subdir2/script.py",
@@ -276,6 +310,7 @@ find_sources_vectors = [
         "mixed_project",
         code={"subdir1"},
         deps={"subdir2"},
+        pyenvs=set(),
         expect_imports_src={"subdir1/notebook.ipynb", "subdir1/script.py"},
         expect_deps_src={"subdir2/setup.py"},
     ),
@@ -284,15 +319,17 @@ find_sources_vectors = [
         "mixed_project",
         code={"subdir1"},
         deps={"."},
+        pyenvs=set(),
         expect_imports_src={"subdir1/notebook.ipynb", "subdir1/script.py"},
         expect_deps_src={"pyproject.toml", "subdir1/setup.cfg", "subdir2/setup.py"},
     ),
     #
-    # We should not traverse into dot dirs (e.g. .git or .venv) by default
+    # 'code' + 'deps' don't traverse into dot dirs (e.g. .git, .venv) by default
     #
     TraverseProjectVector(
         "default_traversal_in_no_issues__does_not_traverse_into_dot_venv",
         "no_issues",
+        pyenvs=set(),
         expect_imports_src={"python_file.py"},
         expect_deps_src={"requirements.txt", "subdir/requirements.txt"},
     ),
@@ -322,6 +359,7 @@ def test_find_sources(vector: TraverseProjectVector):
         },
         deps={project_dir / path for path in vector.deps},
         deps_parser_choice=vector.deps_parser_choice,
+        pyenvs={project_dir / path for path in vector.pyenvs},
     )
     expect_imports_src = {
         path if path == "<stdin>" else project_dir / path
