@@ -83,7 +83,33 @@ class DepsSource:
         assert self.path.is_file()  # sanity check
 
 
-Source = Union[CodeSource, DepsSource]
+@dataclass(frozen=True, eq=True, order=True)
+class PyEnvSource:
+    """A source to be used for looking up installed Python packages.
+
+    This corresponds to the lib/pythonX.Y/site-packages directory in a
+    system-wide Python installation (under /usr, /usr/local, or similar),
+    in a virtualenv, in a poetry2nix environment, or a similar mechanism that
+    uses this layout. Alternatively, it can be a __pypackages__/X.Y/lib
+    directory within a project that uses PEP582.
+    """
+
+    path: Path
+
+    def __post_init__(self) -> None:
+        assert self.path.is_dir()  # sanity check
+        # Support vitualenvs, poetry2nix envs, system-wide installs, etc.
+        if self.path.match("lib/python?.*/site-packages"):
+            if (self.path.parent.parent.parent / "bin/python").is_file():
+                return  # all ok
+        # Also support projects using __pypackages__ from PEP582:
+        elif self.path.match("__pypackages__/?.*/lib"):
+            return  # also ok
+
+        raise ValueError(f"{self.path} is not a valid dir for Python packages!")
+
+
+Source = Union[CodeSource, DepsSource, PyEnvSource]
 
 
 @total_ordering
