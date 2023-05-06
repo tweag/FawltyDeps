@@ -6,7 +6,7 @@ import sys
 import tempfile
 import venv
 from abc import ABC, abstractmethod
-from contextlib import contextmanager
+from contextlib import contextmanager, suppress
 from dataclasses import dataclass, replace
 from functools import partial
 from pathlib import Path
@@ -203,24 +203,25 @@ class LocalPackageResolver(BasePackageResolver):
         """
         self.package_dirs: Set[Path] = set()  # empty => use sys.path instead
         for path in pyenv_paths:
-            package_dir = self.determine_package_dir(path)
-            if package_dir is None:
+            package_dirs = set(self.find_package_dirs(path))
+            if not package_dirs:
                 logger.warning(f"Could not find a Python env at {path}!")
-            else:
-                self.package_dirs.add(package_dir)
+            self.package_dirs.update(package_dirs)
         if pyenv_paths and not self.package_dirs:
             raise ValueError(f"Could not find any Python env in {pyenv_paths}!")
         # We enumerate packages for pyenv_path _once_ and cache the result here:
         self._packages: Optional[Dict[str, Package]] = None
 
     @classmethod
-    def determine_package_dir(cls, path: Path) -> Optional[Path]:
-        """Return the site-packages directory corresponding to the given path.
+    def find_package_dirs(cls, path: Path) -> Iterator[Path]:
+        """Return the packages directories corresponding to the given path.
 
         The given 'path' is a user-provided directory path meant to point to
         a Python environment (e.g. a virtualenv, a poetry2nix environment, or
-        similar). Deduce the appropriate site-packages directory from this path,
-        or return None if no environment could be found at the given path.
+        similar). Deduce the appropriate package directories inside this path,
+        and yield them.
+
+        Yield nothing if no package dirs was found at the given path.
         """
         # We define a "valid Python environment" as a directory that contains
         # a bin/python file, and a lib/pythonX.Y/site-packages subdirectory.
@@ -229,20 +230,31 @@ class LocalPackageResolver(BasePackageResolver):
         # From there, the returned directory is that site-packages subdir.
         # Note that we must also accept lib/pythonX.Y/site-packages for python
         # versions X.Y that are different from the current Python version.
+        found = False
         if (path / "bin/python").is_file():
             for site_packages in path.glob("lib/python?.*/site-packages"):
                 if site_packages.is_dir():
-                    return site_packages
+                    yield site_packages
+                    found = True
+            if found:
+                return
 
         # Workaround for projects using PEP582:
         if path.name == "__pypackages__":
             for site_packages in path.glob("?.*/lib"):
                 if site_packages.is_dir():
-                    return site_packages
+                    yield site_packages
+                    found = True
+            if found:
+                return
 
         # Given path is not a python environment, but it might be _inside_ one.
         # Try again with parent directory
-        return None if path.parent == path else cls.determine_package_dir(path.parent)
+        if path.parent != path:
+            for package_dir in cls.find_package_dirs(path.parent):
+                with suppress(ValueError):
+                    package_dir.relative_to(path)  # ValueError if not relative
+                    yield package_dir
 
     def _from_one_env(
         self, env_paths: List[str]

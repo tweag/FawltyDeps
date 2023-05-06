@@ -1,6 +1,8 @@
 """Verify behavior of package module looking at a given Python environment."""
 import sys
 import venv
+from pathlib import Path
+from typing import Iterator
 
 import pytest
 
@@ -18,7 +20,6 @@ major, minor = sys.version_info[:2]
 # that they might point at (and that we should accept)?
 env_subdirs = [
     "",
-    "bin",
     "lib",
     f"lib/python{major}.{minor}",
     f"lib/python{major}.{minor}/site-packages",
@@ -37,19 +38,17 @@ pep582_subdirs = [
 @pytest.mark.parametrize(
     "subdir", [pytest.param(d, id=f"venv:{d}") for d in env_subdirs]
 )
-def test_determine_package_dir__various_paths_in_venv(tmp_path, subdir):
+def test_find_package_dirs__various_paths_in_venv(tmp_path, subdir):
     venv.create(tmp_path, with_pip=False)
     path = tmp_path / subdir
-    expect = tmp_path / f"lib/python{major}.{minor}/site-packages"
-    assert LocalPackageResolver.determine_package_dir(path) == expect
+    expect = {tmp_path / f"lib/python{major}.{minor}/site-packages"}
+    assert set(LocalPackageResolver.find_package_dirs(path)) == expect
 
 
 @pytest.mark.parametrize(
     "subdir", [pytest.param(d, id=f"poetry2nix:{d}") for d in env_subdirs]
 )
-def test_determine_package_dir__various_paths_in_poetry2nix_env(
-    write_tmp_files, subdir
-):
+def test_find_package_dirs__various_paths_in_poetry2nix_env(write_tmp_files, subdir):
     # A directory structure that resembles a minimal poetry2nix environment:
     tmp_path = write_tmp_files(
         {
@@ -58,14 +57,14 @@ def test_determine_package_dir__various_paths_in_poetry2nix_env(
         }
     )
     path = tmp_path / subdir
-    expect = tmp_path / f"lib/python{major}.{minor}/site-packages"
-    assert LocalPackageResolver.determine_package_dir(path) == expect
+    expect = {tmp_path / f"lib/python{major}.{minor}/site-packages"}
+    assert set(LocalPackageResolver.find_package_dirs(path)) == expect
 
 
 @pytest.mark.parametrize(
     "subdir", [pytest.param(d, id=f"pep582:{d}") for d in pep582_subdirs]
 )
-def test_determine_package_dir__various_paths_in_pypackages(write_tmp_files, subdir):
+def test_find_package_dirs__various_paths_in_pypackages(write_tmp_files, subdir):
     # A directory structure that resembles a minimal PEP582 __pypackages__ dir:
     tmp_path = write_tmp_files(
         {
@@ -73,8 +72,43 @@ def test_determine_package_dir__various_paths_in_pypackages(write_tmp_files, sub
         }
     )
     path = tmp_path / subdir
-    expect = tmp_path / f"__pypackages__/{major}.{minor}/lib"
-    assert LocalPackageResolver.determine_package_dir(path) == expect
+    expect = {tmp_path / f"__pypackages__/{major}.{minor}/lib"}
+    assert set(LocalPackageResolver.find_package_dirs(path)) == expect
+
+
+@pytest.mark.parametrize(
+    "subdir",
+    [pytest.param(d, id=f"pep582:{d}") for d in pep582_subdirs]
+    + [pytest.param(".venv/" + d, id=f"venv:.venv/{d}") for d in env_subdirs],
+)
+def test_find_package_dirs__envs_with_multiple_package_dirs(write_tmp_files, subdir):
+    # A directory structure that contains multiple Python environments, and
+    # multiple package dirs inside each Python environments:
+    tmp_path = write_tmp_files(
+        {
+            f"__pypackages__/{major}.{minor}/lib/first_package.py": "",
+            f"__pypackages__/{major}.{minor + 1}/lib/second_package.py": "",
+            ".venv/bin/python": "",
+            f".venv/lib/python{major}.{minor}/site-packages/third_package.py": "",
+            f".venv/lib/python{major}.{minor + 1}/site-packages/fourth_package.py": "",
+        }
+    )
+    path = tmp_path / subdir
+    actual = set(LocalPackageResolver.find_package_dirs(path))
+
+    def expected_package_dirs(base: Path, subdir: str) -> Iterator[Path]:
+        is_version_agnostic = f"{major}.{minor}" not in subdir
+        if subdir.startswith("__pypackages__"):
+            yield base / f"__pypackages__/{major}.{minor}/lib"
+            if is_version_agnostic:  # expect _all_ versioned dirs
+                yield base / f"__pypackages__/{major}.{minor + 1}/lib"
+        else:
+            assert subdir.startswith(".venv/")
+            yield base / f".venv/lib/python{major}.{minor}/site-packages"
+            if is_version_agnostic:  # expect _all_ versioned dirs
+                yield base / f".venv/lib/python{major}.{minor + 1}/site-packages"
+
+    assert actual == set(expected_package_dirs(tmp_path, subdir))
 
 
 def test_local_env__empty_venv__has_no_packages(tmp_path):
