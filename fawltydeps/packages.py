@@ -193,23 +193,16 @@ class UserDefinedMapping(BasePackageResolver):
 class LocalPackageResolver(BasePackageResolver):
     """Lookup imports exposed by packages installed in a Python environment."""
 
-    def __init__(self, pyenv_paths: AbstractSet[Path] = frozenset()) -> None:
-        """Lookup packages installed in the given virtualenv.
+    def __init__(self, srcs: AbstractSet[PyEnvSource] = frozenset()) -> None:
+        """Lookup packages installed in the given Python environments.
 
-        Default to the current python environment if `pyenv_paths` is empty
-        (the default).
+        Default to the current python environment (aka. sys.path) if `srcs` is
+        empty (the default).
 
         Use importlib_metadata to look up the mapping between packages and their
         provided import names.
         """
-        self.package_dirs: Set[Path] = set()  # empty => use sys.path instead
-        for path in pyenv_paths:
-            package_dirs = set(self.find_package_dirs(path))
-            if not package_dirs:
-                logger.warning(f"Could not find a Python env at {path}!")
-            self.package_dirs.update(package_dirs)
-        if pyenv_paths and not self.package_dirs:
-            raise ValueError(f"Could not find any Python env in {pyenv_paths}!")
+        self.package_dirs: Set[Path] = set(src.path for src in srcs)
         # We enumerate packages for pyenv_path _once_ and cache the result here:
         self._packages: Optional[Dict[str, Package]] = None
 
@@ -335,6 +328,23 @@ class LocalPackageResolver(BasePackageResolver):
         }
 
 
+def pyenv_sources(*pyenv_paths: Path) -> Set[PyEnvSource]:
+    """Helper for converting Python environment paths into PyEnvSources.
+
+    Convenience when you want to construct a LocalPackageResolver from one or
+    more Python environment paths.
+    """
+    ret: Set[PyEnvSource] = set()
+    for path in pyenv_paths:
+        package_dirs = set(LocalPackageResolver.find_package_dirs(path))
+        if not package_dirs:
+            logger.warning(f"Could not find a Python env at {path}!")
+        ret.update(PyEnvSource(d) for d in package_dirs)
+    if pyenv_paths and not ret:
+        raise ValueError(f"Could not find any Python env in {pyenv_paths}!")
+    return ret
+
+
 class TemporaryPipInstallResolver(BasePackageResolver):
     """Resolve packages by installing them in to a temporary venv.
 
@@ -408,7 +418,7 @@ class TemporaryPipInstallResolver(BasePackageResolver):
             installed = partial(self.installed_requirements, self.cached_venv)
             logger.info(f"Installing dependencies into {self.cached_venv}.")
         with installed(sorted(package_names)) as venv_dir:
-            resolver = LocalPackageResolver({venv_dir})
+            resolver = LocalPackageResolver(pyenv_sources(venv_dir))
             return {
                 name: replace(
                     package,
@@ -444,7 +454,7 @@ class IdentityMapping(BasePackageResolver):
 def setup_resolvers(
     custom_mapping_files: Optional[Set[Path]] = None,
     custom_mapping: Optional[CustomMapping] = None,
-    pyenv_paths: AbstractSet[Path] = frozenset(),
+    pyenv_srcs: AbstractSet[PyEnvSource] = frozenset(),
     install_deps: bool = False,
 ) -> Iterator[BasePackageResolver]:
     """Configure a sequence of resolvers according to the given arguments.
@@ -456,7 +466,7 @@ def setup_resolvers(
         mapping_paths=custom_mapping_files or set(), custom_mapping=custom_mapping
     )
 
-    yield LocalPackageResolver(pyenv_paths)
+    yield LocalPackageResolver(pyenv_srcs)
 
     if install_deps:
         yield TemporaryPipInstallResolver()
@@ -508,6 +518,7 @@ def validate_pyenv_source(path: Path) -> Optional[Set[PyEnvSource]]:
     """
     if not path.is_dir():
         raise UnparseablePathException(ctx="Not a directory!", path=path)
-
-    package_dirs = set(LocalPackageResolver.find_package_dirs(path))
-    return {PyEnvSource(dir) for dir in package_dirs} if package_dirs else None
+    try:
+        return pyenv_sources(path)
+    except ValueError:
+        return None

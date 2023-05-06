@@ -10,6 +10,7 @@ from fawltydeps.packages import (
     IdentityMapping,
     LocalPackageResolver,
     Package,
+    pyenv_sources,
     resolve_dependencies,
     setup_resolvers,
 )
@@ -114,13 +115,13 @@ def test_find_package_dirs__envs_with_multiple_package_dirs(write_tmp_files, sub
 
 def test_local_env__empty_venv__has_no_packages(tmp_path):
     venv.create(tmp_path, with_pip=False)
-    lpl = LocalPackageResolver({tmp_path})
+    lpl = LocalPackageResolver(pyenv_sources(tmp_path))
     assert lpl.packages == {}
 
 
 def test_local_env__default_venv__contains_pip_and_setuptools(tmp_path):
     venv.create(tmp_path, with_pip=True)
-    lpl = LocalPackageResolver({tmp_path})
+    lpl = LocalPackageResolver(pyenv_sources(tmp_path))
     # We cannot do a direct comparison, as different Python/pip/setuptools
     # versions differ in exactly which packages are provided. The following
     # is a subset that we can expect across all of our supported versions.
@@ -174,7 +175,7 @@ def test_local_env__prefers_first_package_found_in_sys_path(isolate_default_reso
 def test_local_env__multiple_pyenvs__can_find_packages_in_all(fake_venv):
     venv_dir1, site_dir1 = fake_venv({"some_module": {"some_module"}})
     venv_dir2, site_dir2 = fake_venv({"other-module": {"other_module"}})
-    lpl = LocalPackageResolver({venv_dir1, venv_dir2})
+    lpl = LocalPackageResolver(pyenv_sources(venv_dir1, venv_dir2))
     assert lpl.lookup_packages({"some_module", "other-module"}) == {
         "some_module": Package(
             "some_module",
@@ -194,7 +195,7 @@ def test_local_env__multiple_pyenvs__can_find_packages_in_all(fake_venv):
 def test_local_env__multiple_pyenvs__merges_imports_for_same_package(fake_venv):
     venv_dir1, site_dir1 = fake_venv({"some_module": {"first_import"}})
     venv_dir2, site_dir2 = fake_venv({"some_module": {"second_import"}})
-    lpl = LocalPackageResolver({venv_dir1, venv_dir2})
+    lpl = LocalPackageResolver(pyenv_sources(venv_dir1, venv_dir2))
     assert lpl.lookup_packages({"some_module"}) == {
         "some_module": Package(
             "some_module",
@@ -212,7 +213,7 @@ def test_resolve_dependencies__in_empty_venv__reverts_to_id_mapping(tmp_path):
     venv.create(tmp_path, with_pip=False)
     id_mapping = IdentityMapping()
     actual = resolve_dependencies(
-        ["pip", "setuptools"], setup_resolvers(pyenv_paths={tmp_path})
+        ["pip", "setuptools"], setup_resolvers(pyenv_srcs=pyenv_sources(tmp_path))
     )
     assert actual == id_mapping.lookup_packages({"pip", "setuptools"})
 
@@ -226,7 +227,8 @@ def test_resolve_dependencies__in_fake_venv__returns_local_and_id_deps(fake_venv
         }
     )
     actual = resolve_dependencies(
-        ["PIP", "pandas", "empty-pkg"], setup_resolvers(pyenv_paths={venv_dir})
+        ["PIP", "pandas", "empty-pkg"],
+        setup_resolvers(pyenv_srcs=pyenv_sources(venv_dir)),
     )
     assert actual == {
         "PIP": Package(
@@ -246,7 +248,7 @@ def test_resolve_dependencies__in_2_fake_venvs__returns_local_and_id_deps(fake_v
     )
     actual = resolve_dependencies(
         ["some_module", "pandas", "other_module"],
-        setup_resolvers(pyenv_paths={venv_dir1, venv_dir2}),
+        setup_resolvers(pyenv_srcs=pyenv_sources(venv_dir1, venv_dir2)),
     )
     assert actual == {
         "some_module": Package(
