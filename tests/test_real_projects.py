@@ -16,7 +16,7 @@ from typing import Iterator, List, Optional
 import pytest
 from pkg_resources import Requirement
 
-from fawltydeps.packages import LocalPackageResolver
+from fawltydeps.packages import LocalPackageResolver, pyenv_sources
 from fawltydeps.types import TomlData
 
 from .project_helpers import (
@@ -44,7 +44,7 @@ def verify_requirements(venv_path: Path, requirements: List[str]) -> None:
         for req in requirements
         if "python_version" not in req  # we don't know how to parse these (yet)
     }
-    resolved = LocalPackageResolver({venv_path}).lookup_packages(deps)
+    resolved = LocalPackageResolver(pyenv_sources(venv_path)).lookup_packages(deps)
     assert all(dep in resolved for dep in deps)
 
 

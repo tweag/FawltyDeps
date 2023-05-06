@@ -141,8 +141,8 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
             setup_resolvers(
                 custom_mapping_files=self.settings.custom_mapping_file,
                 custom_mapping=self.settings.custom_mapping,
-                pyenv_paths={
-                    src.path for src in self.sources if isinstance(src, PyEnvSource)
+                pyenv_srcs={
+                    src for src in self.sources if isinstance(src, PyEnvSource)
                 },
                 install_deps=self.settings.install_deps,
             ),
