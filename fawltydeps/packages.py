@@ -441,41 +441,44 @@ class IdentityMapping(BasePackageResolver):
         return {name: self.lookup_package(name) for name in package_names}
 
 
-def resolve_dependencies(
-    dep_names: Iterable[str],
+def setup_resolvers(
     custom_mapping_files: Optional[Set[Path]] = None,
     custom_mapping: Optional[CustomMapping] = None,
     pyenv_paths: AbstractSet[Path] = frozenset(),
     install_deps: bool = False,
+) -> Iterator[BasePackageResolver]:
+    """Configure a sequence of resolvers according to the given arguments.
+
+    This defines the sequence of resolvers that we will use to map dependencies
+    into provided import names.
+    """
+    yield UserDefinedMapping(
+        mapping_paths=custom_mapping_files or set(), custom_mapping=custom_mapping
+    )
+
+    yield LocalPackageResolver(pyenv_paths)
+
+    if install_deps:
+        yield TemporaryPipInstallResolver()
+
+    # Identity mapping being at the end of the resolver sequence ensures that
+    # _all_ deps are matched. TODO: If we make the identity mapping optional,
+    # we must remember to properly handle/signal unresolved dependencies.
+    yield IdentityMapping()
+
+
+def resolve_dependencies(
+    dep_names: Iterable[str],
+    resolvers: Iterable[BasePackageResolver],
 ) -> Dict[str, Package]:
     """Associate dependencies with corresponding Package objects.
 
-    Setup a list of resolvers according to the given settings/arguments, and
-    use these to find Package objects for each of the given dependencies.
+    Use the given sequence of resolvers to find Package objects for each of the
+    given dependencies.
 
     Return a dict mapping dependency names to the resolved Package objects.
     """
     deps = set(dep_names)  # consume the iterable once
-
-    # This defines the "stack" of resolvers that we will use to convert
-    # dependencies into provided import names. We call .lookup_package() on
-    # each resolver in order until one of them returns a Package object. At
-    # that point we are happy, and don't consult any of the later resolvers.
-    resolvers: List[BasePackageResolver] = []
-    resolvers.append(
-        UserDefinedMapping(
-            mapping_paths=custom_mapping_files or set(), custom_mapping=custom_mapping
-        )
-    )
-
-    resolvers.append(LocalPackageResolver(pyenv_paths))
-    if install_deps:
-        resolvers += [TemporaryPipInstallResolver()]
-    # Identity mapping being at the bottom of the resolvers stack ensures that
-    # _all_ deps are matched. TODO: If we make the identity mapping optional,
-    # we must remember to properly handle/signal unresolved dependencies.
-    resolvers += [IdentityMapping()]
-
     ret: Dict[str, Package] = {}
     for resolver in resolvers:
         unresolved = deps - ret.keys()

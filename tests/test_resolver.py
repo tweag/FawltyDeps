@@ -15,6 +15,7 @@ from fawltydeps.packages import (
     TemporaryPipInstallResolver,
     UserDefinedMapping,
     resolve_dependencies,
+    setup_resolvers,
 )
 
 from .utils import default_sys_path_env_for_tests, ignore_package_debug_info
@@ -189,11 +190,13 @@ def test_resolve_dependencies__generates_expected_mappings(
         TemporaryPipInstallResolver.cached_venv = cached_venv
         actual = resolve_dependencies(
             dep_names,
-            custom_mapping_files=set([custom_mapping_file])
-            if custom_mapping_file
-            else None,
-            custom_mapping=user_config_mapping,
-            install_deps=install_deps,
+            setup_resolvers(
+                custom_mapping_files=set([custom_mapping_file])
+                if custom_mapping_file
+                else None,
+                custom_mapping=user_config_mapping,
+                install_deps=install_deps,
+            ),
         )
     finally:
         TemporaryPipInstallResolver.cached_venv = None
