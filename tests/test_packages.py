@@ -11,6 +11,7 @@ from fawltydeps.packages import (
     Package,
     UserDefinedMapping,
     resolve_dependencies,
+    setup_resolvers,
 )
 from fawltydeps.types import UnparseablePathException, UnresolvedDependenciesError
 
@@ -274,7 +275,9 @@ def test_LocalPackageResolver_lookup_packages(
 def test_resolve_dependencies(vector, isolate_default_resolver):
     dep_names = [dd.name for dd in vector.declared_deps]
     isolate_default_resolver(default_sys_path_env_for_tests)
-    actual = ignore_package_debug_info(resolve_dependencies(dep_names))
+    actual = ignore_package_debug_info(
+        resolve_dependencies(dep_names, setup_resolvers())
+    )
     assert actual == vector.expect_resolved_deps
 
 
@@ -295,7 +298,9 @@ def test_resolve_dependencies__informs_once_when_id_mapping_is_used(
         )
     ]
     caplog.set_level(logging.INFO)
-    actual = ignore_package_debug_info(resolve_dependencies(dep_names))
+    actual = ignore_package_debug_info(
+        resolve_dependencies(dep_names, setup_resolvers())
+    )
     assert actual == expect
     assert caplog.record_tuples == expect_log
 
@@ -307,4 +312,4 @@ def test_resolve_dependencies__unresolved_dependencies__UnresolvedDependenciesEr
     dep_names = ["foo", "bar"]
 
     with pytest.raises(UnresolvedDependenciesError):
-        resolve_dependencies(dep_names)
+        resolve_dependencies(dep_names, setup_resolvers())

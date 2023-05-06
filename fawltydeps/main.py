@@ -22,7 +22,12 @@ from pydantic.json import custom_pydantic_encoder  # pylint: disable=no-name-in-
 from fawltydeps import extract_declared_dependencies, extract_imports
 from fawltydeps.check import calculate_undeclared, calculate_unused
 from fawltydeps.cli_parser import build_parser
-from fawltydeps.packages import BasePackageResolver, Package, resolve_dependencies
+from fawltydeps.packages import (
+    BasePackageResolver,
+    Package,
+    resolve_dependencies,
+    setup_resolvers,
+)
 from fawltydeps.settings import Action, OutputFormat, Settings, print_toml_config
 from fawltydeps.traverse_project import find_sources
 from fawltydeps.types import (
@@ -133,12 +138,14 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
         """The resolved mapping of dependency names to provided import names."""
         return resolve_dependencies(
             (dep.name for dep in self.declared_deps),
-            custom_mapping_files=self.settings.custom_mapping_file,
-            custom_mapping=self.settings.custom_mapping,
-            pyenv_paths={
-                src.path for src in self.sources if isinstance(src, PyEnvSource)
-            },
-            install_deps=self.settings.install_deps,
+            setup_resolvers(
+                custom_mapping_files=self.settings.custom_mapping_file,
+                custom_mapping=self.settings.custom_mapping,
+                pyenv_paths={
+                    src.path for src in self.sources if isinstance(src, PyEnvSource)
+                },
+                install_deps=self.settings.install_deps,
+            ),
         )
 
     @property
