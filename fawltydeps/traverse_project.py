@@ -1,30 +1,56 @@
 """Traverse a project to identify appropriate inputs to FawltyDeps."""
 import logging
 from pathlib import Path
-from typing import AbstractSet, Iterator, Optional, Type, Union
+from typing import AbstractSet, Iterator, Optional, Set, Type, Union
 
 from fawltydeps.extract_declared_dependencies import validate_deps_source
 from fawltydeps.extract_imports import validate_code_source
+from fawltydeps.packages import validate_pyenv_source
 from fawltydeps.settings import Settings
-from fawltydeps.types import CodeSource, DepsSource, Source, UnparseablePathException
+from fawltydeps.types import (
+    CodeSource,
+    DepsSource,
+    PyEnvSource,
+    Source,
+    UnparseablePathException,
+)
 from fawltydeps.utils import DirectoryTraversal
 
 logger = logging.getLogger(__name__)
 
 
-def find_sources(  # pylint: disable=too-many-branches
+def find_sources(  # pylint: disable=too-many-branches,too-many-statements
     settings: Settings,
-    source_types: AbstractSet[Type[Source]] = frozenset([CodeSource, DepsSource]),
+    source_types: AbstractSet[Type[Source]] = frozenset(
+        [CodeSource, DepsSource, PyEnvSource]
+    ),
 ) -> Iterator[Source]:
     """Traverse files and directories and yield Sources to be parsed.
 
     Traverse the files and directories configured by the given Settings object,
     and yield the corresponding *Source objects found.
+
+    Some rules/principles:
+    - If explicit files are given to settings.code or .deps, these _shall_ never
+      be ignored, even if they e.g. are located within a Python environment.
+    - If a Python environment (e.g. "path/to/.venv") is explicitly given to
+      settings.pyenvs, then we should _not_ look for .code or .deps files within
+      that Python environment (with exception of the above rule).
+    - When a directory (not directly a Python environment) is given to
+      settings.code, .deps, or .pyenvs, we shall traverse that directory
+      recursively looking for the respective sources (CodeSource, DepsSource,
+      PyEnvSource).
+    - When a Python environment is found during the traversal above, we shall
+      _not_ look for .code/.deps within that directory.
+    - Directories should only be traverse _once_. This includes the case of
+      symlinks-to-dirs. We should be resistant to infinite traversal loops
+      caused by symlinks. (This is handled by DirectoryTraversal)
     """
 
     logger.debug("find_sources() Looking for sources under:")
     logger.debug(f"    code:   {settings.code}")
     logger.debug(f"    deps:   {settings.deps}")
+    logger.debug(f"    pyenvs: {settings.pyenvs}")
 
     traversal: DirectoryTraversal[Union[Type[Source], Path]] = DirectoryTraversal()
 
@@ -51,6 +77,16 @@ def find_sources(  # pylint: disable=too-many-branches
         else:  # must traverse directory
             traversal.add(path, DepsSource)
 
+    for path in settings.pyenvs if PyEnvSource in source_types else []:
+        # exceptions raised by validate_pyenv_source() are propagated here
+        package_dirs: Optional[Set[PyEnvSource]] = validate_pyenv_source(path)
+        if package_dirs is not None:  # Python environment dir given directly
+            logger.debug(f"find_sources() Found {package_dirs}")
+            yield from package_dirs
+            traversal.ignore(path)  # disable traversal of path below
+        else:  # must traverse directory to find Python environments
+            traversal.add(path, PyEnvSource)
+
     for _cur_dir, subdirs, files, extras in traversal.traverse():
         for subdir in subdirs:  # don't recurse into dot dirs
             if subdir.name.startswith("."):
@@ -58,6 +94,12 @@ def find_sources(  # pylint: disable=too-many-branches
 
         types = {t for t in extras if t in source_types}
         assert len(types) > 0
+        if PyEnvSource in types:
+            for path in subdirs:
+                package_dirs = validate_pyenv_source(path)
+                if package_dirs is not None:  # pyenvs found here
+                    yield from package_dirs
+                    traversal.ignore(path)  # don't recurse into Python environment
         if CodeSource in types:
             # Retrieve base_dir from closest ancestor, i.e. last Path in extras
             base_dir = next((x for x in reversed(extras) if isinstance(x, Path)), None)

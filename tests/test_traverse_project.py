@@ -11,6 +11,7 @@ from fawltydeps.types import (
     CodeSource,
     DepsSource,
     PathOrSpecial,
+    PyEnvSource,
     UnparseablePathException,
 )
 
@@ -30,6 +31,7 @@ class TraverseProjectVector:
     deps_parser_choice: Optional[ParserChoice] = None
     expect_imports_src: Set[str] = dataclasses.field(default_factory=set)
     expect_deps_src: Set[str] = dataclasses.field(default_factory=set)
+    expect_pyenv_src: Set[str] = dataclasses.field(default_factory=set)
     expect_raised: Optional[Type[Exception]] = None
 
 
@@ -338,11 +340,117 @@ find_sources_vectors = [
         "no_issues",
         code={".venv"},
         deps={".venv"},
+        pyenvs=set(),
         expect_imports_src={
             ".venv/lib/python3.10/site-packages/dummy_package/setup.py",
             ".venv/lib/python3.10/site-packages/dummy_package/code.py",
         },
         expect_deps_src={".venv/lib/python3.10/site-packages/dummy_package/setup.py"},
+    ),
+    #
+    # Testing 'pyenvs' alone:
+    #
+    TraverseProjectVector(
+        "given_pyenv_as_nonexistent_dir__raises_exception",
+        "no_issues",
+        code=set(),
+        deps=set(),
+        pyenvs={".does_not_exist"},
+        expect_raised=UnparseablePathException,
+    ),
+    TraverseProjectVector(
+        "given_pyenv_as_non_env_dir__yields_nothing",
+        "no_issues",
+        code=set(),
+        deps=set(),
+        pyenvs={"subdir"},
+        expect_pyenv_src=set(),
+    ),
+    TraverseProjectVector(
+        "given_pyenv_as_venv_dir__yields_package_dir_within",
+        "no_issues",
+        code=set(),
+        deps=set(),
+        pyenvs={".venv"},
+        expect_pyenv_src={".venv/lib/python3.10/site-packages"},
+    ),
+    TraverseProjectVector(
+        "given_pyenv_as_venv_dir__yields_multiple_package_dirs_within",
+        "pyenv_galore",
+        code=set(),
+        deps=set(),
+        pyenvs={"another-venv"},
+        expect_pyenv_src={
+            "another-venv/lib/python3.8/site-packages",
+            "another-venv/lib/python3.11/site-packages",
+        },
+    ),
+    TraverseProjectVector(
+        "given_pyenv_as_package_dir__yields_only_one_package_dir_within",
+        "pyenv_galore",
+        code=set(),
+        deps=set(),
+        pyenvs={"another-venv/lib/python3.8"},
+        expect_pyenv_src={"another-venv/lib/python3.8/site-packages"},
+    ),
+    TraverseProjectVector(
+        "given_two_pyenvs__yields_all_package_dirs_within_both",
+        "pyenv_galore",
+        code=set(),
+        deps=set(),
+        pyenvs={".venv", "__pypackages__"},
+        expect_pyenv_src={
+            ".venv/lib/python3.10/site-packages",
+            "__pypackages__/3.7/lib",
+            "__pypackages__/3.10/lib",
+        },
+    ),
+    TraverseProjectVector(
+        "given_parent_dir__yields_all_package_dirs_within_all_pyenvs",
+        "pyenv_galore",
+        code=set(),
+        deps=set(),
+        expect_pyenv_src={
+            ".venv/lib/python3.10/site-packages",
+            "__pypackages__/3.7/lib",
+            "__pypackages__/3.10/lib",
+            "another-venv/lib/python3.8/site-packages",
+            "another-venv/lib/python3.11/site-packages",
+            "poetry2nix_result/lib/python3.9/site-packages",
+        },
+    ),
+    #
+    # Test interaction of 'pyenvs' with 'code' and 'deps':
+    #
+    TraverseProjectVector(
+        "given_parent_dir__code_and_deps_are_never_found_within_pyenvs",
+        "pyenv_galore",
+        expect_pyenv_src={
+            ".venv/lib/python3.10/site-packages",
+            "__pypackages__/3.7/lib",
+            "__pypackages__/3.10/lib",
+            "another-venv/lib/python3.8/site-packages",
+            "another-venv/lib/python3.11/site-packages",
+            "poetry2nix_result/lib/python3.9/site-packages",
+        },
+    ),
+    TraverseProjectVector(
+        "given_one_pyenv__code_and_deps_may_be_found_in_other_pyenvs",
+        "pyenv_galore",
+        pyenvs={"__pypackages__"},
+        expect_imports_src={
+            "another-venv/lib/python3.8/site-packages/another_package/__init__.py",
+            "another-venv/lib/python3.11/site-packages/another_module.py",
+            "another-venv/lib/python3.11/site-packages/setup.py",
+            "poetry2nix_result/lib/python3.9/site-packages/some_module.py",
+        },
+        expect_deps_src={
+            "another-venv/lib/python3.11/site-packages/setup.py",
+        },
+        expect_pyenv_src={
+            "__pypackages__/3.7/lib",
+            "__pypackages__/3.10/lib",
+        },
     ),
 ]
 
@@ -366,9 +474,11 @@ def test_find_sources(vector: TraverseProjectVector):
         for path in vector.expect_imports_src
     }
     expect_deps_src = {project_dir / path for path in vector.expect_deps_src}
+    expect_pyenv_src = {project_dir / path for path in vector.expect_pyenv_src}
 
     actual_imports_src: Set[PathOrSpecial] = set()
     actual_deps_src: Set[Path] = set()
+    actual_pyenv_src: Set[Path] = set()
 
     if vector.expect_raised is not None:
         with pytest.raises(vector.expect_raised):
@@ -380,8 +490,11 @@ def test_find_sources(vector: TraverseProjectVector):
             actual_imports_src.add(src.path)
         elif isinstance(src, DepsSource):
             actual_deps_src.add(src.path)
+        elif isinstance(src, PyEnvSource):
+            actual_pyenv_src.add(src.path)
         else:
             raise TypeError(src)
 
     assert actual_imports_src == expect_imports_src
     assert actual_deps_src == expect_deps_src
+    assert actual_pyenv_src == expect_pyenv_src

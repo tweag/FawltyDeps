@@ -37,6 +37,7 @@ from importlib_metadata import (
 
 from fawltydeps.types import (
     CustomMapping,
+    PyEnvSource,
     UnparseablePathException,
     UnresolvedDependenciesError,
 )
@@ -491,3 +492,19 @@ def resolve_dependencies(
         raise UnresolvedDependenciesError(names=unresolved)
 
     return ret
+
+
+def validate_pyenv_source(path: Path) -> Optional[Set[PyEnvSource]]:
+    """Check if the given directory path is a valid Python environment.
+
+    - If a Python environment is found at the given path, then return a set of
+      package dirs (typically only one) found within this Python environment.
+    - Return None if this is a directory that must be traversed further to find
+      Python environments within.
+    - Raise UnparseablePathException if the given path is not a directory.
+    """
+    if not path.is_dir():
+        raise UnparseablePathException(ctx="Not a directory!", path=path)
+
+    package_dirs = set(LocalPackageResolver.find_package_dirs(path))
+    return {PyEnvSource(dir) for dir in package_dirs} if package_dirs else None
