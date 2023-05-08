@@ -317,14 +317,25 @@ class TemporaryPipInstallResolver(BasePackageResolver):
     def installed_requirements(
         venv_dir: Path, requirements: List[str]
     ) -> Iterator[Path]:
-        """Install the given requirements into venv_dir with `pip install`."""
+        """Install the given requirements into venv_dir with `pip install`.
+
+        We try to install as many of the given requirements as possible. Failed
+        requirements will be logged with warning messages, but no matter how
+        many failures we get, we will still enter the caller's context. It is
+        up to the caller to handle any requirements that we failed to install.
+        """
         marker_file = venv_dir / ".installed"
         if not marker_file.is_file():
             venv.create(venv_dir, clear=True, with_pip=True)
-        subprocess.run(
-            [f"{venv_dir}/bin/pip", "install", "--no-deps"] + requirements,
-            check=True,  # fail if any of the commands fail
-        )
+        argv = [f"{venv_dir}/bin/pip", "install", "--no-deps"]
+        proc = subprocess.run(argv + requirements, check=False)
+        if proc.returncode:  # pip install failed
+            logger.warning("Command failed: %s", argv + requirements)
+            logger.info("Retrying each requirement individually...")
+            for req in requirements:
+                proc = subprocess.run(argv + [req], check=False)
+                if proc.returncode:  # pip install failed
+                    logger.warning("Failed to install %s", repr(req))
         marker_file.touch()
         yield venv_dir
 
@@ -336,15 +347,16 @@ class TemporaryPipInstallResolver(BasePackageResolver):
         Provide a path to the temporary venv into the caller's context in which
         the given requirements have been `pip install`ed. Automatically remove
         the venv at the end of the context.
+
+        Installation is done on a "best effort" basis as documented by
+        .installed_requirements() above. The caller is expected to handle any
+        requirements that we failed to install.
         """
         with tempfile.TemporaryDirectory() as tmpdir:
             with cls.installed_requirements(Path(tmpdir), requirements) as venv_dir:
                 yield venv_dir
 
-    def lookup_packages(
-        self,
-        package_names: Set[str],
-    ) -> Dict[str, Package]:
+    def lookup_packages(self, package_names: Set[str]) -> Dict[str, Package]:
         """Convert package names into Package objects via temporary pip install.
 
         Use the temp_installed_requirements() above to `pip install` the given

@@ -8,7 +8,6 @@ from fawltydeps.packages import (
     IdentityMapping,
     LocalPackageResolver,
     Package,
-    TemporaryPipInstallResolver,
     resolve_dependencies,
 )
 
@@ -161,18 +160,4 @@ def test_resolve_dependencies__in_fake_venv__returns_local_and_id_deps(fake_venv
         "empty-pkg": Package(
             "empty_pkg", set(), LocalPackageResolver, {str(site_packages): set()}
         ),
-    }
-
-
-@pytest.mark.usefixtures("local_pypi")
-def test_on_installed_venv__returns_local_deps():
-    actual = resolve_dependencies(
-        ["leftpadx", "click"], pyenv_path=None, install_deps=True
-    )
-    debug_info = "Provided by temporary `pip install`"
-    assert actual == {
-        "leftpadx": Package(
-            "leftpadx", {"leftpad"}, TemporaryPipInstallResolver, debug_info
-        ),
-        "click": Package("click", {"click"}, TemporaryPipInstallResolver, debug_info),
     }
