@@ -153,7 +153,7 @@ find_sources_vectors = [
     ),
     TraverseProjectVector(
         "given_deps_as_non_deps_file__raises_exception",
-        "README.md",
+        "blog_post_example",
         code=set(),
         deps={"README.md"},
         expect_raised=UnparseablePathException,
@@ -315,6 +315,7 @@ find_sources_vectors = [
 )
 def test_find_sources(vector: TraverseProjectVector):
     project_dir = SAMPLE_PROJECTS_DIR / vector.project
+    assert project_dir.is_dir()
     settings = Settings(
         code={
             path if path == "<stdin>" else project_dir / path for path in vector.code
