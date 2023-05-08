@@ -13,7 +13,11 @@ from fawltydeps.packages import (
     resolve_dependencies,
     setup_resolvers,
 )
-from fawltydeps.types import UnparseablePathException, UnresolvedDependenciesError
+from fawltydeps.types import (
+    PyEnvSource,
+    UnparseablePathException,
+    UnresolvedDependenciesError,
+)
 
 from .utils import (
     SAMPLE_PROJECTS_DIR,
@@ -63,7 +67,7 @@ def test_package__identity_mapping(
 ):
     id_mapping = IdentityMapping()
     p = id_mapping.lookup_package(package_name)
-    assert p.package_name == package_name  # package name is not normalized
+    assert p.package_name == Package.normalize_name(package_name)
     assert p.is_used(matching_imports)
     assert not p.is_used(non_matching_imports)
 
@@ -123,10 +127,14 @@ def test_package__identity_mapping(
     ],
 )
 def test_package__local_env_mapping(
-    package_name, import_names, matching_imports, non_matching_imports
+    package_name, import_names, matching_imports, non_matching_imports, fake_venv
 ):
-    p = Package(package_name, import_names, LocalPackageResolver)
-    assert p.package_name == package_name  # package name is not normalized
+    _venv_dir, site_dir = fake_venv({package_name: import_names})
+    lpl = LocalPackageResolver({PyEnvSource(site_dir)})
+    normalized_name = Package.normalize_name(package_name)
+    p = lpl.packages[normalized_name]
+    assert p.package_name == normalized_name
+    assert p.resolved_with is LocalPackageResolver
     assert p.is_used(matching_imports)
     assert not p.is_used(non_matching_imports)
 

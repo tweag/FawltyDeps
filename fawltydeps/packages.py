@@ -62,7 +62,7 @@ class Package:
     installed.
     """
 
-    package_name: str
+    package_name: str  # auto-normalized in .__post_init__()
     import_names: Set[str]
     resolved_with: Type["BasePackageResolver"]
     debug_info: PackageDebugInfo = None
@@ -78,6 +78,10 @@ class Package:
         (e.g. typing_extension).
         """
         return package_name.lower().replace("-", "_")
+
+    def __post_init__(self) -> None:
+        """Ensure Package object invariants."""
+        object.__setattr__(self, "package_name", self.normalize_name(self.package_name))
 
     def is_used(self, imported_names: Iterable[str]) -> bool:
         """Return True iff this package is among the given import names."""
