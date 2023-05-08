@@ -31,7 +31,7 @@ class UnresolvedDependenciesError(Exception):
     """Exception type when not all dependencies were are resolved"""
 
     def __init__(self, names: Set[str]):
-        self.msg = f"Unresolved dependnencies: {names}"
+        self.msg = f"Unresolved dependencies: {', '.join(sorted(names))}"
 
 
 class ParserChoice(Enum):
