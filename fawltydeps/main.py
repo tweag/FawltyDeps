@@ -294,8 +294,10 @@ def main(
         return parser.error(exc.msg)  # exit code 2
     except UnresolvedDependenciesError as exc:
         logger.error(
-            "%s \nIf you use '--install-deps' option "
-            "please make sure that you have all your dependencies installed.",
+            "%s\nFawltyDeps is unable to find the above packages with the "
+            "configured package resolvers. Consider using --pyenv if these "
+            "packages are already installed somewhere, or --custom-mapping-file "
+            "to take full control of the package-to-import-names mapping.",
             str(exc.msg),
         )
         return 5
