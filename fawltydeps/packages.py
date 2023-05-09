@@ -8,10 +8,9 @@ import venv
 from abc import ABC, abstractmethod
 from contextlib import contextmanager
 from dataclasses import dataclass, replace
+from functools import partial
 from pathlib import Path
 from typing import Dict, Iterable, Iterator, List, Optional, Set, Tuple, Type, Union
-
-import pytest
 
 # importlib_metadata is gradually graduating into the importlib.metadata stdlib
 # module, however we rely on internal functions and recent (and upcoming)
@@ -310,15 +309,28 @@ class TemporaryPipInstallResolver(BasePackageResolver):
     packages in this venv. The venv is automatically deleted before as soon as
     the packages have been resolved."""
 
-    def __init__(
-        self,
-        cache: Optional[pytest.Cache] = None,
-    ) -> None:
-        self.cache = cache
+    # This is only used in tests by `test_resolver`
+    cached_venv: Optional[Path] = None
 
     @staticmethod
     @contextmanager
-    def temp_installed_requirements(requirements: List[str]) -> Iterator[Path]:
+    def installed_requirements(
+        venv_dir: Path, requirements: List[str]
+    ) -> Iterator[Path]:
+        """Install the given requirements into venv_dir with `pip install`."""
+        marker_file = venv_dir / ".installed"
+        if not marker_file.is_file():
+            venv.create(venv_dir, clear=True, with_pip=True)
+        subprocess.run(
+            [f"{venv_dir}/bin/pip", "install", "--no-deps"] + requirements,
+            check=True,  # fail if any of the commands fail
+        )
+        marker_file.touch()
+        yield venv_dir
+
+    @classmethod
+    @contextmanager
+    def temp_installed_requirements(cls, requirements: List[str]) -> Iterator[Path]:
         """Create a temporary venv and install the given requirements into it.
 
         Provide a path to the temporary venv into the caller's context in which
@@ -326,44 +338,8 @@ class TemporaryPipInstallResolver(BasePackageResolver):
         the venv at the end of the context.
         """
         with tempfile.TemporaryDirectory() as tmpdir:
-            venv_dir = Path(tmpdir)
-            venv.create(venv_dir, clear=True, with_pip=True)
-            subprocess.run(
-                [f"{venv_dir}/bin/pip", "install", "--no-deps"] + requirements,
-                check=True,  # fail if any of the commands fail
-            )
-            (venv_dir / ".installed").touch()
-            yield venv_dir
-
-    # This function is only tagged as a context manager to facilitate an
-    # intechangeable use with `temp_installed_requirements()`
-    @staticmethod
-    @contextmanager
-    def cached_venv_with_requirements(
-        requirements: List[str], cache: pytest.Cache
-    ) -> Iterator[Path]:
-        """Install the given requirements into a cached venv.
-
-        Provide a path to the cached venv.
-        The venv persists after the call (and the installed deps are not
-        uninstalled).
-        The `--upgrade` and `--force-reinstall` options are not used to avoid
-        parallel tests over-writing the same package.
-        """
-
-        venv_dir = Path(
-            cache.mkdir(
-                f"fawltydeps_reused_venv_{sys.version_info.major}.{sys.version_info.minor}"
-            )
-        )
-        if not (venv_dir / ".installed").is_file():
-            venv.create(venv_dir, clear=True, with_pip=True)
-        subprocess.run(
-            [f"{venv_dir}/bin/pip", "install", "--no-deps"] + requirements,
-            check=True,  # fail if any of the commands fail
-        )
-        (venv_dir / ".installed").touch()
-        yield venv_dir
+            with cls.installed_requirements(Path(tmpdir), requirements) as venv_dir:
+                yield venv_dir
 
     def lookup_packages(
         self,
@@ -376,16 +352,15 @@ class TemporaryPipInstallResolver(BasePackageResolver):
         on this venv to provide the Package objects that correspond to the
         package names.
         """
-        if self.cache:
-            venv_context = self.cached_venv_with_requirements(
-                sorted(package_names), self.cache
-            )
+        if self.cached_venv is None:
+            installed = self.temp_installed_requirements
+            logger.info("Installing dependencies into a temporary Python environment.")
+        # If self.cached_venv has been set, then use that path instead of creating
+        # a temporary venv for package installation.
         else:
-            venv_context = self.temp_installed_requirements(sorted(package_names))
-            logger.info(
-                "Installing dependencies into a new temporary Python environment."
-            )
-        with venv_context as venv_dir:
+            installed = partial(self.installed_requirements, self.cached_venv)
+            logger.info(f"Installing dependencies into {self.cached_venv}.")
+        with installed(sorted(package_names)) as venv_dir:
             resolver = LocalPackageResolver(venv_dir)
             return {
                 name: replace(
