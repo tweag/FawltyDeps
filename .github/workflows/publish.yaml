@@ -11,6 +11,8 @@ jobs:
   publish:
     needs: [tests]
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
