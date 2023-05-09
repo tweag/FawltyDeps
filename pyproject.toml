@@ -81,6 +81,7 @@ pylint = [
     {version = "^2.15.8", python = "<3.8"},
 ]
 pytest = "^7.1.0"
+ruff = ">=0.3"
 types-setuptools = "^65.6.0.2"
 
 [tool.poetry.group.format]
@@ -114,6 +115,7 @@ pylint = [
     {version = "^2.15.8", python = "<3.8"},
 ]
 pytest = "^7.1.0"
+ruff = ">=0.3"
 types-setuptools = "^65.6.0.2"
 
 [tool.black]
@@ -180,4 +182,5 @@ ignore_unused = [
     "nox",
     "pylint",
     "pytest",
+    "ruff",
 ]
