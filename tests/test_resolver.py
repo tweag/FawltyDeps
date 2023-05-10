@@ -25,7 +25,7 @@ user_defined_mapping = {"apache-airflow": ["airflow", "foo", "bar"]}
 
 
 @st.composite
-def dict_subset_strategy(draw, input_dict: Dict[str, Set[str]]):
+def dict_subset_strategy(draw, input_dict: Dict[str, Set[str]]) -> Dict[str, Set[str]]:
     """Returns a hypothesis strategy to choose items from a dict."""
     if not input_dict:
         return {}
@@ -68,8 +68,8 @@ def user_mapping_to_file_content(user_mapping: Dict[str, List[str]]) -> str:
 
 
 def generate_expected_resolved_deps(
-    locally_installed_deps: Dict[str, List[str]],
-    other_deps: Dict[str, List[str]],
+    locally_installed_deps: Dict[str, Set[str]],
+    other_deps: Dict[str, Set[str]],
     user_defined_deps: List[str],
     user_mapping_from_config: Dict[str, List[str]],
     user_mapping_file: Optional[Path] = None,
@@ -83,15 +83,12 @@ def generate_expected_resolved_deps(
     the category of the dependencies in each argument.
     """
     ret = {}
-    if locally_installed_deps:
-        ret.update(
-            {
-                dep: Package(
-                    Package.normalize_name(dep), set(imports), LocalPackageResolver
-                )
-                for dep, imports in locally_installed_deps.items()
-            }
-        )
+    ret.update(
+        {
+            dep: Package(Package.normalize_name(dep), imports, LocalPackageResolver)
+            for dep, imports in locally_installed_deps.items()
+        }
+    )
     if user_defined_deps:
         user_mapping = UserDefinedMapping(
             set([user_mapping_file]) if user_mapping_file else None,
@@ -99,25 +96,22 @@ def generate_expected_resolved_deps(
         )
         resolved_packages = user_mapping.lookup_packages(set(user_defined_deps))
         ret.update(resolved_packages)
-    if other_deps:
-        if install_deps:
-            ret.update(
-                {
-                    dep: Package(
-                        Package.normalize_name(dep),
-                        set(imports),
-                        TemporaryPipInstallResolver,
-                    )
-                    for dep, imports in other_deps.items()
-                }
-            )
-        else:
-            ret.update(
-                {
-                    dep: Package(dep, {Package.normalize_name(dep)}, IdentityMapping)
-                    for dep in other_deps
-                }
-            )
+    if install_deps:
+        ret.update(
+            {
+                dep: Package(
+                    Package.normalize_name(dep), imports, TemporaryPipInstallResolver
+                )
+                for dep, imports in other_deps.items()
+            }
+        )
+    else:
+        ret.update(
+            {
+                dep: Package(dep, {Package.normalize_name(dep)}, IdentityMapping)
+                for dep in other_deps
+            }
+        )
     return ret
 
 
