@@ -24,6 +24,11 @@ pkgs.mkShell {
     python311
     python312
     poetry
+
+    # Allow installation of binary wheels by (a) providing manylinux2014
+    # support, and (b) patching binaries installed into the Poetry virtualenv.
+    autoPatchelfHook
+    pythonManylinuxPackages.manylinux2014
   ];
   shellHook = ''
     # This is needed to keep python3.7 working while in the same nix-shell
@@ -34,6 +39,8 @@ pkgs.mkShell {
 
     poetry env use "${pkgs.python311}/bin/python"
     poetry install --sync --with=dev
+    # Patch binaries in the Poetry virtualenv to link against Nix deps
+    autoPatchelf "$(poetry env info --path)"
     source "$(poetry env info --path)/bin/activate"
   '';
 }
