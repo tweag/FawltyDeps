@@ -107,7 +107,7 @@ def populate_output_formats(parser: argparse._ActionsContainer) -> None:
 
 
 def populate_parser_paths_options(parser: argparse._ActionsContainer) -> None:
-    """Add the source paths (code, deps, env) Settings members to the parser.
+    """Add the source paths (code, deps, pyenv) Settings members to the parser.
 
     None of these options should specify default values
     (and the parser-wide default value should be argparse.SUPPRESS).
@@ -120,8 +120,8 @@ def populate_parser_paths_options(parser: argparse._ActionsContainer) -> None:
         "basepaths",
         type=lambda p: None if p == argparse.SUPPRESS else Path(p),
         nargs="*",
-        help="(Optional) directory in which to search for code (imports) "
-        "and/or dependency declarations",
+        help="(Optional) directory in which to search for code (imports),"
+        " dependency declarations and/or Python environments",
     )
     parser.add_argument(
         "--code",
@@ -130,8 +130,8 @@ def populate_parser_paths_options(parser: argparse._ActionsContainer) -> None:
         type=parse_path_or_stdin,
         metavar="PATH_OR_STDIN",
         help=(
-            "Code to parse for import statements (file or directory, use '-' "
-            "to read code from stdin; defaults to the current directory)"
+            "Code to parse for import statements (file or directory, use '-'"
+            " to read code from stdin; defaults to the current directory)"
         ),
     )
     parser.add_argument(
@@ -150,8 +150,8 @@ def populate_parser_paths_options(parser: argparse._ActionsContainer) -> None:
         type=read_parser_choice,
         choices=list(ParserChoice),
         help=(
-            "Name of the parsing strategy to use for dependency declarations, "
-            "useful for when the file to parse doesn't match a standard name"
+            "Name of the parsing strategy to use for dependency declarations,"
+            " useful for when the file to parse doesn't match a standard name"
         ),
     )
     parser.add_argument(
@@ -163,8 +163,9 @@ def populate_parser_paths_options(parser: argparse._ActionsContainer) -> None:
         metavar="PYENV_DIR",
         help=(
             "Where to find Python environments that have project dependencies"
-            " installed. When empty (the default), fall back to the Python"
-            " environment where FawltyDeps is installed."
+            " installed. Defaults to looking for Python environments under the"
+            " current directory, or failing that, using the Python environment"
+            " where FawltyDeps is installed."
         ),
     )
     parser.add_argument(
