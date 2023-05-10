@@ -42,7 +42,7 @@ class TraverseProjectVector:
     # These are the exceptions we expect to be raised, or warnings to be logged
     expect_raised: Optional[Type[Exception]] = None
     expect_warnings: List[str] = dataclasses.field(default_factory=list)
-    skip_me: Callable[[], Optional[str]] = lambda: None
+    skip_me: Callable[[], Optional[str]] = lambda: None  # noqa: E731
 
 
 def on_windows(msg: str) -> Callable[[], Optional[str]]:
