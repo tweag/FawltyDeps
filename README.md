@@ -138,22 +138,18 @@ When FawltyDeps looks for undeclared and unused dependencies, it needs to match
 `import` statements in your code with corresponding package dependencies
 declared in your project configuration.
 
-To solve this, FawltyDeps adopts several strategies: mapping provided by the user,
-identity mapping, and most powerful of all - using your python environment.
+To solve this, FawltyDeps uses a sequence of resolvers (aka. mapping strategies)
+to determine which Python packages that provide which import names:
 
 #### Python environment mapping
 
-FawltyDeps looks at the packages installed in your _current
-Python environment_ and what import names each of them provide in order to
-correctly match your dependencies against your imports.
+First of all FawltyDeps looks for _Python environments_ (virtualenvs or similar
+directories like `.venv` or `__pypackages__`.) inside your project (i.e. under
+`basepath`, if given, or the current directory).
 
-The _current Python environment_ in this case is the environment in which
-FawltyDeps itself is installed. This works well when you, for example,
-`pip install fawltydeps` into the same virtualenv as your project dependencies.
-
-If you instead want FawltyDeps to look into a _different_ Python environment for
-mapping dependencies to import names, you can use the `--pyenv` option,
-for example:
+You can use the `--pyenv` option (or the `pyenvs` configuration directive)
+to point FawltyDeps at a specific Python environment located within your project
+or elsewhere. For example:
 
 ```sh
 fawltydeps --code my_package/ --deps pyproject.toml --pyenv .venv/
@@ -166,17 +162,23 @@ This will tell FawltyDeps:
 - to use the Python environment at `.venv/` to map dependency names in
   `pyproject.toml` into import names used in your code under `my_package/`
 
+If `--pyenv` is not used, and no Python environments are found within your project,
+FawltyDeps will fall back to looking at your _current Python environment_:
+This is the environment in which FawltyDeps itself is installed.
+This works well when you, for example, `pip install fawltydeps` into the same
+virtualenv as your project dependencies.
+
 You can use `--pyenv` multiple times to have FawltyDeps look for packages in
-multiple Python environments. When mapping a dependency into import names,
-FawltyDeps will then use the union of all imports provided by all matching
-packages across those Python environments as valid import names for that
-dependency.
+multiple Python environments. In this case (or when multiple Python environments
+are found inside your project) FawltyDeps will use the union (superset) of all
+imports provided by all matching packages across those Python environments as
+valid import names for that dependency.
 
 #### Identity mapping
 
-When FawltyDeps is unable to find an installed package that corresponds to a
-declared dependency, FawltyDeps will fall back to an "identity mapping", where
-it _assumes_ that the dependency provides a single import of the same name,
+When unable to find an installed package that corresponds to a declared
+dependency, FawltyDeps will fall back to an "identity mapping", where it
+_assumes_ that the dependency provides a single import of the same name,
 i.e. it will expect that when you depend on `some_package`, then that should
 correspond to `import some_package` statements in your code.
 
@@ -188,8 +190,8 @@ project dependencies](#why-must-fawltydeps-run-in-the-same-python-environment-as
 
 #### User-defined mapping
 
-You may define your mapping by providing a toml file with package to imports mapping,
-`my_mapping.toml`:
+As a final solution and/or an ultimate override, you may define your own mapping
+of dependency names to import names, by providing a TOML file like this:
 
 ```toml
 my-package = ["mpkg"]
@@ -203,9 +205,11 @@ To use your mapping, run:
 fawltydeps --custom-mapping-file my_mapping.toml
 ```
 
-FawltyDeps will parse `my_mapping.toml` file and use extracted mapping for matching dependencies to imports.
+FawltyDeps will parse your `my_mapping.toml` file and use the extracted mapping
+for matching dependencies to imports.
 
-You may also place the custom mapping in the `pyproject.toml` file of your project, inside a `[tool.fawltydeps.custom_mapping]` section, like this:
+You may also place the custom mapping in the `pyproject.toml` file of your
+project, inside a `[tool.fawltydeps.custom_mapping]` section, like this:
 
 ```toml
 [tool.fawltydeps.custom_mapping]
@@ -214,9 +218,10 @@ scikit-learn = ["sklearn"]
 multiple-modules = ["module1", "module2"]
 ```
 
-Caution when using your mapping is advised. The user-defined mapping takes precedence over all other resolving strategies.
-If the mapping file has some stale mapping entries, they will not be resolved by
-Python environment resolver (which in general is the most accurate).
+Caution when using your mapping is advised: The user-defined mapping takes
+precedence over the other resolvers documented above. For example, if the
+mapping file has some stale/incorrect mapping entries, they will _not_ be
+resolved by the Python environment resolver (which is usually more accurate).
 
 ### Ignoring irrelevant results
 
@@ -276,10 +281,11 @@ Here is a complete list of configuration directives we support:
   Defaults to the current directory, i.e. like `code = ["."]`.
 - `deps`: Files or directories containing the declared dependencies.
   Defaults to the current directory, i.e. like `deps = ["."]`.
-- `pyenvs`: Python environments (directories like `.venv`, `__pypackages__`, or
-  similar) to use for resolving project dependencies into provided import names.
-  Defaults to an empty list, i.e. like `pyenvs = []`, which is interpreted as
-  using the Python environment where FawltyDeps is installed (aka. `sys.path`).
+- `pyenvs`: Where to look for Python environments (directories like `.venv`,
+  `__pypackages__`, or similar) to be used for resolving project dependencies
+  into provided import names. Defaults to looking for Python environments under
+  the current directory, i.e. like `pyenvs = ["."]`. If none are found, use the
+  Python environment where FawltyDeps is installed (aka. `sys.path`).
 - `output_format`: Which output format to use by default. One of `human_summary`,
   `human_detailed`, or `json`.
   The default corresponds to `output_format = "human_summary"`.
@@ -507,13 +513,19 @@ fawltydeps libX
 
 ### Why must FawltyDeps run in the same Python environment as my project dependencies?
 
-As explained above in the section on [resolving dependencies via your Python
-environment](#resolving-dependencies-via-your-python-environment), the core
-logic of FawltyDeps needs to match `import` statements in your code with
-dependencies declared in your project configuration. This is straightforward
-for many packages: for example you `pip install requests` and then
-you can `import requests` in your code. However, this mapping from the name you
-install to the name you `import` is not always self-evident:
+(This is no longer true since FawltyDeps v0.11: FawltyDeps should be able to
+automatically find your project dependencies when they are installed in a Python
+environment that exists within your project. If your project dependencies are
+installed elsewhere, you can point FawltyDeps in their direction with `--pyenv`,
+as explained above in the section on
+[Python environment mapping](#python-environment-mapping))
+
+The reason why FawltyDeps need to find your project dependencies _somewhere_ is
+that the core logic of FawltyDeps needs to match `import` statements in your
+code with dependencies declared in your project configuration. This seems
+straightforward for many packages: for example you `pip install requests` and
+then you can `import requests` in your code. However, this mapping from the name
+you install to the name you `import` is not always self-evident:
 
 - There are sometimes differences between the package name that you
   declare as a dependency, and the `import` name it provides. For example, you
@@ -524,11 +536,18 @@ install to the name you `import` is not always self-evident:
   FawltyDeps need to figure out that this corresponds to the `setuptools`
   dependency.
 
-To solve this, FawltyDeps looks at the packages installed in your current Python
-environment (or the environment given by the `--pyenv` option) to correctly map
-dependencies (package names) into the imports that they provide.
+To solve this, FawltyDeps looks at the packages installed in your Python
+environment to correctly map dependencies (package names) into the imports that
+they provide. This is:
 
-However, when an installed package is not found for a declared dependency, the
+ - any Python environment found via the `--pyenv` option, or
+ - any Python environment found within your project (`basepath` or the current
+directory).
+ - Failing that, FawltyDeps will use the _current Python environment_,
+i.e. the one in which FawltyDeps itself is running.
+
+As a final resort, when an installed package is not found for a declared
+dependency, the
 _identity mapping_ that FawltyDeps falls back to will still do a good job for
 the majority of dependencies where the import name is indeed identical to the
 package name that you depend on.
@@ -545,13 +564,11 @@ _undeclared_ and `scikit-learn` as an _unused_ dependency.
 
 This is very much related to the above question. `scikit-learn` is an example
 of a package that exposes a different import name: `sklearn`.
-When `scikit-learn` is not installed in the current Python environment (the one
-that FawltyDeps uses to find these mappings), then FawltyDeps is unable to make
-the connection between these two names.
+When `scikit-learn` is not found in the Python environment(s) used by FawltyDeps,
+then FawltyDeps is unable to make the connection between these two names.
 
-To solve this problem, make sure that you either install and run FawltyDeps
-in a development environment (e.g. virtualenv) where your project's dependencies
-(including `scikit-learn`) are also installed. Alternatively, you can use the
+To solve this problem, make sure that `scikit-learn` is installed in a Python
+environment that belongs to your project. Alternatively, you can use the
 `--pyenv` option to point at a Python environment where `scikit-learn` and your
 other dependencies are installed.
 
