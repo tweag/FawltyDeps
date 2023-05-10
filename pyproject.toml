@@ -160,6 +160,18 @@ markers = [
 addopts = "-m 'not integration'"
 cache_dir = "~/.cache/pytest"
 
+[tool.ruff]
+# Black uses line-length = 88, but allows exceptions when breaking the line
+# would lead to other rule violations. Use 100 as a maximum hard limit:
+line-length = 100
+target-version = "py37"
+extend-exclude = [
+    "tests/sample_projects/legacy_encoding/big5.py",  # Fails with E902 (not UTF-8)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/sample_projects/*" = ["F401"]  # Allow unused imports in sample projects
+
 [tool.codespell]
 skip = ".git,.mypy_cache,.nox,.vscode,__pycache__,poetry.lock"
 builtin = "clear,rare,informal,usage,code,names"
