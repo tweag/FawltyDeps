@@ -1,10 +1,28 @@
 import hashlib
+import os
 from pathlib import Path
 from typing import Iterable
 
 import nox
 
 python_versions = ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
+
+
+def patch_binaries_if_needed(session: nox.Session, venv_dir: str) -> None:
+    """If we are on Nix, auto-patch any binaries under `venv_dir`.
+
+    Detect if we are running under Nix, and auto-patch any pre-built binaries
+    that were just installed into the Nox virtualenv.
+    """
+    build_inputs = os.environ.get("buildInputs", "")  # noqa: SIM112
+    if "auto-patchelf-hook" not in build_inputs:
+        return
+
+    # We want to invoke autoPatchelf, but it is a shell function in the
+    # surrounding Nix shell, and thus not directly available to session.run().
+    # However, we can invoke nix-shell and tell it to run autoPathelf for us:
+    argv = ["nix-shell", "--run", f"autoPatchelf {venv_dir}"]
+    session.run(*argv, silent=True, external=True)
 
 
 def install_groups(
@@ -60,6 +78,9 @@ def install_groups(
     session.install("-r", str(requirements_txt))
     if include_self:
         session.install("-e", ".")
+
+    if not session.virtualenv._reused:
+        patch_binaries_if_needed(session, session.virtualenv.location)
 
 
 @nox.session(python=python_versions)
