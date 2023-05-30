@@ -48,7 +48,7 @@ class ParserChoice(Enum):
 
 @dataclass(frozen=True, eq=True, order=True)
 class CodeSource:
-    """A Python code source to be parsed for imports statements.
+    """A Python code source to be parsed for import statements.
 
     .path points to the .py or .ipynb file containing Python code, alternatively
         it points to the "<stdin>" special case which means Python code will be
