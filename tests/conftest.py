@@ -293,14 +293,6 @@ def project_with_multiple_python_files(fake_project):
 
 
 @pytest.fixture
-def project_with_code_and_requirements_txt(fake_project):
-    def _inner(*, imports: List[str], declares: List[str]):
-        return fake_project(imports=imports, declared_deps=declares)
-
-    return _inner
-
-
-@pytest.fixture
 def setup_fawltydeps_config(write_tmp_files):
     """Write a custom tmp_path/pyproject.toml with a [tool.fawltydeps] section.
 
