@@ -4,7 +4,7 @@ import venv
 from pathlib import Path
 from tempfile import mkdtemp
 from textwrap import dedent
-from typing import Callable, Dict, Iterable, Optional, Set, Tuple, Union
+from typing import Callable, Dict, List, Optional, Set, Tuple, Union
 
 import pytest
 
@@ -106,211 +106,259 @@ def isolate_default_resolver(
 
 
 @pytest.fixture
-def project_with_requirements(write_tmp_files):
-    return write_tmp_files(
-        {
-            "requirements.txt": """\
-                pandas
-                click
-                """,
-            "subdir/requirements.txt": """\
-                pandas
-                tensorflow>=2
-                """,
-            # This file should be ignored:
-            ".venv/requirements.txt": """\
-                foo_package
-                bar_package
-                """,
-            "python_file.py": "import django",
-        }
-    )
+def fake_project(write_tmp_files, fake_venv):
+    """Create a temporary Python project with the given contents/properties.
 
+    This is a generalized helper to create the directory structure and file
+    contents that reflect a Python project containing the imports, declared
+    dependencies and Python environments passed as arguments. The allowed
+    arguments are:
 
-@pytest.fixture
-def project_with_setup_and_requirements(write_tmp_files):
-    return write_tmp_files(
-        {
-            "requirements.txt": """\
-                pandas
-                click
-                """,
-            "subdir/requirements.txt": """\
-                pandas
-                tensorflow>=2
-                """,
-            "setup.py": """\
-                from setuptools import setup
+    - imports: a list of strings (import names) that will be written as import
+        statements (one line per item) into a file called code.py.
+    - declared_deps: a list of strings (PEP 508 requirements specifiers) that
+        will be written (one line per item) into a requirements.txt file.
+    - fake_venvs: a dict mapping strings (virtualenv paths) to nested dicts to
+        be passed to fake_venv() (i.e. each nested dict maps dependency names
+        to lists of provided import names for that fake_venv instance).
+    - files_with_imports: a dict mapping strings (filenames) to lists of strings
+        (imports); multiple files will be written, each in the same manner as
+         described in 'imports' above.
+    - files_with_declared_deps: a dict mapping strings (filenames) to either:
+          - lists of strings (deps), or to
+          - a pair consisting of a list of strings (deps) and a dict of names to
+            lists of strings (extras/optional deps).
+        The dependencies will be written into associated files, formatted
+        according to the filenames (must be one of requirements.txt, setup.py,
+        setup.cfg, or pyproject.toml).
+    - extra_file_contents: a dict with extra files and their associated contents
+        to be forwarded directly to write_tmp_files().
 
-                setup(
-                    name="MyLib",
-                    install_requires=["pandas", "click>=1.2"],
-                    extras_require={
-                        'annoy': ['annoy==1.15.2'],
-                        'chinese': ['jieba']
-                        }
-                )
-                """,
-            "python_file.py": "import django",
-        }
-    )
+    Returns tmp_path, which is regarded as the root directory of the temporary
+    Python project.
+    """
 
+    Imports = List[str]
+    Deps = List[str]
+    ExtraDeps = Dict[str, Deps]
 
-@pytest.fixture
-def project_with_setup_pyproject_and_requirements(write_tmp_files):
-    return write_tmp_files(
-        {
-            "requirements.txt": """\
-                pandas
-                click
-                """,
-            "subdir/requirements.txt": """\
-                pandas
-                tensorflow>=2
-                """,
-            "setup.py": """\
-                from setuptools import setup
+    def format_python_code(imports: Imports) -> str:
+        return "".join(f"import {s}\n" for s in imports)
 
-                setup(
-                    name="MyLib",
-                    install_requires=["pandas", "click>=1.2"],
-                    extras_require={
-                        'annoy': ['annoy==1.15.2'],
-                        'chinese': ['jieba']
-                        }
-                )
-                """,
-            "pyproject.toml": """\
-                [project]
-                name = "fawltydeps"
+    def format_requirements_txt(deps: Deps, no_extras: ExtraDeps) -> str:
+        assert not no_extras  # not supported
+        return "".join(f"{s}\n" for s in deps)
 
-                dependencies = ["pandas", "pydantic>1.10.4"]
+    def format_setup_py(deps: Deps, extras: ExtraDeps) -> str:
+        return f"""\
+            from setuptools import setup
 
-                [project.optional-dependencies]
-                dev = ["pylint >= 2.15.8"]
-            """,
-            "python_file.py": "import django",
-        }
-    )
+            setup(
+                name="MyLib",
+                install_requires={deps!r},
+                extras_require={extras!r}
+            )
+            """
 
-
-@pytest.fixture
-def project_with_pyproject(write_tmp_files):
-    return write_tmp_files(
-        {
-            "pyproject.toml": """\
-                [project]
-                name = "fawltydeps"
-
-                dependencies = ["pandas", "pydantic>1.10.4"]
-
-                [project.optional-dependencies]
-                dev = ["pylint >= 2.15.8"]
-            """,
-            "python_file.py": "import django",
-        }
-    )
-
-
-@pytest.fixture
-def project_with_setup_cfg(write_tmp_files):
-    return write_tmp_files(
-        {
-            "setup.cfg": """\
+    def format_setup_cfg(deps: Deps, no_extras: ExtraDeps) -> str:
+        assert not no_extras  # not supported
+        return (
+            dedent(
+                """\
                 [metadata]
-                name = "fawltydeps"
+                name = "MyLib"
 
                 [options]
                 install_requires =
-                    pandas
-                    django
-                  
-            """,
+                """
+            )
+            + "\n".join(f"    {d}" for d in deps)
+        )
+
+    def format_pyproject_toml(deps: Deps, extras: ExtraDeps) -> str:
+        return (
+            dedent(
+                f"""\
+                [project]
+                name = "MyLib"
+
+                dependencies = {deps!r}
+
+                [project.optional-dependencies]
+                """
+            )
+            + "\n".join(f"{k} = {v!r}" for k, v in extras.items())
+        )
+
+    def format_deps(
+        filename: str, all_deps: Union[Deps, Tuple[Deps, ExtraDeps]]
+    ) -> str:
+        if isinstance(all_deps, tuple):
+            deps, extras = all_deps
+        else:
+            deps, extras = all_deps, {}
+        formatters: Dict[str, Callable[[Deps, ExtraDeps], str]] = {
+            "requirements.txt": format_requirements_txt,  # default choice
+            "setup.py": format_setup_py,
+            "setup.cfg": format_setup_cfg,
+            "pyproject.toml": format_pyproject_toml,
+        }
+        formatter = formatters.get(Path(filename).name, format_requirements_txt)
+        return formatter(deps, extras)
+
+    def create_one_fake_project(
+        *,
+        imports: Optional[Imports] = None,
+        declared_deps: Optional[Deps] = None,
+        fake_venvs: Optional[Dict[str, Dict[str, Set[str]]]] = None,
+        files_with_imports: Optional[Dict[str, Imports]] = None,
+        files_with_declared_deps: Optional[
+            Dict[str, Union[Deps, Tuple[Deps, ExtraDeps]]]
+        ] = None,
+        extra_file_contents: Optional[Dict[str, str]] = None,
+    ) -> Path:
+        tmp_files = {}
+        if imports is not None:
+            tmp_files["code.py"] = format_python_code(imports)
+        if declared_deps is not None:
+            tmp_files["requirements.txt"] = format_requirements_txt(declared_deps, {})
+        if files_with_imports is not None:
+            for filename, per_file_imports in files_with_imports.items():
+                tmp_files[filename] = format_python_code(per_file_imports)
+        if files_with_declared_deps is not None:
+            for filename, all_deps in files_with_declared_deps.items():
+                tmp_files[filename] = format_deps(filename, all_deps)
+        if extra_file_contents is not None:
+            tmp_files.update(extra_file_contents)
+        tmp_path: Path = write_tmp_files(tmp_files)
+        if fake_venvs is not None:
+            for venv_dir, fake_packages in fake_venvs.items():
+                fake_venv(fake_packages, venv_dir=tmp_path / venv_dir)
+        return tmp_path
+
+    return create_one_fake_project
+
+
+@pytest.fixture
+def project_with_requirements(fake_project):
+    return fake_project(
+        files_with_declared_deps={
+            "requirements.txt": ["pandas", "click"],
+            "subdir/requirements.txt": ["pandas", "tensorflow>=2"],
+            # This file should be ignored:
+            ".venv/requirements.txt": ["foo_package", "bar_package"],
+        },
+        files_with_imports={"python_file.py": ["django"]},
+    )
+
+
+@pytest.fixture
+def project_with_setup_and_requirements(fake_project):
+    return fake_project(
+        files_with_declared_deps={
+            "requirements.txt": ["pandas", "click"],
+            "subdir/requirements.txt": ["pandas", "tensorflow>=2"],
+            "setup.py": (
+                ["pandas", "click>=1.2"],  # install_requires
+                {"annoy": ["annoy==1.15.2"], "chinese": ["jieba"]},  # extras_require
+            ),
+        },
+        files_with_imports={"python_file.py": ["django"]},
+    )
+
+
+@pytest.fixture
+def project_with_setup_pyproject_and_requirements(fake_project):
+    return fake_project(
+        files_with_declared_deps={
+            "requirements.txt": ["pandas", "click"],
+            "subdir/requirements.txt": ["pandas", "tensorflow>=2"],
+            "setup.py": (
+                ["pandas", "click>=1.2"],  # install_requires
+                {"annoy": ["annoy==1.15.2"], "chinese": ["jieba"]},  # extras_require
+            ),
+            "pyproject.toml": (
+                ["pandas", "pydantic>1.10.4"],  # dependencies
+                {"dev": ["pylint >= 2.15.8"]},  # optional-dependencies
+            ),
+        },
+        files_with_imports={"python_file.py": ["django"]},
+    )
+
+
+@pytest.fixture
+def project_with_pyproject(fake_project):
+    return fake_project(
+        files_with_declared_deps={
+            "pyproject.toml": (
+                ["pandas", "pydantic>1.10.4"],  # dependencies
+                {"dev": ["pylint >= 2.15.8"]},  # optional-dependencies
+            ),
+        },
+        files_with_imports={"python_file.py": ["django"]},
+    )
+
+
+@pytest.fixture
+def project_with_setup_cfg(fake_project):
+    return fake_project(
+        files_with_declared_deps={
+            "setup.cfg": ["pandas", "django"],  # install_requires
+        },
+        extra_file_contents={
             "setup.py": """\
                 import setuptools
 
                 if __name__ == "__main__":
                     setuptools.setup()
-            """,
-            "python_file.py": "import django",
-        }
+                """,
+        },
+        files_with_imports={"python_file.py": ["django"]},
     )
 
 
 @pytest.fixture
-def project_with_setup_with_cfg_pyproject_and_requirements(write_tmp_files):
-    return write_tmp_files(
-        {
-            "requirements.txt": """\
-                pandas
-                click
-            """,
-            "subdir/dev-requirements.txt": """\
-                black
-            """,
-            "subdir/requirements.txt": """\
-                pandas
-                tensorflow>=2
-            """,
-            "subdir/requirements-docs.txt": """\
-                sphinx
-            """,
+def project_with_setup_with_cfg_pyproject_and_requirements(fake_project):
+    return fake_project(
+        files_with_declared_deps={
+            "requirements.txt": ["pandas", "click"],
+            "subdir/dev-requirements.txt": ["black"],
+            "subdir/requirements.txt": ["pandas", "tensorflow>=2"],
+            "subdir/requirements-docs.txt": ["sphinx"],
+            "setup.cfg": ["dependencyA", "dependencyB"],  # install_requires
+            "pyproject.toml": (
+                ["pandas", "pydantic>1.10.4"],  # dependencies
+                {"dev": ["pylint >= 2.15.8"]},  # optional-dependencies
+            ),
+        },
+        extra_file_contents={
             "setup.py": """\
                 from setuptools import setup
-                
+
                 setup(use_scm_version=True)
-            """,
-            "setup.cfg": """\
-                [metadata]
-                name = "fawltydeps"
-
-                [options]
-                install_requires =
-                    dependencyA
-                    dependencyB
-                  
-            """,
-            "pyproject.toml": """\
-                [project]
-                name = "fawltydeps"
-
-                dependencies = ["pandas", "pydantic>1.10.4"]
-
-                [project.optional-dependencies]
-                dev = ["pylint >= 2.15.8"]
-            """,
-            "python_file.py": "import django",
-        }
-    )
-
-
-@pytest.fixture
-def project_with_multiple_python_files(write_tmp_files):
-    return write_tmp_files(
-        {
-            "requirements.txt": """\
-                pandas
-                click
                 """,
-            "python_file.py": "import django",
-            "subdir/python_file2.py": "import pandas",
-            "subdir/python_file3.py": "import click",
-            "subdir2/python_file4.py": "import notimported",
-        }
+        },
+        files_with_imports={"python_file.py": ["django"]},
     )
 
 
 @pytest.fixture
-def project_with_code_and_requirements_txt(write_tmp_files):
-    def _inner(*, imports: Iterable[str], declares: Iterable[str]):
-        code = "".join(f"import {s}\n" for s in imports)
-        requirements = "".join(f"{s}\n" for s in declares)
-        return write_tmp_files(
-            {
-                "code.py": code,
-                "requirements.txt": requirements,
-            }
-        )
+def project_with_multiple_python_files(fake_project):
+    return fake_project(
+        declared_deps=["pandas", "click"],
+        files_with_imports={
+            "python_file.py": ["django"],
+            "subdir/python_file2.py": ["pandas"],
+            "subdir/python_file3.py": ["click"],
+            "subdir2/python_file4.py": ["notimported"],
+        },
+    )
+
+
+@pytest.fixture
+def project_with_code_and_requirements_txt(fake_project):
+    def _inner(*, imports: List[str], declares: List[str]):
+        return fake_project(imports=imports, declared_deps=declares)
 
     return _inner
 
