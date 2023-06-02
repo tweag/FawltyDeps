@@ -240,19 +240,6 @@ def fake_project(write_tmp_files, fake_venv):
 
 
 @pytest.fixture
-def project_with_requirements(fake_project):
-    return fake_project(
-        files_with_declared_deps={
-            "requirements.txt": ["pandas", "click"],
-            "subdir/requirements.txt": ["pandas", "tensorflow>=2"],
-            # This file should be ignored:
-            ".venv/requirements.txt": ["foo_package", "bar_package"],
-        },
-        files_with_imports={"python_file.py": ["django"]},
-    )
-
-
-@pytest.fixture
 def project_with_setup_and_requirements(fake_project):
     return fake_project(
         files_with_declared_deps={
