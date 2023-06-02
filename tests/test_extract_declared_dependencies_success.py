@@ -466,28 +466,41 @@ def test_parse_sources__parse_only_requirements_from_subdir__returns_list(
 
 
 def test_find_and_parse_sources__project_with_pyproject_setup_and_requirements__returns_list(
-    project_with_setup_pyproject_and_requirements,
+    fake_project,
 ):
+    tmp_path = fake_project(
+        files_with_declared_deps={
+            "requirements.txt": ["pandas", "click"],
+            "subdir/requirements.txt": ["pandas", "tensorflow>=2"],
+            "setup.py": (
+                ["pandas", "click>=1.2"],  # install_requires
+                {"annoy": ["annoy==1.15.2"], "chinese": ["jieba"]},  # extras_require
+            ),
+            "pyproject.toml": (
+                ["pandas", "pydantic>1.10.4"],  # dependencies
+                {"dev": ["pylint >= 2.15.8"]},  # optional-dependencies
+            ),
+        },
+        files_with_imports={"python_file.py": ["django"]},
+    )
     expect = [
         # from requirements.txt:
         "pandas",
         "click",
+        # from subdir/requirements.txt:
+        "pandas",
+        "tensorflow",
         # from setup.py:
         "pandas",
         "click",
         "annoy",
         "jieba",
-        # from subdir/requirements.txt:
-        "pandas",
-        "tensorflow",
         # from pyproject.toml:
         "pandas",
         "pydantic",
         "pylint",
     ]
-    settings = Settings(
-        code=set(), deps={project_with_setup_pyproject_and_requirements}
-    )
+    settings = Settings(code=set(), deps={tmp_path})
     deps_sources = list(find_sources(settings, {DepsSource}))
     actual = collect_dep_names(parse_sources(deps_sources))
     assert_unordered_equivalence(actual, expect)
