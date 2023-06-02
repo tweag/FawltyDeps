@@ -1,11 +1,12 @@
 """Common types used across FawltyDeps."""
 
 import sys
+from abc import ABC
 from dataclasses import asdict, dataclass, field, replace
 from enum import Enum
 from functools import total_ordering
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
+from typing import Any, Dict, List, Optional, Set, Tuple, Type, Union
 
 from fawltydeps.utils import hide_dataclass_fields
 
@@ -47,7 +48,20 @@ class ParserChoice(Enum):
 
 
 @dataclass(frozen=True, eq=True, order=True)
-class CodeSource:
+class Source(ABC):
+    """Base class for some source of input to FawltyDeps.
+
+    This exists to inject the class name of the subclass into our JSON output.
+    """
+
+    source_type: Type["Source"] = field(init=False)
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "source_type", self.__class__)
+
+
+@dataclass(frozen=True, eq=True, order=True)
+class CodeSource(Source):
     """A Python code source to be parsed for import statements.
 
     .path points to the .py or .ipynb file containing Python code, alternatively
@@ -63,6 +77,7 @@ class CodeSource:
     base_dir: Optional[Path] = None
 
     def __post_init__(self) -> None:
+        super().__post_init__()
         if self.path != "<stdin>":
             assert isinstance(self.path, Path)
             if not self.path.is_file():
@@ -78,7 +93,7 @@ class CodeSource:
 
 
 @dataclass(frozen=True, eq=True, order=True)
-class DepsSource:
+class DepsSource(Source):
     """A source to be parsed for declared dependencies.
 
     Also include which declared dependencies parser we have chosen to use for
@@ -96,11 +111,12 @@ class DepsSource:
     parser_choice: ParserChoice
 
     def __post_init__(self) -> None:
+        super().__post_init__()
         assert self.path.is_file()  # sanity check
 
 
 @dataclass(frozen=True, eq=True, order=True)
-class PyEnvSource:
+class PyEnvSource(Source):
     """A source to be used for looking up installed Python packages.
 
     .path points to a directory that directly contains Python packages, e.g. the
@@ -114,6 +130,7 @@ class PyEnvSource:
     path: Path
 
     def __post_init__(self) -> None:
+        super().__post_init__()
         assert self.path.is_dir()  # sanity check
         # Support vitualenvs, poetry2nix envs, system-wide installs, etc.
         if self.path.match("lib/python?.*/site-packages"):
@@ -124,9 +141,6 @@ class PyEnvSource:
             return  # also ok
 
         raise ValueError(f"{self.path} is not a valid dir for Python packages!")
-
-
-Source = Union[CodeSource, DepsSource, PyEnvSource]
 
 
 @total_ordering
