@@ -82,7 +82,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
 
         # The following members are calculated once, on-demand, by the
         # @property @calculated_once methods below:
-        self._source: Optional[Set[Source]] = None
+        self._sources: Optional[Set[Source]] = None
         self._imports: Optional[List[ParsedImport]] = None
         self._declared_deps: Optional[List[DeclaredDependency]] = None
         self._resolved_deps: Optional[Dict[str, Package]] = None
@@ -199,6 +199,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
             frozenset: partial(sorted, key=str),
             set: partial(sorted, key=str),
             type(BasePackageResolver): lambda klass: klass.__name__,
+            type(Source): lambda klass: klass.__name__,
         }
         encoder = partial(custom_pydantic_encoder, custom_type_encoders)
         json_dict = {
@@ -206,6 +207,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
             # Using properties with an underscore do not trigger computations.
             # They are populated only if the computations were already required
             # by settings.actions.
+            "sources": self._sources,
             "imports": self._imports,
             "declared_deps": self._declared_deps,
             "resolved_deps": self._resolved_deps,

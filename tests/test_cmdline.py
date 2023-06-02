@@ -7,6 +7,7 @@ core exhaustively (which is what the other unit tests are for.
 
 import json
 import logging
+import sys
 from dataclasses import dataclass, field
 from itertools import dropwhile
 from textwrap import dedent
@@ -45,6 +46,7 @@ def make_json_settings_dict(**kwargs):
         "verbosity": 0,
         "custom_mapping_file": [],
     }
+    assert all(k in settings for k in kwargs)
     settings.update(kwargs)
     return settings
 
@@ -136,6 +138,13 @@ def test_list_imports_json__from_py_file__prints_imports_from_file(write_tmp_fil
             code=[f"{tmp_path}/myfile.py"],
             output_format="json",
         ),
+        "sources": [
+            {
+                "source_type": "CodeSource",
+                "path": f"{tmp_path}/myfile.py",
+                "base_dir": None,
+            },
+        ],
         "imports": [
             {
                 "name": "requests",
@@ -298,6 +307,13 @@ def test_list_deps_json__dir__prints_deps_from_requirements_txt(fake_project):
         "settings": make_json_settings_dict(
             actions=["list_deps"], deps=[f"{tmp_path}"], output_format="json"
         ),
+        "sources": [
+            {
+                "source_type": "DepsSource",
+                "path": f"{tmp_path}/requirements.txt",
+                "parser_choice": "requirements.txt",
+            },
+        ],
         "imports": None,
         "declared_deps": [
             {
@@ -516,12 +532,33 @@ def test_check_json__simple_project__can_report_both_undeclared_and_unused(
     tmp_path = fake_project(
         imports=["requests"],
         declared_deps=["pandas"],
+        fake_venvs={"my_venv": {}},
     )
 
+    major, minor = sys.version_info[:2]
     expect = {
         "settings": make_json_settings_dict(
-            code=[f"{tmp_path}"], deps=[f"{tmp_path}"], output_format="json"
+            code=[f"{tmp_path}"],
+            deps=[f"{tmp_path}"],
+            pyenvs=[f"{tmp_path}"],
+            output_format="json",
         ),
+        "sources": [
+            {
+                "source_type": "CodeSource",
+                "path": f"{tmp_path}/code.py",
+                "base_dir": f"{tmp_path}",
+            },
+            {
+                "source_type": "DepsSource",
+                "path": f"{tmp_path}/requirements.txt",
+                "parser_choice": "requirements.txt",
+            },
+            {
+                "source_type": "PyEnvSource",
+                "path": f"{tmp_path}/my_venv/lib/python{major}.{minor}/site-packages",
+            },
+        ],
         "imports": [
             {
                 "name": "requests",
@@ -557,7 +594,11 @@ def test_check_json__simple_project__can_report_both_undeclared_and_unused(
         "version": version(),
     }
     output, returncode = run_fawltydeps_function(
-        "--check", "--json", f"--code={tmp_path}", f"--deps={tmp_path}"
+        "--check",
+        "--json",
+        f"--code={tmp_path}",
+        f"--deps={tmp_path}",
+        f"--pyenv={tmp_path}",
     )
     assert json.loads(output) == expect
     assert returncode == 3  # --json does not affect exit code
