@@ -255,25 +255,6 @@ def project_with_setup_and_requirements(fake_project):
 
 
 @pytest.fixture
-def project_with_setup_pyproject_and_requirements(fake_project):
-    return fake_project(
-        files_with_declared_deps={
-            "requirements.txt": ["pandas", "click"],
-            "subdir/requirements.txt": ["pandas", "tensorflow>=2"],
-            "setup.py": (
-                ["pandas", "click>=1.2"],  # install_requires
-                {"annoy": ["annoy==1.15.2"], "chinese": ["jieba"]},  # extras_require
-            ),
-            "pyproject.toml": (
-                ["pandas", "pydantic>1.10.4"],  # dependencies
-                {"dev": ["pylint >= 2.15.8"]},  # optional-dependencies
-            ),
-        },
-        files_with_imports={"python_file.py": ["django"]},
-    )
-
-
-@pytest.fixture
 def project_with_pyproject(fake_project):
     return fake_project(
         files_with_declared_deps={
