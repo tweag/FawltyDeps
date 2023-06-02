@@ -417,11 +417,17 @@ def test_parse_setup_py__multiple_entries_in_extras_require__returns_list(
     assert_unordered_equivalence(result, expected)
 
 
-def test_find_and_parse_sources__simple_project__returns_list(
-    project_with_requirements,
-):
+def test_find_and_parse_sources__simple_project__returns_list(fake_project):
     expect = ["pandas", "click", "pandas", "tensorflow"]
-    settings = Settings(code=set(), deps={project_with_requirements})
+    tmp_path = fake_project(
+        files_with_declared_deps={
+            "requirements.txt": ["pandas", "click"],
+            "subdir/requirements.txt": ["pandas", "tensorflow>=2"],
+            # This file should be ignored:
+            ".venv/requirements.txt": ["foo_package", "bar_package"],
+        },
+    )
+    settings = Settings(code=set(), deps={tmp_path})
     deps_sources = list(find_sources(settings, {DepsSource}))
     actual = collect_dep_names(parse_sources(deps_sources))
     assert_unordered_equivalence(actual, expect)
