@@ -99,6 +99,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
         """The input sources (code, deps, pyenv) found in this project."""
         # What Source types are needed for which action?
         source_types: Dict[Action, Set[Type[Source]]] = {
+            Action.LIST_SOURCES: {CodeSource, DepsSource, PyEnvSource},
             Action.LIST_IMPORTS: {CodeSource},
             Action.LIST_DEPS: {DepsSource},
             Action.REPORT_UNDECLARED: {CodeSource, DepsSource, PyEnvSource},
@@ -177,6 +178,8 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
         ret = cls(settings, stdin)
 
         # Compute only the properties needed to satisfy settings.actions:
+        if ret.is_enabled(Action.LIST_SOURCES):
+            ret.sources  # pylint: disable=pointless-statement
         if ret.is_enabled(Action.LIST_IMPORTS):
             ret.imports  # pylint: disable=pointless-statement
         if ret.is_enabled(Action.LIST_DEPS):
@@ -219,6 +222,24 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
 
     def print_human_readable(self, out: TextIO, details: bool = True) -> None:
         """Print a human-readable rendering of this analysis to 'out'."""
+        if self.is_enabled(Action.LIST_SOURCES):
+            if details:
+                # Sort sources by type, then by path
+                source_types = [
+                    (CodeSource, "Sources of Python code:"),
+                    (DepsSource, "Sources of declared dependencies:"),
+                    (PyEnvSource, "Python environments:"),
+                ]
+                for source_type, heading in source_types:
+                    sources = {s for s in self.sources if s.source_type is source_type}
+                    if sources:
+                        print("\n" + heading, file=out)
+                        lines = [f"  {src.render(details)}" for src in sources]
+                        print("\n".join(sorted(lines)), file=out)
+            else:
+                unique_paths = {src.render(details) for src in self.sources}
+                print("\n".join(unique_paths), file=out)
+
         if self.is_enabled(Action.LIST_IMPORTS):
             if details:
                 # Sort imports by source, then by name

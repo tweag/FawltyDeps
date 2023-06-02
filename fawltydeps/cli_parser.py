@@ -60,6 +60,16 @@ def populate_parser_actions(parser: argparse._ActionsContainer) -> None:
         help="Report only unused dependencies",
     )
     parser.add_argument(
+        "--list-sources",
+        dest="actions",
+        action="store_const",
+        const={Action.LIST_SOURCES},
+        help=(
+            "List input paths used to extract imports, declared dependencies "
+            "and find installed packages"
+        ),
+    )
+    parser.add_argument(
         "--list-imports",
         dest="actions",
         action="store_const",

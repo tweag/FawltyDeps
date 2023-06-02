@@ -70,6 +70,8 @@ one of these can be used at a time:
 - `--check-unused`: Report only unused dependencies
 - `--list-imports`: List third-party imports extracted from the project
 - `--list-deps`: List declared dependencies extracted from the project
+- `--list-sources`: List files/directories from which imports, declared
+  dependencies and installed packages would be extracted
 
 When none of these are specified, the default action is `--check`.
 
@@ -110,6 +112,9 @@ To include both code from stdin (`import foo`) and a file path (`file.py`), use:
 ```sh
 echo "import foo" | fawltydeps --list-imports --code - file.py
 ```
+
+At any time, if you want to see where FawltyDeps is looking for Python code,
+you can use the `--list-sources --detailed` options.
 
 #### Where to find declared dependencies
 
