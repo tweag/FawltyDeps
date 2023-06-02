@@ -396,6 +396,116 @@ def test_list_deps__pick_multiple_listed_files__prints_all_dependencies(
     assert returncode == 0
 
 
+def test_list_sources__in_empty_project__lists_nothing(tmp_path):
+    output, returncode = run_fawltydeps_function("--list-sources", f"{tmp_path}")
+    expect = []
+    assert_unordered_equivalence(output.splitlines()[:-2], expect)
+    assert returncode == 0
+
+
+def test_list_sources__in_varied_project__lists_all_files(fake_project):
+    tmp_path = fake_project(
+        files_with_imports={
+            "code.py": ["foo"],
+            "subdir/other.py": ["foo"],
+            "subdir/notebook.ipynb": ["foo"],
+        },
+        files_with_declared_deps={
+            "requirements.txt": ["foo"],
+            "pyproject.toml": ["foo"],
+            "setup.py": ["foo"],
+            "setup.cfg": ["foo"],
+        },
+        fake_venvs={"my_venv": {}},
+    )
+    output, returncode = run_fawltydeps_function("--list-sources", f"{tmp_path}")
+    major, minor = sys.version_info[:2]
+    expect = [
+        str(tmp_path / filename)
+        for filename in [
+            "code.py",
+            "subdir/other.py",
+            "subdir/notebook.ipynb",
+            "requirements.txt",
+            "pyproject.toml",
+            "setup.py",
+            "setup.cfg",
+            f"my_venv/lib/python{major}.{minor}/site-packages",
+        ]
+    ]
+    assert_unordered_equivalence(output.splitlines()[:-2], expect)
+    assert returncode == 0
+
+
+def test_list_sources_detailed__in_varied_project__lists_all_files(fake_project):
+    tmp_path = fake_project(
+        files_with_imports={
+            "code.py": ["foo"],
+            "subdir/notebook.ipynb": ["foo"],
+            "subdir/other.py": ["foo"],
+        },
+        files_with_declared_deps={
+            "pyproject.toml": ["foo"],
+            "requirements.txt": ["foo"],
+            "setup.cfg": ["foo"],
+            "setup.py": ["foo"],
+        },
+        fake_venvs={"my_venv": {}},
+    )
+    output, returncode = run_fawltydeps_function(
+        "--list-sources", f"{tmp_path}", "--detailed"
+    )
+    expect_code_lines = [
+        f"  {tmp_path / filename} (using {tmp_path}/ as base for 1st-party imports)"
+        for filename in [
+            "code.py",
+            "setup.py",  # This is both a CodeSource and an DepsSource!
+            "subdir/notebook.ipynb",
+            "subdir/other.py",
+        ]
+    ]
+    expect_deps_lines = [
+        f"  {tmp_path / filename} (parsed as a {filename} file)"
+        for filename in [
+            "pyproject.toml",
+            "requirements.txt",
+            "setup.cfg",
+            "setup.py",
+        ]
+    ]
+    major, minor = sys.version_info[:2]
+    expect_pyenv_lines = [
+        f"  {tmp_path}/my_venv/lib/python{major}.{minor}/site-packages "
+        + "(as a source of Python packages)",
+    ]
+    expect = [
+        "Sources of Python code:",
+        *expect_code_lines,
+        "",
+        "Sources of declared dependencies:",
+        *expect_deps_lines,
+        "",
+        "Python environments:",
+        *expect_pyenv_lines,
+    ]
+    assert output.splitlines() == expect
+    assert returncode == 0
+
+
+def test_list_sources_detailed__from_both_python_file_and_stdin(fake_project):
+    tmp_path = fake_project(files_with_imports={"code.py": ["foo"]})
+    output, returncode = run_fawltydeps_function(
+        "--list-sources", f"{tmp_path}", "--code", f"{tmp_path}", "-", "--detailed"
+    )
+    expect = [
+        "Sources of Python code:",
+        f"  {tmp_path}/code.py (using {tmp_path}/ as base for 1st-party imports)",
+        "  <stdin>",
+    ]
+    assert output.splitlines() == expect
+    assert returncode == 0
+
+
 @dataclass
 class ProjectTestVector:
     """Test vectors for FawltyDeps Settings configuration."""

@@ -1,7 +1,7 @@
 """Common types used across FawltyDeps."""
 
 import sys
-from abc import ABC
+from abc import ABC, abstractmethod
 from dataclasses import asdict, dataclass, field, replace
 from enum import Enum
 from functools import total_ordering
@@ -59,6 +59,11 @@ class Source(ABC):
     def __post_init__(self) -> None:
         object.__setattr__(self, "source_type", self.__class__)
 
+    @abstractmethod
+    def render(self, detailed: bool) -> str:
+        """Return a human-readable string representation of this source."""
+        raise NotImplementedError
+
 
 @dataclass(frozen=True, eq=True, order=True)
 class CodeSource(Source):
@@ -91,6 +96,11 @@ class CodeSource(Source):
                     path=self.path,
                 )
 
+    def render(self, detailed: bool) -> str:
+        if detailed and self.base_dir is not None:
+            return f"{self.path} (using {self.base_dir}/ as base for 1st-party imports)"
+        return f"{self.path}"
+
 
 @dataclass(frozen=True, eq=True, order=True)
 class DepsSource(Source):
@@ -113,6 +123,11 @@ class DepsSource(Source):
     def __post_init__(self) -> None:
         super().__post_init__()
         assert self.path.is_file()  # sanity check
+
+    def render(self, detailed: bool) -> str:
+        if detailed:
+            return f"{self.path} (parsed as a {self.parser_choice} file)"
+        return f"{self.path}"
 
 
 @dataclass(frozen=True, eq=True, order=True)
@@ -141,6 +156,11 @@ class PyEnvSource(Source):
             return  # also ok
 
         raise ValueError(f"{self.path} is not a valid dir for Python packages!")
+
+    def render(self, detailed: bool) -> str:
+        if detailed:
+            return f"{self.path} (as a source of Python packages)"
+        return f"{self.path}"
 
 
 @total_ordering

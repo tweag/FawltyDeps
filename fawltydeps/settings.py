@@ -63,6 +63,7 @@ class OrderedEnum(Enum):
 class Action(OrderedEnum):
     """Actions provided by the FawltyDeps application."""
 
+    LIST_SOURCES = "list_sources"
     LIST_IMPORTS = "list_imports"
     LIST_DEPS = "list_deps"
     REPORT_UNDECLARED = "check_undeclared"
