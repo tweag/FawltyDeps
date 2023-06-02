@@ -271,12 +271,10 @@ def test_list_imports__pick_multiple_files_dir_and_code__prints_all_imports(
     assert returncode == 0
 
 
-def test_list_deps_detailed__dir__prints_deps_from_requirements_txt(
-    project_with_code_and_requirements_txt,
-):
-    tmp_path = project_with_code_and_requirements_txt(
+def test_list_deps_detailed__dir__prints_deps_from_requirements_txt(fake_project):
+    tmp_path = fake_project(
         imports=["requests", "pandas"],
-        declares=["requests", "pandas"],
+        declared_deps=["requests", "pandas"],
     )
 
     expect = [
@@ -290,12 +288,10 @@ def test_list_deps_detailed__dir__prints_deps_from_requirements_txt(
     assert returncode == 0
 
 
-def test_list_deps_json__dir__prints_deps_from_requirements_txt(
-    project_with_code_and_requirements_txt,
-):
-    tmp_path = project_with_code_and_requirements_txt(
+def test_list_deps_json__dir__prints_deps_from_requirements_txt(fake_project):
+    tmp_path = fake_project(
         imports=["requests", "pandas"],
-        declares=["requests", "pandas"],
+        declared_deps=["requests", "pandas"],
     )
 
     expect = {
@@ -325,12 +321,10 @@ def test_list_deps_json__dir__prints_deps_from_requirements_txt(
     assert returncode == 0
 
 
-def test_list_deps_summary__dir__prints_deps_from_requirements_txt(
-    project_with_code_and_requirements_txt,
-):
-    tmp_path = project_with_code_and_requirements_txt(
+def test_list_deps_summary__dir__prints_deps_from_requirements_txt(fake_project):
+    tmp_path = fake_project(
         imports=["requests", "pandas"],
-        declares=["requests", "pandas"],
+        declared_deps=["requests", "pandas"],
     )
 
     expect = ["pandas", "requests"]
@@ -496,13 +490,10 @@ project_tests_samples = [
 @pytest.mark.parametrize(
     "vector", [pytest.param(v, id=v.id) for v in project_tests_samples]
 )
-def test_check_undeclared_and_unused(
-    vector,
-    project_with_code_and_requirements_txt,
-):
-    tmp_path = project_with_code_and_requirements_txt(
+def test_check_undeclared_and_unused(vector, fake_project):
+    tmp_path = fake_project(
         imports=vector.imports,
-        declares=vector.declares,
+        declared_deps=vector.declares,
     )
     output, errors, returncode = run_fawltydeps_subprocess(
         *[option.format(path=tmp_path) for option in vector.options]
@@ -520,11 +511,11 @@ def test_check_undeclared_and_unused(
 
 
 def test_check_json__simple_project__can_report_both_undeclared_and_unused(
-    project_with_code_and_requirements_txt,
+    fake_project,
 ):
-    tmp_path = project_with_code_and_requirements_txt(
+    tmp_path = fake_project(
         imports=["requests"],
-        declares=["pandas"],
+        declared_deps=["pandas"],
     )
 
     expect = {
@@ -572,12 +563,10 @@ def test_check_json__simple_project__can_report_both_undeclared_and_unused(
     assert returncode == 3  # --json does not affect exit code
 
 
-def test_check_undeclared__simple_project__reports_only_undeclared(
-    project_with_code_and_requirements_txt,
-):
-    tmp_path = project_with_code_and_requirements_txt(
+def test_check_undeclared__simple_project__reports_only_undeclared(fake_project):
+    tmp_path = fake_project(
         imports=["requests"],
-        declares=["pandas"],
+        declared_deps=["pandas"],
     )
 
     expect = [
@@ -596,12 +585,10 @@ def test_check_undeclared__simple_project__reports_only_undeclared(
     assert returncode == 3
 
 
-def test_check_unused__simple_project__reports_only_unused(
-    project_with_code_and_requirements_txt,
-):
-    tmp_path = project_with_code_and_requirements_txt(
+def test_check_unused__simple_project__reports_only_unused(fake_project):
+    tmp_path = fake_project(
         imports=["requests"],
-        declares=["pandas"],
+        declared_deps=["pandas"],
     )
 
     expect = [
@@ -620,12 +607,10 @@ def test_check_unused__simple_project__reports_only_unused(
     assert returncode == 4
 
 
-def test__no_action__defaults_to_check_action(
-    project_with_code_and_requirements_txt,
-):
-    tmp_path = project_with_code_and_requirements_txt(
+def test__no_action__defaults_to_check_action(fake_project):
+    tmp_path = fake_project(
         imports=["requests"],
-        declares=["pandas"],
+        declared_deps=["pandas"],
     )
 
     expect = [
@@ -644,12 +629,10 @@ def test__no_action__defaults_to_check_action(
     assert returncode == 3
 
 
-def test__no_options__defaults_to_check_action_in_current_dir(
-    project_with_code_and_requirements_txt,
-):
-    tmp_path = project_with_code_and_requirements_txt(
+def test__no_options__defaults_to_check_action_in_current_dir(fake_project):
+    tmp_path = fake_project(
         imports=["requests"],
-        declares=["pandas"],
+        declared_deps=["pandas"],
     )
 
     expect = [
@@ -668,12 +651,10 @@ def test__no_options__defaults_to_check_action_in_current_dir(
     assert returncode == 3
 
 
-def test_check__summary__writes_only_names_of_unused_and_undeclared(
-    project_with_code_and_requirements_txt,
-):
-    tmp_path = project_with_code_and_requirements_txt(
+def test_check__summary__writes_only_names_of_unused_and_undeclared(fake_project):
+    tmp_path = fake_project(
         imports=["requests"],
-        declares=["pandas"],
+        declared_deps=["pandas"],
     )
 
     expect = [
@@ -691,18 +672,21 @@ def test_check__summary__writes_only_names_of_unused_and_undeclared(
 
 
 def test_check_detailed__simple_project_in_fake_venv__resolves_imports_vs_deps(
-    fake_venv, project_with_code_and_requirements_txt
+    fake_project,
 ):
-    tmp_path = project_with_code_and_requirements_txt(
+    tmp_path = fake_project(
         imports=["requests"],
-        declares=["pandas"],
+        declared_deps=["pandas"],
+        # A venv where the "pandas" package provides a "requests" import name
+        # should satisfy our comparison
+        fake_venvs={".venv": {"pandas": {"requests"}}},
     )
-    # A venv where the "pandas" package provides a "requests" import name
-    # should satisfy our comparison
-    venv_dir, _ = fake_venv({"pandas": {"requests"}})
 
     output, returncode = run_fawltydeps_function(
-        "--detailed", f"--code={tmp_path}", f"--deps={tmp_path}", f"--pyenv={venv_dir}"
+        "--detailed",
+        f"--code={tmp_path}",
+        f"--deps={tmp_path}",
+        f"--pyenv={tmp_path}/.venv",
     )
     assert output.splitlines() == [
         Analysis.success_message(check_undeclared=True, check_unused=True),
@@ -711,17 +695,19 @@ def test_check_detailed__simple_project_in_fake_venv__resolves_imports_vs_deps(
 
 
 def test_check_detailed__simple_project_w_2_fake_venv__resolves_imports_vs_deps(
-    fake_venv, project_with_code_and_requirements_txt
+    fake_project,
 ):
-    tmp_path = project_with_code_and_requirements_txt(
+    tmp_path = fake_project(
         imports=["some_import", "other_import", "yet_another"],
-        declares=["something", "other"],
+        declared_deps=["something", "other"],
+        fake_venvs={
+            "venv1": {"something": {"some_import"}},
+            "venv2": {"something": {"other_import"}, "other": {"yet_another"}},
+        },
     )
-    venv_dir1, _ = fake_venv({"something": {"some_import"}})
-    venv_dir2, _ = fake_venv({"something": {"other_import"}, "other": {"yet_another"}})
 
     output, returncode = run_fawltydeps_function(
-        "--detailed", f"{tmp_path}", "--pyenv", f"{venv_dir1}", f"{venv_dir2}"
+        "--detailed", f"{tmp_path}", "--pyenv", f"{tmp_path}/venv1", f"{tmp_path}/venv2"
     )
     assert output.splitlines() == [
         Analysis.success_message(check_undeclared=True, check_unused=True),
@@ -792,15 +778,11 @@ def test_check_detailed__simple_project_w_2_fake_venv__resolves_imports_vs_deps(
     ],
 )
 def test_cmdline_on_ignored_undeclared_option(
-    args,
-    imports,
-    dependencies,
-    expected,
-    project_with_code_and_requirements_txt,
+    args, imports, dependencies, expected, fake_project
 ):
-    tmp_path = project_with_code_and_requirements_txt(
+    tmp_path = fake_project(
         imports=imports,
-        declares=dependencies,
+        declared_deps=dependencies,
     )
     output, returncode = run_fawltydeps_function(*args, basepath=tmp_path)
     assert output.splitlines() == expected
@@ -931,17 +913,13 @@ def test_cmdline_on_ignored_undeclared_option(
     ],
 )
 def test_cmdline_args_in_combination_with_config_file(
-    config,
-    args,
-    expect,
-    project_with_code_and_requirements_txt,
-    setup_fawltydeps_config,
+    config, args, expect, fake_project, setup_fawltydeps_config
 ):
     # We keep the project itself constant (one undeclared + one unused dep),
     # but we vary the FD configuration directives and command line args
-    tmp_path = project_with_code_and_requirements_txt(
+    tmp_path = fake_project(
         imports=["requests"],
-        declares=["pandas"],
+        declared_deps=["pandas"],
     )
     setup_fawltydeps_config(config)
     output, errors, returncode = run_fawltydeps_subprocess(

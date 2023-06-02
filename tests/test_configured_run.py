@@ -64,12 +64,10 @@ configured_run_tests_samples = [
 @pytest.mark.parametrize(
     "vector", [pytest.param(v, id=v.id) for v in configured_run_tests_samples]
 )
-def test_run_with_pyproject_toml_settings(
-    vector, project_with_code_and_requirements_txt
-):
-    tmp_path = project_with_code_and_requirements_txt(
+def test_run_with_pyproject_toml_settings(vector, fake_project):
+    tmp_path = fake_project(
         imports=vector.imports,
-        declares=vector.dependencies,
+        declared_deps=vector.dependencies,
     )
     path = tmp_path / "pyproject.toml"
     path.write_text(dedent(vector.toml_contents))
