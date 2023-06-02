@@ -525,14 +525,25 @@ def test_find_and_parse_sources__project_with_pyproject__returns_list(fake_proje
     assert_unordered_equivalence(actual, expect)
 
 
-def test_find_and_parse_sources__project_with_setup_cfg__returns_list(
-    project_with_setup_cfg,
-):
+def test_find_and_parse_sources__project_with_setup_cfg__returns_list(fake_project):
+    tmp_path = fake_project(
+        files_with_declared_deps={
+            "setup.cfg": ["pandas", "django"],  # install_requires
+        },
+        extra_file_contents={
+            "setup.py": """\
+                import setuptools
+
+                if __name__ == "__main__":
+                    setuptools.setup()
+                """,
+        },
+    )
     expect = [
         "pandas",
         "django",
     ]
-    settings = Settings(code=set(), deps={project_with_setup_cfg})
+    settings = Settings(code=set(), deps={tmp_path})
     deps_sources = list(find_sources(settings, {DepsSource}))
     actual = collect_dep_names(parse_sources(deps_sources))
     assert_unordered_equivalence(actual, expect)

@@ -255,24 +255,6 @@ def project_with_setup_and_requirements(fake_project):
 
 
 @pytest.fixture
-def project_with_setup_cfg(fake_project):
-    return fake_project(
-        files_with_declared_deps={
-            "setup.cfg": ["pandas", "django"],  # install_requires
-        },
-        extra_file_contents={
-            "setup.py": """\
-                import setuptools
-
-                if __name__ == "__main__":
-                    setuptools.setup()
-                """,
-        },
-        files_with_imports={"python_file.py": ["django"]},
-    )
-
-
-@pytest.fixture
 def project_with_setup_with_cfg_pyproject_and_requirements(fake_project):
     return fake_project(
         files_with_declared_deps={
