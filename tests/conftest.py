@@ -4,7 +4,7 @@ import venv
 from pathlib import Path
 from tempfile import mkdtemp
 from textwrap import dedent
-from typing import Callable, Dict, Iterable, Set, Tuple, Union
+from typing import Callable, Dict, Iterable, Optional, Set, Tuple, Union
 
 import pytest
 
@@ -37,12 +37,20 @@ def write_tmp_files(tmp_path: Path):
 
 @pytest.fixture
 def fake_venv(tmp_path):
-    def create_one_fake_venv(fake_packages: Dict[str, Set[str]]) -> Tuple[Path, Path]:
-        venv_dir = Path(mkdtemp(prefix="fake_venv.", dir=tmp_path))
+    def create_one_fake_venv(
+        fake_packages: Dict[str, Set[str]],
+        *,
+        venv_dir: Optional[Path] = None,
+        py_version: Tuple[int, int] = sys.version_info[:2],
+    ) -> Tuple[Path, Path]:
+        if venv_dir is None:
+            venv_dir = Path(mkdtemp(prefix="fake_venv.", dir=tmp_path))
+        else:
+            venv_dir.parent.mkdir(parents=True, exist_ok=True)
         venv.create(venv_dir, with_pip=False)
 
         # Create fake packages
-        major, minor = sys.version_info[:2]
+        major, minor = py_version
         site_dir = venv_dir / f"lib/python{major}.{minor}/site-packages"
         assert site_dir.is_dir()
         for package_name, import_names in fake_packages.items():
