@@ -255,19 +255,6 @@ def project_with_setup_and_requirements(fake_project):
 
 
 @pytest.fixture
-def project_with_pyproject(fake_project):
-    return fake_project(
-        files_with_declared_deps={
-            "pyproject.toml": (
-                ["pandas", "pydantic>1.10.4"],  # dependencies
-                {"dev": ["pylint >= 2.15.8"]},  # optional-dependencies
-            ),
-        },
-        files_with_imports={"python_file.py": ["django"]},
-    )
-
-
-@pytest.fixture
 def project_with_setup_cfg(fake_project):
     return fake_project(
         files_with_declared_deps={
