@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
-      - uses: Gr1N/setup-poetry@v7
+      - uses: Gr1N/setup-poetry@v8
       - name: Configure access
         run: |
           poetry config repositories.testpypi https://test.pypi.org/legacy/
