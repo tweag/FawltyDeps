@@ -15,7 +15,7 @@ import logging
 import sys
 from functools import partial
 from operator import attrgetter
-from typing import Dict, List, Optional, Set, TextIO, Type
+from typing import Dict, Iterator, List, Optional, Set, TextIO, Type
 
 from pydantic.json import custom_pydantic_encoder  # pylint: disable=no-name-in-module
 
@@ -220,10 +220,11 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
         }
         json.dump(json_dict, out, indent=2, default=encoder)
 
-    def print_human_readable(self, out: TextIO, details: bool = True) -> None:
+    def print_human_readable(self, out: TextIO, detailed: bool = True) -> None:
         """Print a human-readable rendering of this analysis to 'out'."""
-        if self.is_enabled(Action.LIST_SOURCES):
-            if details:
+
+        def render_sources() -> Iterator[str]:
+            if detailed:
                 # Sort sources by type, then by path
                 source_types = [
                     (CodeSource, "Sources of Python code:"),
@@ -231,45 +232,55 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
                     (PyEnvSource, "Python environments:"),
                 ]
                 for source_type, heading in source_types:
-                    sources = {s for s in self.sources if s.source_type is source_type}
-                    if sources:
-                        print("\n" + heading, file=out)
-                        lines = [f"  {src.render(details)}" for src in sources]
-                        print("\n".join(sorted(lines)), file=out)
+                    filtered = {s for s in self.sources if s.source_type is source_type}
+                    if filtered:
+                        yield "\n" + heading
+                        yield from sorted([f"  {src.render(True)}" for src in filtered])
             else:
-                unique_paths = {src.render(details) for src in self.sources}
-                print("\n".join(unique_paths), file=out)
+                yield from sorted({src.render(False) for src in self.sources})
 
-        if self.is_enabled(Action.LIST_IMPORTS):
-            if details:
+        def render_imports() -> Iterator[str]:
+            if detailed:
                 # Sort imports by source, then by name
                 for imp in sorted(self.imports, key=attrgetter("source", "name")):
-                    print(f"{imp.source}: {imp.name}", file=out)
+                    yield f"{imp.source}: {imp.name}"
             else:
                 unique_imports = {i.name for i in self.imports}
-                print("\n".join(sorted(unique_imports)), file=out)
+                yield from sorted(unique_imports)
 
-        if self.is_enabled(Action.LIST_DEPS):
-            if details:
-                # Sort dependencies by location, then by name
-                for dep in sorted(
-                    set(self.declared_deps), key=attrgetter("source", "name")
-                ):
-                    print(f"{dep.source}: {dep.name}", file=out)
+        def render_declared_deps() -> Iterator[str]:
+            if detailed:
+                # Sort dependencies by source, then by name
+                unique_deps = set(self.declared_deps)
+                for dep in sorted(unique_deps, key=attrgetter("source", "name")):
+                    yield f"{dep.source}: {dep.name}"
             else:
-                print(
-                    "\n".join(sorted(set(d.name for d in self.declared_deps))), file=out
-                )
+                yield from sorted(set(d.name for d in self.declared_deps))
 
-        if self.is_enabled(Action.REPORT_UNDECLARED) and self.undeclared_deps:
-            print("\nThese imports appear to be undeclared dependencies:", file=out)
+        def render_undeclared() -> Iterator[str]:
+            yield "\nThese imports appear to be undeclared dependencies:"
             for undeclared in self.undeclared_deps:
-                print(f"- {undeclared.render(details)}", file=out)
+                yield f"- {undeclared.render(detailed)}"
 
-        if self.is_enabled(Action.REPORT_UNUSED) and self.unused_deps:
-            print(f"\n{UNUSED_DEPS_OUTPUT_PREFIX}:", file=out)
+        def render_unused() -> Iterator[str]:
+            yield f"\n{UNUSED_DEPS_OUTPUT_PREFIX}:"
             for unused in sorted(self.unused_deps, key=lambda d: d.name):
-                print(f"- {unused.render(details)}", file=out)
+                yield f"- {unused.render(detailed)}"
+
+        def output(lines: Iterator[str]) -> None:
+            for line in lines:
+                print(line, file=out)
+
+        if self.is_enabled(Action.LIST_SOURCES):
+            output(render_sources())
+        if self.is_enabled(Action.LIST_IMPORTS):
+            output(render_imports())
+        if self.is_enabled(Action.LIST_DEPS):
+            output(render_declared_deps())
+        if self.is_enabled(Action.REPORT_UNDECLARED) and self.undeclared_deps:
+            output(render_undeclared())
+        if self.is_enabled(Action.REPORT_UNUSED) and self.unused_deps:
+            output(render_unused())
 
     @staticmethod
     def success_message(check_undeclared: bool, check_unused: bool) -> Optional[str]:
@@ -318,11 +329,11 @@ def print_output(
     if analysis.settings.output_format == OutputFormat.JSON:
         analysis.print_json(stdout)
     elif analysis.settings.output_format == OutputFormat.HUMAN_DETAILED:
-        analysis.print_human_readable(stdout, details=True)
+        analysis.print_human_readable(stdout, detailed=True)
         if exit_code == 0 and success_message:
             print(f"\n{success_message}", file=stdout)
     elif analysis.settings.output_format == OutputFormat.HUMAN_SUMMARY:
-        analysis.print_human_readable(stdout, details=False)
+        analysis.print_human_readable(stdout, detailed=False)
         if exit_code == 0 and success_message:
             print(f"\n{success_message}", file=stdout)
         else:
