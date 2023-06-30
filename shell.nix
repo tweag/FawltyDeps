@@ -28,7 +28,7 @@ pkgs.mkShell {
     unset _PYTHON_HOST_PLATFORM
     unset _PYTHON_SYSCONFIGDATA_NAME
 
-    poetry env use "${pkgs.python310}/bin/python"
+    poetry env use "${pkgs.python311}/bin/python"
     poetry install --sync --with=dev
     source "$(poetry env info --path)/bin/activate"
   '';
