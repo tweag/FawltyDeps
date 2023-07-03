@@ -79,7 +79,7 @@ isort = [
     {version = "^5.10", python = ">=3.8"},
     {version = ">=5.10,<5.12.0", python = "<3.8"},
 ]
-codespell = "^2.2.2"
+codespell = "^2.2.4"
 
 [tool.poetry.group.dev]
 optional = true
@@ -90,7 +90,7 @@ optional = true
 # (e.g. a CI action), consider whether it's also useful to have this available
 # in a developers environment
 black = "^22"
-codespell = "^2.2.2"
+codespell = "^2.2.4"
 colorama = "^0.4.6"
 hypothesis = "^6.68.2"
 mypy = "^0.991"
@@ -141,7 +141,7 @@ addopts = "-m 'not integration'"
 cache_dir = "~/.cache/pytest"
 
 [tool.codespell]
-skip = ".git,.mypy_cache,.nox,.vscode,__pycache__"
+skip = ".git,.mypy_cache,.nox,.vscode,__pycache__,poetry.lock"
 builtin = "clear,rare,informal,usage,code,names"
 ignore-words-list = "jupyter,iff"  # prevent jupyter -> jupiter, iff -> if
 check-filenames = true
