@@ -12,7 +12,7 @@ readme = "README.md"
 license = "MIT"
 repository = "https://github.com/tweag/FawltyDeps"
 classifiers = [
-    "Development Status :: 2 - Pre-Alpha",
+    "Development Status :: 3 - Alpha",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Software Development :: Quality Assurance",
     "Intended Audience :: Developers",
