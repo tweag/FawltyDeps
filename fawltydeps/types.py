@@ -48,7 +48,16 @@ class ParserChoice(Enum):
 
 @dataclass(frozen=True, eq=True, order=True)
 class CodeSource:
-    """A Python code source to be parsed for imports statements."""
+    """A Python code source to be parsed for imports statements.
+
+    .path points to the .py or .ipynb file containing Python code, alternatively
+        it points to the "<stdin>" special case which means Python code will be
+        read from standard input.
+    .base_dir is an optional directory that contains modules/packages that
+        should be considered _first_-party (i.e. _not_ third-path dependencies)
+        when imported from the code in .path. More details at
+        https://pycqa.github.io/isort/docs/configuration/options.html#src-paths
+    """
 
     path: PathOrSpecial
     base_dir: Optional[Path] = None
@@ -74,6 +83,13 @@ class DepsSource:
 
     Also include which declared dependencies parser we have chosen to use for
     this file.
+
+    .path points to the file containing dependency declarations.
+    .parser_choice selects the parser/format to be used for extracting
+        dependency declarations from .path. If this is not passed in explicitly
+        (via Settings.deps_parser_choice) it will be automatically determined
+        from looking at .path's filename (see first_applicable_parser() in
+        extract_declared_dependencies.py).
     """
 
     path: Path
@@ -87,11 +103,12 @@ class DepsSource:
 class PyEnvSource:
     """A source to be used for looking up installed Python packages.
 
-    This corresponds to the lib/pythonX.Y/site-packages directory in a
-    system-wide Python installation (under /usr, /usr/local, or similar),
-    in a virtualenv, in a poetry2nix environment, or a similar mechanism that
-    uses this layout. Alternatively, it can be a __pypackages__/X.Y/lib
-    directory within a project that uses PEP582.
+    .path points to a directory that directly contains Python packages, e.g. the
+        lib/pythonX.Y/site-packages directory in a system-wide Python
+        installation (under /usr, /usr/local, or similar), in a virtualenv, in
+        a poetry2nix environment, or a similar mechanism that uses this layout.
+        Alternatively, it can be a __pypackages__/X.Y/lib directory within a
+        project that uses PEP582.
     """
 
     path: Path
