@@ -46,7 +46,29 @@ UNUSED_DEPS_OUTPUT_PREFIX = "These dependencies appear to be unused (i.e. not im
 
 
 class Analysis:  # pylint: disable=too-many-instance-attributes
-    """Result from FawltyDeps analysis, to be presented to the user."""
+    """Result from FawltyDeps analysis, to be presented to the user.
+
+    This collects the various data structures that are central to FawltyDeps'
+    functionality. Depending on which actions are enabled settings.actions, we
+    will _avoid_ calculating members in this class that are not needed (e.g.
+    when the user passes --list-imports, we don't need to look for dependency
+    declarations, nor do we need to calculate undeclared/unused dependencies).
+
+    The implicit sequence/dependency between the members is as follows:
+    - .sources (a set of CodeSource, DepsSource and/or PyEnvSource objects)
+        reflect the result of traversing the project structure.
+    - .imports contains the imports found by parsing the CodeSources.
+    - .declared_deps contains the declared dependencies found by parsing the
+        DepsSources.
+    - .resolved_deps contains the mapping from .declared_deps to the Python
+        package that expose the corresponding imports. This package is found
+        within one of the PyEnvSources.
+    - .undeclared_deps is calculated by finding the .imports that are not
+        present in any of the .resolved_deps.
+    - .unused_deps is the subset of .declared_deps whose corresponding packages
+        only provide imports that are never actually imported (i.e. present in
+        .imports).
+    """
 
     def __init__(self, settings: Settings, stdin: Optional[TextIO] = None):
         self.settings = settings
@@ -69,7 +91,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
     @property
     @calculated_once
     def sources(self) -> Set[Source]:
-        """The input sources (code and deps) found in this project."""
+        """The input sources (code, deps, pyenv) found in this project."""
         # What Source types are needed for which action?
         source_types: Dict[Action, Set[Type[Source]]] = {
             Action.LIST_IMPORTS: {CodeSource},
