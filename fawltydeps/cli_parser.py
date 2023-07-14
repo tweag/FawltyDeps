@@ -120,8 +120,11 @@ def populate_parser_paths_options(parser: argparse._ActionsContainer) -> None:
         "basepaths",
         type=lambda p: None if p == argparse.SUPPRESS else Path(p),
         nargs="*",
-        help="(Optional) directory in which to search for code (imports),"
-        " dependency declarations and/or Python environments",
+        help=(
+            "Optional directories in which to search for code (imports),"
+            " dependency declarations and/or Python environments. Defaults to"
+            " the current directory."
+        ),
     )
     parser.add_argument(
         "--code",
@@ -130,8 +133,8 @@ def populate_parser_paths_options(parser: argparse._ActionsContainer) -> None:
         type=parse_path_or_stdin,
         metavar="PATH_OR_STDIN",
         help=(
-            "Code to parse for import statements (file or directory, use '-'"
-            " to read code from stdin; defaults to the current directory)"
+            "Code to parse for import statements (files or directories, or use"
+            " '-' to read code from stdin). Defaults to basepaths (see above)."
         ),
     )
     parser.add_argument(
@@ -141,8 +144,8 @@ def populate_parser_paths_options(parser: argparse._ActionsContainer) -> None:
         type=Path,
         metavar="PATH",
         help=(
-            "Where to find dependency declarations (file or directory, defaults"
-            " to looking for supported files in the current directory)"
+            "Where to find dependency declarations (files or directories)."
+            " Defaults to finding supported files under basepaths (see above)."
         ),
     )
     parser.add_argument(
@@ -162,10 +165,10 @@ def populate_parser_paths_options(parser: argparse._ActionsContainer) -> None:
         type=Path,
         metavar="PYENV_DIR",
         help=(
-            "Where to find Python environments that have project dependencies"
-            " installed. Defaults to looking for Python environments under the"
-            " current directory, or failing that, using the Python environment"
-            " where FawltyDeps is installed."
+            "Where to search for Python environments that have project"
+            " dependencies installed. Defaults to searching under basepaths"
+            " (see above). If no environments are found, fall back to using the"
+            " Python environment where FawltyDeps is installed."
         ),
     )
     parser.add_argument(
@@ -175,7 +178,8 @@ def populate_parser_paths_options(parser: argparse._ActionsContainer) -> None:
         type=Path,
         metavar="FILE_PATH",
         help=(
-            "Path to toml file containing mapping of dependencies to imports defined by the user."
+            "Path to toml file containing mapping of dependencies to imports"
+            " defined by the user."
         ),
     )
 
