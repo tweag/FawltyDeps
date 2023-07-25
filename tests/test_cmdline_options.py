@@ -60,7 +60,7 @@ example_python_stdin = dedent(
 """
 )
 venvs = [str(project_with_no_issues / ".venv")]
-other = ["--generate-toml-file", "--version"]
+other = ["--generate-toml-config", "--version", "--install-deps"]
 
 
 # Options below contain paths specific for an input project

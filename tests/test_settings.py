@@ -40,7 +40,6 @@ EXPECT_DEFAULTS = dict(
     code={Path(".")},
     deps={Path(".")},
     pyenvs={Path(".")},
-    custom_mapping_file=set(),
     custom_mapping=None,
     output_format=OutputFormat.HUMAN_SUMMARY,
     ignore_undeclared=set(),
@@ -48,6 +47,7 @@ EXPECT_DEFAULTS = dict(
     deps_parser_choice=None,
     install_deps=False,
     verbosity=0,
+    custom_mapping_file=set(),
 )
 
 
