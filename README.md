@@ -277,6 +277,9 @@ Here is a complete list of configuration directives we support:
 - `actions`: A list of one or more of these actions to perform: `list_imports`,
   `list_deps`, `check_undeclared`, `check_unused`. The default behavior
   corresponds to `actions = ["check_undeclared", "check_unused"]`.
+- `output_format`: Which output format to use by default. One of `human_summary`,
+  `human_detailed`, or `json`.
+  The default corresponds to `output_format = "human_summary"`.
 - `code`: Files or directories containing the code to parse for import statements.
   Defaults to the current directory, i.e. like `code = ["."]`.
 - `deps`: Files or directories containing the declared dependencies.
@@ -286,9 +289,6 @@ Here is a complete list of configuration directives we support:
   into provided import names. Defaults to looking for Python environments under
   the current directory, i.e. like `pyenvs = ["."]`. If none are found, use the
   Python environment where FawltyDeps is installed (aka. `sys.path`).
-- `output_format`: Which output format to use by default. One of `human_summary`,
-  `human_detailed`, or `json`.
-  The default corresponds to `output_format = "human_summary"`.
 - `ignore_undeclared`: A list of specific dependencies to ignore when reporting
   undeclared dependencies, for example: `["some_module", "some_other_module"]`.
   The default is the empty list: `ignore_undeclared = []`.
@@ -305,6 +305,10 @@ Here is a complete list of configuration directives we support:
   - `0`: `WARNING`-level log messages and above are shown. This is the default.
   - `1`: `INFO`-level log messages and above are shown.
   - `2`: All log messages (including `DEBUG`) are shown.
+- `custom_mapping_file`: Paths to files containing user-defined mapping.
+  Expected file format is defined in the User-defined mapping [section](#user-defined-mapping).
+- `[tool.fawltydeps.custom_mapping]`: Section in the configuration, under which a custom mapping
+  can be added. Expected format is described in the User-defined mapping [section](#user-defined-mapping).
 
 ### Environment variables
 
@@ -540,11 +544,11 @@ To solve this, FawltyDeps looks at the packages installed in your Python
 environment to correctly map dependencies (package names) into the imports that
 they provide. This is:
 
- - any Python environment found via the `--pyenv` option, or
- - any Python environment found within your project (`basepath` or the current
-directory).
- - Failing that, FawltyDeps will use the _current Python environment_,
-i.e. the one in which FawltyDeps itself is running.
+- any Python environment found via the `--pyenv` option, or
+- any Python environment found within your project (`basepath` or the current
+  directory).
+- Failing that, FawltyDeps will use the _current Python environment_,
+  i.e. the one in which FawltyDeps itself is running.
 
 As a final resort, when an installed package is not found for a declared
 dependency, the

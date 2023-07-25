@@ -36,7 +36,6 @@ def make_json_settings_dict(**kwargs):
         "code": ["."],
         "deps": ["."],
         "pyenvs": [],
-        "custom_mapping_file": [],
         "custom_mapping": None,
         "output_format": "human_summary",
         "ignore_undeclared": [],
@@ -44,6 +43,7 @@ def make_json_settings_dict(**kwargs):
         "deps_parser_choice": None,
         "install_deps": False,
         "verbosity": 0,
+        "custom_mapping_file": [],
     }
     settings.update(kwargs)
     return settings
@@ -851,12 +851,12 @@ def test_cmdline_on_ignored_undeclared_option(
                 # code = ['.']
                 deps = ['foobar']
                 # pyenvs = []
-                # custom_mapping_file = []
                 # ignore_undeclared = []
                 # ignore_unused = []
                 # deps_parser_choice = ...
                 # install_deps = false
                 # verbosity = 0
+                # custom_mapping_file = []
                 # [tool.fawltydeps.custom_mapping]
                 """
             ).splitlines(),
@@ -875,12 +875,12 @@ def test_cmdline_on_ignored_undeclared_option(
                 # code = ['.']
                 # deps = ['.']
                 pyenvs = ['None']
-                # custom_mapping_file = []
                 # ignore_undeclared = []
                 # ignore_unused = []
                 # deps_parser_choice = ...
                 # install_deps = false
                 # verbosity = 0
+                # custom_mapping_file = []
                 # [tool.fawltydeps.custom_mapping]
                 """
             ).splitlines(),
@@ -899,12 +899,12 @@ def test_cmdline_on_ignored_undeclared_option(
                 # code = ['.']
                 # deps = ['.']
                 pyenvs = ['baz', 'xyzzy']
-                # custom_mapping_file = []
                 # ignore_undeclared = []
                 # ignore_unused = []
                 # deps_parser_choice = ...
                 # install_deps = false
                 # verbosity = 0
+                # custom_mapping_file = []
                 # [tool.fawltydeps.custom_mapping]
                 """
             ).splitlines(),
