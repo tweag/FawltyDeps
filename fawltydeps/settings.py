@@ -111,13 +111,13 @@ class Settings(BaseSettings):  # type: ignore
     code: Set[PathOrSpecial] = {Path(".")}
     deps: Set[Path] = {Path(".")}
     pyenvs: Set[Path] = set()
-    custom_mapping_file: Set[Path] = set()
     custom_mapping: Optional[CustomMapping] = None
     ignore_undeclared: Set[str] = set()
     ignore_unused: Set[str] = set()
     deps_parser_choice: Optional[ParserChoice] = None
     install_deps: bool = False
     verbosity: int = 0
+    custom_mapping_file: Set[Path] = set()
 
     # Class vars: these can not be overridden in the same way as above, only by
     # passing keyword args to Settings.config(). This is because they change the
