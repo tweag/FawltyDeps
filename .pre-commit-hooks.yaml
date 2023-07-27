@@ -1,0 +1,6 @@
+-   id: fawlty-deps
+    name: FawltyDeps
+    description: Python dependency checker
+    entry: fawltydeps
+    language: python
+    pass_filenames: false
