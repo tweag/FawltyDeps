@@ -110,7 +110,7 @@ class Settings(BaseSettings):  # type: ignore
     output_format: OutputFormat = OutputFormat.HUMAN_SUMMARY
     code: Set[PathOrSpecial] = {Path(".")}
     deps: Set[Path] = {Path(".")}
-    pyenvs: Set[Path] = set()
+    pyenvs: Set[Path] = {Path(".")}
     custom_mapping: Optional[CustomMapping] = None
     ignore_undeclared: Set[str] = set()
     ignore_unused: Set[str] = set()
@@ -189,11 +189,17 @@ class Settings(BaseSettings):  # type: ignore
         if base_paths:
             code_paths = args_dict.setdefault("code", base_paths)
             deps_paths = args_dict.setdefault("deps", base_paths)
-            if code_paths != base_paths and deps_paths != base_paths:
+            pyenv_paths = args_dict.setdefault("pyenvs", base_paths)
+            if (
+                code_paths != base_paths
+                and deps_paths != base_paths
+                and pyenv_paths != base_paths
+            ):
                 msg = (
-                    "All three path specifications (code, deps, and base)"
-                    f"have been used. Use at most 2. basepaths={base_paths}, "
-                    f"code_paths={code_paths}, deps_paths={deps_paths}"
+                    "All four path specifications (code, deps, pyenvs, and base)"
+                    f"have been used. Use at most 3. basepaths={base_paths}, "
+                    f"code_paths={code_paths}, deps_paths={deps_paths}, "
+                    f"pyenv_paths={pyenv_paths}"
                 )
                 raise argparse.ArgumentError(argument=None, message=msg)
 

@@ -39,7 +39,7 @@ EXPECT_DEFAULTS = dict(
     actions={Action.REPORT_UNDECLARED, Action.REPORT_UNUSED},
     code={Path(".")},
     deps={Path(".")},
-    pyenvs=set(),
+    pyenvs={Path(".")},
     custom_mapping_file=set(),
     custom_mapping=None,
     output_format=OutputFormat.HUMAN_SUMMARY,
@@ -81,15 +81,15 @@ def setup_env(monkeypatch):
 
 safe_string = strategies.text(alphabet=string.ascii_letters + string.digits, min_size=1)
 nonempty_string_set = strategies.sets(safe_string, min_size=1)
-three_different_string_groups = strategies.tuples(
-    nonempty_string_set, nonempty_string_set, nonempty_string_set
-).filter(lambda ss: ss[0] != ss[1] and ss[0] != ss[2] and ss[1] != ss[2])
+four_different_string_groups = strategies.tuples(
+    *([nonempty_string_set] * 4),
+).filter(lambda ss: all(a != b for a, b in combinations(ss, 2)))
 
 
-@given(code_deps_base=three_different_string_groups)
-def test_code_deps_and_base_unequal__raises_error(code_deps_base):
-    code, deps, base = code_deps_base
-    args = list(base) + ["--code"] + list(code) + ["--deps"] + list(deps)
+@given(code_deps_pyenvs_base=four_different_string_groups)
+def test_code_deps_pyenvs_and_base_unequal__raises_error(code_deps_pyenvs_base):
+    code, deps, pyenvs, base = code_deps_pyenvs_base
+    args = [*base, "--code", *code, "--deps", *deps, "--pyenv", *pyenvs]
     with pytest.raises(argparse.ArgumentError):
         run_build_settings(args)
 
@@ -97,6 +97,7 @@ def test_code_deps_and_base_unequal__raises_error(code_deps_base):
 path_options = {  # options (-> settings members) that interact with basepath
     "--code": "code",
     "--deps": "deps",
+    "--pyenv": "pyenvs",
 }
 
 Item = TypeVar("Item")
@@ -151,12 +152,18 @@ def test_base_path_fills_path_options_when_other_path_settings_are_absent(basepa
         pytest.param(conf_sett, base, id=test_name)
         for conf_sett, base, test_name in [
             (None, {"single-base"}, "empty-config"),
-            (dict(code=["test-code"]), {"base1", "base2"}, "only-code-set"),
-            (dict(deps=["deps-test"]), {"single-base"}, "only-deps-set"),
+            ({"code": ["test-code"]}, {"base1", "base2"}, "only-code-set"),
+            ({"deps": ["deps-test"]}, {"single-base"}, "only-deps-set"),
+            ({"pyenvs": ["pyenvs-test"]}, {"single-base"}, "only-pyenvs-set"),
             (
-                dict(code=["code-test"], deps=["test-deps"]),
+                {"code": ["code-test"], "deps": ["test-deps"]},
                 {"base1", "base2"},
                 "code-and-deps-set",
+            ),
+            (
+                {"code": ["code-test"], "deps": ["test-deps"], "pyenvs": ["abc"]},
+                {"base1", "base2"},
+                "all-three-set",
             ),
         ]
     ],
