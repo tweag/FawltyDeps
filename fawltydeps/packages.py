@@ -342,7 +342,7 @@ def pyenv_sources(*pyenv_paths: Path) -> Set[PyEnvSource]:
     for path in pyenv_paths:
         package_dirs = set(LocalPackageResolver.find_package_dirs(path))
         if not package_dirs:
-            logger.warning(f"Could not find a Python env at {path}!")
+            logger.debug(f"Could not find a Python env at {path}!")
         ret.update(PyEnvSource(d) for d in package_dirs)
     if pyenv_paths and not ret:
         raise ValueError(f"Could not find any Python env in {pyenv_paths}!")
