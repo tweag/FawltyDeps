@@ -1,4 +1,4 @@
--   id: fawlty-deps
+-   id: check
     name: FawltyDeps
     description: Python dependency checker
     entry: fawltydeps
