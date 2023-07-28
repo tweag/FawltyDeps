@@ -5,9 +5,21 @@ import random
 import string
 import sys
 from dataclasses import dataclass, field
-from itertools import chain, permutations, product
+from itertools import chain, combinations, permutations, product
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Set, Tuple, Type, TypeVar, Union
+from typing import (
+    Any,
+    Dict,
+    Iterable,
+    Iterator,
+    List,
+    Optional,
+    Set,
+    Tuple,
+    Type,
+    TypeVar,
+    Union,
+)
 
 import pytest
 from hypothesis import given, strategies
@@ -82,24 +94,55 @@ def test_code_deps_and_base_unequal__raises_error(code_deps_base):
         run_build_settings(args)
 
 
+path_options = {  # options (-> settings members) that interact with basepath
+    "--code": "code",
+    "--deps": "deps",
+}
+
+Item = TypeVar("Item")
+
+
+def subsets(
+    items: Set[Item],
+    min_size: int = 0,
+    max_size: int = sys.maxsize,
+) -> Iterator[Set[Item]]:
+    """Generate all subsets of the given set within the given size constraints.
+
+    This is equivalent to the "power set" with a size filter applied.
+    """
+    max_size = min(max_size, len(items))
+    for size in range(min_size, max_size + 1):
+        for tpl in combinations(items, size):
+            yield set(tpl)
+
+
 @given(basepaths=nonempty_string_set, fillers=nonempty_string_set)
-@pytest.mark.parametrize(["filled", "unfilled"], [("code", "deps"), ("deps", "code")])
-def test_base_path_respects_path_already_filled_via_cli(
-    basepaths, filled, unfilled, fillers
-):
-    args = list(basepaths) + [f"--{filled}"] + list(fillers)
+@pytest.mark.parametrize(
+    ["filled", "unfilled"],
+    [
+        pytest.param(opts, path_options.keys() - opts, id="Passing " + ", ".join(opts))
+        for opts in subsets(set(path_options.keys()), 1, len(path_options) - 1)
+    ],
+)
+def test_path_option_overrides_base_path(basepaths, filled, unfilled, fillers):
+    assert filled and unfilled and (unfilled | filled) == path_options.keys()
+    args = list(basepaths)
+    for option in filled:
+        args += [option] + list(fillers)
     settings = run_build_settings(args)
-    assert getattr(settings, filled) == to_path_set(fillers)
-    assert getattr(settings, unfilled) == to_path_set(basepaths)
+    for option in filled:
+        assert getattr(settings, path_options[option]) == to_path_set(fillers)
+    for option in unfilled:
+        assert getattr(settings, path_options[option]) == to_path_set(basepaths)
 
 
 @given(basepaths=nonempty_string_set)
-def test_base_path_fills_code_and_deps_when_other_path_settings_are_absent(basepaths):
+def test_base_path_fills_path_options_when_other_path_settings_are_absent(basepaths):
     # Nothing else through CLI nor through config file
     settings = run_build_settings(cmdl=list(basepaths))
     expected = to_path_set(basepaths)
-    assert settings.code == expected
-    assert settings.deps == expected
+    assert all(getattr(settings, memb) == expected for memb in path_options.values())
 
 
 @pytest.mark.parametrize(
@@ -118,7 +161,7 @@ def test_base_path_fills_code_and_deps_when_other_path_settings_are_absent(basep
         ]
     ],
 )
-def test_base_path_overrides_config_file_code_and_deps(
+def test_base_path_overrides_config_file_for_all_path_options(
     config_settings,
     basepaths,
     setup_fawltydeps_config,
@@ -129,8 +172,7 @@ def test_base_path_overrides_config_file_code_and_deps(
 
     settings = run_build_settings(cmdl=list(basepaths), config_file=config_file)
     expected = to_path_set(basepaths)
-    assert settings.code == expected
-    assert settings.deps == expected
+    assert all(getattr(settings, memb) == expected for memb in path_options.values())
 
 
 OPTION_VALUES = {
