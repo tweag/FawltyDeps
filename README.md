@@ -596,3 +596,19 @@ fawltydeps --code -
 # FawltyDeps waits for code on stdin; paste from your clipboard,
 # then press Ctrl+D to signal EOF (end-of-file).
 ```
+
+### Can I use FawltyDeps as a pre-commit hook?
+
+Yes! Assuming that you already use the [pre-commit](https://pre-commit.com)
+tool, you can add something like this to your project's
+`.pre-commit-config.yaml`:
+
+```yaml
+repos:
+  - repo: https://github.com/tweag/FawltyDeps
+    rev: v0.12.1
+    hooks:
+      - id: check
+        args:
+          - --detailed
+```
