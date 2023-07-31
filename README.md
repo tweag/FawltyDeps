@@ -299,8 +299,9 @@ Here is a complete list of configuration directives we support:
   declared dependencies. Must be one of `"requirements.txt"`, `"setup.py"`,
   `"setup.cfg"`, `"pyproject.toml"`, or leave it unset (i.e. the default) for
   auto-detection (based on filename).
-- `install-deps`: Install Python dependencies gathered with FawltyDeps to
-  a temporary virtual environment. Dependencies will be installed from PyPI.
+- `install-deps`: Automatically install Python dependencies gathered with
+  FawltyDeps into a temporary virtual environment. This will use `pip install`,
+  which downloads packages from PyPI by default.
 - `verbosity`: An integer controlling the default log level of FawltyDeps:
   - `-2`: Only `CRITICAL`-level log messages are shown.
   - `-1`: `ERROR`-level log messages and above are shown.
