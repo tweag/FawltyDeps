@@ -43,6 +43,7 @@ pip-requirements-parser = "^32.0.1"
 pydantic = "^1.10.4"
 tomli = {version = "^2.0.1", python = "<3.11"}
 typing-extensions = {version = "^4.4.0", python = "<3.8"}
+setuptools = "^68.0.0"
 
 [tool.poetry.group.nox]
 optional = true
