@@ -1,4 +1,4 @@
-name: Tests 
+name: Tests
 
 on: [workflow_call]
 
@@ -30,3 +30,5 @@ jobs:
         run: poetry run nox --no-venv --no-install --non-interactive -s tests -- -vv
       - name: Run integration tests on Python ${{ matrix.python-version }}
         run: poetry run nox --no-venv --no-install --non-interactive -s integration_tests -- -vv
+      - name: Run fawltydeps
+        run: poetry run fawltydeps --code fawltydeps/ --deps pyproject.toml --ignore-unused black codespell colorama hypothesis mypy nox pylint pytest types-setuptools
