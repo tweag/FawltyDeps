@@ -82,6 +82,13 @@ def integration_tests(session):
 
 
 @nox.session(python=python_versions)
+def self_test(session):
+    install_groups(session)
+    venv_path = session.run("poetry", "env", "info", "--path", silent=True).strip()
+    session.run("fawltydeps", f"--pyenv={venv_path}")
+
+
+@nox.session(python=python_versions)
 def lint(session):
     install_groups(session, include=["lint"])
     session.run("mypy")

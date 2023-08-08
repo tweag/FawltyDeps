@@ -31,4 +31,4 @@ jobs:
       - name: Run integration tests on Python ${{ matrix.python-version }}
         run: poetry run nox --no-venv --no-install --non-interactive -s integration_tests -- -vv
       - name: Run fawltydeps on Python ${{ matrix.python-version }}
-        run: poetry run fawltydeps --code fawltydeps/ --deps pyproject.toml --pyenv ~/.cache/pypoetry/virtualenvs --ignore-unused black codespell colorama hypothesis mypy nox pylint pytest types-setuptools -vv
+        run: poetry run nox --no-venv --no-install --non-interactive -s self_test -- -vv
