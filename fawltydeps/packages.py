@@ -474,11 +474,8 @@ def setup_resolvers(
 
     if install_deps:
         yield TemporaryPipInstallResolver()
-
-    # Identity mapping being at the end of the resolver sequence ensures that
-    # _all_ deps are matched. TODO: If we make the identity mapping optional,
-    # we must remember to properly handle/signal unresolved dependencies.
-    yield IdentityMapping()
+    else:
+        yield IdentityMapping()
 
 
 def resolve_dependencies(
