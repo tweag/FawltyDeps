@@ -1,13 +1,15 @@
 """Verify behavior of TemporaryPipInstallResolver."""
 import logging
 
+import pytest
+
 from fawltydeps.packages import (
-    IdentityMapping,
     Package,
     TemporaryPipInstallResolver,
     resolve_dependencies,
     setup_resolvers,
 )
+from fawltydeps.types import UnresolvedDependenciesError
 
 
 def test_resolve_dependencies_install_deps__via_local_cache(local_pypi):
@@ -23,42 +25,33 @@ def test_resolve_dependencies_install_deps__via_local_cache(local_pypi):
     }
 
 
-def test_resolve_dependencies_install_deps__handle_pip_install_failure(
+def test_resolve_dependencies_install_deps__raises_unresolved_error_on_pip_install_failure(
     caplog, local_pypi
 ):
-    # TemporaryPipInstallResolver will handle the inevitable pip install error
-    # and return to resolve_dependencies() with the missing package unresolved.
-    # For now, IdentityMapping "saves the day" and supplies a Package object.
-    # Soon, this should result in an unresolved package error instead.
+    # This tests the case where TemporaryPipInstallResolver encounters the
+    # inevitable pip install error and returns to resolve_dependencies()
+    # with the missing package unresolved.
+    # Since either install_deps or IdentityMapping are the final resolvers,
+    # this should raise an `UnresolvedDependenciesError`.
     caplog.set_level(logging.WARNING)
-    actual = resolve_dependencies(
-        ["does_not_exist"], setup_resolvers(install_deps=True)
-    )
-    assert actual == {
-        "does_not_exist": Package(
-            "does_not_exist", {"does_not_exist"}, IdentityMapping
-        ),
-    }
+
+    with pytest.raises(UnresolvedDependenciesError):
+        resolve_dependencies(["does_not_exist"], setup_resolvers(install_deps=True))
+
     assert all(word in caplog.text for word in ["pip", "install", "does_not_exist"])
 
 
-def test_resolve_dependencies_install_deps__pip_install_some_packages(
+def test_resolve_dependencies_install_deps_on_mixed_packages__raises_unresolved_error(
     caplog, local_pypi
 ):
-    debug_info = "Provided by temporary `pip install`"
-    caplog.set_level(logging.WARNING)
-    actual = resolve_dependencies(
-        ["click", "does_not_exist", "leftpadx"], setup_resolvers(install_deps=True)
+    caplog.set_level(logging.DEBUG)
+    deps = {"click", "does_not_exist", "leftpadx"}
+    # Attempting to pip install "does_not_exist"
+    # will result in an `UnresolvedDependenciesError`.
+    with pytest.raises(UnresolvedDependenciesError):
+        resolve_dependencies(deps, setup_resolvers(install_deps=True))
+    # Attempted to install deps with TemporaryPipInstall
+    assert (
+        f"Trying to resolve {deps!r} with <fawltydeps.packages.TemporaryPipInstallResolver"
+        in caplog.text
     )
-    # pip install is able to install "leftpadx", but "package_does_not_exist"
-    # falls through to IdentityMapping.
-    assert actual == {
-        "click": Package("click", {"click"}, TemporaryPipInstallResolver, debug_info),
-        "does_not_exist": Package(
-            "does_not_exist", {"does_not_exist"}, IdentityMapping
-        ),
-        "leftpadx": Package(
-            "leftpadx", {"leftpad"}, TemporaryPipInstallResolver, debug_info
-        ),
-    }
-    assert all(word in caplog.text for word in ["pip", "install", "does_not_exist"])
