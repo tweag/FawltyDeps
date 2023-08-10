@@ -313,11 +313,8 @@ def test_resolve_dependencies__informs_once_when_id_mapping_is_used(
     assert caplog.record_tuples == expect_log
 
 
-@pytest.mark.skip(
-    "This test waits for making IdentityMappig optional or not used as a fallback"
-)
 def test_resolve_dependencies__unresolved_dependencies__UnresolvedDependenciesError_raised():
     dep_names = ["foo", "bar"]
 
     with pytest.raises(UnresolvedDependenciesError):
-        resolve_dependencies(dep_names, setup_resolvers())
+        resolve_dependencies(dep_names, setup_resolvers(install_deps=True))
