@@ -41,6 +41,22 @@ def test_resolve_dependencies_install_deps__raises_unresolved_error_on_pip_insta
     assert all(word in caplog.text for word in ["pip", "install", "does_not_exist"])
 
 
+def test_resolve_dependencies_install_deps__unresolved_error_only_warns_failing_packages(
+    caplog, local_pypi
+):
+    # When we fail to install _some_ - but not all - packages, the error message
+    # should only mention the packages that we failed to install.
+    caplog.set_level(logging.WARNING)
+    deps = {"click", "does_not_exist", "leftpadx"}
+
+    with pytest.raises(UnresolvedDependenciesError):
+        resolve_dependencies(deps, setup_resolvers(install_deps=True))
+
+    assert "Failed to install 'does_not_exist'" in caplog.text
+    assert "Failed to install 'click'" not in caplog.text
+    assert "Failed to install 'leftpadx'" not in caplog.text
+
+
 def test_resolve_dependencies_install_deps_on_mixed_packages__raises_unresolved_error(
     caplog, local_pypi
 ):
