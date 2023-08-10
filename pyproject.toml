@@ -43,6 +43,7 @@ pip-requirements-parser = "^32.0.1"
 pydantic = "^1.10.4"
 tomli = {version = "^2.0.1", python = "<3.11"}
 typing-extensions = {version = "^4.4.0", python = "<3.8"}
+setuptools = "^68.0.0"
 
 [tool.poetry.group.nox]
 optional = true
@@ -150,3 +151,20 @@ uri-ignore-words-list = "*"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.fawltydeps]
+code = ["fawltydeps"]
+deps = ["pyproject.toml"]
+ignore_unused = [
+    # Tools not meant to be imported
+    "black",
+    "codespell",
+    "hypothesis",
+    "mypy",
+    "nox",
+    "pylint",
+    "pytest",
+    # Other dependencies that enable functionality in the above tools
+    "colorama",
+    "types-setuptools",
+]

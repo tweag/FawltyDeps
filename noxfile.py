@@ -1,4 +1,5 @@
 import hashlib
+import sys
 from pathlib import Path
 from typing import Iterable
 
@@ -79,6 +80,14 @@ def tests(session):
 def integration_tests(session):
     install_groups(session, include=["test"])
     session.run("pytest", "-x", "-m", "integration", "--durations=10", *session.posargs)
+
+
+@nox.session(python=python_versions)
+def self_test(session):
+    install_groups(session)
+    # For --pyenv, use Nox's virtualenv, or fall back to current virtualenv
+    venv_path = getattr(session.virtualenv, "location", sys.prefix)
+    session.run("fawltydeps", f"--pyenv={venv_path}")
 
 
 @nox.session(python=python_versions)
