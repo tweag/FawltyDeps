@@ -14,6 +14,7 @@ from textwrap import dedent
 from typing import List
 
 import pytest
+from importlib_metadata import files as package_files
 
 from fawltydeps.main import UNUSED_DEPS_OUTPUT_PREFIX, VERBOSE_PROMPT, Analysis, version
 from fawltydeps.types import Location, UnusedDependency
@@ -864,6 +865,91 @@ def test_check_detailed__simple_project_w_2_fake_venv__resolves_imports_vs_deps(
         Analysis.success_message(check_undeclared=True, check_unused=True),
     ]
     assert returncode == 0
+
+
+def test_check_json__no_pyenvs_found__falls_back_to_current_env(fake_project):
+    # When using the _current_ env (aka. sys.path), we can assume that FD's
+    # own dependencies (such as "pip-requirements-parser", providing the
+    # "pip_requirements_parser" and "packaging_legacy_version" import names)
+    # will be present/resolved, but "other_module" must rely on falling back to
+    # the identity mapping.
+    tmp_path = fake_project(
+        imports=["packaging_legacy_version", "other_module"],
+        declared_deps=["pip-requirements-parser", "other_module"],
+    )
+
+    # Find the expected site-packages directory containing
+    # pip-requirements-parser in the current environment
+    site_packages = package_files("pip-requirements-parser")[0].locate()
+    while site_packages.name != "site-packages":
+        site_packages = site_packages.parent
+
+    expect = {
+        "settings": make_json_settings_dict(
+            code=[f"{tmp_path}"],
+            deps=[f"{tmp_path}"],
+            pyenvs=[f"{tmp_path}"],
+            output_format="json",
+        ),
+        "sources": [
+            {
+                "source_type": "CodeSource",
+                "path": f"{tmp_path}/code.py",
+                "base_dir": f"{tmp_path}",
+            },
+            {
+                "source_type": "DepsSource",
+                "path": f"{tmp_path}/requirements.txt",
+                "parser_choice": "requirements.txt",
+            },
+            # No PyEnvSources found
+        ],
+        "imports": [
+            {
+                "name": "packaging_legacy_version",
+                "source": {"path": f"{tmp_path}/code.py", "lineno": 1},
+            },
+            {
+                "name": "other_module",
+                "source": {"path": f"{tmp_path}/code.py", "lineno": 2},
+            },
+        ],
+        "declared_deps": [
+            {
+                "name": "pip-requirements-parser",
+                "source": {"path": f"{tmp_path}/requirements.txt"},
+            },
+            {
+                "name": "other_module",
+                "source": {"path": f"{tmp_path}/requirements.txt"},
+            },
+        ],
+        "resolved_deps": {
+            "pip-requirements-parser": {
+                "package_name": "pip_requirements_parser",
+                "import_names": ["packaging_legacy_version", "pip_requirements_parser"],
+                "resolved_with": "LocalPackageResolver",
+                "debug_info": {
+                    f"{site_packages}": [
+                        "packaging_legacy_version",
+                        "pip_requirements_parser",
+                    ],
+                },
+            },
+            "other_module": {
+                "package_name": "other_module",
+                "import_names": ["other_module"],
+                "resolved_with": "IdentityMapping",
+                "debug_info": None,
+            },
+        },
+        "undeclared_deps": [],
+        "unused_deps": [],
+        "version": version(),
+    }
+    output, returncode = run_fawltydeps_function("--check", "--json", f"{tmp_path}")
+    assert json.loads(output) == expect
+    assert returncode == 0  # --json does not affect exit code
 
 
 @pytest.mark.parametrize(

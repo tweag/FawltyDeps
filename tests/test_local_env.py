@@ -268,3 +268,27 @@ def test_resolve_dependencies__in_2_fake_venvs__returns_local_and_id_deps(fake_v
             {str(site_dir2): {"other_module"}},
         ),
     }
+
+
+def test_resolve_dependencies__when_no_env_found__fallback_to_current():
+    # When no Python env is found by traverse_project, we end up with zero
+    # PyEnvSource objects in Analysis.sources. This is communicated to
+    # setup_resolvers() as an empty set.
+    resolvers = list(setup_resolvers(pyenv_srcs=set()))
+
+    # The resulting resolvers should include a single LocalPackageResolver whose
+    # .package_dirs is empty. This signals that the current env (aka. sys.path)
+    # should be used instead.
+    local_resolvers = [r for r in resolvers if isinstance(r, LocalPackageResolver)]
+    assert len(local_resolvers) == 1
+    lpr = local_resolvers[0]
+    assert lpr.package_dirs == set()
+
+    # The only thing we can assume about the _current_ env (in which FD runs)
+    # is that "fawltydeps" is installed (hence resolved via our 'lpr'), and that
+    # "other_module" is not installed (and thus resolved with id mapping).
+    actual = resolve_dependencies(["fawltydeps", "other_module"], resolvers)
+    assert actual == {
+        "fawltydeps": lpr.lookup_packages({"fawltydeps"})["fawltydeps"],
+        "other_module": Package("other_module", {"other_module"}, IdentityMapping),
+    }
