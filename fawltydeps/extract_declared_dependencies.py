@@ -295,7 +295,8 @@ def parse_pyproject_toml(path: Path) -> Iterator[DeclaredDependency]:
             file_list
             for optional_deps_item in [
                     optional_deps_section.get("file", {})
-                    for optional_deps_section in dynamic_section.get("optional-dependencies", {}).values()
+                    for optional_deps_section in
+                    dynamic_section.get("optional-dependencies", {}).values()
             ]
             for file_list in optional_deps_item
         ]
