@@ -288,6 +288,26 @@ def parse_pyproject_toml(path: Path) -> Iterator[DeclaredDependency]:
     else:
         logger.debug("%s does not contain [tool.poetry].", source)
 
+    if "dynamic" in parsed_contents.get("tool", {}).get("setuptools", {}).keys():
+        dynamic_section = parsed_contents["tool"]["setuptools"]["dynamic"]
+        dynamic_deps_files = dynamic_section.get("dependencies", {}).get("file", [])
+        dynamic_optional_deps_files = [
+            file_list
+            for optional_deps_item in [
+                    optional_deps_section.get("file", {})
+                    for optional_deps_section in dynamic_section.get("optional-dependencies", {}).values()
+            ]
+            for file_list in optional_deps_item
+        ]
+        dynamic_files = dynamic_deps_files + dynamic_optional_deps_files
+        if isinstance(dynamic_files, list):
+            for req_file in dynamic_files:
+                req_file_path = Path(req_file)
+                if req_file_path.exists():
+                    yield from parse_requirements_txt(req_file_path)
+                else:
+                    logger.debug("%s does not exist. Skipping", req_file_path)
+
 
 class ParsingStrategy(NamedTuple):
     """Named pairing of an applicability criterion and a dependency parser"""
