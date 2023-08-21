@@ -525,6 +525,41 @@ def test_find_and_parse_sources__project_with_pyproject__returns_list(fake_proje
     assert_unordered_equivalence(actual, expect)
 
 
+def test_find_and_parse_dynamic_sources__project_with_pyproject__returns_list(
+    write_tmp_files,
+    fake_project,
+):
+    # Write requirements files into a place where files should be initially ignored
+    # but will be looked into if the (optional) dependencies are dynamic.
+    tmp_dir = write_tmp_files(
+        {
+            ".subdir/requirements.txt": """pandas""",
+            ".subdir/requirements-test.txt": """pylint >= 2.15.8""",
+        }
+    )
+    tmp_path = fake_project(
+        files_with_declared_deps={
+            "pyproject.toml": (
+                [
+                    (tmp_dir / ".subdir/requirements.txt").as_posix()
+                ],  # dynamic dependencies path
+                {
+                    "test": [(tmp_dir / ".subdir/requirements-test.txt").as_posix()]
+                },  # dynamic optional-dependencies path
+            ),
+        },
+        is_dynamic=True,
+    )
+    expect = [
+        "pandas",
+        "pylint",
+    ]
+    settings = Settings(code=set(), deps={tmp_path})
+    deps_sources = list(find_sources(settings, {DepsSource}))
+    actual = collect_dep_names(parse_sources(deps_sources))
+    assert_unordered_equivalence(actual, expect)
+
+
 def test_find_and_parse_sources__project_with_setup_cfg__returns_list(fake_project):
     tmp_path = fake_project(
         files_with_declared_deps={
