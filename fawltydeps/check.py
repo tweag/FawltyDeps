@@ -64,3 +64,15 @@ def calculate_unused(
         UnusedDependency(name, [dep.source for dep in deps])
         for name, deps in groupby(unused, key=lambda d: d.name)
     ]
+
+# types-requests -> requests
+# if all(import_name.endswith("-stubs") for import_name in package.import_names):
+#    this_is_a_type_stubs_package = True
+
+# package X that provides stubs for import names Y_i
+# if Y_i are in imported_names, then consider X as a used package
+provides_stubs_for = [
+    import_name.remove_suffix("-stubs")
+    for import_name in package.import_names
+    if import_name.endswith("-stubs")
+]
