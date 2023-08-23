@@ -288,32 +288,42 @@ def parse_pyproject_toml(path: Path) -> Iterator[DeclaredDependency]:
     else:
         logger.debug("%s does not contain [tool.poetry].", source)
 
-    if "dynamic" in parsed_contents.get("project", {}) and (
-        "dependencies" in parsed_contents["project"]["dynamic"]
-        or "optional-dependencies" in parsed_contents["project"]["dynamic"]
-    ):
-        if "dynamic" in parsed_contents.get("tool", {}).get("setuptools", {}):
-            dynamic_section = parsed_contents["tool"]["setuptools"]["dynamic"]
-            dynamic_deps_files = dynamic_section.get("dependencies", {}).get("file", [])
-            dynamic_optional_deps_files = [
-                file_list
-                for optional_deps_item in [
-                    optional_deps_section.get("file", {})
-                    for optional_deps_section in dynamic_section.get(
-                        "optional-dependencies", {}
-                    ).values()
-                ]
-                for file_list in optional_deps_item
+    try:
+        dynamic = parsed_contents["project"]["dynamic"]
+    except KeyError:
+        dynamic = []
+
+    deps_files = []
+    try:
+        if "dependencies" in dynamic:
+            deps_files = parsed_contents["tool"]["setuptools"]["dynamic"][
+                "dependencies"
+            ]["file"]
+    except KeyError:
+        pass
+
+    optional_deps_files = []
+    try:
+        if "optional-dependencies" in dynamic:
+            optional_deps = parsed_contents["tool"]["setuptools"]["dynamic"][
+                "optional-dependencies"
             ]
-            dynamic_files = dynamic_deps_files + dynamic_optional_deps_files
-            for req_file in dynamic_files:
-                req_file_path = Path(req_file)
-                if req_file_path.exists():
-                    yield from parse_requirements_txt(req_file_path)
-                else:
-                    logger.debug("%s does not exist. Skipping", req_file_path)
+            # Extract the file paths and flatten them into a single list
+            optional_deps_files = [
+                file_path
+                for file_path_list in [v["file"] for v in optional_deps.values()]
+                for file_path in file_path_list
+            ]
+    except KeyError:
+        pass
+
+    dynamic_files = deps_files + optional_deps_files
+    for req_file in dynamic_files:
+        req_file_path = path.parent / req_file
+        if req_file_path.exists():
+            yield from parse_requirements_txt(req_file_path)
         else:
-            logger.debug("%s does not contain [tool.setuptools.dynamic].", source)
+            logger.error("%s does not exist. Skipping.", req_file_path)
 
 
 class ParsingStrategy(NamedTuple):
