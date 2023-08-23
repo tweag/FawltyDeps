@@ -14,7 +14,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
-      - uses: Gr1N/setup-poetry@v8
+      - name: Set up Poetry
+        uses: Gr1N/setup-poetry@v8
+        with:
+          poetry-version: "1.5.1" # support for Python 3.7 was dropped in 1.6.0
       - name: Configure access
         run: |
           poetry config repositories.testpypi https://test.pypi.org/legacy/
