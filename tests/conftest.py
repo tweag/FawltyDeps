@@ -145,14 +145,11 @@ def fake_project(write_tmp_files, fake_venv):
     def format_python_code(imports: Imports) -> str:
         return "".join(f"import {s}\n" for s in imports)
 
-    def format_requirements_txt(
-        deps: Deps, no_extras: ExtraDeps, no_dynamic: bool
-    ) -> str:
-        assert not no_extras, no_dynamic  # not supported
+    def format_requirements_txt(deps: Deps, no_extras: ExtraDeps) -> str:
+        assert not no_extras  # not supported
         return "".join(f"{s}\n" for s in deps)
 
-    def format_setup_py(deps: Deps, extras: ExtraDeps, no_dynamic: bool) -> str:
-        assert not no_dynamic  # not supported
+    def format_setup_py(deps: Deps, extras: ExtraDeps) -> str:
         return f"""\
             from setuptools import setup
 
@@ -163,8 +160,8 @@ def fake_project(write_tmp_files, fake_venv):
             )
             """
 
-    def format_setup_cfg(deps: Deps, no_extras: ExtraDeps, no_dynamic: bool) -> str:
-        assert not no_extras, no_dynamic  # not supported
+    def format_setup_cfg(deps: Deps, no_extras: ExtraDeps) -> str:
+        assert not no_extras  # not supported
         return (
             dedent(
                 """\
@@ -178,25 +175,7 @@ def fake_project(write_tmp_files, fake_venv):
             + "\n".join(f"    {d}" for d in deps)
         )
 
-    def format_pyproject_toml(deps: Deps, extras: ExtraDeps, is_dynamic: bool) -> str:
-        if is_dynamic:
-            return (
-                dedent(
-                    f"""\
-                    [project]
-                    name = "MyLib"
-
-                    dynamic = ["dependencies", "optional-dependencies"]
-
-                    [tool.setuptools.dynamic]
-
-                    dependencies = {{ file = {deps!r} }}
-
-                    [tool.setuptools.dynamic.optional-dependencies]
-                    """
-                )
-                + "\n".join(f"{k} = {{ file = {v!r} }}" for k, v in extras.items())
-            )
+    def format_pyproject_toml(deps: Deps, extras: ExtraDeps) -> str:
         return (
             dedent(
                 f"""\
@@ -212,20 +191,20 @@ def fake_project(write_tmp_files, fake_venv):
         )
 
     def format_deps(
-        filename: str, all_deps: Union[Deps, Tuple[Deps, ExtraDeps]], is_dynamic: bool
+        filename: str, all_deps: Union[Deps, Tuple[Deps, ExtraDeps]]
     ) -> str:
         if isinstance(all_deps, tuple):
             deps, extras = all_deps
         else:
             deps, extras = all_deps, {}
-        formatters: Dict[str, Callable[[Deps, ExtraDeps, bool], str]] = {
+        formatters: Dict[str, Callable[[Deps, ExtraDeps], str]] = {
             "requirements.txt": format_requirements_txt,  # default choice
             "setup.py": format_setup_py,
             "setup.cfg": format_setup_cfg,
             "pyproject.toml": format_pyproject_toml,
         }
         formatter = formatters.get(Path(filename).name, format_requirements_txt)
-        return formatter(deps, extras, is_dynamic)
+        return formatter(deps, extras)
 
     def create_one_fake_project(
         *,
@@ -237,21 +216,18 @@ def fake_project(write_tmp_files, fake_venv):
             Dict[str, Union[Deps, Tuple[Deps, ExtraDeps]]]
         ] = None,
         extra_file_contents: Optional[Dict[str, str]] = None,
-        is_dynamic: bool = False,
     ) -> Path:
         tmp_files = {}
         if imports is not None:
             tmp_files["code.py"] = format_python_code(imports)
         if declared_deps is not None:
-            tmp_files["requirements.txt"] = format_requirements_txt(
-                declared_deps, {}, False
-            )
+            tmp_files["requirements.txt"] = format_requirements_txt(declared_deps, {})
         if files_with_imports is not None:
             for filename, per_file_imports in files_with_imports.items():
                 tmp_files[filename] = format_python_code(per_file_imports)
         if files_with_declared_deps is not None:
             for filename, all_deps in files_with_declared_deps.items():
-                tmp_files[filename] = format_deps(filename, all_deps, is_dynamic)
+                tmp_files[filename] = format_deps(filename, all_deps)
         if extra_file_contents is not None:
             tmp_files.update(extra_file_contents)
         tmp_path: Path = write_tmp_files(tmp_files)
