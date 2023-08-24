@@ -320,10 +320,10 @@ def parse_pyproject_toml(path: Path) -> Iterator[DeclaredDependency]:
     with path.open("rb") as tomlfile:
         parsed_contents = tomllib.load(tomlfile)
 
+    yield from parse_pep621_pyproject_contents(parsed_contents, source)
+
     if "dynamic" in parsed_contents.get("project", {}):
         yield from parse_dynamic_pyproject_contents(parsed_contents, source)
-    else:
-        yield from parse_pep621_pyproject_contents(parsed_contents, source)
 
     if "poetry" in parsed_contents.get("tool", {}):
         yield from parse_poetry_pyproject_dependencies(
