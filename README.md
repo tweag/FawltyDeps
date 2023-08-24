@@ -144,17 +144,39 @@ When FawltyDeps looks for undeclared and unused dependencies, it needs to match
 declared in your project configuration.
 
 To solve this, FawltyDeps uses a sequence of resolvers (aka. mapping strategies)
-to determine which Python packages that provide which import names:
+to determine which Python packages provide which import names. The diagram below
+shows the dependencies' flow through the sequence of mappings supported by
+FawltyDeps (each of which is introduced in the following subsections):
+- Local Python environment mapping
+- User-defined mapping
+- Mapping via temporarily installed packages
+- Identity mapping
 
-#### Python environment mapping
+<img src="./images/resolvers_sequence.png" alt="Sequence of resolvers used by FawltyDeps" width="500"/>
 
-First of all FawltyDeps looks for _Python environments_ (virtualenvs or similar
-directories like `.venv` or `__pypackages__`.) inside your project (i.e. under
-`basepath`, if given, or the current directory).
+
+The priority of each of these mappings, together with their default values and
+customization options are summarized in the table below:
+
+| Priority | Mapping strategy        | Options |
+|----------|----------------------|------------|
+| 1        | User-defined mapping | Provide a custom mapping in TOML format via `--custom-mapping-file` or by providing a `[tool.fawltydeps.custom_mapping]` section in your project’s `pyproject.toml`. <br /> Default: No custom mapping|
+| 2        | Mapping from installed packages | Point to one or more environments via `--pyenv`.<br />Default: auto-discovery of Python environments under the project’s basepath. If none are found, default to the Python environment in which FawltyDeps itself is installed.|
+| 3a       | Mapping via temporary installation of packages  | Activated with the `--install-deps` option.|
+| 3b       | Identity mapping | Active by default. Deactivated when `install-deps` is used. |
+
+
+#### Local Python environment mapping
+
+Local Python environment mapping refers to using packages already installed
+in local Python environments on your system to resolve dependencies into
+the imports they expose. This leverages the functionality provided
+by the excellent [`importlib_metadata`](https://importlib-metadata.readthedocs.io/en/latest/)
+library.
 
 You can use the `--pyenv` option (or the `pyenvs` configuration directive)
-to point FawltyDeps at a specific Python environment located within your project
-or elsewhere. For example:
+to point FawltyDeps at one [or more] specific Python environment(s) located
+within your project or elsewhere. For example:
 
 ```sh
 fawltydeps --code my_package/ --deps pyproject.toml --pyenv .venv/
@@ -167,9 +189,14 @@ This will tell FawltyDeps:
 - to use the Python environment at `.venv/` to map dependency names in
   `pyproject.toml` into import names used in your code under `my_package/`
 
-If `--pyenv` is not used, and no Python environments are found within your project,
-FawltyDeps will fall back to looking at your _current Python environment_:
-This is the environment in which FawltyDeps itself is installed.
+If `--pyenv` is not used, FawltyDeps will look for _Python environments_
+(virtualenvs or similar directories like `.venv` or `__pypackages__`.) inside
+your project (i.e. under `basepath`, if given, or the current directory).
+
+If no Python environments are found within your project, FawltyDeps will fall
+back to looking at your _current Python environment_: This is the environment
+in which FawltyDeps itself is installed.
+
 This works well when you, for example, `pip install fawltydeps` into the same
 virtualenv as your project dependencies.
 
@@ -179,23 +206,10 @@ are found inside your project) FawltyDeps will use the union (superset) of all
 imports provided by all matching packages across those Python environments as
 valid import names for that dependency.
 
-#### Identity mapping
-
-When unable to find an installed package that corresponds to a declared
-dependency, FawltyDeps will fall back to an "identity mapping", where it
-_assumes_ that the dependency provides a single import of the same name,
-i.e. it will expect that when you depend on `some_package`, then that should
-correspond to `import some_package` statements in your code.
-
-This fallback assumption is not always correct, but it allows FawltyDeps to
-produce results (albeit sometimes inaccurate) when the current Python
-environment does not contain all of your declared dependencies. Please see
-FAQ below about [why FawltyDeps must run in the same Python environment as your
-project dependencies](#why-must-fawltydeps-run-in-the-same-python-environment-as-my-project-dependencies).
-
 #### User-defined mapping
 
-As a final solution and/or an ultimate override, you may define your own mapping
+We provide a custom mapping functionality to users wishing to take control
+over the way FawltyDeps resolves dependencies. You may define your own mapping
 of dependency names to import names, by providing a TOML file like this:
 
 ```toml
@@ -223,10 +237,66 @@ scikit-learn = ["sklearn"]
 multiple-modules = ["module1", "module2"]
 ```
 
-Caution when using your mapping is advised: The user-defined mapping takes
-precedence over the other resolvers documented above. For example, if the
-mapping file has some stale/incorrect mapping entries, they will _not_ be
-resolved by the Python environment resolver (which is usually more accurate).
+The provided mapping can be complete or partial. In the case where some of the
+dependencies defined in your project configuration cannot be resolved,
+FawltyDeps will attempt to resolve them using the sequence of resolvers 
+illustrated in the diagram above.
+
+Caution when using your mapping is advised: As illustrated in the diagram, the
+user-defined mapping takes precedence over the other resolvers documented
+above. For example, if the mapping file has some stale/incorrect mapping
+entries, they will _not_ be resolved by the Python environment resolver (which
+is usually more accurate).
+
+Note that in the absence of a custom mapping, FawltyDeps will skip this resolver
+to the next one in the sequence, that is, mapping via local Python environments.
+
+#### Identity mapping
+
+When unable to find an installed package that corresponds to a declared
+dependency either via a user-provided mapping or local Python environments,
+FawltyDeps will fall back to one of two strategies. "Identity mapping", which we
+present in this section is the default fallback strategy. We discuss the other
+strategy in the next subsection.
+
+Identity mapping relies on the simplistic assumption that the dependency provides
+a single import of the same name, i.e. it will expect that when you depend on
+`some_package`, then that should correspond to `import some_package` statements
+in your code.
+
+This assumption is correct for many packages and it allows FawltyDeps to
+produce results (albeit sometimes inaccurate ones) when the current Python
+environment does not contain all of your declared dependencies.
+
+To ensure correctness, however, refer to the next subsection outlining the other
+fallback strategy.
+
+#### Mapping by temporarily installing packages
+Your local Python environements might not always have all your project's
+dependencies installed. Assuming that you don’t want to go through the
+bother of installing packages manually, and you also don't want to rely on
+the inaccurate identity mapping as your fallback strategy, you can use the
+`--install-deps` option, introduced in v0.13.0. This will `pip install`
+missing dependencies (from [PyPI](https://pypi.org/), by default) into a
+_temporary virtualenv_, and allow FawltyDeps to use this to come up with the
+correct mapping.
+
+Since this is a potentially expensive strategy (e.g. downloading packages from
+PyPI), we have chosen to hide it behind the `--install-deps` command-line
+option. If you want to always enable this option, you can set the corresponding
+`install_deps` configuration variable to `true` in the `[tool.fawltydeps]`
+section of your `pyproject.toml`.
+
+To customize how this auto-installation happens (e.g. use a different package index),
+you can use [pip’s environment variables](https://pip.pypa.io/en/stable/topics/configuration/).
+
+Note that we’re never guaranteed to be able to resolve _all_ dependencies with
+this method: For example, there could be a typo in your `requirements.txt` that
+means a dependency will _never_ be found on PyPI, or there could be other
+circumstances (e.g. network issues or restrictions in your CI environment) that
+prevent this strategy from working at all. 
+In this case, FawltyDeps will throw an error and will not produce an
+unused/undeclared report.
 
 ### Ignoring irrelevant results
 
