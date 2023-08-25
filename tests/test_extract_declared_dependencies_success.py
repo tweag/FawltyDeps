@@ -556,12 +556,16 @@ def test_find_and_parse_dynamic_sources__project_with_pyproject__returns_list(
     assert_unordered_equivalence(actual, expect)
 
 
-def test_find_and_parse_regular_and_dynamic_sources__project_with_pyproject__returns_list(
+def test_find_and_parse_static_and_dynamic_sources__project_with_pyproject__returns_list(
     write_tmp_files,
     fake_project,
 ):
     # Write requirements files into a place where files should be initially ignored
     # but will be included when the dynamic sections in pyproject.toml are parsed.
+
+    # If dependencies or optional dependencies are declared dynamic, they can
+    # no longer be declared static. Therefore, the static sections will not be
+    # parsed if there are dynamic sections declared.
     tmp_path = fake_project(
         files_with_declared_deps={
             ".subdir/requirements.txt": ["pandas"],
@@ -582,8 +586,6 @@ def test_find_and_parse_regular_and_dynamic_sources__project_with_pyproject__ret
     expect = [
         "pandas",
         "pylint",
-        "django",
-        "black",
     ]
     settings = Settings(code=set(), deps={tmp_path})
     deps_sources = list(find_sources(settings, {DepsSource}))

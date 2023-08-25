@@ -233,7 +233,21 @@ def parse_pep621_pyproject_contents(
                 yield req, src
 
     fields_parsers = [("main", parse_main), ("optional", parse_optional)]
-    return parse_pyproject_elements(parsed_contents, source, "PEP621", fields_parsers)
+
+    if "dynamic" in parsed_contents.get("project", {}):
+        yield from parse_dynamic_pyproject_contents(parsed_contents, source)
+        if "dependencies" in parsed_contents["project"]["dynamic"]:
+            if "optional-dependencies" in parsed_contents["project"]["dynamic"]:
+                fields_parsers = []
+            else:
+                fields_parsers = [("optional", parse_optional)]
+        else:
+            if "optional-dependencies" in parsed_contents["project"]["dynamic"]:
+                fields_parsers = [("main", parse_main)]
+
+    yield from parse_pyproject_elements(
+        parsed_contents, source, "PEP621", fields_parsers
+    )
 
 
 def parse_dynamic_pyproject_contents(
@@ -312,8 +326,7 @@ def parse_pyproject_toml(path: Path) -> Iterator[DeclaredDependency]:
 
     There are multiple ways to declare dependencies inside a pyproject.toml.
     We currently handle:
-    - PEP 621 core metadata fields.
-    - PEP 621 dynamic dependencies and optional-dependencies.
+    - PEP 621 core and dynamic metadata fields.
     - Poetry-specific metadata in `tool.poetry` sections.
     """
     source = Location(path)
@@ -321,9 +334,6 @@ def parse_pyproject_toml(path: Path) -> Iterator[DeclaredDependency]:
         parsed_contents = tomllib.load(tomlfile)
 
     yield from parse_pep621_pyproject_contents(parsed_contents, source)
-
-    if "dynamic" in parsed_contents.get("project", {}):
-        yield from parse_dynamic_pyproject_contents(parsed_contents, source)
 
     if "poetry" in parsed_contents.get("tool", {}):
         yield from parse_poetry_pyproject_dependencies(
