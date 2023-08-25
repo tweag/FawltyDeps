@@ -247,9 +247,6 @@ above. For example, if the mapping file has some stale/incorrect mapping
 entries, they will _not_ be resolved by the Python environment resolver (which
 is usually more accurate).
 
-Note that in the absence of a custom mapping, FawltyDeps will skip this resolver
-to the next one in the sequence, that is, mapping via local Python environments.
-
 #### Identity mapping
 
 When unable to find an installed package that corresponds to a declared
