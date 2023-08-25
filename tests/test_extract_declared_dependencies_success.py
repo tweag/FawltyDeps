@@ -556,6 +556,41 @@ def test_find_and_parse_dynamic_sources__project_with_pyproject__returns_list(
     assert_unordered_equivalence(actual, expect)
 
 
+def test_find_and_parse_regular_and_dynamic_sources__project_with_pyproject__returns_list(
+    write_tmp_files,
+    fake_project,
+):
+    # Write requirements files into a place where files should be initially ignored
+    # but will be included when the dynamic sections in pyproject.toml are parsed.
+    tmp_path = fake_project(
+        files_with_declared_deps={
+            ".subdir/requirements.txt": ["pandas"],
+            ".subdir/requirements-test.txt": ["pylint >= 2.15.8"],
+        },
+        extra_file_contents={
+            "pyproject.toml": """\
+            [project]
+            name = "MyLib"
+            dynamic = ["dependencies", "optional-dependencies"]
+            dependencies = ["django"]
+            optional-dependencies = {"dev" = ["black"]}
+            [tool.setuptools.dynamic]
+            dependencies = { file = [".subdir/requirements.txt"] }
+            optional-dependencies.test = { file = [".subdir/requirements-test.txt"] } """,
+        },
+    )
+    expect = [
+        "pandas",
+        "pylint",
+        "django",
+        "black",
+    ]
+    settings = Settings(code=set(), deps={tmp_path})
+    deps_sources = list(find_sources(settings, {DepsSource}))
+    actual = collect_dep_names(parse_sources(deps_sources))
+    assert_unordered_equivalence(actual, expect)
+
+
 def test_find_and_parse_sources__project_with_setup_cfg__returns_list(fake_project):
     tmp_path = fake_project(
         files_with_declared_deps={
