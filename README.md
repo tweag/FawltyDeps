@@ -148,9 +148,9 @@ to determine which Python packages provide which import names. The diagram below
 shows the dependencies' flow through the sequence of mappings supported by
 FawltyDeps (each of which is introduced in the following subsections):
 - Local Python environment mapping
-- User-defined mapping
 - Mapping via temporarily installed packages
 - Identity mapping
+- User-defined mapping
 
 <img src="./images/resolvers_sequence.png" alt="Sequence of resolvers used by FawltyDeps" width="500"/>
 
@@ -206,47 +206,6 @@ are found inside your project) FawltyDeps will use the union (superset) of all
 imports provided by all matching packages across those Python environments as
 valid import names for that dependency.
 
-#### User-defined mapping
-
-We provide a custom mapping functionality to users wishing to take control
-over the way FawltyDeps resolves dependencies. You may define your own mapping
-of dependency names to import names, by providing a TOML file like this:
-
-```toml
-my-package = ["mpkg"]
-scikit-learn = ["sklearn"]
-multiple-modules = ["module1", "module2"]
-```
-
-To use your mapping, run:
-
-```sh
-fawltydeps --custom-mapping-file my_mapping.toml
-```
-
-FawltyDeps will parse your `my_mapping.toml` file and use the extracted mapping
-for matching dependencies to imports.
-
-You may also place the custom mapping in the `pyproject.toml` file of your
-project, inside a `[tool.fawltydeps.custom_mapping]` section, like this:
-
-```toml
-[tool.fawltydeps.custom_mapping]
-my-package = ["mpkg"]
-scikit-learn = ["sklearn"]
-multiple-modules = ["module1", "module2"]
-```
-
-The provided mapping can be complete or partial. When a dependency is not
-present in the given mapping, FawltyDeps will continue to resolve it using
-the sequence of resolvers illustrated in the diagram above.
-
-Caution when using your mapping is advised: As illustrated in the diagram, the
-user-defined mapping takes precedence over the other resolvers documented
-above. For example, if the mapping file has some stale/incorrect mapping
-entries, they will _not_ be resolved by the Python environment resolver (which
-is usually more accurate).
-
 #### Identity mapping
 
 When unable to find an installed package that corresponds to a declared
@@ -293,6 +252,47 @@ means a dependency will _never_ be found on PyPI, or there could be other
 circumstances (e.g. network issues or restrictions in your CI environment) that
 prevent this strategy from working at all. 
 In this case, FawltyDeps will throw an error and abort.
+
+#### User-defined mapping
+
+We provide a custom mapping functionality to users wishing to take control
+over the way FawltyDeps resolves dependencies. You may define your own mapping
+of dependency names to import names, by providing a TOML file like this:
+
+```toml
+my-package = ["mpkg"]
+scikit-learn = ["sklearn"]
+multiple-modules = ["module1", "module2"]
+```
+
+To use your mapping, run:
+
+```sh
+fawltydeps --custom-mapping-file my_mapping.toml
+```
+
+FawltyDeps will parse your `my_mapping.toml` file and use the extracted mapping
+for matching dependencies to imports.
+
+You may also place the custom mapping in the `pyproject.toml` file of your
+project, inside a `[tool.fawltydeps.custom_mapping]` section, like this:
+
+```toml
+[tool.fawltydeps.custom_mapping]
+my-package = ["mpkg"]
+scikit-learn = ["sklearn"]
+multiple-modules = ["module1", "module2"]
+```
+
+The provided mapping can be complete or partial. When a dependency is not
+present in the given mapping, FawltyDeps will continue to resolve it using
+the sequence of resolvers illustrated in the diagram above.
+
+Caution when using your mapping is advised: As illustrated in the diagram, the
+user-defined mapping takes precedence over the other resolvers documented
+above. For example, if the mapping file has some stale/incorrect mapping
+entries, they will _not_ be resolved by the Python environment resolver (which
+is usually more accurate).
 
 ### Ignoring irrelevant results
 
