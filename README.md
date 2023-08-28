@@ -680,7 +680,7 @@ tool, you can add something like this to your project's
 ```yaml
 repos:
   - repo: https://github.com/tweag/FawltyDeps
-    rev: v0.12.1
+    rev: v0.13.0
     hooks:
       - id: check
         args:
