@@ -233,7 +233,61 @@ def parse_pep621_pyproject_contents(
                 yield req, src
 
     fields_parsers = [("main", parse_main), ("optional", parse_optional)]
-    return parse_pyproject_elements(parsed_contents, source, "PEP621", fields_parsers)
+
+    if "dynamic" in parsed_contents.get("project", {}):
+        yield from parse_dynamic_pyproject_contents(parsed_contents, source)
+        if "dependencies" in parsed_contents["project"]["dynamic"]:
+            if "optional-dependencies" in parsed_contents["project"]["dynamic"]:
+                fields_parsers = []
+            else:
+                fields_parsers = [("optional", parse_optional)]
+        else:
+            if "optional-dependencies" in parsed_contents["project"]["dynamic"]:
+                fields_parsers = [("main", parse_main)]
+
+    yield from parse_pyproject_elements(
+        parsed_contents, source, "PEP621", fields_parsers
+    )
+
+
+def parse_dynamic_pyproject_contents(
+    parsed_contents: TomlData, source: Location
+) -> Iterator[DeclaredDependency]:
+    """Extract dynamic dependencies from a pyproject.toml using the PEP 621 fields"""
+
+    dynamic = parsed_contents["project"]["dynamic"]
+
+    deps_files = []
+    try:
+        if "dependencies" in dynamic:
+            deps_files = parsed_contents["tool"]["setuptools"]["dynamic"][
+                "dependencies"
+            ]["file"]
+    except KeyError:
+        pass
+
+    optional_deps_files = []
+    try:
+        if "optional-dependencies" in dynamic:
+            optional_deps = parsed_contents["tool"]["setuptools"]["dynamic"][
+                "optional-dependencies"
+            ]
+            # Extract the file paths and flatten them into a single list
+            optional_deps_files = [
+                file_path
+                for file_path_list in [v["file"] for v in optional_deps.values()]
+                for file_path in file_path_list
+            ]
+    except KeyError:
+        pass
+
+    dynamic_files = deps_files + optional_deps_files
+    for req_file in dynamic_files:
+        req_file_path = Path(source.path).parent / req_file
+        if req_file_path.exists():
+            yield from parse_requirements_txt(req_file_path)
+        else:
+            logger.error("%s does not exist. Skipping.", req_file_path)
 
 
 def parse_pyproject_elements(
@@ -272,7 +326,7 @@ def parse_pyproject_toml(path: Path) -> Iterator[DeclaredDependency]:
 
     There are multiple ways to declare dependencies inside a pyproject.toml.
     We currently handle:
-    - PEP 621 core metadata fields
+    - PEP 621 core and dynamic metadata fields.
     - Poetry-specific metadata in `tool.poetry` sections.
     """
     source = Location(path)

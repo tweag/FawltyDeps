@@ -525,6 +525,153 @@ def test_find_and_parse_sources__project_with_pyproject__returns_list(fake_proje
     assert_unordered_equivalence(actual, expect)
 
 
+def test_find_and_parse_dynamic_sources__project_with_pyproject__returns_list(
+    write_tmp_files,
+    fake_project,
+):
+    # Write requirements files into a place where files should be initially ignored
+    # but will be included when the dynamic sections in pyproject.toml are parsed.
+    tmp_path = fake_project(
+        files_with_declared_deps={
+            ".subdir/requirements.txt": ["pandas"],
+            ".subdir/requirements-test.txt": ["pylint >= 2.15.8"],
+        },
+        extra_file_contents={
+            "pyproject.toml": """\
+            [project]
+            name = "MyLib"
+            dynamic = ["dependencies", "optional-dependencies"]
+            [tool.setuptools.dynamic]
+            dependencies = { file = [".subdir/requirements.txt"] }
+            optional-dependencies.test = { file = [".subdir/requirements-test.txt"] } """,
+        },
+    )
+    expect = [
+        "pandas",
+        "pylint",
+    ]
+    settings = Settings(code=set(), deps={tmp_path})
+    deps_sources = list(find_sources(settings, {DepsSource}))
+    actual = collect_dep_names(parse_sources(deps_sources))
+    assert_unordered_equivalence(actual, expect)
+
+
+def test_find_and_parse_static_and_dynamic_sources__project_with_pyproject__returns_list(
+    write_tmp_files,
+    fake_project,
+):
+    # Write requirements files into a place where files should be initially ignored
+    # but will be included when the dynamic sections in pyproject.toml are parsed.
+
+    # If dependencies or optional dependencies are declared dynamic, they can
+    # no longer be declared static. Therefore, the static [project.dependencies]
+    # and [project.optional-dependencies] sections will not be parsed since
+    # "dependencies" and "optional-dependencies" are declared in [project.dynamic].
+    tmp_path = fake_project(
+        files_with_declared_deps={
+            ".subdir/requirements.txt": ["pandas"],
+            ".subdir/requirements-test.txt": ["pylint >= 2.15.8"],
+        },
+        extra_file_contents={
+            "pyproject.toml": """\
+            [project]
+            name = "MyLib"
+            dynamic = ["dependencies", "optional-dependencies"]
+            dependencies = ["django"]
+            optional-dependencies = {"dev" = ["black"]}
+            [tool.setuptools.dynamic]
+            dependencies = { file = [".subdir/requirements.txt"] }
+            optional-dependencies.test = { file = [".subdir/requirements-test.txt"] } """,
+        },
+    )
+    expect = [
+        "pandas",
+        "pylint",
+    ]
+    settings = Settings(code=set(), deps={tmp_path})
+    deps_sources = list(find_sources(settings, {DepsSource}))
+    actual = collect_dep_names(parse_sources(deps_sources))
+    assert_unordered_equivalence(actual, expect)
+
+
+def test_find_and_parse_static_and_dynamic_dependencies__project_with_pyproject__returns_list(
+    write_tmp_files,
+    fake_project,
+):
+    # Write requirements files into a place where files should be initially ignored
+    # but will be included when the dynamic sections in pyproject.toml are parsed.
+
+    # If dependencies or optional dependencies are declared dynamic, they can no longer
+    # be declared as static. As a result, the [project.dependencies] section won't be parsed,
+    # since "dependencies" is declared in [project.dynamic]. However, the static
+    # [project.optional-dependencies] section will still be parsed, as "optional-dependencies"
+    # is not marked as dynamic.
+    tmp_path = fake_project(
+        files_with_declared_deps={
+            ".subdir/requirements.txt": ["pandas"],
+            ".subdir/requirements-test.txt": ["pylint >= 2.15.8"],
+        },
+        extra_file_contents={
+            "pyproject.toml": """\
+            [project]
+            name = "MyLib"
+            dynamic = ["dependencies"]
+            dependencies = ["django"]
+            optional-dependencies = {"dev" = ["black"]}
+            [tool.setuptools.dynamic]
+            dependencies = { file = [".subdir/requirements.txt"] }
+            optional-dependencies.test = { file = [".subdir/requirements-test.txt"] } """,
+        },
+    )
+    expect = [
+        "pandas",
+        "black",
+    ]
+    settings = Settings(code=set(), deps={tmp_path})
+    deps_sources = list(find_sources(settings, {DepsSource}))
+    actual = collect_dep_names(parse_sources(deps_sources))
+    assert_unordered_equivalence(actual, expect)
+
+
+def test_find_and_parse_static_and_dynamic_opt_dependencies__project_with_pyproject__returns_list(
+    write_tmp_files,
+    fake_project,
+):
+    # Write requirements files into a place where files should be initially ignored
+    # but will be included when the dynamic sections in pyproject.toml are parsed.
+
+    # If dependencies or optional dependencies are declared dynamic, they can no longer
+    # be declared as static. As a result, the [project.optional-dependencies] section
+    # won't be parsed, since "optional-dependencies" is declared in [project.dynamic].
+    # However, the static [project.dependencies] section will still be parsed,
+    # as "dependencies" is not marked as dynamic.
+    tmp_path = fake_project(
+        files_with_declared_deps={
+            ".subdir/requirements.txt": ["pandas"],
+            ".subdir/requirements-test.txt": ["pylint >= 2.15.8"],
+        },
+        extra_file_contents={
+            "pyproject.toml": """\
+            [project]
+            name = "MyLib"
+            dynamic = ["optional-dependencies"]
+            dependencies = ["django"]
+            optional-dependencies = {"dev" = ["black"]}
+            [tool.setuptools.dynamic]
+            dependencies = { file = [".subdir/requirements.txt"] }
+            optional-dependencies.test = { file = [".subdir/requirements-test.txt"] } """,
+        },
+    )
+    expect = [
+        "django",
+        "pylint",
+    ]
+    settings = Settings(code=set(), deps={tmp_path})
+    deps_sources = list(find_sources(settings, {DepsSource}))
+    actual = collect_dep_names(parse_sources(deps_sources))
+    assert_unordered_equivalence(actual, expect)
+
+
 def test_find_and_parse_sources__project_with_setup_cfg__returns_list(fake_project):
     tmp_path = fake_project(
         files_with_declared_deps={
