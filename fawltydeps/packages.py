@@ -376,15 +376,33 @@ class TemporaryPipInstallResolver(BasePackageResolver):
         marker_file = venv_dir / ".installed"
         if not marker_file.is_file():
             venv.create(venv_dir, clear=True, with_pip=True)
-        argv = [f"{venv_dir}/bin/pip", "install", "--no-deps"]
-        proc = subprocess.run(argv + requirements, check=False)
+        # Capture output from `pip install` to prevent polluting our own stdout
+        pip_install_runner = partial(
+            subprocess.run,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            check=False,
+        )
+        argv = [
+            f"{venv_dir}/bin/pip",
+            "install",
+            "--no-deps",
+            "--quiet",
+            "--disable-pip-version-check",
+        ]
+        proc = pip_install_runner(argv + requirements)
         if proc.returncode:  # pip install failed
             logger.warning("Command failed: %s", argv + requirements)
+            if proc.stdout.strip():
+                logger.warning("Output:\n%s", proc.stdout)
             logger.info("Retrying each requirement individually...")
             for req in requirements:
-                proc = subprocess.run(argv + [req], check=False)
+                proc = pip_install_runner(argv + [req])
                 if proc.returncode:  # pip install failed
                     logger.warning("Failed to install %s", repr(req))
+                    if proc.stdout.strip():
+                        logger.warning("Output:\n%s", proc.stdout)
         marker_file.touch()
         yield venv_dir
 
