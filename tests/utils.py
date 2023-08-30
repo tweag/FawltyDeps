@@ -63,6 +63,8 @@ default_sys_path_env_for_tests = {
     "setuptools": {"setuptools", "pkg_resources", "_distutils_hack"},
     "isort": {"isort"},
     "typing-extensions": {"typing_extensions"},
+    "types-setuptools": {"setuptools-stubs", "pkg_resources-stubs"},
+    "types-requests": {"requests-stubs"},
 }
 
 
