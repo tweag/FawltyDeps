@@ -84,17 +84,25 @@ class Package:
         object.__setattr__(self, "package_name", self.normalize_name(self.package_name))
 
     def has_type_stubs(self) -> Set[str]:
-        provides_stubs_for = [
-            import_name.remove_suffix("-stubs")
-            for import_name in package.import_names
-            if import_name.endswith("-stubs")
-        ]
-        ...
+        """Returns a set of import names without type stubs suffix."""
+        if sys.version_info >= (3, 9):
+            # `str.removesuffix` function is available for Python 3.9 and above.
+            provides_stubs_for = [
+                import_name.removesuffix("-stubs") for import_name in self.import_names
+            ]
+        else:
+            provides_stubs_for = [
+                import_name[: -len("-stubs")]
+                for import_name in self.import_names
+                if import_name.endswith("-stubs")
+            ]
+        return set(provides_stubs_for)
 
     def is_used(self, imported_names: Iterable[str]) -> bool:
         """Return True iff this package is among the given import names."""
-        return bool(self.import_names.intersection(imported_names)) or
-            bool(self.import_names.has_type_stubs().intersection(imported_names))
+        return bool(self.import_names.intersection(imported_names)) or bool(
+            self.has_type_stubs().intersection(imported_names)
+        )
 
 
 class BasePackageResolver(ABC):
