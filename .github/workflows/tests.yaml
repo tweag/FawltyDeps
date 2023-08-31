@@ -21,12 +21,12 @@ jobs:
         uses: Gr1N/setup-poetry@v8
         with:
           poetry-version: "1.5.1" # support for Python 3.7 was dropped in 1.6.0
-      # - uses: actions/cache@v2
-      #   with:
-      #     path: |
-      #       ~/.cache/pypoetry/virtualenvs
-      #       ~/.cache/pytest
-      #     key: ${{ runner.os }}-poetry-tests-${{ hashFiles('poetry.lock') }}
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/pypoetry/virtualenvs
+            ~/.cache/pytest
+          key: ${{ runner.os }}-poetry-tests-${{ hashFiles('poetry.lock') }}
       - name: Install project
         run: poetry install --no-interaction --sync --with=nox,test,lint,format,dev
       - name: Run unit tests on Python ${{ matrix.python-version }}
