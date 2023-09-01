@@ -28,7 +28,7 @@ jobs:
             ~/.cache/pytest
           key: ${{ runner.os }}-poetry-tests-${{ hashFiles('poetry.lock') }}
       - name: Install project
-        run: poetry install --no-interaction --sync --with=nox,test,lint,format,dev
+        run: poetry install --no-interaction --sync --with=nox,test
       - name: Run unit tests on Python ${{ matrix.python-version }}
         run: poetry run nox --no-venv --no-install --non-interactive -s tests -- -vv
       - name: Run integration tests on Python ${{ matrix.python-version }}
