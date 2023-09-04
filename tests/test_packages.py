@@ -124,6 +124,13 @@ def test_package__identity_mapping(
             ["foobar", "and", "other", "names"],
             id="name_with_three_imports__matches_third_import",
         ),
+        pytest.param(
+            "types-requests",
+            {"requests-stubs"},
+            ["requests", "and", "other", "names"],
+            ["types_requests", "and", "other", "names"],
+            id="name_with_stubs_suffix__matches_name_without_suffix",
+        ),
     ],
 )
 def test_package__local_env_mapping(
@@ -263,6 +270,11 @@ def test_user_defined_mapping__no_input__returns_empty_mapping():
             "typing-extensions",
             {"typing_extensions"},
             id="package_with_hyphen__provides_import_name_with_underscore",
+        ),
+        pytest.param(
+            "types-setuptools",
+            {"pkg_resources-stubs", "setuptools-stubs"},
+            id="package_using_typeshed__provides_import_name_with_stubs_suffix",
         ),
     ],
 )

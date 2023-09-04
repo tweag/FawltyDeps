@@ -166,5 +166,4 @@ ignore_unused = [
     "pytest",
     # Other dependencies that enable functionality in the above tools
     "colorama",
-    "types-setuptools",
 ]
