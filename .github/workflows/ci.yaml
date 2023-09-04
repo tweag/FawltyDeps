@@ -5,6 +5,8 @@ on: [push, pull_request]
 jobs:
   tests:
     uses: ./.github/workflows/tests.yaml
+  self_test:
+    uses: ./.github/workflows/self_test.yaml
   lint:
     uses: ./.github/workflows/lint.yaml
   format:

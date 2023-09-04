@@ -1,4 +1,4 @@
-name: Tests
+name: Self test
 
 on: [workflow_call]
 
@@ -25,11 +25,8 @@ jobs:
         with:
           path: |
             ~/.cache/pypoetry/virtualenvs
-            ~/.cache/pytest
-          key: ${{ runner.os }}-poetry-tests-${{ hashFiles('poetry.lock') }}
+          key: ${{ runner.os }}-poetry-self-test-${{ hashFiles('poetry.lock') }}
       - name: Install project
-        run: poetry install --no-interaction --sync --with=nox,test
-      - name: Run unit tests on Python ${{ matrix.python-version }}
-        run: poetry run nox --no-venv --no-install --non-interactive -s tests -- -vv
-      - name: Run integration tests on Python ${{ matrix.python-version }}
-        run: poetry run nox --no-venv --no-install --non-interactive -s integration_tests -- -vv
+        run: poetry install --no-interaction --sync --with=nox,test,lint,format,dev
+      - name: Run fawltydeps on Python ${{ matrix.python-version }}
+        run: poetry run nox --no-venv --no-install --non-interactive -s self_test -- -vv
