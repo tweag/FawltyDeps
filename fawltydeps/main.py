@@ -17,7 +17,10 @@ from functools import partial
 from operator import attrgetter
 from typing import Dict, Iterator, List, Optional, Set, TextIO, Type
 
-from pydantic.json import custom_pydantic_encoder  # pylint: disable=no-name-in-module
+try:  # import from Pydantic V2
+    from pydantic.v1.json import custom_pydantic_encoder
+except ModuleNotFoundError:
+    from pydantic.json import custom_pydantic_encoder  # type: ignore[no-redef]
 
 from fawltydeps import extract_declared_dependencies, extract_imports
 from fawltydeps.check import calculate_undeclared, calculate_unused
