@@ -63,7 +63,7 @@ optional = true
 
 [tool.poetry.group.lint.dependencies]
 hypothesis = "^6.68.2"
-mypy = "^0.991"
+mypy = "^1.0.1"
 nox = "^2022.11.21"
 pylint = "^2.15.8"
 pytest = "^7.1.0"
@@ -94,7 +94,7 @@ black = "^22"
 codespell = "^2.2.4"
 colorama = "^0.4.6"
 hypothesis = "^6.68.2"
-mypy = "^0.991"
+mypy = "^1.0.1"
 nox = "^2022.11.21"
 pylint = "^2.15.8"
 pytest = "^7.1.0"
