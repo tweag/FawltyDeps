@@ -93,6 +93,28 @@ def parse_path_or_stdin(arg: str) -> PathOrSpecial:
     return Path(arg)
 
 
+default_ignore_unused = set(
+    [  # Development tools not meant to be imported
+        "black",
+        "codespell",
+        "coverage",
+        "fawltydeps",
+        "flake8",
+        "hypothesis",
+        "isort",
+        "mypy",
+        "nox",
+        "pylint",
+        "pyright",
+        "pytest",
+        "wheel",
+        "tox",
+        # Other dependencies that enable functionality in the above tools
+        "colorama",
+    ]
+)
+
+
 class Settings(BaseSettings):  # type: ignore
     """FawltyDeps settings.
 
@@ -114,7 +136,7 @@ class Settings(BaseSettings):  # type: ignore
     pyenvs: Set[Path] = {Path(".")}
     custom_mapping: Optional[CustomMapping] = None
     ignore_undeclared: Set[str] = set()
-    ignore_unused: Set[str] = set()
+    ignore_unused: Set[str] = default_ignore_unused
     deps_parser_choice: Optional[ParserChoice] = None
     install_deps: bool = False
     verbosity: int = 0

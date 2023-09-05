@@ -155,15 +155,3 @@ build-backend = "poetry.core.masonry.api"
 [tool.fawltydeps]
 code = ["fawltydeps"]
 deps = ["pyproject.toml"]
-ignore_unused = [
-    # Tools not meant to be imported
-    "black",
-    "codespell",
-    "hypothesis",
-    "mypy",
-    "nox",
-    "pylint",
-    "pytest",
-    # Other dependencies that enable functionality in the above tools
-    "colorama",
-]
