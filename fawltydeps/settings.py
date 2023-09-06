@@ -97,6 +97,7 @@ default_ignore_unused = set(
     [  # Development tools not meant to be imported
         "black",
         "codespell",
+        "colorama",
         "coverage",
         "fawltydeps",
         "flake8",
@@ -109,8 +110,6 @@ default_ignore_unused = set(
         "pytest",
         "wheel",
         "tox",
-        # Other dependencies that enable functionality in the above tools
-        "colorama",
     ]
 )
 
