@@ -18,7 +18,8 @@ requirements = []  # rely on identity mapping
 undeclared_deps = ["tomli"]
 
 # Declared dependencies which were never `import`ed from the code:
-unused_deps = ["black", "jieba", "tox"]
+# "black" and "tox" will be ignored since they are in the default_ignored_unused list
+unused_deps = ["jieba"]
 
 [experiments.subdir2]
 description = "Run fawltydeps on subdir2 only"
