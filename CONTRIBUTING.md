@@ -44,8 +44,7 @@ git clone https://github.com/tweag/FawltyDeps.git
 
 ### Set Up Your Development Environment
 
-
-### Poetry
+#### Poetry
 
 The project uses [Poetry](https://python-poetry.org/). Install Poetry, and then
 run:
@@ -67,7 +66,7 @@ have all the dependencies declared in our [`pyproject.toml`](./pyproject.toml)
 installed. (Without this shell activated you will have to prefix the more
 specific commands below with `poetry run ...`).
 
-### Nox
+#### Nox
 
 We use [Nox](https://nox.thea.codes/en/stable/) for test/workflow automation:
 
@@ -96,7 +95,7 @@ isort fawltydeps tests   # Fix sorting of import statements
 black .                  # Fix code formatting
 ```
 
-### Shortcut: Nix
+#### Shortcut: Nix
 
 We have a [`shell.nix`](./shell.nix) which provides Poetry in addition to all of
 our supported Python versions. If you have [Nix](https://nixos.org) available
@@ -141,7 +140,7 @@ while verifying their output. These projects, along with the expected FawltyDeps
 outputs, are defined in TOML files under
 [`tests/real_projects`](./tests/real_projects).
 
-##### Contributing more projects to the test suite
+#### Contributing more projects to the test suite
 
 For bug reports, when a user reports that FawltyDeps does not work as it should
 on their project, we aim to follow this process:
@@ -169,7 +168,7 @@ When you're ready to submit your changes:
    ```sh
    git push origin feature/your-feature-name
    ```
-2. Visit the FawltyDeps repository on GitHub.
+2. Visit the [FawltyDeps repository](https://github.com/tweag/fawltydeps) on GitHub.
 3. Click the "New Pull Request" button.
 4. Select the appropriate branch and describe your changes in the pull request.
 Be sure to reference any related issues.
