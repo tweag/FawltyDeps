@@ -6,17 +6,21 @@ Please take a moment to review this guide before you get started.
 
 ## Table of Contents
 
-1. [Code of Conduct](#code-of-conduct)
-2. [Getting Started](#getting-started)
+[Code of Conduct](#code-of-conduct)
+
+[Getting Started](#getting-started)
    - [Fork the Repository](#fork-the-repository)
    - [Clone the Repository](#clone-the-repository)
    - [Set Up Your Development Environment](#set-up-your-development-environment)
-3. [Making Changes](#making-changes)
+
+[Making Changes](#making-changes)
    - [Branch Naming](#branch-naming)
    - [Commit Messages](#commit-messages)
    - [Testing](#testing)
-4. [Submitting Pull Requests](#submitting-pull-requests)
-5. [Review Process](#review-process)
+
+[Submitting Pull Requests](#submitting-pull-requests)
+
+[Review Process](#review-process)
 
 ## Code of Conduct
 
@@ -40,8 +44,75 @@ git clone https://github.com/tweag/FawltyDeps.git
 
 ### Set Up Your Development Environment
 
-Follow the setup instructions in the project's [README](./README.md) to
-configure your development environment.
+
+### Poetry
+
+The project uses [Poetry](https://python-poetry.org/). Install Poetry, and then
+run:
+
+```sh
+poetry install --with=dev
+```
+
+to create a virtualenv with all (development) dependencies installed.
+
+From there you can run:
+
+```sh
+poetry shell
+```
+
+to jump into a development shell with this virtualenv activated. Here you will
+have all the dependencies declared in our [`pyproject.toml`](./pyproject.toml)
+installed. (Without this shell activated you will have to prefix the more
+specific commands below with `poetry run ...`).
+
+### Nox
+
+We use [Nox](https://nox.thea.codes/en/stable/) for test/workflow automation:
+
+```sh
+nox --list        # List sessions
+nox               # Run all available sessions
+nox -R            # Run all available sessions, while reusing virtualenvs (i.e. faster)
+nox -s tests      # Run unit tests on supported Python versions (that are available)
+nox -s tests-3.7  # Run unit tests on Python v3.7 (assuming it is available locally)
+nox -s integration_tests-3.11  # Run integration tests on Python 3.11
+nox -s lint       # Run linters (mypy + pylint) on all supported Python versions
+nox -s format     # Check formatting (isort + black)
+nox -s reformat   # Fix formatting (isort + black)
+```
+
+If you want to run a command individually, the corresponding session is defined inside
+[`noxfile.py`](./noxfile.py). For example, these
+commands will work:
+
+```sh
+pytest                   # Run unit tests
+pytest -m integration    # Run integration tests
+mypy                     # Run static type checking
+pylint fawltydeps tests  # Run Pylint
+isort fawltydeps tests   # Fix sorting of import statements
+black .                  # Fix code formatting
+```
+
+### Shortcut: Nix
+
+We have a [`shell.nix`](./shell.nix) which provides Poetry in addition to all of
+our supported Python versions. If you have [Nix](https://nixos.org) available
+on your machine, then running:
+
+```sh
+nix-shell
+```
+
+will put you inside a shell where the Poetry virtualenv (with all development
+dependencies) is activated, and all supported Python versions are available.
+This also provides isolation from whatever Python version(s) and packages are
+installed on your system.
+
+From there, a simple `nox` will run all tests + linters against all supported
+Python versions, as well as checking/formatting the code.
 
 ## Making Changes
 
@@ -57,20 +128,38 @@ Write clear and concise commit messages that describe your changes.
 
 #### Running Tests Locally
 
-For detailed instructions on running tests locally,
-please refer to the [Nox section](#nox) in our [README](./README.md).
+For detailed instructions on running tests locally, please refer to the Nox section in [Set Up Your Development Environment](#set-up-your-development-environment).
 
-#### Continuous Integration
+#### Integration tests
 
-Every pull request you submit will trigger our continuous integration (CI) pipeline,
-which includes running unit tests and integration tests using GitHub Actions.
-Your changes must pass these tests before they can be merged.
+In addition to comprehensive unit tests under `tests/`, we also verify
+FawltyDeps' behavior with integration tests which (among other things) include
+testing with real-world projects. To that end, we have a framework in
+[`tests/test_real_projects.py`](./tests/test_real_projects.py) for downloading
+and unpacking tarballs of 3rd-party projects, and then running fawltydeps on them,
+while verifying their output. These projects, along with the expected FawltyDeps
+outputs, are defined in TOML files under
+[`tests/real_projects`](./tests/real_projects).
 
-Please make sure that your code changes do not break any existing tests,
-and consider adding new tests when introducing new features or making significant modifications.
+##### Contributing more projects to the test suite
 
-If you encounter any issues related to tests or need help with the testing process,
-feel free to reach out in the pull request discussion.
+For bug reports, when a user reports that FawltyDeps does not work as it should
+on their project, we aim to follow this process:
+
+- If the project is freely available, we can add a relevant version of the
+  project under `tests/real_projects`.
+- We can then isolate the problems/issues/features and define/express them
+  succinctly as one or more sample projects under `tests/sample_projects`.
+- We examine the issue more closely and update core logic, adding/altering unit
+  tests along the way.
+
+The resulting updates are introduced to `fawltydeps` and reflected in our
+expectations, first in the TOML for the sample project(s) and then finally in
+the `real_projects` TOML.
+
+If you find a project where FawltyDeps is not doing a good job, we appreciate
+if you add that project under [`tests/real_projects`](./tests/real_projects).
+To see how these tests work, look at the existing files in that directory.
 
 ## Submitting Pull Requests
 
