@@ -17,7 +17,7 @@ import pytest
 from importlib_metadata import files as package_files
 
 from fawltydeps.main import UNUSED_DEPS_OUTPUT_PREFIX, VERBOSE_PROMPT, Analysis, version
-from fawltydeps.settings import default_ignore_unused
+from fawltydeps.settings import DEFAULT_IGNORE_UNUSED
 from fawltydeps.types import Location, UnusedDependency
 
 from .test_extract_imports_simple import generate_notebook
@@ -42,7 +42,7 @@ def make_json_settings_dict(**kwargs):
         "custom_mapping": None,
         "output_format": "human_summary",
         "ignore_undeclared": [],
-        "ignore_unused": sorted(list(default_ignore_unused)),
+        "ignore_unused": sorted(DEFAULT_IGNORE_UNUSED),
         "deps_parser_choice": None,
         "install_deps": False,
         "verbosity": 0,
@@ -1097,7 +1097,7 @@ def test_cmdline_on_ignored_undeclared_option(
                 deps = ['foobar']
                 # pyenvs = ['.']
                 # ignore_undeclared = []
-                # ignore_unused = {sorted(list(default_ignore_unused))}
+                # ignore_unused = {sorted(DEFAULT_IGNORE_UNUSED)}
                 # deps_parser_choice = ...
                 # install_deps = false
                 # verbosity = 0
@@ -1121,7 +1121,7 @@ def test_cmdline_on_ignored_undeclared_option(
                 # deps = ['.']
                 pyenvs = ['None']
                 # ignore_undeclared = []
-                # ignore_unused = {sorted(list(default_ignore_unused))}
+                # ignore_unused = {sorted(DEFAULT_IGNORE_UNUSED)}
                 # deps_parser_choice = ...
                 # install_deps = false
                 # verbosity = 0
@@ -1145,7 +1145,7 @@ def test_cmdline_on_ignored_undeclared_option(
                 # deps = ['.']
                 pyenvs = ['baz', 'xyzzy']
                 # ignore_undeclared = []
-                # ignore_unused = {sorted(list(default_ignore_unused))}
+                # ignore_unused = {sorted(DEFAULT_IGNORE_UNUSED)}
                 # deps_parser_choice = ...
                 # install_deps = false
                 # verbosity = 0
@@ -1169,7 +1169,7 @@ def test_cmdline_on_ignored_undeclared_option(
                 # deps = ['.']
                 # pyenvs = ['.']
                 # ignore_undeclared = []
-                # ignore_unused = {sorted(list(default_ignore_unused))}
+                # ignore_unused = {sorted(DEFAULT_IGNORE_UNUSED)}
                 # deps_parser_choice = ...
                 install_deps = true
                 # verbosity = 0

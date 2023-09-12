@@ -27,7 +27,7 @@ from pydantic import ValidationError
 from pydantic.env_settings import SettingsError  # pylint: disable=no-name-in-module
 
 from fawltydeps.main import build_parser
-from fawltydeps.settings import Action, OutputFormat, Settings, default_ignore_unused
+from fawltydeps.settings import DEFAULT_IGNORE_UNUSED, Action, OutputFormat, Settings
 from fawltydeps.types import TomlData
 
 if sys.version_info >= (3, 11):
@@ -43,7 +43,7 @@ EXPECT_DEFAULTS = dict(
     custom_mapping=None,
     output_format=OutputFormat.HUMAN_SUMMARY,
     ignore_undeclared=set(),
-    ignore_unused=default_ignore_unused,
+    ignore_unused=DEFAULT_IGNORE_UNUSED,
     deps_parser_choice=None,
     install_deps=False,
     verbosity=0,
