@@ -7,6 +7,7 @@ authors = [
     "Nour El Mawass <nour.elmawass@tweag.io>",
     "Johan Herland <johan.herland@tweag.io>",
     "Vince Reuter <vince.reuter@tweag.io>",
+    "Zhihan Zhang <zhihan.zhang@tweag.io>",
 ]
 readme = "README.md"
 license = "MIT"
