@@ -8,9 +8,14 @@ from functools import partial, total_ordering
 from pathlib import Path
 from typing import ClassVar, List, Optional, Set, TextIO, Tuple, Type, Union
 
-from pydantic import BaseSettings
-from pydantic.env_settings import SettingsSourceCallable  # pylint: disable=E0611
-from pydantic.json import custom_pydantic_encoder  # pylint: disable=no-name-in-module
+try:  # import from Pydantic V2
+    from pydantic.v1 import BaseSettings
+    from pydantic.v1.env_settings import SettingsSourceCallable
+    from pydantic.v1.json import custom_pydantic_encoder
+except ModuleNotFoundError:
+    from pydantic import BaseSettings  # type: ignore[no-redef]
+    from pydantic.env_settings import SettingsSourceCallable  # type: ignore[no-redef]
+    from pydantic.json import custom_pydantic_encoder  # type: ignore[no-redef]
 
 from fawltydeps.types import CustomMapping, ParserChoice, PathOrSpecial, TomlData
 
@@ -113,7 +118,7 @@ DEFAULT_IGNORE_UNUSED = {
 }
 
 
-class Settings(BaseSettings):  # type: ignore
+class Settings(BaseSettings):
     """FawltyDeps settings.
 
     Below, you find the defaults, these can be overridden in multiple ways:

@@ -23,8 +23,6 @@ from typing import (
 
 import pytest
 from hypothesis import given, strategies
-from pydantic import ValidationError
-from pydantic.env_settings import SettingsError  # pylint: disable=no-name-in-module
 
 from fawltydeps.main import build_parser
 from fawltydeps.settings import DEFAULT_IGNORE_UNUSED, Action, OutputFormat, Settings
@@ -34,6 +32,13 @@ if sys.version_info >= (3, 11):
     from tomllib import TOMLDecodeError  # pylint: disable=no-member
 else:
     from tomli import TOMLDecodeError
+
+try:  # import from Pydantic V2
+    from pydantic.v1 import ValidationError
+    from pydantic.v1.env_settings import SettingsError
+except ModuleNotFoundError:
+    from pydantic import ValidationError  # type: ignore[assignment]
+    from pydantic.env_settings import SettingsError  # type: ignore[no-redef]
 
 EXPECT_DEFAULTS = dict(
     actions={Action.REPORT_UNDECLARED, Action.REPORT_UNUSED},
