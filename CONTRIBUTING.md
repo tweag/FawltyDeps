@@ -39,7 +39,7 @@ This will create a copy of the project in your GitHub account.
 Clone your fork of the repository to your local machine:
 
 ```sh
-git clone https://github.com/tweag/FawltyDeps.git
+git clone git@github.com:<your_username>/FawltyDeps.git
 ```
 
 ### Set Up Your Development Environment
