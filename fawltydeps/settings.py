@@ -100,21 +100,42 @@ def parse_path_or_stdin(arg: str) -> PathOrSpecial:
 
 DEFAULT_IGNORE_UNUSED = {
     # Development tools not meant to be imported
+    # Formatting Tools
+    "autopep8",
     "black",
+    "isort",
+    "pyformat",
+    "yapf",
+    # Linting Tools
+    "bandit",
+    "flake8",
+    "mccabe",
+    "pyflakes",
+    "pylint",
+    # Security Tools
     "codespell",
-    "colorama",
+    # Documentation Tools
+    "sphinx",
+    "sphinx-rtd-theme",
+    "recommonmark",
+    # Testing Tools
     "coverage",
     "fawltydeps",
-    "flake8",
     "hypothesis",
-    "isort",
     "mypy",
     "nox",
-    "pylint",
-    "pyright",
+    "pre-commit",
     "pytest",
-    "wheel",
     "tox",
+    # Utility Tools
+    "colorama",
+    "pydocstyle",
+    "pyright",
+    "rope",
+    "ruff",
+    "twine",
+    "unify",
+    "wheel",
 }
 
 
