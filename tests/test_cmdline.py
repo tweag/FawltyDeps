@@ -964,9 +964,9 @@ def test_check_json__no_pyenvs_found__falls_back_to_current_env(fake_project):
             id="check_unused_action_on_default_ignored_unused_dep__outputs_nothing",
         ),
         pytest.param(
-            ["--check-unused", "--ignore-unused", "black", "mypy"],
+            ["--check-unused", "--ignore-unused", "black", "pandas"],
             ["requests"],
-            ["black", "mypy"],
+            ["black", "pandas"],
             [Analysis.success_message(check_undeclared=False, check_unused=True)],
             id="check_unused_action_on_overriden_ignored_unused_dep__outputs_nothing",
         ),
