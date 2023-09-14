@@ -73,12 +73,11 @@ types-setuptools = "^65.6.0.2"
 optional = true
 
 [tool.poetry.group.format.dependencies]
-black = "^22"
-colorama = "^0.4.6"
+black = {version = "^22", extras = ["colorama"]}
 isort = [
     # isort 5.12.0 drops support for Python v3.7:
-    {version = "^5.10", python = ">=3.8"},
-    {version = ">=5.10,<5.12.0", python = "<3.8"},
+    {version = "^5.10", extras = ["colors"], python = ">=3.8"},
+    {version = ">=5.10,<5.12.0", extras = ["colors"], python = "<3.8"},
 ]
 codespell = "^2.2.4"
 
@@ -90,9 +89,8 @@ optional = true
 # something to the above groups (i.e. something that targets a specific purpose
 # (e.g. a CI action), consider whether it's also useful to have this available
 # in a developers environment
-black = "^22"
+black = {version = "^22", extras = ["colorama"]}
 codespell = "^2.2.4"
-colorama = "^0.4.6"
 hypothesis = "^6.68.2"
 mypy = "^1.0.1"
 nox = "^2022.11.21"

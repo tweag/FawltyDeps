@@ -128,7 +128,6 @@ DEFAULT_IGNORE_UNUSED = {
     "pytest",
     "tox",
     # Utility Tools
-    "colorama",
     "pydocstyle",
     "pyright",
     "rope",
