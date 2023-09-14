@@ -94,6 +94,7 @@ files = [
 
 [package.dependencies]
 click = ">=8.0.0"
+colorama = {version = ">=0.4.3", optional = true, markers = "extra == \"colorama\""}
 mypy-extensions = ">=0.4.3"
 pathspec = ">=0.9.0"
 platformdirs = ">=2"
@@ -1004,4 +1005,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.7.2"
-content-hash = "61619347a6be652532e9042f9c2370fe55b270bc3fc1197b0334ad4d82396c8d"
+content-hash = "9ad1819ce88359baafe4429fde2eb9815b854fe2d3974ddb9d28cf9dd1a4a590"
