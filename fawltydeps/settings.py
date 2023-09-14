@@ -103,38 +103,39 @@ DEFAULT_IGNORE_UNUSED = {
     # Formatting Tools
     "autopep8",
     "black",
+    "codespell",
     "isort",
     "pyformat",
     "yapf",
     # Linting Tools
-    "bandit",
     "flake8",
     "mccabe",
+    "mypy",
     "pyflakes",
     "pylint",
+    "pyright",
+    "ruff",
     # Security Tools
-    "codespell",
+    "bandit",
     # Documentation Tools
+    "myst-parser",
+    "recommonmark",
     "sphinx",
     "sphinx-rtd-theme",
-    "recommonmark",
     # Testing Tools
     "coverage",
     "fawltydeps",
-    "hypothesis",
-    "mypy",
     "nox",
     "pre-commit",
     "pytest",
     "tox",
+    # Building and Packaging Tools
+    "twine",
+    "wheel",
     # Utility Tools
     "pydocstyle",
-    "pyright",
     "rope",
-    "ruff",
-    "twine",
     "unify",
-    "wheel",
 }
 
 
