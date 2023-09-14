@@ -153,3 +153,12 @@ build-backend = "poetry.core.masonry.api"
 [tool.fawltydeps]
 code = ["fawltydeps"]
 deps = ["pyproject.toml"]
+ignore_unused = [
+    "black",
+    "codespell",
+    "hypothesis",
+    "mypy",
+    "nox",
+    "pylint",
+    "pytest",
+]
