@@ -250,7 +250,7 @@ Note that we’re never guaranteed to be able to resolve _all_ dependencies with
 this method: For example, there could be a typo in your `requirements.txt` that
 means a dependency will _never_ be found on PyPI, or there could be other
 circumstances (e.g. network issues or restrictions in your CI environment) that
-prevent this strategy from working at all. 
+prevent this strategy from working at all.
 In this case, FawltyDeps will throw an error and abort.
 
 #### User-defined mapping
@@ -307,10 +307,16 @@ declared or not, but you can ask for them to be ignored with the
 Conversely, there may be dependencies that you have declared without intending
 to `import` them. This is often the case for developer tools like Black or Mypy
 that are part of your project's development environment.
-FawltyDeps cannot automatically tell which of your declared dependencies are
-meant to be `import`ed or not, but you ask for specific deps to be ignored with
-the `--ignore-unused` option, for example:
-`--ignore-unused black mypy`
+We've introduced a `DEFAULT_IGNORE_UNUSED` list, which includes various
+categories of commonly used development tools and dependencies.
+FawltyDeps can automatically ignore these dependencies when checking for unused
+imports. For the complete `DEFAULT_IGNORE_UNUSED` list, please see the
+[default_ignore_unused_list.md](./docs/default_ignore_unused_list.md) file
+in the repository. If you have additional dependencies that you want to exclude
+from the check for unused imports, you can use the `--ignore-unused` option
+to customize the ignore list. By providing your own list of dependencies with
+this option, you can effectively overwrite the default list. For example:
+`--ignore-unused black mypy some_other_module`
 
 ### Output formats
 
@@ -364,8 +370,12 @@ Here is a complete list of configuration directives we support:
   undeclared dependencies, for example: `["some_module", "some_other_module"]`.
   The default is the empty list: `ignore_undeclared = []`.
 - `ignore_unused`: A list of specific dependencies to ignore when reporting
-  unused dependencies, for example: `["black", "mypy"]`.
-  The default is the empty list: `ignore_unused = []`.
+  unused dependencies, for example: `["black", "mypy", "some_other_module"]`.
+  The default is a list including common development tools. However, you have the
+  flexibility to overwrite this list according to your project's specific requirements.
+  For the complete default list, please see the
+  [default_ignore_unused_list.md](./docs/default_ignore_unused_list.md) file
+  in the repository.
 - `deps_parser_choice`: Manually select which format to use for parsing
   declared dependencies. Must be one of `"requirements.txt"`, `"setup.py"`,
   `"setup.cfg"`, `"pyproject.toml"`, or leave it unset (i.e. the default) for
