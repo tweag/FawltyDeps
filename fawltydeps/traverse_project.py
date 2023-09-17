@@ -63,8 +63,8 @@ def find_sources(  # pylint: disable=too-many-branches,too-many-statements
         else:  # must traverse directory
             # sanity check: convince mypy that SpecialPath is already handled
             assert isinstance(path_or_special, Path)
-            traversal.add(path_or_special, CodeSource)
-            traversal.add(path_or_special, path_or_special)  # also record base dir
+            # record also base dir for later
+            traversal.add(path_or_special, CodeSource, path_or_special)
 
     for path in settings.deps if DepsSource in source_types else []:
         # exceptions raised by validate_deps_source() are propagated here

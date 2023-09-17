@@ -79,8 +79,8 @@ class DirectoryTraversal(Generic[T]):
        compose as we traverse the directory structure. For example, if we attach
        FOO to directory /some/dir, and attach BAR to directory /some/dir/subdir,
        then we want both FOO and BAR to be available while we traverse
-       /some/dir/subdir and below. (To attach multiple pieces of data to a
-       single directory, call .add() multiple times.)
+       /some/dir/subdir and below. To attach multiple pieces of data to a
+       single directory, pass all pieces (in order) to .add().
     3. Allow the traversal to adjust itself while in progress. For example,
        while traversing /some/dir we want to be able "ignore" a directory
        (including /some/dir or any parent) from (further) traversal. Likewise,
@@ -88,22 +88,25 @@ class DirectoryTraversal(Generic[T]):
        given traversal, re-adding a directory that was already traversed shall
        have no effect, if you want to re-traverse then setup a _new_ traversal.)
 
-    However, we _do_ assume that the directory structures being traversed remain
-    unchanged during traversal. I.e. a directory
+    Note that we _do_ assume that the directory structures being traversed
+    remain unchanged during traversal. I.e. adding new entries to a directory
+    that has otherwise already been traversed will not cause it to traversed
+    again.
     """
 
     to_traverse: Set[Path] = field(default_factory=set)
     to_ignore: Set[DirId] = field(default_factory=set)  # includes already-traversed
     attached: Dict[DirId, List[T]] = field(default_factory=dict)
 
-    def add(self, dir_path: Path, attach_data: Optional[T] = None) -> None:
+    def add(self, dir_path: Path, *attach_data: T) -> None:
         """Add one directory to this traversal, optionally w/attached data.
 
         - Any attached data will be supplied to the given directory and its
           subdirectories when it is being .traverse()d.
-        - A directory can be added multiple times with different attached data;
-          all the attached data will be supplied (in the order it was added) by
-          .traverse().
+        - Multiple data items may be attached simply by passing them (in order)
+          as additional arguments to this method. A directory can also be added
+          multiple times with different attached data; all the attached data
+          will be supplied (in the order it was added) by .traverse().
         - A parent directory and a child directory may both be added with
           different data attached. The child directory will be supplied both the
           parent's data (first) and its own data (last) by .traverse().
@@ -115,8 +118,7 @@ class DirectoryTraversal(Generic[T]):
             raise NotADirectoryError(dir_path)
         dir_id = DirId.from_path(dir_path)
         self.to_traverse.add(dir_path)
-        if attach_data:
-            self.attached.setdefault(dir_id, []).append(attach_data)
+        self.attached.setdefault(dir_id, []).extend(attach_data)
 
     def ignore(self, dir_path: Path) -> None:
         """Ignore a directory in future traversal.
