@@ -162,6 +162,7 @@ class Settings(BaseSettings):
     ignore_unused: Set[str] = DEFAULT_IGNORE_UNUSED
     deps_parser_choice: Optional[ParserChoice] = None
     install_deps: bool = False
+    exclude: Set[str] = {".*"}
     verbosity: int = 0
     custom_mapping_file: Set[Path] = set()
 
