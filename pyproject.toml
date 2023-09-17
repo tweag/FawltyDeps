@@ -54,6 +54,7 @@ setuptools = [
     {version = ">=68.0.0", python = ">=3.8"},
     {version = ">=68.0.0,<68.1.0", python = "<3.8"},
 ]
+gitignore-parser = "^0.1.8"
 
 [tool.poetry.group.nox]
 optional = true
