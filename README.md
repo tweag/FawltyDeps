@@ -386,6 +386,9 @@ Here is a complete list of configuration directives we support:
 - `install-deps`: Automatically install Python dependencies gathered with
   FawltyDeps into a temporary virtual environment. This will use `pip install`,
   which downloads packages from PyPI by default.
+- `exclude`: File/directory patterns to exclude/ignore when looking for code
+  (imports), dependency declarations and/or Python environments. Defaults to
+  `exclude = [".*"]`, meaning that hidden/dot paths are excluded from traversal.
 - `verbosity`: An integer controlling the default log level of FawltyDeps:
   - `-2`: Only `CRITICAL`-level log messages are shown.
   - `-1`: `ERROR`-level log messages and above are shown.

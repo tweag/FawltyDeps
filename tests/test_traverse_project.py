@@ -6,6 +6,7 @@ from typing import Optional, Set, Type
 
 import pytest
 
+from fawltydeps.dir_traversal import ExcludeRuleError, ExcludeRuleMissing
 from fawltydeps.settings import ParserChoice, Settings
 from fawltydeps.traverse_project import find_sources
 from fawltydeps.types import (
@@ -29,6 +30,7 @@ class TraverseProjectVector:
     code: Set[str] = dataclasses.field(default_factory=lambda: {"."})
     deps: Set[str] = dataclasses.field(default_factory=lambda: {"."})
     pyenvs: Set[str] = dataclasses.field(default_factory=lambda: {"."})
+    exclude: Set[str] = dataclasses.field(default_factory=lambda: Settings().exclude)
     deps_parser_choice: Optional[ParserChoice] = None
     # These are paths (also relative to the project) that we expect to find:
     expect_imports_src: Set[str] = dataclasses.field(default_factory=set)
@@ -511,6 +513,66 @@ find_sources_vectors = [
             ".venvs/another-venv/lib/python3.11/site-packages",
         },
     ),
+    #
+    # Test invalid 'exclude':
+    #
+    TraverseProjectVector(
+        "empty_exclude_pattern__raises_ExcludeRuleMissing",
+        "empty",
+        code=set(),
+        deps=set(),
+        pyenvs=set(),
+        exclude={"", "\t", "    "},
+        expect_raised=ExcludeRuleMissing,
+    ),
+    TraverseProjectVector(
+        "comment_exclude_pattern__raises_ExcludeRuleMissing",
+        "empty",
+        code=set(),
+        deps=set(),
+        pyenvs=set(),
+        exclude={"# a comment", "# another comment"},
+        expect_raised=ExcludeRuleMissing,
+    ),
+    TraverseProjectVector(
+        "anchored_exclude_pattern_without_basedir__raises_ExcludeRuleError",
+        "empty",
+        code=set(),
+        deps=set(),
+        pyenvs=set(),
+        exclude={"foo/bar"},
+        expect_raised=ExcludeRuleError,
+    ),
+    TraverseProjectVector(
+        "disabling_default_exclude__causes_hidden_files_to_be_found",
+        "hidden_files",
+        exclude=set(),
+        expect_imports_src={
+            ".hidden.code.py",
+            ".hidden_dir/code.py",
+        },
+        expect_deps_src={
+            ".hidden.requirements.txt",
+            ".hidden_dir/requirements.txt",
+        },
+        expect_pyenv_src={
+            ".venvs/.venv/lib/python3.10/site-packages",
+            ".venvs/another-venv/lib/python3.8/site-packages",
+            ".venvs/another-venv/lib/python3.11/site-packages",
+        },
+    ),
+    TraverseProjectVector(
+        "replacing_default_exclude__causes_some_hidden_files_to_be_found",
+        "hidden_files",
+        exclude={".hidden_dir/"},
+        expect_imports_src={".hidden.code.py"},
+        expect_deps_src={".hidden.requirements.txt"},
+        expect_pyenv_src={
+            ".venvs/.venv/lib/python3.10/site-packages",
+            ".venvs/another-venv/lib/python3.8/site-packages",
+            ".venvs/another-venv/lib/python3.11/site-packages",
+        },
+    ),
 ]
 
 
@@ -529,6 +591,7 @@ def test_find_sources(vector: TraverseProjectVector):
         deps={project_dir / path for path in vector.deps},
         deps_parser_choice=vector.deps_parser_choice,
         pyenvs={project_dir / path for path in vector.pyenvs},
+        exclude=vector.exclude,
     )
     expect_imports_src = {
         path if path == "<stdin>" else project_dir / path

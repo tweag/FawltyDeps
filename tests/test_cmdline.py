@@ -47,6 +47,7 @@ def make_json_settings_dict(**kwargs):
         "ignore_unused": sorted(DEFAULT_IGNORE_UNUSED),
         "deps_parser_choice": None,
         "install_deps": False,
+        "exclude": [".*"],
         "verbosity": 0,
         "custom_mapping_file": [],
     }
@@ -1135,6 +1136,7 @@ def test_cmdline_on_ignored_undeclared_option(
                 # ignore_unused = {sorted(DEFAULT_IGNORE_UNUSED)}
                 # deps_parser_choice = ...
                 # install_deps = false
+                # exclude = ['.*']
                 # verbosity = 0
                 # custom_mapping_file = []
                 # [tool.fawltydeps.custom_mapping]
@@ -1159,6 +1161,7 @@ def test_cmdline_on_ignored_undeclared_option(
                 # ignore_unused = {sorted(DEFAULT_IGNORE_UNUSED)}
                 # deps_parser_choice = ...
                 # install_deps = false
+                # exclude = ['.*']
                 # verbosity = 0
                 # custom_mapping_file = []
                 # [tool.fawltydeps.custom_mapping]
@@ -1183,6 +1186,7 @@ def test_cmdline_on_ignored_undeclared_option(
                 # ignore_unused = {sorted(DEFAULT_IGNORE_UNUSED)}
                 # deps_parser_choice = ...
                 # install_deps = false
+                # exclude = ['.*']
                 # verbosity = 0
                 # custom_mapping_file = []
                 # [tool.fawltydeps.custom_mapping]
@@ -1207,6 +1211,7 @@ def test_cmdline_on_ignored_undeclared_option(
                 # ignore_unused = {sorted(DEFAULT_IGNORE_UNUSED)}
                 # deps_parser_choice = ...
                 install_deps = true
+                # exclude = ['.*']
                 # verbosity = 0
                 # custom_mapping_file = []
                 # [tool.fawltydeps.custom_mapping]

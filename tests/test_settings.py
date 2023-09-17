@@ -51,6 +51,7 @@ EXPECT_DEFAULTS = dict(
     ignore_unused=DEFAULT_IGNORE_UNUSED,
     deps_parser_choice=None,
     install_deps=False,
+    exclude={".*"},
     verbosity=0,
     custom_mapping_file=set(),
 )

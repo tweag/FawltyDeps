@@ -63,6 +63,8 @@ def find_sources(  # pylint: disable=too-many-branches,too-many-statements
     logger.debug(f"    pyenvs: {settings.pyenvs}")
 
     traversal: DirectoryTraversal[AttachedData] = DirectoryTraversal()
+    for pattern in settings.exclude:
+        traversal.exclude(pattern)
 
     for path_or_special in settings.code if CodeSource in source_types else []:
         # exceptions raised by validate_code_source() are propagated here
@@ -97,7 +99,6 @@ def find_sources(  # pylint: disable=too-many-branches,too-many-statements
         else:  # must traverse directory to find Python environments
             traversal.add(path, PyEnvSource)
 
-    traversal.exclude(".*")  # don't traverse into dot dirs
     for step in traversal.traverse():
         # Extract the Source types we're looking for in this directory.
         # Sanity checks:
