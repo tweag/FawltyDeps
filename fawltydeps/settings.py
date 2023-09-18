@@ -121,7 +121,6 @@ DEFAULT_IGNORE_UNUSED = {
     "myst-parser",
     "recommonmark",
     "sphinx",
-    "sphinx-rtd-theme",
     # Testing Tools
     "coverage",
     "fawltydeps",
