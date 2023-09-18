@@ -310,8 +310,8 @@ that are part of your project's development environment.
 We've introduced a `DEFAULT_IGNORE_UNUSED` list, which includes various
 categories of commonly used development tools and dependencies.
 FawltyDeps can automatically ignore these dependencies when checking for unused
-imports. For the complete `DEFAULT_IGNORE_UNUSED` list, please see the
-[default_ignore_unused_list.md](./docs/default_ignore_unused_list.md) file
+imports. For the complete list, please see the `DEFAULT_IGNORE_UNUSED`
+variable in the [`fawltydeps/settings.py`](./fawltydeps/settings.py) file
 in the repository. If you have additional dependencies that you want to exclude
 from the check for unused imports, you can use the `--ignore-unused` option
 to customize the ignore list. By providing your own list of dependencies with
@@ -373,8 +373,8 @@ Here is a complete list of configuration directives we support:
   unused dependencies, for example: `["black", "mypy", "some_other_module"]`.
   The default is a list including common development tools. However, you have the
   flexibility to overwrite this list according to your project's specific requirements.
-  For the complete default list, please see the
-  [default_ignore_unused_list.md](./docs/default_ignore_unused_list.md) file
+  For the complete default list, please see the `DEFAULT_IGNORE_UNUSED`
+  variable in the [`fawltydeps/settings.py`](./fawltydeps/settings.py) file
   in the repository.
 - `deps_parser_choice`: Manually select which format to use for parsing
   declared dependencies. Must be one of `"requirements.txt"`, `"setup.py"`,
