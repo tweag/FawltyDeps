@@ -60,7 +60,10 @@ representative at an online or offline event.
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
 reported to the community leaders responsible for enforcement at
-[Nour El Mawass](mailto:nour.elmawass@tweag.io), [Maria Knorps](mailto:maria.knorps@tweag.io) and [Johan Herland](mailto:johan.herland@tweag.io).
+[Nour El Mawass](mailto:nour.elmawass@tweag.io),
+[Maria Knorps](mailto:maria.knorps@tweag.io),
+[Johan Herland](mailto:johan.herland@tweag.io), and
+[Zhihan Zhang](mailto:zhihan.zhang@tweag.io).
 All complaints will be reviewed and investigated promptly and fairly.
 
 All community leaders are obligated to respect the privacy and security of the
