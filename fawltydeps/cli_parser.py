@@ -232,8 +232,10 @@ def populate_parser_configuration(parser: argparse._ActionsContainer) -> None:
         action="union",
         metavar="DEP_NAME",
         help=(
-            "Dependencies to ignore when looking for unused"
-            " dependencies, e.g. --ignore-unused pylint black"
+            "Specify a list of dependencies to ignore when looking for unused"
+            " dependencies. By default, this list includes common development tools."
+            " Use this option to customize the list,"
+            " e.g. --ignore-unused pylint black some_other_module"
         ),
     )
     parser.add_argument(
