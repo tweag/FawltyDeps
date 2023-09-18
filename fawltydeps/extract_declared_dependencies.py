@@ -111,7 +111,7 @@ def parse_setup_py(path: Path) -> Iterator[DeclaredDependency]:
             and node.value.func.id == "setup"
         )
 
-    setup_contents = ast.parse(path.read_text(), filename=str(source.path))
+    setup_contents = ast.parse(path.read_text("utf-8"), filename=str(source.path))
     for node in ast.walk(setup_contents):
         tracked_vars.evaluate(node)
         if _is_setup_function_call(node):

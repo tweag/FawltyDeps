@@ -150,7 +150,7 @@ def parse_python_file(
     if not local_context:
         local_context = make_isort_config(Path("."), (path.parent,))
     yield from parse_code(
-        path.read_text(), source=Location(path), local_context=local_context
+        path.read_text("utf-8"), source=Location(path), local_context=local_context
     )
 
 
