@@ -17,6 +17,7 @@ import pytest
 from importlib_metadata import files as package_files
 
 from fawltydeps.main import UNUSED_DEPS_OUTPUT_PREFIX, VERBOSE_PROMPT, Analysis, version
+from fawltydeps.settings import DEFAULT_IGNORE_UNUSED
 from fawltydeps.types import Location, UnusedDependency
 
 from .test_extract_imports_simple import generate_notebook
@@ -41,7 +42,7 @@ def make_json_settings_dict(**kwargs):
         "custom_mapping": None,
         "output_format": "human_summary",
         "ignore_undeclared": [],
-        "ignore_unused": [],
+        "ignore_unused": sorted(DEFAULT_IGNORE_UNUSED),
         "deps_parser_choice": None,
         "install_deps": False,
         "verbosity": 0,
@@ -956,23 +957,30 @@ def test_check_json__no_pyenvs_found__falls_back_to_current_env(fake_project):
     "args,imports,dependencies,expected",
     [
         pytest.param(
-            ["--check-unused", "--ignore-unused", "black", "mypy"],
+            ["--check-unused"],
             ["requests"],
             ["black", "mypy"],
             [Analysis.success_message(check_undeclared=False, check_unused=True)],
-            id="check_unused_action_on_ignored_unused_dep__outputs_nothing",
+            id="check_unused_action_on_default_ignored_unused_dep__outputs_nothing",
         ),
         pytest.param(
-            ["--list-deps", "--ignore-unused", "black"],
+            ["--check-unused", "--ignore-unused", "black", "pandas"],
+            ["requests"],
+            ["black", "pandas"],
+            [Analysis.success_message(check_undeclared=False, check_unused=True)],
+            id="check_unused_action_on_overriden_ignored_unused_dep__outputs_nothing",
+        ),
+        pytest.param(
+            ["--list-deps", "--ignore-unused", "numpy"],
             [],
-            ["black"],
-            ["black", "", VERBOSE_PROMPT],
+            ["numpy"],
+            ["numpy", "", VERBOSE_PROMPT],
             id="list_deps_action_on_ignored_dep__reports_dep",
         ),
         pytest.param(
-            ["--check-undeclared", "--ignore-unused", "isort"],
-            ["isort"],
-            ["isort"],
+            ["--check-undeclared", "--ignore-unused", "pandas"],
+            ["pandas"],
+            ["pandas"],
             [Analysis.success_message(check_undeclared=True, check_unused=False)],
             id="check_undeclared_action_on_ignored_declared_dep__does_not_report_dep_as_undeclared",
         ),
@@ -1004,11 +1012,11 @@ def test_check_json__no_pyenvs_found__falls_back_to_current_env(fake_project):
                 "isort",
                 "numpy",
                 "--ignore-unused",
-                "pylint",
-                "black",
+                "pandas",
+                "tomli",
             ],
             ["isort", "numpy"],
-            ["pylint", "black"],
+            ["pandas", "tomli"],
             [Analysis.success_message(check_undeclared=True, check_unused=True)],
             id="check_action_on_ignored__does_not_report_ignored",
         ),
@@ -1079,7 +1087,7 @@ def test_cmdline_on_ignored_undeclared_option(
             {"actions": ["list_imports"], "output_format": "json"},
             ["--detailed", "--deps=foobar", "--generate-toml-config"],
             dedent(
-                """\
+                f"""\
                 # Copy this TOML section into your pyproject.toml to configure FawltyDeps
                 # (default values are commented)
                 [tool.fawltydeps]
@@ -1089,7 +1097,7 @@ def test_cmdline_on_ignored_undeclared_option(
                 deps = ['foobar']
                 # pyenvs = ['.']
                 # ignore_undeclared = []
-                # ignore_unused = []
+                # ignore_unused = {sorted(DEFAULT_IGNORE_UNUSED)}
                 # deps_parser_choice = ...
                 # install_deps = false
                 # verbosity = 0
@@ -1103,7 +1111,7 @@ def test_cmdline_on_ignored_undeclared_option(
             {"actions": ["check_undeclared"]},
             ["--pyenv=None", "--generate-toml-config"],
             dedent(
-                """\
+                f"""\
                 # Copy this TOML section into your pyproject.toml to configure FawltyDeps
                 # (default values are commented)
                 [tool.fawltydeps]
@@ -1113,7 +1121,7 @@ def test_cmdline_on_ignored_undeclared_option(
                 # deps = ['.']
                 pyenvs = ['None']
                 # ignore_undeclared = []
-                # ignore_unused = []
+                # ignore_unused = {sorted(DEFAULT_IGNORE_UNUSED)}
                 # deps_parser_choice = ...
                 # install_deps = false
                 # verbosity = 0
@@ -1127,7 +1135,7 @@ def test_cmdline_on_ignored_undeclared_option(
             {"pyenvs": ["foo", "bar"]},
             ["--pyenv", "baz", "xyzzy", "--generate-toml-config"],
             dedent(
-                """\
+                f"""\
                 # Copy this TOML section into your pyproject.toml to configure FawltyDeps
                 # (default values are commented)
                 [tool.fawltydeps]
@@ -1137,7 +1145,7 @@ def test_cmdline_on_ignored_undeclared_option(
                 # deps = ['.']
                 pyenvs = ['baz', 'xyzzy']
                 # ignore_undeclared = []
-                # ignore_unused = []
+                # ignore_unused = {sorted(DEFAULT_IGNORE_UNUSED)}
                 # deps_parser_choice = ...
                 # install_deps = false
                 # verbosity = 0
@@ -1151,7 +1159,7 @@ def test_cmdline_on_ignored_undeclared_option(
             {},
             ["--install-deps", "--generate-toml-config"],
             dedent(
-                """\
+                f"""\
                 # Copy this TOML section into your pyproject.toml to configure FawltyDeps
                 # (default values are commented)
                 [tool.fawltydeps]
@@ -1161,7 +1169,7 @@ def test_cmdline_on_ignored_undeclared_option(
                 # deps = ['.']
                 # pyenvs = ['.']
                 # ignore_undeclared = []
-                # ignore_unused = []
+                # ignore_unused = {sorted(DEFAULT_IGNORE_UNUSED)}
                 # deps_parser_choice = ...
                 install_deps = true
                 # verbosity = 0
@@ -1225,31 +1233,32 @@ def test_deps_across_groups_appear_just_once_in_order_in_general_detailed(tmp_pa
 def pyproject_toml_contents():
     data = dedent(
         """
-        [tool.poetry.group.lint.dependencies]
-        mypy = "^0.991"
-        pylint = "^2.15.8"
-        types-setuptools = "^65.6.0.2"
+        [tool.poetry.group.data_science.dependencies]
+        numpy = "^1.21"
+        pandas = "^1.3"
+        matplotlib = "^3.4"
 
-        [tool.poetry.group.format.dependencies]
-        black = "^22"
-        colorama = "^0.4.6"
-        codespell = "^2.2.2"
+        [tool.poetry.group.web_development.dependencies]
+        django = "^4.0"
+        fastapi = "^1.5"
+        uvicorn = "^0.15"
+        httpx = "^0.21"
+        pandas = "^1.3"
 
-        [tool.poetry.group.dev.dependencies]
-        black = "^22"
-        codespell = "^2.2.2"
-        colorama = "^0.4.6"
-        mypy = "^0.991"
-        pylint = "^2.15.8"
-        types-setuptools = "^65.6.0.2"
+        [tool.poetry.group.web_scraping.dependencies]
+        scrapy = "^2.5"
+        requests-html = "^0.10"
         """
     )
     uniq_deps = (
-        "black",
-        "codespell",
-        "colorama",
-        "mypy",
-        "pylint",
-        "types-setuptools",
+        "django",
+        "fastapi",
+        "httpx",
+        "matplotlib",
+        "numpy",
+        "pandas",
+        "requests-html",
+        "scrapy",
+        "uvicorn",
     )
     return data, uniq_deps

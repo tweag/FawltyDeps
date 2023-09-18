@@ -8,7 +8,7 @@
 name = "blog_post_example"
 description = '''
   This is the example being used in the blog post that announces FawltyDeps
-  on Tweag's blow: https://www.tweag.io/blog/
+  on Tweag's blog: https://www.tweag.io/blog/
   This example project is contrived to demonstrate what FawltyDeps can do, and
   and what benefits it can bring to a Python project. The project includes:
   - A couple of undeclared dependencies, one that should obviously have been
@@ -42,7 +42,7 @@ undeclared_deps = [
 ]
 
 # Declared dependencies which were never `import`ed from the code:
+# "black" will be ignored since it is in the default_ignored_unused list
 unused_deps = [
-    "black",
     "tensorflow",
 ]

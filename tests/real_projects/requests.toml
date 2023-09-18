@@ -62,6 +62,7 @@ undeclared_deps = [
     "setuptools",
     "simplejson",
 ]
+# We don't have "wheel" as unused_deps because it is in the default_ignore_unused list
 unused_deps =  [
     "Flask",
     "PySocks",
@@ -71,5 +72,4 @@ unused_deps =  [
     "pytest-cov",
     "pytest-httpbin",
     "pytest-mock",
-    "wheel",
 ]

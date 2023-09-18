@@ -25,7 +25,7 @@ import pytest
 from hypothesis import given, strategies
 
 from fawltydeps.main import build_parser
-from fawltydeps.settings import Action, OutputFormat, Settings
+from fawltydeps.settings import DEFAULT_IGNORE_UNUSED, Action, OutputFormat, Settings
 from fawltydeps.types import TomlData
 
 if sys.version_info >= (3, 11):
@@ -48,7 +48,7 @@ EXPECT_DEFAULTS = dict(
     custom_mapping=None,
     output_format=OutputFormat.HUMAN_SUMMARY,
     ignore_undeclared=set(),
-    ignore_unused=set(),
+    ignore_unused=DEFAULT_IGNORE_UNUSED,
     deps_parser_choice=None,
     install_deps=False,
     verbosity=0,
