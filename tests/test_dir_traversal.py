@@ -96,7 +96,7 @@ class DirectoryTraversalVector(Generic[T]):
     id: str
     given: List[BaseEntry]
     add: List[Tuple[str, Tuple[T, ...]]] = field(default_factory=lambda: [(".", ())])
-    ignore: List[str] = field(default_factory=list)
+    skip_dirs: List[str] = field(default_factory=list)
     expect: List[ExpectedTraverseStep] = field(default_factory=list)
     expect_alternatives: Optional[List[List[ExpectedTraverseStep]]] = None
 
@@ -141,10 +141,10 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
         ],
     ),
     DirectoryTraversalVector(
-        "add_subdir__ignore_parent_with_data__traverse_only_subdir_with_no_data",
+        "add_subdir__skip_parent_with_data__traverse_only_subdir_with_no_data",
         given=[Dir("sub")],
         add=[(".", (123,)), ("sub", ())],
-        ignore=["."],
+        skip_dirs=["."],
         expect=[ExpectedTraverseStep("sub", [], [], [])],
     ),
     DirectoryTraversalVector(
@@ -258,8 +258,8 @@ def test_DirectoryTraversal(vector: DirectoryTraversalVector, tmp_path):
     traversal: DirectoryTraversal = DirectoryTraversal()
     for path, data_items in vector.add:
         traversal.add(tmp_path / path, *data_items)
-    for path in vector.ignore:
-        traversal.ignore(tmp_path / path)
+    for path in vector.skip_dirs:
+        traversal.skip_dir(tmp_path / path)
 
     actual = [
         (cur_dir, set(subdirs), set(files), list(data))
