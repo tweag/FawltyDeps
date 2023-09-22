@@ -6,7 +6,7 @@ from typing import Generic, List, Optional, Set, Tuple, TypeVar
 
 import pytest
 
-from fawltydeps.utils import DirectoryTraversal
+from fawltydeps.dir_traversal import DirectoryTraversal
 
 from .utils import assert_unordered_equivalence
 

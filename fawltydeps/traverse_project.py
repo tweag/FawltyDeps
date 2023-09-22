@@ -3,6 +3,7 @@ import logging
 from pathlib import Path
 from typing import AbstractSet, Iterator, Optional, Set, Type, Union
 
+from fawltydeps.dir_traversal import DirectoryTraversal
 from fawltydeps.extract_declared_dependencies import validate_deps_source
 from fawltydeps.extract_imports import validate_code_source
 from fawltydeps.packages import validate_pyenv_source
@@ -14,7 +15,6 @@ from fawltydeps.types import (
     Source,
     UnparseablePathException,
 )
-from fawltydeps.utils import DirectoryTraversal
 
 logger = logging.getLogger(__name__)
 
