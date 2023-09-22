@@ -83,14 +83,14 @@ def find_sources(  # pylint: disable=too-many-branches,too-many-statements
         if package_dirs is not None:  # Python environment dir given directly
             logger.debug(f"find_sources() Found {package_dirs}")
             yield from package_dirs
-            traversal.ignore(path)  # disable traversal of path below
+            traversal.skip_dir(path)  # disable traversal of path below
         else:  # must traverse directory to find Python environments
             traversal.add(path, PyEnvSource)
 
     for _cur_dir, subdirs, files, extras in traversal.traverse():
         for subdir in subdirs:  # don't recurse into dot dirs
             if subdir.name.startswith("."):
-                traversal.ignore(subdir)
+                traversal.skip_dir(subdir)
 
         types = {t for t in extras if t in source_types}
         assert len(types) > 0
@@ -99,7 +99,7 @@ def find_sources(  # pylint: disable=too-many-branches,too-many-statements
                 package_dirs = validate_pyenv_source(path)
                 if package_dirs is not None:  # pyenvs found here
                     yield from package_dirs
-                    traversal.ignore(path)  # don't recurse into Python environment
+                    traversal.skip_dir(path)  # don't recurse into Python environment
         if CodeSource in types:
             # Retrieve base_dir from closest ancestor, i.e. last Path in extras
             base_dir = next((x for x in reversed(extras) if isinstance(x, Path)), None)

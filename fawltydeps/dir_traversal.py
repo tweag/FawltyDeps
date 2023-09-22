@@ -51,7 +51,7 @@ class DirectoryTraversal(Generic[T]):
        /some/dir/subdir and below. To attach multiple pieces of data to a
        single directory, pass all pieces (in order) to .add().
     3. Allow the traversal to adjust itself while in progress. For example,
-       while traversing /some/dir we want to be able "ignore" a directory
+       while traversing /some/dir we want to be able "skip" a directory
        (including /some/dir or any parent) from (further) traversal. Likewise,
        we should be able to _add_ more directories to the traversal. (For a
        given traversal, re-adding a directory that was already traversed shall
@@ -64,7 +64,7 @@ class DirectoryTraversal(Generic[T]):
     """
 
     to_traverse: Set[Path] = field(default_factory=set)
-    to_ignore: Set[DirId] = field(default_factory=set)  # includes already-traversed
+    skip_dirs: Set[DirId] = field(default_factory=set)  # includes already-traversed
     attached: Dict[DirId, List[T]] = field(default_factory=dict)
 
     def add(self, dir_path: Path, *attach_data: T) -> None:
@@ -89,13 +89,13 @@ class DirectoryTraversal(Generic[T]):
         self.to_traverse.add(dir_path)
         self.attached.setdefault(dir_id, []).extend(attach_data)
 
-    def ignore(self, dir_path: Path) -> None:
+    def skip_dir(self, dir_path: Path) -> None:
         """Ignore a directory in future traversal.
 
         The given directory or its subdirectories will _not_ be traversed
         (although explicitly .add()ed subdirectories _will_ be traversed).
         """
-        self.to_ignore.add(DirId.from_path(dir_path))
+        self.skip_dirs.add(DirId.from_path(dir_path))
 
     def traverse(self) -> Iterator[Tuple[Path, Set[Path], Set[Path], List[T]]]:
         """Perform the traversal of the added directories.
@@ -105,14 +105,15 @@ class DirectoryTraversal(Generic[T]):
         - The set of all (immediate) subdirectories in the current directory.
           This is NOT a mutable list, as you might expect from os.walk();
           instead, to prevent traversing into a subdirectory, you can call
-          .ignore() with the relevant subdirectory.
+          .skip_dir() with the relevant subdirectory.
         - The set of all files in the current directory.
         - An ordered list of attached data items, for each of the directory
           levels starting at the base directory (the top-most parent directory
           passed to .add()), up to and including the current directory.
 
-        Directories that have already been .ignore()d will not be traversed, nor
-        will a directory previously traversed by this instance be re-traversed.
+        Directories that have already been .skip_dir()ed will not be traversed,
+        nor will a directory previously traversed by this instance be traversed
+        again.
         """
 
         def accumulate_attached_data(parent_dir: Path, child_dir: Path) -> Iterator[T]:
@@ -129,7 +130,7 @@ class DirectoryTraversal(Generic[T]):
             remaining = sorted(
                 path
                 for path in self.to_traverse
-                if DirId.from_path(path) not in self.to_ignore
+                if DirId.from_path(path) not in self.skip_dirs
             )
             if not remaining:  # nothing left to do
                 break
@@ -139,16 +140,16 @@ class DirectoryTraversal(Generic[T]):
             for cur, subdirs, filenames in os.walk(base_dir, followlinks=True):
                 cur_dir = Path(cur)
                 cur_id = DirId.from_path(cur_dir)
-                if cur_id in self.to_ignore:
+                if cur_id in self.skip_dirs:
                     logger.debug(f"  Ignoring {cur_dir}")
                     subdirs[:] = []  # don't recurse into subdirs
                     continue  # skip to next
 
                 logger.debug(f"  Traversing {cur_dir}")
-                self.to_ignore.add(cur_id)  # don't re-traverse this dir
+                self.skip_dirs.add(cur_id)  # don't traverse this dir again
                 # At this yield, the caller takes over control, and may modify
-                # .to_traverse/.to_ignore/.attached (typically via .add() or
-                # .ignore()). We cannot assume anything about their state here.
+                # .to_traverse/.skip_dirs/.attached (typically via .add() or
+                # .skip_dir()). We cannot assume anything about their state here.
                 yield (
                     cur_dir,
                     {cur_dir / subdir for subdir in subdirs},
