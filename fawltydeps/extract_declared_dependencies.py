@@ -367,7 +367,7 @@ PARSER_CHOICES = {
         lambda path: path.name == "pyproject.toml", parse_pyproject_toml
     ),
     ParserChoice.REQUIREMENTS_TXT: ParsingStrategy(
-        lambda path: re.compile(r".*\brequirements\b.*\.(txt|in)").match(path.name)
+        lambda path: re.compile(r".*requirements.*\.(txt|in)").match(path.name)
         is not None,
         parse_requirements_txt,
     ),
