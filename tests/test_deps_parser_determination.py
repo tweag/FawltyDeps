@@ -2,10 +2,12 @@
 
 import logging
 import shutil
+from pathlib import Path
 
 import pytest
 
 from fawltydeps.extract_declared_dependencies import (
+    first_applicable_parser,
     parse_source,
     parse_sources,
     validate_deps_source,
@@ -15,6 +17,45 @@ from fawltydeps.traverse_project import find_sources
 from fawltydeps.types import DepsSource
 
 from .utils import assert_unordered_equivalence, collect_dep_names
+
+
+@pytest.mark.parametrize(
+    ["path", "expect_choice"],
+    [
+        pytest.param(Path(path), expect_choice, id=path)
+        for path, expect_choice in [
+            ("requirements.txt", ParserChoice.REQUIREMENTS_TXT),
+            ("setup.py", ParserChoice.SETUP_PY),
+            ("setup.cfg", ParserChoice.SETUP_CFG),
+            ("pyproject.toml", ParserChoice.PYPROJECT_TOML),
+            ("anything_else", None),
+            ("sub/requirements.txt", ParserChoice.REQUIREMENTS_TXT),
+            ("sub/setup.py", ParserChoice.SETUP_PY),
+            ("sub/setup.cfg", ParserChoice.SETUP_CFG),
+            ("sub/pyproject.toml", ParserChoice.PYPROJECT_TOML),
+            ("sub/anything_else", None),
+            ("/abs/requirements.txt", ParserChoice.REQUIREMENTS_TXT),
+            ("/abs/setup.py", ParserChoice.SETUP_PY),
+            ("/abs/setup.cfg", ParserChoice.SETUP_CFG),
+            ("/abs/pyproject.toml", ParserChoice.PYPROJECT_TOML),
+            ("/abs/anything_else", None),
+            ("requirements.txt/wat", None),
+            ("setup.py/wat", None),
+            ("setup.cfg/wat", None),
+            ("pyproject.toml/wat", None),
+            ("requirements-dev.txt", ParserChoice.REQUIREMENTS_TXT),
+            ("test-requirements.txt", ParserChoice.REQUIREMENTS_TXT),
+            ("extra-requirements-dev.txt", ParserChoice.REQUIREMENTS_TXT),
+            ("abc_requirements.txt", ParserChoice.REQUIREMENTS_TXT),
+            ("requirements_abc.txt", ParserChoice.REQUIREMENTS_TXT),
+            ("more_requirements_stuff.txt", ParserChoice.REQUIREMENTS_TXT),
+            ("evenrequirementsthis.txt", ParserChoice.REQUIREMENTS_TXT),
+        ]
+    ],
+)
+def test_first_applicable_parser(path, expect_choice):
+    assert first_applicable_parser(path) is expect_choice
+
 
 PARSER_CHOICE_FILE_NAME_MATCH_GRID = {
     ParserChoice.REQUIREMENTS_TXT: "requirements.txt",
