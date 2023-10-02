@@ -3,11 +3,16 @@ import sys
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Generic, List, Optional, Tuple, TypeVar, Union
+from typing import Generic, List, Optional, Tuple, Type, TypeVar, Union
 
 import pytest
 
-from fawltydeps.dir_traversal import DirectoryTraversal, TraversalStep
+from fawltydeps.dir_traversal import (
+    DirectoryTraversal,
+    ExcludeRuleError,
+    ExcludeRuleMissing,
+    TraversalStep,
+)
 
 from .utils import assert_unordered_equivalence
 
@@ -106,6 +111,10 @@ class DirectoryTraversalVector(Generic[T]):
     given: List[BaseEntry]
     add: List[AddCall] = field(default_factory=lambda: [AddCall(path=".")])
     skip_dirs: List[str] = field(default_factory=list)
+    exclude_patterns: List[Union[str, Tuple[str, Optional[str]]]] = field(
+        default_factory=list
+    )
+    exclude_exceptions: List[Type[Exception]] = field(default_factory=list)
     expect: List[ExpectedTraverseStep] = field(default_factory=list)
     expect_alternatives: Optional[List[List[ExpectedTraverseStep]]] = None
     skip_me: Optional[str] = None
@@ -278,6 +287,488 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
         ],
         skip_me=on_windows("Symlinks on Windows may be created only by administrators"),
     ),
+    DirectoryTraversalVector(
+        "excluded_dot_dirs__are_not_traversed",
+        given=[
+            File(".venv/sub/file"),
+            File("dir/.venv/sub/file"),
+            File("dir/foo.py"),
+        ],
+        exclude_patterns=[".*"],  # exclude all paths that start with "."
+        expect=[
+            ExpectedTraverseStep(".", subdirs=["dir"]),  # excluded_subdirs=[".venv"]
+            ExpectedTraverseStep("dir", files=["foo.py"]),  # excluded_subdirs=[".venv"]
+        ],
+    ),
+    #
+    # Testing exclude patterns
+    #
+    # The following tests are based on the pattern format rules listed in
+    # `git help ignore` (https://git-scm.com/docs/gitignore#_pattern_format).
+    #
+    # A blank line matches no files, so it can serve as a separator for
+    # readability.
+    DirectoryTraversalVector(
+        "gitignore_parsing__disregard_blank_lines",
+        given=[File("dir/file")],
+        exclude_patterns=["", ""],
+        exclude_exceptions=[ExcludeRuleMissing, ExcludeRuleMissing],
+        expect=[
+            ExpectedTraverseStep(".", subdirs=["dir"]),
+            ExpectedTraverseStep("dir", files=["file"]),
+        ],
+    ),
+    # A line starting with # serves as a comment. Put a backslash ("\") in
+    # front of the first hash for patterns that begin with a hash.
+    DirectoryTraversalVector(
+        "gitignore_parsing__disregard_comments",
+        given=[
+            File("#do_not_exclude"),
+            File("#do_exclude"),
+        ],
+        exclude_patterns=[
+            "#do_not_exclude",  # comment
+            "\\#do_exclude",  # match literal '#'
+        ],
+        exclude_exceptions=[ExcludeRuleMissing],
+        expect=[
+            ExpectedTraverseStep(
+                ".", files=["#do_not_exclude"]  # excluded_files=["#do_exclude"]
+            ),
+        ],
+    ),
+    # Trailing spaces are excluded unless they are quoted with backslash ("\").
+    DirectoryTraversalVector(
+        "gitignore_parsing__disregard_trailing_spaces",
+        given=[
+            File("do_not_exclude "),
+            File("do_exclude "),
+        ],
+        exclude_patterns=[
+            "do_not_exclude ",  # disregard this trailing space
+            "do_exclude\\ ",  # match literal trailing space
+        ],
+        expect=[
+            ExpectedTraverseStep(
+                ".", files=["do_not_exclude "]  # excluded_files=["do_exclude "]
+            ),
+        ],
+        skip_me=on_windows("Windows does not support paths with trailing spaces"),
+        # https://stackoverflow.com/a/67886889
+    ),
+    # An optional prefix "!" which negates the pattern; any matching file
+    # excluded by a previous pattern will become included again. It is not
+    # possible to re-include a file if a parent directory of that file is
+    # excluded. Git doesn’t list excluded directories for performance reasons,
+    # so any patterns on contained files have no effect, no matter where they
+    # are defined. Put a backslash ("\") in front of the first "!" for patterns
+    # that begin with a literal "!", for example, "\!important!.txt".
+    DirectoryTraversalVector(
+        "gitignore_parsing__negated_patterns_override_earlier_exclude",
+        given=[
+            File("do_not_exclude"),
+            File("do_exclude"),
+        ],
+        exclude_patterns=[
+            "*exclude",
+            "!do_not_exclude",
+        ],
+        expect=[
+            ExpectedTraverseStep(
+                ".", files=["do_not_exclude"]  # excluded_files=["do_exclude"]
+            ),
+        ],
+    ),
+    DirectoryTraversalVector(
+        "gitignore_parsing__cannot_negate_if_parent_dir_is_already_excluded",
+        given=[
+            File("do_exclude/do_not_exclude"),
+            File("do_not_exclude"),
+        ],
+        exclude_patterns=[
+            "do_exclude",  # excludes directory
+            "!do_not_exclude",  # ineffective inside excluded directory
+        ],
+        expect=[
+            ExpectedTraverseStep(
+                ".", files=["do_not_exclude"]  # excluded_subdirs=["do_exclude"]
+            ),
+        ],
+    ),
+    DirectoryTraversalVector(
+        "gitignore_parsing__escape_literal_exclamation_mark",
+        given=[
+            File("!exclude_me!"),
+            File("exclude_me!"),
+        ],
+        exclude_patterns=["\\!exclude_me!"],  # matches only first entry above
+        expect=[
+            ExpectedTraverseStep(
+                ".", files=["exclude_me!"]  # excluded_files=["!exclude_me!"]
+            ),
+        ],
+    ),
+    # The slash "/" is used as the directory separator. Separators may occur at
+    # the beginning, middle or end of the .gitignore search pattern.
+    #
+    # If there is a separator at the beginning or middle (or both) of the
+    # pattern, then the pattern is relative to the directory level of the
+    # particular .gitignore file itself. Otherwise the pattern may also match
+    # at any level below the .gitignore level.
+    DirectoryTraversalVector(
+        "exclude_pattern_with_slash_at_beginning__anchors_to_current_dir",
+        given=[
+            File("a/file"),
+            File("file"),
+        ],
+        exclude_patterns=["/file"],  # matches second, but not first
+        expect=[
+            ExpectedTraverseStep(".", subdirs=["a"]),  # excluded_files=["file"]
+            ExpectedTraverseStep("a", files=["file"]),
+        ],
+    ),
+    DirectoryTraversalVector(
+        "anchored_pattern__must_have_base_dir",
+        given=[File("file")],
+        exclude_patterns=[("/file", None)],
+        exclude_exceptions=[ExcludeRuleError],
+        expect=[ExpectedTraverseStep(".", files=["file"])],
+    ),
+    DirectoryTraversalVector(
+        "exclude_pattern_with_slash_in_middle__anchors_to_current_dir",
+        given=[
+            File("a/b/file"),
+            File("b/file"),
+        ],
+        exclude_patterns=["b/file"],  # matches second, but not first
+        expect=[
+            ExpectedTraverseStep(".", subdirs=["a", "b"]),
+            ExpectedTraverseStep("a", subdirs=["b"]),
+            ExpectedTraverseStep("a/b", files=["file"]),
+            ExpectedTraverseStep("b"),  # excluded_files=["file"]
+        ],
+    ),
+    DirectoryTraversalVector(
+        "exclude_pattern_without_slash__matches_at_any_level",
+        given=[
+            File("a/b/file"),
+            File("b/file"),
+            File("file"),
+        ],
+        exclude_patterns=["file"],  # matches all
+        expect=[
+            ExpectedTraverseStep(".", subdirs=["a", "b"]),  # excluded_files=["file"]
+            ExpectedTraverseStep("a", subdirs=["b"]),
+            ExpectedTraverseStep("a/b"),  # excluded_files=["file"]
+            ExpectedTraverseStep("b"),  # excluded_files=["file"]
+        ],
+    ),
+    DirectoryTraversalVector(
+        "exclude_pattern_without_slash__does_not_match_above_base_dir",
+        given=[
+            File("file"),
+            File("a/file"),
+            File("a/b/file"),
+        ],
+        exclude_patterns=[("file", "a/")],
+        expect=[
+            ExpectedTraverseStep(".", subdirs=["a"], files=["file"]),
+            ExpectedTraverseStep("a", subdirs=["b"]),  # gnored_files=["file"]
+            ExpectedTraverseStep("a/b"),  # excluded_files=["file"]
+        ],
+    ),
+    # If there is a separator at the end of the pattern then the pattern will
+    # only match directories, otherwise the pattern can match both files and
+    # directories.
+    DirectoryTraversalVector(
+        "exclude_pattern_with_slash_at_end__matches_dirs_only",
+        given=[
+            File("dir1/some_path"),  # some_path is not a dir
+            File("dir2/some_path/a_file"),  # some_path is a dir
+        ],
+        exclude_patterns=["some_path/"],  # matches second, but not first
+        expect=[
+            ExpectedTraverseStep(".", subdirs=["dir1", "dir2"]),
+            ExpectedTraverseStep("dir1", files=["some_path"]),
+            ExpectedTraverseStep("dir2"),  # excluded_subdirs=["some_path"]
+        ],
+    ),
+    DirectoryTraversalVector(
+        "exclude_pattern_with_combined_slashes_and_base_dir",
+        given=[
+            Dir("b"),
+            Dir("a/b"),
+            Dir("a/a/b"),  # below pattern matches only this
+            Dir("a/a/a/b"),
+        ],
+        exclude_patterns=[("a/b/", "a/")],
+        expect=[
+            ExpectedTraverseStep(".", subdirs=["a", "b"]),
+            ExpectedTraverseStep("a", subdirs=["a", "b"]),
+            ExpectedTraverseStep("a/a", subdirs=["a"]),  # excluded_subdirs=["b"]
+            ExpectedTraverseStep("a/a/a", subdirs=["b"]),
+            ExpectedTraverseStep("a/a/a/b"),
+            ExpectedTraverseStep("a/b"),
+            ExpectedTraverseStep("b"),
+        ],
+    ),
+    # For example, a pattern doc/frotz/ matches doc/frotz directory, but not
+    # a/doc/frotz directory; however frotz/ matches frotz and a/frotz that is
+    # a directory (all paths are relative from the .gitignore file).
+    DirectoryTraversalVector(
+        "exclude_pattern__doc_frotz_example",
+        given=[
+            Dir("doc/frotz"),
+            Dir("a/doc/frotz"),
+        ],
+        exclude_patterns=["doc/frotz/"],  # matches first, but not second
+        expect=[
+            ExpectedTraverseStep(".", subdirs=["a", "doc"]),
+            ExpectedTraverseStep("a", subdirs=["doc"]),
+            ExpectedTraverseStep("a/doc", subdirs=["frotz"]),
+            ExpectedTraverseStep("a/doc/frotz"),
+            ExpectedTraverseStep("doc"),  # excluded_subdirs=["frotz"]
+        ],
+    ),
+    DirectoryTraversalVector(
+        "exclude_pattern__frotz_example",
+        given=[
+            Dir("frotz"),
+            Dir("a/frotz"),
+        ],
+        exclude_patterns=["frotz/"],  # matches both
+        expect=[
+            ExpectedTraverseStep(".", subdirs=["a"]),  # excluded_subdirs=["frotz"]
+            ExpectedTraverseStep("a"),  # excluded_subdirs=["frotz"]
+        ],
+    ),
+    # An asterisk "*" matches anything except a slash. The character "?" matches
+    # any one character except "/". The range notation, e.g. [a-zA-Z], can be
+    # used to match one of the characters in a range. See fnmatch(3) and the
+    # FNM_PATHNAME flag for a more detailed description.
+    DirectoryTraversalVector(
+        "asterisk_matches_anything_except_slash",
+        given=[
+            File("abcdef"),
+            File("abcxyzdef"),
+            File("abcdefdef"),
+            File("abcabcdef"),
+            File("abc/def"),  # not matched
+        ],
+        exclude_patterns=["abc*def"],
+        expect=[
+            ExpectedTraverseStep(
+                ".",
+                subdirs=["abc"],
+                # excluded_files=["abcdef", "abcxyzdef", "abcdefdef", "abcabcdef"]
+            ),
+            ExpectedTraverseStep("abc", files=["def"]),
+        ],
+    ),
+    DirectoryTraversalVector(
+        "question_mark_matches_any_one_char_except_slash",
+        given=[
+            File("abcdef"),  # not matched
+            File("abcxdef"),
+            File("abcddef"),
+            File("abc/def"),  # not matched
+        ],
+        exclude_patterns=["abc?def"],
+        expect=[
+            ExpectedTraverseStep(
+                ".",
+                subdirs=["abc"],
+                files=["abcdef"],
+                # excluded_files=["abcxdef", "abcddef"]
+            ),
+            ExpectedTraverseStep("abc", files=["def"]),
+        ],
+    ),
+    DirectoryTraversalVector(
+        "range_matches_any_one_char_in_range",
+        given=[
+            File("abcdef"),  # not matched
+            File("abcWdef"),  # not matched
+            File("abcXdef"),
+            File("abcYdef"),
+            File("abcZdef"),
+            File("abcXYXdef"),  # not matched
+            File("abc/def"),  # not matched
+        ],
+        exclude_patterns=["abc[X-Z]def"],
+        expect=[
+            ExpectedTraverseStep(
+                ".",
+                subdirs=["abc"],
+                files=["abcdef", "abcWdef", "abcXYXdef"],
+                # excluded_files=["abcXdef", "abcYdef", "abcZdef"],
+            ),
+            ExpectedTraverseStep("abc", files=["def"]),
+        ],
+    ),
+    DirectoryTraversalVector(
+        "range_with_slash_does_not_match_dir_separator",
+        given=[
+            File("abcdef"),  # not matched
+            File("abcXdef"),
+            File("abc/def"),  # not matched, see FNM_PATHNAME in fnmatch(3)
+        ],
+        exclude_patterns=["abc[X-Z/]def"],
+        expect=[
+            ExpectedTraverseStep(
+                ".", subdirs=["abc"], files=["abcdef"]  # excluded_files=["abcXdef"]
+            ),
+            ExpectedTraverseStep("abc", files=["def"]),
+        ],
+    ),
+    # Two consecutive asterisks ("**") in patterns matched against full pathname
+    # may have special meaning:
+    #
+    # A leading "**" followed by a slash means match in all directories.
+    # For example, "**/foo" matches file or directory "foo" anywhere, the same
+    # as pattern "foo". "**/foo/bar" matches file or directory "bar" anywhere
+    # that is directly under directory "foo".
+    DirectoryTraversalVector(
+        "exclude_pattern_double_asterisk_slash_matches_in_all_dirs_under_base",
+        given=[
+            File("foo"),  # not matched, due to base_dir a/
+            File("a/foo"),
+            File("a/b/foo"),
+            File("a/c/foo/more"),
+        ],
+        exclude_patterns=[("**/foo", "a/")],
+        expect=[
+            ExpectedTraverseStep(".", subdirs=["a"], files=["foo"]),
+            ExpectedTraverseStep("a", subdirs=["b", "c"]),  # excluded_files=["foo"]
+            ExpectedTraverseStep("a/b"),  # excluded_files=["foo"]
+            ExpectedTraverseStep("a/c"),  # excluded_subdirs=["foo"]
+        ],
+    ),
+    DirectoryTraversalVector(
+        "exclude_pattern_double_asterisk_and_multiple_slashes",
+        given=[
+            File("foo/bar"),  # not matched, due to base_dir a/
+            File("a/foo/bar/file"),
+            File("a/foo/baz/file"),  # does not match
+            File("a/b/foo/bar"),
+            File("a/c/bar"),  # does not match
+            Dir("a/c/foo/bar"),
+        ],
+        exclude_patterns=[("**/foo/bar", "a/")],
+        expect=[
+            ExpectedTraverseStep(".", subdirs=["a", "foo"]),
+            ExpectedTraverseStep("a", subdirs=["foo", "b", "c"]),
+            ExpectedTraverseStep("a/foo", subdirs=["baz"]),  # excluded_subdirs=["bar"]
+            ExpectedTraverseStep("a/foo/baz", files=["file"]),
+            ExpectedTraverseStep("a/b", subdirs=["foo"]),
+            ExpectedTraverseStep("a/b/foo"),  # excluded_files=["bar"]
+            ExpectedTraverseStep("a/c", subdirs=["foo"], files=["bar"]),
+            ExpectedTraverseStep("a/c/foo"),  # excluded_subdirs=["bar"]
+            ExpectedTraverseStep("foo", files=["bar"]),
+        ],
+    ),
+    # A trailing "/**" matches everything inside. For example, "abc/**" matches
+    # all files inside directory "abc", relative to the location of the
+    # .gitignore file, with infinite depth.
+    DirectoryTraversalVector(
+        "trailing_double_asterisk_after_slash_matches_everything_underneath",
+        given=[
+            File("abc/def"),
+            File("abc/a/very/long/and/deeply/nested/subdir/with/files/in/it"),
+            File("abx/yz"),  # not matched
+        ],
+        exclude_patterns=["abc/**"],
+        expect=[
+            ExpectedTraverseStep(".", subdirs=["abc", "abx"]),
+            ExpectedTraverseStep(
+                "abc"
+            ),  # excluded_subdirs=["a"], excluded_files=["def"]
+            ExpectedTraverseStep("abx", files=["yz"]),
+        ],
+    ),
+    # A slash followed by two consecutive asterisks then a slash matches zero or
+    # more directories. For example, "a/**/b" matches "a/b", "a/x/b", "a/x/y/b"
+    # and so on.
+    DirectoryTraversalVector(
+        "double_asterisk_between_slashes_matches_zero_or_more_dir_levels",
+        given=[
+            File("a/b"),
+            File("a/x/b"),
+            File("a/x/y/b"),
+            File("a/x/z/b/also_excluded"),
+            File("a/x/bb"),  # not matched
+            File("a/c"),  # not matched
+            File("foo/a/b/c"),  # not matched, because a/**/b is anchored
+        ],
+        exclude_patterns=["a/**/b"],
+        expect=[
+            ExpectedTraverseStep(".", subdirs=["a", "foo"]),
+            ExpectedTraverseStep(
+                "a", subdirs=["x"], files=["c"]
+            ),  # excluded_files=["b"]
+            ExpectedTraverseStep(
+                "a/x", subdirs=["y", "z"], files=["bb"]  # excluded_files=["b"]
+            ),
+            ExpectedTraverseStep("a/x/y"),  # excluded_files=["b"]
+            ExpectedTraverseStep("a/x/z"),  # excluded_subdirs=["b"]
+            ExpectedTraverseStep("foo", subdirs=["a"]),
+            ExpectedTraverseStep("foo/a", subdirs=["b"]),
+            ExpectedTraverseStep("foo/a/b", files=["c"]),
+        ],
+    ),
+    # Other consecutive asterisks are considered regular asterisks and will
+    # match according to the previous rules.
+    DirectoryTraversalVector(
+        "double_asterisk_elsewhere_is_equivalent_to_single_asterisk",
+        given=[
+            File("a/bc/d"),
+            File("a/bXc/d/also_excluded"),
+            File("a/bbc/d"),
+            File("a/bcc/d"),
+            File("a/bcd"),  # not matched
+            File("a/b/c/d"),  # not matched
+            File("a/bb/cc/d"),  # not matched
+            File("a/bb/XX/cc/d"),  # not matched
+        ],
+        exclude_patterns=["a/b**c/d"],
+        expect=[
+            ExpectedTraverseStep(".", subdirs=["a"]),
+            ExpectedTraverseStep(
+                "a", subdirs=["bc", "bXc", "bbc", "bcc", "b", "bb"], files=["bcd"]
+            ),
+            ExpectedTraverseStep("a/bc"),  # excluded_files=["d"]
+            ExpectedTraverseStep("a/bXc"),  # excluded_subdirs=["d"]
+            ExpectedTraverseStep("a/bbc"),  # excluded_files=["d"]
+            ExpectedTraverseStep("a/bcc"),  # excluded_files=["d"]
+            ExpectedTraverseStep("a/b", subdirs=["c"]),
+            ExpectedTraverseStep("a/b/c", files=["d"]),
+            ExpectedTraverseStep("a/bb", subdirs=["cc", "XX"]),
+            ExpectedTraverseStep("a/bb/cc", files=["d"]),
+            ExpectedTraverseStep("a/bb/XX", subdirs=["cc"]),
+            ExpectedTraverseStep("a/bb/XX/cc", files=["d"]),
+        ],
+    ),
+    DirectoryTraversalVector(
+        "multi_asterisks_elsewhere_is_equivalent_to_single_asterisk",
+        given=[
+            File("a/bc/d"),
+            File("a/b/c/d"),  # not matched
+            File("xfoo"),
+            File("x/foo"),  # not matched
+            File("barx"),
+        ],
+        exclude_patterns=["a/b***c/d", "/****foo", "bar***"],
+        expect=[
+            ExpectedTraverseStep(
+                ".", subdirs=["a", "x"]  # excluded_files=["xfoo", "barx"]
+            ),
+            ExpectedTraverseStep("a", subdirs=["bc", "b"]),
+            ExpectedTraverseStep("a/bc"),  # excluded_files=["d"]
+            ExpectedTraverseStep("a/b", subdirs=["c"]),
+            ExpectedTraverseStep("a/b/c", files=["d"]),
+            ExpectedTraverseStep("x", files=["foo"]),
+        ],
+    ),
 ]
 
 
@@ -296,6 +787,18 @@ def test_DirectoryTraversal(vector: DirectoryTraversalVector, tmp_path):
         traversal.add(tmp_path / call.path, *call.attach)
     for path in vector.skip_dirs:
         traversal.skip_dir(tmp_path / path)
+    exclude_exceptions = []
+    for pattern in vector.exclude_patterns:
+        base_dir = tmp_path  # default
+        if isinstance(pattern, tuple):
+            pattern, base_dir = pattern
+            if base_dir is not None:
+                base_dir = tmp_path / base_dir
+        try:
+            traversal.exclude(pattern, base_dir=base_dir)
+        except Exception as e:
+            exclude_exceptions.append(type(e))
+    assert vector.exclude_exceptions == exclude_exceptions
 
     actual = list(traversal.traverse())
     if vector.expect_alternatives is None:  # vector.expect _must_ match

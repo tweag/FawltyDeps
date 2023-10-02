@@ -97,11 +97,13 @@ def lint(session):
     session.run("mypy")
     session.run("pylint", "fawltydeps")
     test_extra_pylint_disable = [
+        "broad-exception-caught",
         "invalid-name",
         "missing-function-docstring",
         "protected-access",
         "redefined-outer-name",
         "too-many-arguments",
+        "too-many-branches",
         "too-many-instance-attributes",
         "too-many-lines",
         "unused-argument",

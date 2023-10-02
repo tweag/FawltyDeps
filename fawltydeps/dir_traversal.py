@@ -5,7 +5,19 @@ import os
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
-from typing import Dict, FrozenSet, Generic, Iterator, List, NamedTuple, Set, TypeVar
+from typing import (
+    Dict,
+    FrozenSet,
+    Generic,
+    Iterator,
+    List,
+    NamedTuple,
+    Optional,
+    Set,
+    TypeVar,
+)
+
+import gitignore_parser  # type: ignore
 
 from fawltydeps.utils import dirs_between
 
@@ -33,6 +45,14 @@ class DirId(NamedTuple):
         return cls(dir_stat.st_dev, dir_stat.st_ino)
 
 
+class ExcludeRuleMissing(Exception):
+    """A blank line or comment passed to DirectoryTraversal.exclude()."""
+
+
+class ExcludeRuleError(ValueError):
+    """Error while parsing an exclude pattern in DirectoryTraversal.exclude()."""
+
+
 @dataclass(frozen=True, order=True)
 class TraversalStep(Generic[T]):
     """Encapsulate a single step/directory in an ongoing directory traversal.
@@ -44,13 +64,13 @@ class TraversalStep(Generic[T]):
     """
 
     dir: Path  # the current directory being traversed.
-    subdirs: FrozenSet[Path]  # unignored subdirs within the current dir
-    files: FrozenSet[Path]  # unignored files within the current dir
+    subdirs: FrozenSet[Path]  # non-excluded subdirs within the current dir
+    files: FrozenSet[Path]  # non-excluded files within the current dir
     attached: List[T]  # data attached to the current dir or any of its parents
 
 
 @dataclass
-class DirectoryTraversal(Generic[T]):
+class DirectoryTraversal(Generic[T]):  # type: ignore
     """Encapsulate the efficient traversal of a directory structure.
 
     In short, this is os.walk() on steroids.
@@ -72,6 +92,8 @@ class DirectoryTraversal(Generic[T]):
        we should be able to _add_ more directories to the traversal. (For a
        given traversal, re-adding a directory that was already traversed shall
        have no effect, if you want to re-traverse then setup a _new_ traversal.)
+    4. Obey exclude patterns (a la .gitignore) that enable us to exclude parts
+       of the directory tree.
 
     Note that we _do_ assume that the directory structures being traversed
     remain unchanged during traversal. I.e. adding new entries to a directory
@@ -82,6 +104,7 @@ class DirectoryTraversal(Generic[T]):
     to_traverse: Set[Path] = field(default_factory=set)
     skip_dirs: Set[DirId] = field(default_factory=set)  # includes already-traversed
     attached: Dict[DirId, List[T]] = field(default_factory=dict)
+    exclude_rules: List[gitignore_parser.IgnoreRule] = field(default_factory=list)  # type: ignore
 
     def add(self, dir_path: Path, *attach_data: T) -> None:
         """Add one directory to this traversal, optionally w/attached data.
@@ -113,16 +136,59 @@ class DirectoryTraversal(Generic[T]):
         """
         self.skip_dirs.add(DirId.from_path(dir_path))
 
+    def exclude(self, pattern: str, base_dir: Optional[Path] = None) -> None:
+        """Add gitignore-style exclude pattern to this traversal.
+
+        Anchored gitignore rules are taken relative to 'base_dir'. If 'base_dir'
+        is not given, the rule cannot be anchored.
+
+        Subdirectories that match an exclude pattern will not be traversed, and
+        will also not be part of the step.subdirs returned while traversing the
+        parent.
+
+        Files that match an exclude pattern will not be part of the step.files
+        returned while traversing the parent.
+
+        TODO: Consider building our own gitignore parse based on
+        fnmatch_pathname_to_regex() from
+        https://github.com/mherrmann/gitignore_parser/blob/8ea4444243e79aa6a359d58b9e9196c15ae6d2d8/gitignore_parser.py#L151
+        which itself is based on
+        https://github.com/snark/ignorance/blob/c9ec7881165e309c6d18cf00d8d62c9b80ea1168/ignorance/utils.py#L44
+        """
+        logger.debug(f"Parsing rule from pattern {pattern!r}")
+        rule = gitignore_parser.rule_from_pattern(pattern.rstrip("\n"), base_dir)
+        if rule is None:
+            raise ExcludeRuleMissing(f"No rule found in {pattern!r}")
+        if rule.anchored and base_dir is None:
+            raise ExcludeRuleError(f"Anchored pattern without base_dir in {pattern!r}")
+
+        logger.debug(f"Adding rule {rule!r} @ {rule.base_path!r}")
+        self.exclude_rules.append(rule)
+
+    def _do_exclude(self, path: Path, is_dir: bool) -> bool:
+        """Check if given path is excluded by any of our exclude rules."""
+        abs_path = str(path.resolve())
+        for rule in reversed(self.exclude_rules):
+            try:
+                if rule.match(abs_path):
+                    if rule.directory_only and not is_dir:
+                        continue  # this rule does not match after all
+                    logger.debug(f"    exclude rule {rule!r} matches {abs_path}")
+                    return not rule.negation
+            except ValueError:  # abs_path not relative to rule.base_path
+                pass
+        return False
+
     def traverse(self) -> Iterator[TraversalStep[T]]:
         """Perform the traversal of the added directories.
 
         For each directory traverse, yield a TraversalStep object that contains:
         - The path to the current directory being traversed.
-        - The set of all (immediate) subdirectories in the current directory.
-          This is NOT a mutable list, as you might expect from os.walk();
-          instead, to prevent traversing into a subdirectory, you can call
-          .skip_dir() with the relevant subdirectory.
-        - The set of all files in the current directory.
+        - The set of all (immediate) subdirectories in the current directory
+          that are not excluded. This is a frozenset (NOT a mutable list, as you
+          might expect from os.walk()); to prevent traversing into a subdir, you
+          should pass the subdir to .skip_dir().
+        - The set of all (not excluded) files in the current directory.
         - An ordered list of attached data items, for each of the directory
           levels starting at the base directory (the top-most parent directory
           passed to .add()), up to and including the current directory.
@@ -163,12 +229,27 @@ class DirectoryTraversal(Generic[T]):
 
                 logger.debug(f"  Traversing {cur_dir}")
                 self.skip_dirs.add(cur_id)  # don't traverse this dir again
+
+                subdir_paths = {cur_dir / subdir for subdir in subdirs}
+                file_paths = {cur_dir / filename for filename in filenames}
+
+                # Process excludes
+                exclude_subdirs = {
+                    path for path in subdir_paths if self._do_exclude(path, True)
+                }
+                for subdir in exclude_subdirs:
+                    logger.debug(f"    skip traversing excluded subdir {subdir}")
+                    self.skip_dir(subdir)
+                exclude_files = {
+                    path for path in file_paths if self._do_exclude(path, False)
+                }
+
                 # At this yield, the caller takes over control, and may modify
-                # .to_traverse/.skip_dirs/.attached (typically via .add() or
-                # .skip_dir()). We cannot assume anything about their state here.
+                # instance members (typically via .add(), .skip_dir(), or
+                # .exclude()). We cannot assume anything about their state here.
                 yield TraversalStep(
                     cur_dir,
-                    frozenset(cur_dir / subdir for subdir in subdirs),
-                    frozenset(cur_dir / filename for filename in filenames),
+                    frozenset(subdir_paths - exclude_subdirs),
+                    frozenset(file_paths - exclude_files),
                     list(accumulate_attached_data(base_dir, cur_dir)),
                 )
