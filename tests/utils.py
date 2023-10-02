@@ -6,6 +6,7 @@ import os
 import subprocess
 from dataclasses import dataclass, field, replace
 from pathlib import Path
+from pprint import pformat
 from textwrap import dedent
 from typing import Any, Dict, Iterable, Iterator, List, Optional, Tuple, Union
 
@@ -43,10 +44,12 @@ def walk_dir(path: Path) -> Iterator[Path]:
             yield Path(root, filename)
 
 
-def assert_unordered_equivalence(actual: Iterable[Any], expected: Iterable[Any]):
+def assert_unordered_equivalence(actual: Iterable[Any], expect: Iterable[Any]):
     actual_s = sorted(actual)
-    expected_s = sorted(expected)
-    assert actual_s == expected_s, f"{actual_s!r} != {expected_s!r}"
+    expect_s = sorted(expect)
+    assert (
+        actual_s == expect_s
+    ), f"--- EXPECTED ---\n{pformat(expect_s)}\n--- BUT GOT ---\n{pformat(actual_s)}"
 
 
 def collect_dep_names(deps: Iterable[DeclaredDependency]) -> Iterable[str]:
