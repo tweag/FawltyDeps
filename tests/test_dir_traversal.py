@@ -2,11 +2,11 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Generic, List, Optional, Set, Tuple, TypeVar
+from typing import Generic, List, Optional, Tuple, TypeVar
 
 import pytest
 
-from fawltydeps.dir_traversal import DirectoryTraversal
+from fawltydeps.dir_traversal import DirectoryTraversal, TraversalStep
 
 from .utils import assert_unordered_equivalence
 
@@ -75,16 +75,16 @@ class ExpectedTraverseStep(Generic[T]):
     """Expected data for one step of DirectoryTraversal."""
 
     # All strings are relative to tmp_path
-    cur_dir: str
+    dir: str
     subdirs: List[str]
     files: List[str]
     attached: List[T]
 
-    def prepare(self, tmp_path: Path) -> Tuple[Path, Set[Path], Set[Path], List[T]]:
-        return (
-            tmp_path / self.cur_dir,
-            {tmp_path / self.cur_dir / d for d in self.subdirs},
-            {tmp_path / self.cur_dir / f for f in self.files},
+    def prepare(self, tmp_path: Path) -> TraversalStep:
+        return TraversalStep(
+            tmp_path / self.dir,
+            frozenset(tmp_path / self.dir / d for d in self.subdirs),
+            frozenset(tmp_path / self.dir / f for f in self.files),
             self.attached,
         )
 
@@ -261,10 +261,7 @@ def test_DirectoryTraversal(vector: DirectoryTraversalVector, tmp_path):
     for path in vector.skip_dirs:
         traversal.skip_dir(tmp_path / path)
 
-    actual = [
-        (cur_dir, set(subdirs), set(files), list(data))
-        for cur_dir, subdirs, files, data in traversal.traverse()
-    ]
+    actual = list(traversal.traverse())
     if vector.expect_alternatives is None:  # vector.expect _must_ match
         expect = [step.prepare(tmp_path) for step in vector.expect]
         assert_unordered_equivalence(actual, expect)

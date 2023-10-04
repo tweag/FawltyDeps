@@ -87,24 +87,26 @@ def find_sources(  # pylint: disable=too-many-branches,too-many-statements
         else:  # must traverse directory to find Python environments
             traversal.add(path, PyEnvSource)
 
-    for _cur_dir, subdirs, files, extras in traversal.traverse():
-        for subdir in subdirs:  # don't recurse into dot dirs
+    for step in traversal.traverse():
+        for subdir in step.subdirs:  # don't recurse into dot dirs
             if subdir.name.startswith("."):
                 traversal.skip_dir(subdir)
 
-        types = {t for t in extras if t in source_types}
+        types = {t for t in step.attached if t in source_types}
         assert len(types) > 0
         if PyEnvSource in types:
-            for path in subdirs:
+            for path in step.subdirs:
                 package_dirs = validate_pyenv_source(path)
                 if package_dirs is not None:  # pyenvs found here
                     yield from package_dirs
                     traversal.skip_dir(path)  # don't recurse into Python environment
         if CodeSource in types:
-            # Retrieve base_dir from closest ancestor, i.e. last Path in extras
-            base_dir = next((x for x in reversed(extras) if isinstance(x, Path)), None)
+            # Retrieve base_dir from closest ancestor, i.e. last Path in attached
+            base_dir = next(
+                (x for x in reversed(step.attached) if isinstance(x, Path)), None
+            )
             assert base_dir is not None  # sanity check: No CodeSource w/o base_dir
-            for path in files:
+            for path in step.files:
                 try:  # catch all exceptions while traversing dirs
                     validated = validate_code_source(path, base_dir)
                     assert validated is not None  # sanity check
@@ -112,7 +114,7 @@ def find_sources(  # pylint: disable=too-many-branches,too-many-statements
                 except UnparseablePathException:  # don't abort directory walk for this
                     pass
         if DepsSource in types:
-            for path in files:
+            for path in step.files:
                 try:  # catch all exceptions while traversing dirs
                     validated = validate_deps_source(
                         path, settings.deps_parser_choice, filter_by_parser=True
