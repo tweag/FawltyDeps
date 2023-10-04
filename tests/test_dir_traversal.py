@@ -76,9 +76,9 @@ class ExpectedTraverseStep(Generic[T]):
 
     # All strings are relative to tmp_path
     dir: str
-    subdirs: List[str]
-    files: List[str]
-    attached: List[T]
+    subdirs: List[str] = field(default_factory=list)
+    files: List[str] = field(default_factory=list)
+    attached: List[T] = field(default_factory=list)
 
     def prepare(self, tmp_path: Path) -> TraversalStep:
         return TraversalStep(
@@ -105,21 +105,21 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
     DirectoryTraversalVector(
         "empty_dir",
         given=[],
-        expect=[ExpectedTraverseStep(".", [], [], [])],
+        expect=[ExpectedTraverseStep(".")],
     ),
     DirectoryTraversalVector(
         "one_file__attach_data",
         given=[File("foo")],
         add=[(".", (123,))],
-        expect=[ExpectedTraverseStep(".", [], ["foo"], [123])],
+        expect=[ExpectedTraverseStep(".", files=["foo"], attached=[123])],
     ),
     DirectoryTraversalVector(
         "one_subdir_plus__attach_data_on_both",
         given=[Dir("sub")],
         add=[(".", (123,)), ("sub", (456,))],
         expect=[
-            ExpectedTraverseStep(".", ["sub"], [], [123]),
-            ExpectedTraverseStep("sub", [], [], [123, 456]),
+            ExpectedTraverseStep(".", subdirs=["sub"], attached=[123]),
+            ExpectedTraverseStep("sub", attached=[123, 456]),
         ],
     ),
     DirectoryTraversalVector(
@@ -127,8 +127,8 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
         given=[Dir("sub")],
         add=[(".", (123, 456))],
         expect=[
-            ExpectedTraverseStep(".", ["sub"], [], [123, 456]),
-            ExpectedTraverseStep("sub", [], [], [123, 456]),
+            ExpectedTraverseStep(".", subdirs=["sub"], attached=[123, 456]),
+            ExpectedTraverseStep("sub", attached=[123, 456]),
         ],
     ),
     DirectoryTraversalVector(
@@ -136,8 +136,8 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
         given=[Dir("sub")],
         add=[(".", (123,)), (".", (456,))],
         expect=[
-            ExpectedTraverseStep(".", ["sub"], [], [123, 456]),
-            ExpectedTraverseStep("sub", [], [], [123, 456]),
+            ExpectedTraverseStep(".", subdirs=["sub"], attached=[123, 456]),
+            ExpectedTraverseStep("sub", attached=[123, 456]),
         ],
     ),
     DirectoryTraversalVector(
@@ -145,24 +145,24 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
         given=[Dir("sub")],
         add=[(".", (123,)), ("sub", ())],
         skip_dirs=["."],
-        expect=[ExpectedTraverseStep("sub", [], [], [])],
+        expect=[ExpectedTraverseStep("sub")],
     ),
     DirectoryTraversalVector(
         "nested_subdir__attach_data_on_some_parents__gets_data_from_grandparents",
         given=[Dir("a/b/c/d")],
         add=[("a/b/c", (123,)), ("a", (456,)), (".", ())],
         expect=[
-            ExpectedTraverseStep(".", ["a"], [], []),
-            ExpectedTraverseStep("a", ["b"], [], [456]),
-            ExpectedTraverseStep("a/b", ["c"], [], [456]),
-            ExpectedTraverseStep("a/b/c", ["d"], [], [456, 123]),
-            ExpectedTraverseStep("a/b/c/d", [], [], [456, 123]),
+            ExpectedTraverseStep(".", subdirs=["a"]),
+            ExpectedTraverseStep("a", subdirs=["b"], attached=[456]),
+            ExpectedTraverseStep("a/b", subdirs=["c"], attached=[456]),
+            ExpectedTraverseStep("a/b/c", subdirs=["d"], attached=[456, 123]),
+            ExpectedTraverseStep("a/b/c/d", attached=[456, 123]),
         ],
     ),
     DirectoryTraversalVector(
         "symlinks_to_self__are_not_traversed",
         given=[RelativeSymlink("rel_self", "."), AbsoluteSymlink("abs_self", ".")],
-        expect=[ExpectedTraverseStep(".", ["rel_self", "abs_self"], [], [])],
+        expect=[ExpectedTraverseStep(".", subdirs=["rel_self", "abs_self"])],
     ),
     DirectoryTraversalVector(
         "symlinks_to_parent__are_not_traversed",
@@ -171,8 +171,8 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
             AbsoluteSymlink("sub/abs_parent", "."),
         ],
         expect=[
-            ExpectedTraverseStep(".", ["sub"], [], []),
-            ExpectedTraverseStep("sub", ["rel_parent", "abs_parent"], [], []),
+            ExpectedTraverseStep(".", subdirs=["sub"]),
+            ExpectedTraverseStep("sub", subdirs=["rel_parent", "abs_parent"]),
         ],
     ),
     DirectoryTraversalVector(
@@ -183,19 +183,19 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
         ],
         expect_alternatives=[
             [
-                ExpectedTraverseStep(".", ["sub1", "sub2"], [], []),
-                ExpectedTraverseStep("sub1", ["rel_link_sub2"], [], []),
-                ExpectedTraverseStep("sub2", ["abs_link_sub1"], [], []),
+                ExpectedTraverseStep(".", subdirs=["sub1", "sub2"]),
+                ExpectedTraverseStep("sub1", subdirs=["rel_link_sub2"]),
+                ExpectedTraverseStep("sub2", subdirs=["abs_link_sub1"]),
             ],
             [
-                ExpectedTraverseStep(".", ["sub1", "sub2"], [], []),
-                ExpectedTraverseStep("sub1", ["rel_link_sub2"], [], []),
-                ExpectedTraverseStep("sub1/rel_link_sub2", ["abs_link_sub1"], [], []),
+                ExpectedTraverseStep(".", subdirs=["sub1", "sub2"]),
+                ExpectedTraverseStep("sub1", subdirs=["rel_link_sub2"]),
+                ExpectedTraverseStep("sub1/rel_link_sub2", subdirs=["abs_link_sub1"]),
             ],
             [
-                ExpectedTraverseStep(".", ["sub1", "sub2"], [], []),
-                ExpectedTraverseStep("sub2", ["abs_link_sub1"], [], []),
-                ExpectedTraverseStep("sub2/abs_link_sub1", ["rel_link_sub2"], [], []),
+                ExpectedTraverseStep(".", subdirs=["sub1", "sub2"]),
+                ExpectedTraverseStep("sub2", subdirs=["abs_link_sub1"]),
+                ExpectedTraverseStep("sub2/abs_link_sub1", subdirs=["rel_link_sub2"]),
             ],
         ],
     ),
@@ -207,8 +207,8 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
         ],
         add=[("here", ())],
         expect=[
-            ExpectedTraverseStep("here", ["symlink"], [], []),
-            ExpectedTraverseStep("here/symlink", [], ["file"], []),
+            ExpectedTraverseStep("here", subdirs=["symlink"]),
+            ExpectedTraverseStep("here/symlink", files=["file"]),
         ],
     ),
     DirectoryTraversalVector(
@@ -219,8 +219,8 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
         ],
         add=[("here", ())],
         expect=[
-            ExpectedTraverseStep("here", ["symlink"], [], []),
-            ExpectedTraverseStep("here/symlink", [], ["file"], []),
+            ExpectedTraverseStep("here", subdirs=["symlink"]),
+            ExpectedTraverseStep("here/symlink", files=["file"]),
         ],
     ),
     DirectoryTraversalVector(
@@ -232,16 +232,16 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
         ],
         expect_alternatives=[
             [
-                ExpectedTraverseStep(".", ["dir", "rel_link", "abs_link"], [], []),
-                ExpectedTraverseStep("dir", [], ["file"], []),
+                ExpectedTraverseStep(".", subdirs=["dir", "rel_link", "abs_link"]),
+                ExpectedTraverseStep("dir", files=["file"]),
             ],
             [
-                ExpectedTraverseStep(".", ["dir", "rel_link", "abs_link"], [], []),
-                ExpectedTraverseStep("rel_link", [], ["file"], []),
+                ExpectedTraverseStep(".", subdirs=["dir", "rel_link", "abs_link"]),
+                ExpectedTraverseStep("rel_link", files=["file"]),
             ],
             [
-                ExpectedTraverseStep(".", ["dir", "rel_link", "abs_link"], [], []),
-                ExpectedTraverseStep("abs_link", [], ["file"], []),
+                ExpectedTraverseStep(".", subdirs=["dir", "rel_link", "abs_link"]),
+                ExpectedTraverseStep("abs_link", files=["file"]),
             ],
         ],
     ),
