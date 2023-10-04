@@ -5,7 +5,7 @@ import os
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
-from typing import Dict, Generic, Iterator, List, NamedTuple, Set, Tuple, TypeVar
+from typing import Dict, FrozenSet, Generic, Iterator, List, NamedTuple, Set, TypeVar
 
 from fawltydeps.utils import dirs_between
 
@@ -31,6 +31,22 @@ class DirId(NamedTuple):
         """Construct DirId from given directory path."""
         dir_stat = path.stat()
         return cls(dir_stat.st_dev, dir_stat.st_ino)
+
+
+@dataclass(frozen=True, order=True)
+class TraversalStep(Generic[T]):
+    """Encapsulate a single step/directory in an ongoing directory traversal.
+
+    This is an expanded variant of the (dirpath, dirnames, filenames) tuple that
+    you would iterate over when doing an os.walk() or Path.walk().
+    For each directory that is traversed by a DirectoryTraversal object
+    (see below), an instance of this class is returned.
+    """
+
+    dir: Path  # the current directory being traversed.
+    subdirs: FrozenSet[Path]  # unignored subdirs within the current dir
+    files: FrozenSet[Path]  # unignored files within the current dir
+    attached: List[T]  # data attached to the current dir or any of its parents
 
 
 @dataclass
@@ -97,10 +113,10 @@ class DirectoryTraversal(Generic[T]):
         """
         self.skip_dirs.add(DirId.from_path(dir_path))
 
-    def traverse(self) -> Iterator[Tuple[Path, Set[Path], Set[Path], List[T]]]:
+    def traverse(self) -> Iterator[TraversalStep[T]]:
         """Perform the traversal of the added directories.
 
-        For each directory traverse, yield a 4-element tuple consisting of:
+        For each directory traverse, yield a TraversalStep object that contains:
         - The path to the current directory being traversed.
         - The set of all (immediate) subdirectories in the current directory.
           This is NOT a mutable list, as you might expect from os.walk();
@@ -150,9 +166,9 @@ class DirectoryTraversal(Generic[T]):
                 # At this yield, the caller takes over control, and may modify
                 # .to_traverse/.skip_dirs/.attached (typically via .add() or
                 # .skip_dir()). We cannot assume anything about their state here.
-                yield (
+                yield TraversalStep(
                     cur_dir,
-                    {cur_dir / subdir for subdir in subdirs},
-                    {cur_dir / filename for filename in filenames},
+                    frozenset(cur_dir / subdir for subdir in subdirs),
+                    frozenset(cur_dir / filename for filename in filenames),
                     list(accumulate_attached_data(base_dir, cur_dir)),
                 )
