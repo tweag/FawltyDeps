@@ -6,9 +6,9 @@
   }) {},
   python37_overlay ? self: super: { python37 = pkgsWith37.python37; },
   pkgs ? import (builtins.fetchTarball {
-    # Branch: nixos-23.05
-    url = "https://github.com/NixOS/nixpkgs/archive/9790f3242da2152d5aa1976e3e4b8b414f4dd206.tar.gz";
-    sha256 = "1y6zipys4803ckvnamfljb8raglgkbz1fz1fg03cxp4jqiiva5s1";
+    # Branch: nixos-unstable
+    url = "https://github.com/NixOS/nixpkgs/archive/1fcb41f796d091e9ebcd90d28c8fd8b5b93231be.tar.gz";
+    sha256 = "1crwvpvqrx7s4i0iygl99q7jlm07hxch4c8pzfnc98aqz6754a80";
   }) { overlays = [ python37_overlay ]; }
 }:
 pkgs.mkShell {
