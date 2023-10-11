@@ -6,6 +6,7 @@ import os
 import subprocess
 from dataclasses import dataclass, field, replace
 from pathlib import Path
+from textwrap import dedent
 from typing import Any, Dict, Iterable, Iterator, List, Optional, Tuple
 
 from fawltydeps.main import main
@@ -21,6 +22,12 @@ from fawltydeps.types import (
 SAMPLE_PROJECTS_DIR = Path(__file__).with_name("sample_projects")
 
 logger = logging.getLogger(__name__)
+
+
+def dedent_bytes(data: bytes) -> bytes:
+    """Like textwrap.dedent(), but for bytes instead of str."""
+    text = data.decode(encoding="utf-8", errors="surrogateescape")
+    return dedent(text).encode(encoding="utf-8", errors="surrogateescape")
 
 
 def walk_dir(path: Path) -> Iterator[Path]:
