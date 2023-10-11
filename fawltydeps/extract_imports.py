@@ -4,7 +4,7 @@ import ast
 import json
 import logging
 from pathlib import Path
-from typing import Iterable, Iterator, Optional, TextIO, Tuple
+from typing import Iterable, Iterator, Optional, TextIO, Tuple, Union
 
 import isort
 
@@ -37,12 +37,22 @@ ISORT_FALLBACK_CONFIG = make_isort_config(Path("."))
 
 
 def parse_code(
-    code: str, *, source: Location, local_context: isort.Config = ISORT_FALLBACK_CONFIG
+    code: Union[str, bytes],
+    *,
+    source: Location,
+    local_context: isort.Config = ISORT_FALLBACK_CONFIG,
 ) -> Iterator[ParsedImport]:
-    """Extract import statements from a string containing Python code.
+    """Extract import statements from a (byte)string containing Python code.
 
     Generate (i.e. yield) the module names that are imported in the order
     they appear in the code.
+
+    The given code can be either a str or a bytes object. If a bytes object is
+    used, the approrpiate encoding of the source code will be auto-detected,
+    but if a str object is used, we assume that the caller has already decoded
+    the source correctly, e.g. by using the tokenize.open() helper or similar.
+    For more details about Python source file encodings, please see
+    https://docs.python.org/3/reference/lexical_analysis.html#encoding-declarations.
     """
 
     def is_external_import(name: str) -> bool:

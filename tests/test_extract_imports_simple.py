@@ -15,6 +15,8 @@ from fawltydeps.extract_imports import (
 )
 from fawltydeps.types import CodeSource, Location, ParsedImport, PathOrSpecial
 
+from .utils import dedent_bytes
+
 
 def imports_w_linenos(
     names_w_linenos: List[Tuple[str, int]],
@@ -194,6 +196,20 @@ def write_code_sources(write_tmp_files):
             ),
             [],
             id="stdlib_import_with_if_else_fallback__ignores_all",
+        ),
+        pytest.param(
+            dedent_bytes(
+                b"""\
+                # -*- coding: big5 -*-
+
+                # Some Traditional Chinese characters:
+                chars = "\xa4@\xa8\xc7\xa4\xa4\xa4\xe5\xa6r\xb2\xc5"
+
+                import numpy
+                """
+            ),
+            [("numpy", 6)],
+            id="legacy_encoding__is_correctly_interpreted",
         ),
     ],
 )
