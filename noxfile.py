@@ -105,6 +105,7 @@ def lint(session):
         "too-many-instance-attributes",
         "too-many-lines",
         "unused-argument",
+        "use-dict-literal",
         "use-implicit-booleaness-not-comparison",
     ]
     session.run(
