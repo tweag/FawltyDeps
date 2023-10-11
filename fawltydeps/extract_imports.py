@@ -3,6 +3,7 @@
 import ast
 import json
 import logging
+import tokenize
 from pathlib import Path
 from typing import Iterable, Iterator, Optional, TextIO, Tuple, Union
 
@@ -159,9 +160,10 @@ def parse_python_file(
     """
     if not local_context:
         local_context = make_isort_config(Path("."), (path.parent,))
-    yield from parse_code(
-        path.read_text(), source=Location(path), local_context=local_context
-    )
+    with tokenize.open(path) as pyfile:
+        yield from parse_code(
+            pyfile.read(), source=Location(path), local_context=local_context
+        )
 
 
 def parse_source(

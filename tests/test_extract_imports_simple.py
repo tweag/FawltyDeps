@@ -241,6 +241,25 @@ def test_parse_python_file__combo_of_simple_imports__extracts_all_externals(
     assert list(parse_python_file(tmp_path / "test.py")) == expect
 
 
+def test_parse_python_file__legacy_encoding__extracts_import(tmp_path):
+    script = tmp_path / "big5.py"
+    script.write_bytes(
+        dedent_bytes(
+            b"""\
+            # -*- coding: big5 -*-
+
+            # Some Traditional Chinese characters:
+            chars = "\xa4@\xa8\xc7\xa4\xa4\xa4\xe5\xa6r\xb2\xc5"
+
+            import numpy
+            """
+        )
+    )
+
+    expect = imports_w_linenos([("numpy", 6)], script)
+    assert list(parse_python_file(script)) == expect
+
+
 def test_parse_notebook_file__simple_imports__extracts_all(tmp_path):
     code = generate_notebook([["import pandas\n", "import pytorch"]])
     script = tmp_path / "test.ipynb"
