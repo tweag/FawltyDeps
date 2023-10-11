@@ -119,24 +119,20 @@ def test_local_env__empty_venv__has_no_packages(tmp_path):
     assert lpl.packages == {}
 
 
-def test_local_env__default_venv__contains_pip_and_setuptools(tmp_path):
+def test_local_env__default_venv__contains_pip(tmp_path):
+    # Different Python versions install different packages in their default venv
+    # (e.g. Python v3.12 no longer installs setuptools). Also, package versions
+    # will differ in exactly which import names are provided. The only common
+    # subset that can expect across all of our supported versions is that the
+    # "pip" package is installed, and that it provides a "pip" import name.
     venv.create(tmp_path, with_pip=True)
     lpl = LocalPackageResolver(pyenv_sources(tmp_path))
-    # We cannot do a direct comparison, as different Python/pip/setuptools
-    # versions differ in exactly which packages are provided. The following
-    # is a subset that we can expect across all of our supported versions.
-    expect = {  # package name -> (subset of) provided import names
-        "pip": {"pip"},
-        "setuptools": {"setuptools", "pkg_resources"},
-    }
     expect_location = tmp_path / f"lib/python{major}.{minor}/site-packages"
-    for expect_package_name, expect_import_names in expect.items():
-        assert expect_package_name in lpl.packages
-        p = lpl.packages[expect_package_name]
-        assert expect_package_name == p.package_name
-        for expect_import_name in expect_import_names:
-            assert expect_import_name in p.import_names
-            assert str(expect_location) in p.debug_info
+    assert "pip" in lpl.packages
+    pip = lpl.packages["pip"]
+    assert pip.package_name == "pip"
+    assert "pip" in pip.import_names
+    assert str(expect_location) in pip.debug_info
 
 
 def test_local_env__current_venv__contains_prepared_packages(isolate_default_resolver):
