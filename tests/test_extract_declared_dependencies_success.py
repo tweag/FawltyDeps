@@ -14,7 +14,12 @@ from fawltydeps.settings import Settings
 from fawltydeps.traverse_project import find_sources
 from fawltydeps.types import DepsSource
 
-from .utils import assert_unordered_equivalence, collect_dep_names, deps_factory
+from .utils import (
+    assert_unordered_equivalence,
+    collect_dep_names,
+    dedent_bytes,
+    deps_factory,
+)
 
 
 @pytest.mark.parametrize(
@@ -280,6 +285,21 @@ def test_parse_requirements_txt(write_tmp_files, file_content, expect_deps):
             """,
             ["pandas", "click", "annoy", "foobar"],
             id="nested_variable_reference__succeeds",
+        ),
+        pytest.param(
+            dedent_bytes(
+                b"""\
+                # -*- coding: big5 -*-
+                from setuptools import setup
+
+                setup(
+                    name="\xa4@\xa8\xc7\xa4\xa4\xa4\xe5\xa6r\xb2\xc5",
+                    install_requires=["pandas", "click"]
+                )
+                """
+            ),
+            ["pandas", "click"],
+            id="legacy_encoding__succeeds",
         ),
     ],
 )

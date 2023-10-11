@@ -24,12 +24,15 @@ def local_pypi(request, monkeypatch):
 
 @pytest.fixture
 def write_tmp_files(tmp_path: Path):
-    def _inner(file_contents: Dict[str, str]) -> Path:
+    def _inner(file_contents: Dict[str, Union[str, bytes]]) -> Path:
         for filename, contents in file_contents.items():
             path = tmp_path / filename
             assert path.relative_to(tmp_path)
             path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text(dedent(contents))
+            if isinstance(contents, bytes):
+                path.write_bytes(contents)
+            else:
+                path.write_text(dedent(contents))
         return tmp_path
 
     return _inner

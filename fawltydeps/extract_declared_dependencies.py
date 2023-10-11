@@ -5,6 +5,7 @@ import configparser
 import logging
 import re
 import sys
+import tokenize
 from dataclasses import replace
 from pathlib import Path
 from tempfile import NamedTemporaryFile
@@ -111,7 +112,8 @@ def parse_setup_py(path: Path) -> Iterator[DeclaredDependency]:
             and node.value.func.id == "setup"
         )
 
-    setup_contents = ast.parse(path.read_text(), filename=str(source.path))
+    with tokenize.open(path) as setup_py:
+        setup_contents = ast.parse(setup_py.read(), filename=str(source.path))
     for node in ast.walk(setup_contents):
         tracked_vars.evaluate(node)
         if _is_setup_function_call(node):
