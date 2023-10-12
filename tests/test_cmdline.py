@@ -23,6 +23,7 @@ from fawltydeps.types import Location, UnusedDependency
 from .test_extract_imports_simple import generate_notebook
 from .utils import (
     assert_unordered_equivalence,
+    dedent_bytes,
     run_fawltydeps_function,
     run_fawltydeps_subprocess,
 )
@@ -278,6 +279,25 @@ def test_list_imports__pick_multiple_files_dir_and_code__prints_all_imports(
         "--list-imports", "--code", "-", f"{path_code2}", to_stdin=code
     )
     expect = ["django", "requests", "foo", "numpy"]
+    assert_unordered_equivalence(output.splitlines()[:-2], expect)
+    assert returncode == 0
+
+
+def test_list_imports__stdin_with_legacy_encoding__prints_all_imports():
+    code = dedent_bytes(
+        b"""\
+        # -*- coding: big5 -*-
+
+        # Some Traditional Chinese characters:
+        chars = "\xa4@\xa8\xc7\xa4\xa4\xa4\xe5\xa6r\xb2\xc5"
+
+        import numpy
+        """
+    )
+    output, returncode = run_fawltydeps_function(
+        "--list-imports", "--code", "-", to_stdin=code
+    )
+    expect = ["numpy"]
     assert_unordered_equivalence(output.splitlines()[:-2], expect)
     assert returncode == 0
 

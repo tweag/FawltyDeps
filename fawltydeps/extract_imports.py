@@ -5,7 +5,7 @@ import json
 import logging
 import tokenize
 from pathlib import Path
-from typing import Iterable, Iterator, Optional, TextIO, Tuple, Union
+from typing import BinaryIO, Iterable, Iterator, Optional, Tuple, Union
 
 import isort
 
@@ -167,7 +167,7 @@ def parse_python_file(
 
 
 def parse_source(
-    src: CodeSource, stdin: Optional[TextIO] = None
+    src: CodeSource, stdin: Optional[BinaryIO] = None
 ) -> Iterator[ParsedImport]:
     """Invoke a suitable parser for the given source.
 
@@ -206,7 +206,7 @@ def parse_source(
 
 
 def parse_sources(
-    sources: Iterable[CodeSource], stdin: Optional[TextIO] = None
+    sources: Iterable[CodeSource], stdin: Optional[BinaryIO] = None
 ) -> Iterator[ParsedImport]:
     """Parse import statements from the given sources."""
     for source in sources:
