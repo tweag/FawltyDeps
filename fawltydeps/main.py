@@ -15,7 +15,7 @@ import logging
 import sys
 from functools import partial
 from operator import attrgetter
-from typing import Dict, Iterator, List, Optional, Set, TextIO, Type
+from typing import BinaryIO, Dict, Iterator, List, Optional, Set, TextIO, Type
 
 try:  # import from Pydantic V2
     from pydantic.v1.json import custom_pydantic_encoder
@@ -78,7 +78,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
         .imports).
     """
 
-    def __init__(self, settings: Settings, stdin: Optional[TextIO] = None):
+    def __init__(self, settings: Settings, stdin: Optional[BinaryIO] = None):
         self.settings = settings
         self.stdin = stdin
         self.version = version()
@@ -167,7 +167,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
         )
 
     @classmethod
-    def create(cls, settings: Settings, stdin: Optional[TextIO] = None) -> "Analysis":
+    def create(cls, settings: Settings, stdin: Optional[BinaryIO] = None) -> "Analysis":
         """Exercise FawltyDeps' core logic according to the given settings.
 
         Perform the actions specified in 'settings.actions' and apply the other
@@ -347,7 +347,7 @@ def print_output(
 
 def main(
     cmdline_args: Optional[List[str]] = None,  # defaults to sys.argv[1:]
-    stdin: TextIO = sys.stdin,
+    stdin: BinaryIO = sys.stdin.buffer,
     stdout: TextIO = sys.stdout,
 ) -> int:
     """Command-line entry point."""

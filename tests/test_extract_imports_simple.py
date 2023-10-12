@@ -1,6 +1,7 @@
 """Test that we can extract simple imports from Python code."""
 import json
 import logging
+from io import BytesIO
 from pathlib import Path
 from textwrap import dedent
 from typing import Dict, List, Tuple, Union
@@ -561,3 +562,19 @@ def test_parse_sources__ignore_first_party_imports(
     ]
 
     assert list(parse_sources(code_sources)) == expect
+
+
+def test_parse_sources__legacy_encoding_on_stdin__extracts_import():
+    code = dedent_bytes(
+        b"""\
+        # -*- coding: big5 -*-
+
+        # Some Traditional Chinese characters:
+        chars = "\xa4@\xa8\xc7\xa4\xa4\xa4\xe5\xa6r\xb2\xc5"
+
+        import numpy
+        """
+    )
+
+    expect = imports_w_linenos([("numpy", 6)], "<stdin>")
+    assert list(parse_sources([CodeSource("<stdin>")], BytesIO(code))) == expect

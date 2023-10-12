@@ -7,7 +7,7 @@ import subprocess
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 from textwrap import dedent
-from typing import Any, Dict, Iterable, Iterator, List, Optional, Tuple
+from typing import Any, Dict, Iterable, Iterator, List, Optional, Tuple, Union
 
 from fawltydeps.main import main
 from fawltydeps.packages import IdentityMapping, LocalPackageResolver, Package
@@ -129,19 +129,21 @@ def run_fawltydeps_subprocess(
 def run_fawltydeps_function(
     *args: str,
     config_file: Path = Path("/dev/null"),
-    to_stdin: Optional[str] = None,
+    to_stdin: Optional[Union[str, bytes]] = None,
     basepath: Optional[Path] = None,
 ) -> Tuple[str, int]:
     """Run FawltyDeps with `main` function. Designed for unit tests.
 
     Ignores logging output and returns stdout and the exit code
     """
+    if isinstance(to_stdin, str):
+        to_stdin = to_stdin.encode()
     output = io.StringIO()
     exit_code = main(
         cmdline_args=([str(basepath)] if basepath else [])
         + [f"--config-file={str(config_file)}"]
         + list(args),
-        stdin=io.StringIO(to_stdin),
+        stdin=io.BytesIO(to_stdin or b""),
         stdout=output,
     )
 
