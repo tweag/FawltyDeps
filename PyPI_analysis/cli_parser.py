@@ -1,14 +1,16 @@
-"""Declare command line options.
+"""Declare PyPI analysis command line options.
 
 Part of the options are strictly related to `Settings` object
 and part is for general purpose.
+
+Reuse of Fawltydeps command line options.
 """
 
 import argparse
 from pathlib import Path
 from typing import Any, Optional, Sequence
 
-from fawltydeps.settings import Action, parse_path_or_stdin
+from fawltydeps.settings import parse_path_or_stdin
 from fawltydeps.utils import version
 
 
@@ -24,22 +26,6 @@ class ArgparseUnionAction(argparse.Action):
     ) -> None:
         items = getattr(namespace, self.dest, [])
         setattr(namespace, self.dest, set(items) | set(values))
-
-
-def populate_parser_actions(parser: argparse._ActionsContainer) -> None:
-    """Add the Actions-related arguments to the command-line parser.
-
-    These are mutually exclusive options that each will set the .actions
-    member to a set of 'Action's. If not given, the .actions member will
-    remain unset, to allow the underlying default to come through.
-    """
-    parser.add_argument(
-        "--list-imports",
-        dest="actions",
-        action="store_const",
-        const={Action.LIST_IMPORTS},
-        help="List third-party imports extracted from code",
-    )
 
 
 def populate_output_formats(parser: argparse._ActionsContainer) -> None:
@@ -164,12 +150,6 @@ def build_parser(
     )
 
     parser.register("action", "union", ArgparseUnionAction)
-
-    # A mutually exclusive group for arguments specifying .actions
-    action_group = parser.add_argument_group(
-        title="Actions (choose one)"
-    ).add_mutually_exclusive_group()
-    populate_parser_actions(action_group)
 
     # A mutually exclusive group for arguments specifying .output_format
     output_format_group = parser.add_argument_group(

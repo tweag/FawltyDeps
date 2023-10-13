@@ -1,3 +1,8 @@
+"""Detect different types of imports for automating PyPI analysis.
+
+Reuse of Fawltydeps extract_imports code.
+"""
+
 import ast
 import json
 import logging
@@ -37,70 +42,74 @@ ISORT_FALLBACK_CONFIG = make_isort_config(Path("."))
 def parse_code(
     code: str, *, source: Location, local_context: isort.Config = ISORT_FALLBACK_CONFIG
 ) -> Iterator[Dict[str, ParsedImport]]:
-    """Extract import statements from a string containing Python code.
+    """Extract conditional import statements from a string containing Python code.
 
-    Generate (i.e. yield) the module names that are imported in the order
+    Generate (i.e. yield) the import category module names that are imported in the order
     they appear in the code.
     """
 
     def is_external_import(name: str) -> bool:
         return isort.place_module(name, config=local_context) == "THIRDPARTY"
 
+    def conditional_imports(parsed_code: ast.Module):
+        for node in ast.walk(parsed_code):
+            if isinstance(node, ast.Try):
+                if isinstance(node.handlers, list) and len(node.handlers) == 1:
+                    handler = node.handlers[0]
+                    if (
+                        isinstance(handler.type, ast.Name)
+                        and handler.type.id == "ImportError"
+                        and isinstance(handler.body, list)
+                        and len(handler.body) == 1
+                        and isinstance(handler.body[0], ast.Pass)
+                    ):
+                        if isinstance(node.body, list):
+                            for node_import in node.body:
+                                if isinstance(node_import, ast.Import):
+                                    for alias in node_import.names:
+                                        name = alias.name.split(".", 1)[0]
+                                        if is_external_import(name):
+                                            yield {
+                                                "Conditional imports": ParsedImport(
+                                                    name=name,
+                                                    source=source.supply(
+                                                        lineno=node.lineno
+                                                    ),
+                                                )
+                                            }
+                                        elif isinstance(node_import, ast.ImportFrom):
+                                            # Relative imports are always relative to the current package, and
+                                            # will therefore not resolve to a third-party package.
+                                            # They are therefore uninteresting to us.
+                                            if (
+                                                node_import.level == 0
+                                                and node_import.module is not None
+                                            ):
+                                                name = node_import.module.split(".", 1)[
+                                                    0
+                                                ]
+                                                if is_external_import(name):
+                                                    yield {
+                                                        "Conditional imports": ParsedImport(
+                                                            name=name,
+                                                            source=source.supply(
+                                                                lineno=node.lineno
+                                                            ),
+                                                        )
+                                                    }
+
     try:
         parsed_code = ast.parse(code, filename=str(source.path))
     except SyntaxError as exc:
         logger.error(f"Could not parse code from {source}: {exc}")
         return
-
-    for node in ast.walk(parsed_code):
-        if isinstance(node, ast.Try):
-            if isinstance(node.handlers, list) and len(node.handlers) == 1:
-                handler = node.handlers[0]
-                if (
-                    isinstance(handler.type, ast.Name)
-                    and handler.type.id == "ImportError"
-                    and isinstance(handler.body, list)
-                    and len(handler.body) == 1
-                    and isinstance(handler.body[0], ast.Pass)
-                ):
-                    if isinstance(node.body, list):
-                        for node_import in node.body:
-                            if isinstance(node_import, ast.Import):
-                                for alias in node_import.names:
-                                    name = alias.name.split(".", 1)[0]
-                                    if is_external_import(name):
-                                        yield {
-                                            "Conditional imports": ParsedImport(
-                                                name=name,
-                                                source=source.supply(
-                                                    lineno=node.lineno
-                                                ),
-                                            )
-                                        }
-                            elif isinstance(node_import, ast.ImportFrom):
-                                # Relative imports are always relative to the current package, and
-                                # will therefore not resolve to a third-party package.
-                                # They are therefore uninteresting to us.
-                                if (
-                                    node_import.level == 0
-                                    and node_import.module is not None
-                                ):
-                                    name = node_import.module.split(".", 1)[0]
-                                    if is_external_import(name):
-                                        yield {
-                                            "Conditional imports": ParsedImport(
-                                                name=name,
-                                                source=source.supply(
-                                                    lineno=node.lineno
-                                                ),
-                                            )
-                                        }
+    yield from conditional_imports(parsed_code)
 
 
 def parse_notebook_file(
     path: Path, local_context: Optional[isort.Config] = None
 ) -> Iterator[ParsedImport]:
-    """Extract import statements from an ipynb notebook.
+    """Extract conditional import statements from an ipynb notebook.
 
     Generate (i.e. yield) the module names that are imported in the order
     they appear in the file.
@@ -164,7 +173,7 @@ def parse_notebook_file(
 def parse_python_file(
     path: Path, local_context: Optional[isort.Config] = None
 ) -> Iterator[ParsedImport]:
-    """Extract import statements from a file containing Python code.
+    """Extract conditional import statements from a file containing Python code.
 
     Generate (i.e. yield) the module names that are imported in the order
     they appear in the file.

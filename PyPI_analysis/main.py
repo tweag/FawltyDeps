@@ -28,7 +28,6 @@ from PyPI_analysis.cli_parser import build_parser
 logger = logging.getLogger(__name__)
 
 VERBOSE_PROMPT = "For a more verbose report re-run with the `--detailed` option."
-UNUSED_DEPS_OUTPUT_PREFIX = "These dependencies appear to be unused (i.e. not imported)"
 
 
 class Analysis:  # pylint: disable=too-many-instance-attributes
@@ -44,16 +43,6 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
     - .sources (a set of CodeSource, DepsSource and/or PyEnvSource objects)
         reflect the result of traversing the project structure.
     - .imports contains the imports found by parsing the CodeSources.
-    - .declared_deps contains the declared dependencies found by parsing the
-        DepsSources.
-    - .resolved_deps contains the mapping from .declared_deps to the Python
-        package that expose the corresponding imports. This package is found
-        within one of the PyEnvSources.
-    - .undeclared_deps is calculated by finding the .imports that are not
-        present in any of the .resolved_deps.
-    - .unused_deps is the subset of .declared_deps whose corresponding packages
-        only provide imports that are never actually imported (i.e. present in
-        .imports).
     """
 
     def __init__(self, settings: Settings, stdin: Optional[TextIO] = None):
@@ -82,7 +71,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
         return set(
             find_sources(
                 self.settings,
-                set.union(*[source_types[action] for action in self.settings.actions]),
+                set.union(*[source_types[action] for action in {Action.LIST_IMPORTS}]),
             )
         )
 
@@ -111,11 +100,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
         """
         ret = cls(settings, stdin)
 
-        # Compute only the properties needed to satisfy settings.actions:
-        if ret.is_enabled(Action.LIST_SOURCES):
-            ret.sources  # pylint: disable=pointless-statement
-        if ret.is_enabled(Action.LIST_IMPORTS):
-            ret.imports  # pylint: disable=pointless-statement
+        ret.imports
 
         return ret
 
@@ -175,8 +160,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
             for line in lines:
                 print(line, file=out)
 
-        if self.is_enabled(Action.LIST_IMPORTS):
-            output(render_imports())
+        output(render_imports())
 
     @staticmethod
     def success_message(check_undeclared: bool, check_unused: bool) -> Optional[str]:
