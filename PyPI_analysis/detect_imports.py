@@ -98,12 +98,97 @@ def parse_code(
                                                         )
                                                     }
 
+    def alternative_imports(parsed_code: ast.Module):
+        for node in ast.walk(parsed_code):
+            if isinstance(node, ast.Try):
+                if isinstance(node.handlers, list) and len(node.handlers) == 1:
+                    handler = node.handlers[0]
+                    if (
+                        isinstance(handler.type, ast.Name)
+                        and handler.type.id == "ImportError"
+                        and isinstance(handler.body, list)
+                        and all(
+                            isinstance(handler_body, ast.Import)
+                            for handler_body in handler.body
+                        )
+                    ):
+                        if isinstance(node.body, list):
+                            for node_import in node.body:
+                                if isinstance(node_import, ast.Import):
+                                    for alias in node_import.names:
+                                        name = alias.name.split(".", 1)[0]
+                                        if is_external_import(name):
+                                            yield {
+                                                "Alternative imports": ParsedImport(
+                                                    name=name,
+                                                    source=source.supply(
+                                                        lineno=node.lineno
+                                                    ),
+                                                )
+                                            }
+
+                                        elif isinstance(node_import, ast.ImportFrom):
+                                            # Relative imports are always relative to the current package, and
+                                            # will therefore not resolve to a third-party package.
+                                            # They are therefore uninteresting to us.
+                                            if (
+                                                node_import.level == 0
+                                                and node_import.module is not None
+                                            ):
+                                                name = node_import.module.split(".", 1)[
+                                                    0
+                                                ]
+                                                if is_external_import(name):
+                                                    yield {
+                                                        "Alternative imports": ParsedImport(
+                                                            name=name,
+                                                            source=source.supply(
+                                                                lineno=node.lineno
+                                                            ),
+                                                        )
+                                                    }
+                            for node_import in handler.body:
+                                if isinstance(node_import, ast.Import):
+                                    for alias in node_import.names:
+                                        name = alias.name.split(".", 1)[0]
+                                        if is_external_import(name):
+                                            yield {
+                                                "Alternative imports": ParsedImport(
+                                                    name=name,
+                                                    source=source.supply(
+                                                        lineno=node.lineno
+                                                    ),
+                                                )
+                                            }
+
+                                        elif isinstance(node_import, ast.ImportFrom):
+                                            # Relative imports are always relative to the current package, and
+                                            # will therefore not resolve to a third-party package.
+                                            # They are therefore uninteresting to us.
+                                            if (
+                                                node_import.level == 0
+                                                and node_import.module is not None
+                                            ):
+                                                name = node_import.module.split(".", 1)[
+                                                    0
+                                                ]
+                                                if is_external_import(name):
+                                                    yield {
+                                                        "Alternative imports": ParsedImport(
+                                                            name=name,
+                                                            source=source.supply(
+                                                                lineno=node.lineno
+                                                            ),
+                                                        )
+                                                    }
+
     try:
         parsed_code = ast.parse(code, filename=str(source.path))
     except SyntaxError as exc:
         logger.error(f"Could not parse code from {source}: {exc}")
         return
     yield from conditional_imports(parsed_code)
+    yield from alternative_imports(parsed_code)
 
 
 def parse_notebook_file(

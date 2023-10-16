@@ -148,11 +148,11 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
         def render_imports() -> Iterator[str]:
             if detailed:
                 for imp in self.imports:
-                    yield f"Conditional imports: {imp['Conditional imports'].source}: {imp['Conditional imports'].name}"
+                    yield f"{list(imp.keys())[0]}: {imp[list(imp.keys())[0]].source}: {imp[list(imp.keys())[0]].name}"
             else:
                 unique_imports = {
-                    "Conditional imports: " + i["Conditional imports"].name
-                    for i in self.imports
+                    list(imp.keys())[0] + ": " + imp[list(imp.keys())[0]].name
+                    for imp in self.imports
                 }
                 yield from sorted(unique_imports)
 
@@ -165,7 +165,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
     @staticmethod
     def success_message(check_undeclared: bool, check_unused: bool) -> Optional[str]:
         """Returns the message to print when the analysis finds no errors."""
-        return "No conditional imports detected."
+        return "No conditional or alternative imports detected."
 
 
 def assign_exit_code(analysis: Analysis) -> int:
