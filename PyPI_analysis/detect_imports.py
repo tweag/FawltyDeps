@@ -58,7 +58,7 @@ def parse_code(
                     handler = node.handlers[0]
                     if (
                         isinstance(handler.type, ast.Name)
-                        and handler.type.id == "ImportError"
+                        and handler.type.id in ["ImportError", "ModuleNotFoundError"]
                         and isinstance(handler.body, list)
                         and len(handler.body) == 1
                         and isinstance(handler.body[0], ast.Pass)
@@ -102,7 +102,7 @@ def parse_code(
                     handler = node.handlers[0]
                     if (
                         isinstance(handler.type, ast.Name)
-                        and handler.type.id == "ImportError"
+                        and handler.type.id in ["ImportError", "ModuleNotFoundError"]
                         and isinstance(handler.body, list)
                         and all(
                             isinstance(handler_body, ast.Import)
