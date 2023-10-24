@@ -67,6 +67,8 @@ class TraversalStep(Generic[T]):
     subdirs: FrozenSet[Path]  # non-excluded subdirs within the current dir
     files: FrozenSet[Path]  # non-excluded files within the current dir
     attached: List[T]  # data attached to the current dir or any of its parents
+    excluded_subdirs: FrozenSet[Path]  # excluded subdirs within the current dir
+    excluded_files: FrozenSet[Path]  # excluded files within the current dir
 
 
 @dataclass
@@ -192,6 +194,8 @@ class DirectoryTraversal(Generic[T]):  # type: ignore
         - An ordered list of attached data items, for each of the directory
           levels starting at the base directory (the top-most parent directory
           passed to .add()), up to and including the current directory.
+        - The set of excluded subdirs.
+        - The set of excluded files.
 
         Directories that have already been .skip_dir()ed will not be traversed,
         nor will a directory previously traversed by this instance be traversed
@@ -252,4 +256,6 @@ class DirectoryTraversal(Generic[T]):  # type: ignore
                     frozenset(subdir_paths - exclude_subdirs),
                     frozenset(file_paths - exclude_files),
                     list(accumulate_attached_data(base_dir, cur_dir)),
+                    frozenset(exclude_subdirs),
+                    frozenset(exclude_files),
                 )
