@@ -304,6 +304,24 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
             ExpectedTraverseStep("dir", files=["foo.py"], excluded_subdirs=[".venv"]),
         ],
     ),
+    DirectoryTraversalVector(
+        "excluded_dot_dirs__are_traversed_if_they_are_also_explicitly_added",
+        given=[
+            File(".venv/sub/file"),
+            File("dir/.venv/sub/file"),
+            File("dir/foo.py"),
+        ],
+        add=[AddCall(path=".", attach=(123,)), AddCall(path=".venv", attach=(456,))],
+        exclude_patterns=[".*"],  # exclude all paths that start with "."
+        expect=[
+            ExpectedTraverseStep(".", subdirs=[".venv", "dir"], attached=[123]),
+            ExpectedTraverseStep(".venv", subdirs=["sub"], attached=[123, 456]),
+            ExpectedTraverseStep(".venv/sub", files=["file"], attached=[123, 456]),
+            ExpectedTraverseStep(
+                "dir", files=["foo.py"], excluded_subdirs=[".venv"], attached=[123]
+            ),
+        ],
+    ),
     #
     # Testing exclude patterns
     #
