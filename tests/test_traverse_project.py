@@ -25,11 +25,12 @@ class TraverseProjectVector:
 
     id: str
     project: str  # The base path for this test, relative to SAMPLE_PROJECTS_DIR
-    # The following sets contain paths that are all relative to cwd
+    # These sets contain input paths that are all relative to the above project:
     code: Set[str] = dataclasses.field(default_factory=lambda: {"."})
     deps: Set[str] = dataclasses.field(default_factory=lambda: {"."})
     pyenvs: Set[str] = dataclasses.field(default_factory=lambda: {"."})
     deps_parser_choice: Optional[ParserChoice] = None
+    # These are paths (also relative to the project) that we expect to find:
     expect_imports_src: Set[str] = dataclasses.field(default_factory=set)
     expect_deps_src: Set[str] = dataclasses.field(default_factory=set)
     expect_pyenv_src: Set[str] = dataclasses.field(default_factory=set)
@@ -337,16 +338,34 @@ find_sources_vectors = [
         expect_deps_src={"requirements.txt", "subdir/requirements.txt"},
     ),
     TraverseProjectVector(
+        "default_traversal_in_hidden_files__finds_nothing",
+        "hidden_files",
+    ),
+    TraverseProjectVector(
+        "passing_dot_files_explicitly__does_find_them",
+        "hidden_files",
+        code={".hidden.code.py"},
+        deps={".hidden.requirements.txt"},
+        expect_imports_src={".hidden.code.py"},
+        expect_deps_src={".hidden.requirements.txt"},
+    ),
+    TraverseProjectVector(
         "passing_dot_dir_explicitly__does_traverse_into_it",
-        "no_issues",
-        code={".venv"},
-        deps={".venv"},
+        "hidden_files",
+        code={".hidden_dir"},
+        deps={".hidden_dir"},
         pyenvs=set(),
-        expect_imports_src={
-            ".venv/lib/python3.10/site-packages/dummy_package/setup.py",
-            ".venv/lib/python3.10/site-packages/dummy_package/code.py",
-        },
-        expect_deps_src={".venv/lib/python3.10/site-packages/dummy_package/setup.py"},
+        expect_imports_src={".hidden_dir/code.py"},
+        expect_deps_src={".hidden_dir/requirements.txt"},
+    ),
+    TraverseProjectVector(
+        "passing_parent_dir_and_dot_dir_explicitly__does_traverse_into_it",
+        "hidden_files",
+        code={".hidden_dir"},
+        deps={".hidden_dir"},
+        pyenvs={"."},
+        expect_imports_src={".hidden_dir/code.py"},
+        expect_deps_src={".hidden_dir/requirements.txt"},
     ),
     #
     # Testing 'pyenvs' alone:
@@ -420,6 +439,25 @@ find_sources_vectors = [
             "poetry2nix_result/lib/python3.9/site-packages",
         },
     ),
+    TraverseProjectVector(
+        "given_parent_dir__does_not_find_pyenvs_inside_dot_dir",
+        "hidden_files",
+        code=set(),
+        deps=set(),
+        expect_pyenv_src=set(),
+    ),
+    TraverseProjectVector(
+        "given_dot_dir__finds_pyenvs_inside_dot_dir",
+        "hidden_files",
+        code=set(),
+        deps=set(),
+        pyenvs={".venvs"},
+        expect_pyenv_src={
+            ".venvs/.venv/lib/python3.10/site-packages",
+            ".venvs/another-venv/lib/python3.8/site-packages",
+            ".venvs/another-venv/lib/python3.11/site-packages",
+        },
+    ),
     #
     # Test interaction of 'pyenvs' with 'code' and 'deps':
     #
@@ -451,6 +489,26 @@ find_sources_vectors = [
         expect_pyenv_src={
             "__pypackages__/3.7/lib",
             "__pypackages__/3.10/lib",
+        },
+    ),
+    TraverseProjectVector(
+        "given_multiple_dot_dirs__finds_all_except_code_within_pyenvs",
+        "hidden_files",
+        code={".", ".hidden_dir", ".venvs", ".hidden.code.py"},
+        deps={".", ".hidden_dir", ".venvs", ".hidden.requirements.txt"},
+        pyenvs={".", ".hidden_dir", ".venvs"},
+        expect_imports_src={
+            ".hidden.code.py",
+            ".hidden_dir/code.py",
+        },
+        expect_deps_src={
+            ".hidden.requirements.txt",
+            ".hidden_dir/requirements.txt",
+        },
+        expect_pyenv_src={
+            ".venvs/.venv/lib/python3.10/site-packages",
+            ".venvs/another-venv/lib/python3.8/site-packages",
+            ".venvs/another-venv/lib/python3.11/site-packages",
         },
     ),
 ]

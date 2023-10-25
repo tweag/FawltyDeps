@@ -97,11 +97,8 @@ def find_sources(  # pylint: disable=too-many-branches,too-many-statements
         else:  # must traverse directory to find Python environments
             traversal.add(path, PyEnvSource)
 
+    traversal.exclude(".*")  # don't traverse into dot dirs
     for step in traversal.traverse():
-        for subdir in step.subdirs:  # don't recurse into dot dirs
-            if subdir.name.startswith("."):
-                traversal.skip_dir(subdir)
-
         # Extract the Source types we're looking for in this directory.
         # Sanity checks:
         #   - We should not traverse into a directory unless we're looking for
@@ -113,7 +110,7 @@ def find_sources(  # pylint: disable=too-many-branches,too-many-statements
         assert all(t in source_types for t in types)
 
         if PyEnvSource in types:
-            for path in step.subdirs:
+            for path in step.subdirs | step.excluded_subdirs:
                 package_dirs = validate_pyenv_source(path)
                 if package_dirs is not None:  # pyenvs found here
                     yield from package_dirs
