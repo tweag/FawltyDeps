@@ -103,7 +103,7 @@ class DirectoryTraversal(Generic[T]):  # type: ignore
     again.
     """
 
-    to_traverse: Set[Path] = field(default_factory=set)
+    to_traverse: Dict[Path, DirId] = field(default_factory=dict)
     skip_dirs: Set[DirId] = field(default_factory=set)  # includes already-traversed
     attached: Dict[DirId, List[T]] = field(default_factory=dict)
     exclude_rules: List[gitignore_parser.IgnoreRule] = field(default_factory=list)  # type: ignore
@@ -127,7 +127,7 @@ class DirectoryTraversal(Generic[T]):  # type: ignore
         if not dir_path.is_dir():
             raise NotADirectoryError(dir_path)
         dir_id = DirId.from_path(dir_path)
-        self.to_traverse.add(dir_path)
+        self.to_traverse[dir_path] = dir_id
         self.attached.setdefault(dir_id, []).extend(attach_data)
 
     def skip_dir(self, dir_path: Path) -> None:
@@ -144,9 +144,9 @@ class DirectoryTraversal(Generic[T]):  # type: ignore
         Anchored gitignore rules are taken relative to 'base_dir'. If 'base_dir'
         is not given, the rule cannot be anchored.
 
-        Subdirectories that match an exclude pattern will not be traversed, and
-        will also not be part of the step.subdirs returned while traversing the
-        parent.
+        Subdirectories that match an exclude pattern (and have not been .add()ed
+        explicitly) will not be traversed, and will also not be part of the
+        step.subdirs returned while traversing the parent.
 
         Files that match an exclude pattern will not be part of the step.files
         returned while traversing the parent.
@@ -213,15 +213,15 @@ class DirectoryTraversal(Generic[T]):  # type: ignore
                     yield data
 
         while True:
-            remaining = sorted(
-                path
-                for path in self.to_traverse
-                if DirId.from_path(path) not in self.skip_dirs
-            )
+            remaining = {
+                path: dir_id
+                for path, dir_id in self.to_traverse.items()
+                if dir_id not in self.skip_dirs
+            }
             if not remaining:  # nothing left to do
                 break
             logger.debug(f"Left to traverse: {remaining}")
-            base_dir = remaining[0]
+            base_dir = min(remaining.keys())
             assert base_dir.is_dir()  # sanity check
             for cur, subdirs, filenames in os.walk(base_dir, followlinks=True):
                 cur_dir = Path(cur)
@@ -239,7 +239,10 @@ class DirectoryTraversal(Generic[T]):  # type: ignore
 
                 # Process excludes
                 exclude_subdirs = {
-                    path for path in subdir_paths if self._do_exclude(path, True)
+                    path
+                    for path in subdir_paths
+                    if self._do_exclude(path, True)
+                    and (DirId.from_path(path) not in remaining.values())
                 }
                 for subdir in exclude_subdirs:
                     logger.debug(f"    skip traversing excluded subdir {subdir}")
