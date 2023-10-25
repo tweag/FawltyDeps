@@ -4,6 +4,7 @@ import io
 import logging
 import os
 import subprocess
+import sys
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 from textwrap import dedent
@@ -101,9 +102,16 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
     return [UnusedDependency(dep, [Location(Path("foo"))]) for dep in deps]
 
 
+def _config_file_name():
+    if sys.platform.startswith("win"):
+        return Path("nul")
+    else:
+        return Path("/dev/null")
+
+
 def run_fawltydeps_subprocess(
     *args: str,
-    config_file: Path = Path("/dev/null"),
+    config_file: Path = _config_file_name(),
     to_stdin: Optional[str] = None,
     cwd: Optional[Path] = None,
 ) -> Tuple[str, str, int]:
