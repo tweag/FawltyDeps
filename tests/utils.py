@@ -4,7 +4,7 @@ import io
 import logging
 import os
 import subprocess
-import sys
+import platform
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 from textwrap import dedent
@@ -103,10 +103,9 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
 
 
 def _config_file_name():
-    if sys.platform.startswith("win"):
-        return Path("nul")
-    else:
-        return Path("/dev/null")
+    if platform.system() == "Windows":
+        return Path("NUL")
+    return Path("/dev/null")
 
 
 def run_fawltydeps_subprocess(
