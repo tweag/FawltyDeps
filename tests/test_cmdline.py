@@ -222,6 +222,33 @@ def test_list_imports__from_dir__prints_imports_from_py_and_ipynb_files_only(
     assert returncode == 0
 
 
+def test_list_imports__from_dir_with_some_excluded__prints_imports_from_unexcluded_only(
+    write_tmp_files,
+):
+    notebook_content = generate_notebook([["import pytorch"]])
+    tmp_path = write_tmp_files(
+        {
+            "file1.py": """\
+                from my_pathlib import Path
+                import pandas, scipy
+                """,
+            "file2.NOT_PYTHON": """\
+                import requests
+                from foo import bar, baz
+                import numpy as np
+                """,
+            "file3.ipynb": notebook_content,
+        }
+    )
+
+    expect = [f"{tmp_path / 'file3.ipynb'}[1]:1: pytorch"]
+    output, returncode = run_fawltydeps_function(
+        "--list-imports", "--detailed", f"--code={tmp_path}", "--exclude=*.py"
+    )
+    assert output.splitlines() == expect
+    assert returncode == 0
+
+
 def test_list_imports__from_unsupported_file__fails_with_exit_code_2(tmp_path):
     filepath = tmp_path / "test.NOT_SUPPORTED"
     filepath.write_text("import pandas")
@@ -240,6 +267,33 @@ def test_list_imports__from_missing_file__fails_with_exit_code_2(tmp_path):
         "--list-imports", f"--code={missing_path}"
     )
     assert f"Code path to parse is neither dir nor file: {missing_path}" in errors
+    assert returncode == 2
+
+
+def test_list_imports__missing_exclude_pattern__fails_with_exit_code_2(tmp_path):
+    _output, errors, returncode = run_fawltydeps_subprocess(
+        "--list-imports", "--exclude="
+    )
+    assert "Error while parsing exclude pattern: No rule found in ''" in errors
+    assert returncode == 2
+
+
+def test_list_imports__comment_in_exclude_pattern__fails_with_exit_code_2(tmp_path):
+    _output, errors, returncode = run_fawltydeps_subprocess(
+        "--list-imports", "--exclude", "# comment"
+    )
+    assert "Error while parsing exclude pattern: No rule found in '# comment'" in errors
+    assert returncode == 2
+
+
+def test_list_imports__error_in_exclude_pattern__fails_with_exit_code_2(tmp_path):
+    _output, errors, returncode = run_fawltydeps_subprocess(
+        "--list-imports", "--exclude=foo/bar"
+    )
+    assert (
+        "Error while parsing exclude pattern: Anchored pattern without base_dir in 'foo/bar'"
+        in errors
+    )
     assert returncode == 2
 
 
@@ -1120,6 +1174,18 @@ def test_cmdline_on_ignored_undeclared_option(
             id="override_output_format_from_config_with_command_line_option",
         ),
         pytest.param(
+            {"actions": ["list_imports"], "output_format": "human_detailed"},
+            ["--exclude", "code.py"],
+            [],
+            id="combine_actions_in_config_with_exclude_on_command_line",
+        ),
+        pytest.param(
+            {"actions": ["list_imports"], "exclude": ["code.py"]},
+            ["--exclude", ".*", "--detailed"],
+            ["code.py:1: requests"],
+            id="override_exclude_in_config_with_exclude_on_command_line",
+        ),
+        pytest.param(
             {"actions": ["list_imports"], "output_format": "json"},
             ["--detailed", "--deps=foobar", "--generate-toml-config"],
             dedent(
@@ -1196,7 +1262,7 @@ def test_cmdline_on_ignored_undeclared_option(
         ),
         pytest.param(
             {},
-            ["--install-deps", "--generate-toml-config"],
+            ["--install-deps", "--exclude", "foo*", "bar/", "--generate-toml-config"],
             dedent(
                 f"""\
                 # Copy this TOML section into your pyproject.toml to configure FawltyDeps
@@ -1211,7 +1277,7 @@ def test_cmdline_on_ignored_undeclared_option(
                 # ignore_unused = {sorted(DEFAULT_IGNORE_UNUSED)}
                 # deps_parser_choice = ...
                 install_deps = true
-                # exclude = ['.*']
+                exclude = ['bar/', 'foo*']
                 # verbosity = 0
                 # custom_mapping_file = []
                 # [tool.fawltydeps.custom_mapping]

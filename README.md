@@ -298,6 +298,51 @@ above. For example, if the mapping file has some stale/incorrect mapping
 entries, they will _not_ be resolved by the Python environment resolver (which
 is usually more accurate).
 
+### Excluding paths
+
+If you want FawltyDeps to exclude parts of your source tree when loooking for
+code, dependency declarations, or Python environments, then you can use the
+`--exclude` option to specify path patterns to exclude, e.g. the following
+command will skip everything under `tests/`:
+
+```sh
+fawltydeps --exclude tests/
+```
+
+The format of the exclude patterns is the same as used by `.gitignore` files,
+[see here for a full description](https://git-scm.com/docs/gitignore#_pattern_format).
+(Note that some patterns that must be interpreted relative to the location of a
+`.gitignore` file are not (yet) supported by FawltyDeps. Search for "relative"
+in the linked page to see which pattern types are not yet supported.)
+
+When the `--exclude` option is not specified, its default value is `".*"`, which
+matches all paths that start with a dot (`.`), aka. "hidden" paths. In the above
+example, if you want to exclude both hidden paths, and everything under
+`tests/`, then instead use:
+
+```sh
+fawltydeps --exclude tests/ ".*"
+```
+
+The `--exclude` patterns have lower priority than any paths you pass directly
+on the command line, e.g. in this command:
+
+```sh
+fawltydeps --code my_file.py --exclude my_file.py
+```
+
+the `--code` options "wins" (i.e. imports in `my_file.py` will be found); the
+`--exclude` option only takes affect when traversing directories to look for
+more files. E.g. use this to find code inside `my_dir`, but skip Jupyter
+notebooks:
+
+```sh
+fawltydeps --code my_dir --exclude "*.ipynb"
+```
+
+(The extra quotes here are needed to prevent the shell from interpreting and
+replacing the `*` wildcard.)
+
 ### Ignoring irrelevant results
 
 There may be `import` statements in your code that should not be considered an
