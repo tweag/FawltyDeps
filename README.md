@@ -311,9 +311,6 @@ fawltydeps --exclude tests/
 
 The format of the exclude patterns is the same as used by `.gitignore` files,
 [see here for a full description](https://git-scm.com/docs/gitignore#_pattern_format).
-(Note that some patterns that must be interpreted relative to the location of a
-`.gitignore` file are not (yet) supported by FawltyDeps. Search for "relative"
-in the linked page to see which pattern types are not yet supported.)
 
 When the `--exclude` option is not specified, its default value is `".*"`, which
 matches all paths that start with a dot (`.`), aka. "hidden" paths. In the above
@@ -324,8 +321,18 @@ example, if you want to exclude both hidden paths, and everything under
 fawltydeps --exclude tests/ ".*"
 ```
 
-The `--exclude` patterns have lower priority than any paths you pass directly
-on the command line, e.g. in this command:
+(The extra quotes here are needed to prevent the shell from interpreting and
+replacing the `*` wildcard.)
+
+You can also point to exclude patterns stored in a file, with the
+`--exclude-from` option. E.g. to read exclude patterns from `./my_excludes.txt`:
+
+```sh
+fawltydeps --exclude-from my_excludes.txt
+```
+
+Exclude patterns have lower priority than any paths you pass directly on the
+command line, e.g. in this command:
 
 ```sh
 fawltydeps --code my_file.py --exclude my_file.py
@@ -339,9 +346,6 @@ notebooks:
 ```sh
 fawltydeps --code my_dir --exclude "*.ipynb"
 ```
-
-(The extra quotes here are needed to prevent the shell from interpreting and
-replacing the `*` wildcard.)
 
 ### Ignoring irrelevant results
 
