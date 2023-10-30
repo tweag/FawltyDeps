@@ -8,7 +8,7 @@ description = """
 """
 
 [experiments.default]
-description = "Run fawltydeps in an project where everything is hidden."
+description = "Default run where everything is hidden."
 pyenvs = [""]  # Find all Python environments in project
 
 # 3rd-party imports found in the code:
@@ -22,3 +22,57 @@ undeclared_deps = []
 
 # Declared dependencies which were never `import`ed from the code:
 unused_deps = []
+
+[experiments.exclude_nothing]
+description = "Run without excludes - everything is found."
+pyenvs = [""]  # Find all Python environments in project
+exclude = []  # No default excludes
+
+# 3rd-party imports found in the code:
+imports = [
+    "module_a",  # .hidden.code.py
+    "module_b",  # .hidden_dir/code.py
+]
+
+# Declared dependencies found in the project configuration:
+declared_deps = [
+    "package_x",  # .hidden.requirements.txt
+    "package_y",  # .hidden_dir/requirements.txt
+]
+
+# Import names in the code that do not have a matching dependency declared:
+undeclared_deps = [
+    "module_a",  # .hidden.code.py
+    "module_b",  # .hidden_dir/code.py
+]
+
+# Declared dependencies which were never `import`ed from the code:
+unused_deps = [
+    "package_x",  # .hidden.requirements.txt
+    "package_y",  # .hidden_dir/requirements.txt
+]
+
+[experiments.exclude_some_things]
+description = "Run with custom exclude pattern instead of default."
+pyenvs = [""]  # Find all Python environments in project
+exclude = [".hidden_dir/"]  # Only exclude .hidden_dir/
+
+# 3rd-party imports found in the code:
+imports = [
+    "module_a",  # .hidden.code.py
+]
+
+# Declared dependencies found in the project configuration:
+declared_deps = [
+    "package_x",  # .hidden.requirements.txt
+]
+
+# Import names in the code that do not have a matching dependency declared:
+undeclared_deps = [
+    "module_a",  # .hidden.code.py
+]
+
+# Declared dependencies which were never `import`ed from the code:
+unused_deps = [
+    "package_x",  # .hidden.requirements.txt
+]

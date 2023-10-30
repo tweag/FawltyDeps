@@ -49,6 +49,8 @@ class Experiment(BaseExperiment):
               BaseExperiment.requirements installed will be used instead.
     - install_deps: Whether or not to include the TemporaryPipInstall resolver
                     when resolving dependencies (default: False)
+    - exclude: Settings.exclude strings with gitignore patterns. If not given
+               (or None), the default [".*"] pattern is used.
 
     See BaseExperiment for details on the inherited members.
     """
@@ -57,6 +59,7 @@ class Experiment(BaseExperiment):
     deps: List[str]
     pyenvs: Optional[List[str]]
     install_deps: bool
+    exclude: List[str]
 
     @classmethod
     def from_toml(cls, name: str, data: TomlData) -> "Experiment":
@@ -65,6 +68,7 @@ class Experiment(BaseExperiment):
             deps=data.get("deps", [""]),
             pyenvs=data.get("pyenvs", None),
             install_deps=data.get("install_deps", False),
+            exclude=data.get("exclude", None),
             **cls._init_args_from_toml(name, data),
         )
 
@@ -80,6 +84,7 @@ class Experiment(BaseExperiment):
             deps={(project_path / path) for path in self.deps},
             pyenvs=pyenvs,
             install_deps=self.install_deps,
+            exclude=Settings().exclude if self.exclude is None else set(self.exclude),
         )
 
 
