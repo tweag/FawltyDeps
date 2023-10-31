@@ -71,7 +71,7 @@ class TraversalStep(Generic[T]):
 
 
 @dataclass
-class DirectoryTraversal(Generic[T]):  # type: ignore
+class DirectoryTraversal(Generic[T]):
     """Encapsulate the efficient traversal of a directory structure.
 
     In short, this is os.walk() on steroids.
@@ -105,7 +105,7 @@ class DirectoryTraversal(Generic[T]):  # type: ignore
     to_traverse: Dict[Path, DirId] = field(default_factory=dict)
     skip_dirs: Set[DirId] = field(default_factory=set)  # includes already-traversed
     attached: Dict[DirId, List[T]] = field(default_factory=dict)
-    exclude_rules: List[gitignore_parser.IgnoreRule] = field(default_factory=list)  # type: ignore
+    exclude_rules: List[gitignore_parser.Rule] = field(default_factory=list)
 
     def add(self, dir_path: Path, *attach_data: T) -> None:
         """Add one directory to this traversal, optionally w/attached data.

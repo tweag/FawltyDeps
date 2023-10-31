@@ -1,5 +1,6 @@
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from typing import Optional
 from unittest import TestCase, main
 from unittest.mock import mock_open, patch
 
@@ -195,7 +196,7 @@ data/**
             self.assertTrue(matches(link))
 
 
-def _parse_gitignore_string(data: str, fake_base_dir: str = None):
+def _parse_gitignore_string(data: str, fake_base_dir: Optional[str] = None):
     with patch("builtins.open", mock_open(read_data=data)):
         success = parse_gitignore(f"{fake_base_dir}/.gitignore", fake_base_dir)
         return success
