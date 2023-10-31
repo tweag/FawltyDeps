@@ -6,7 +6,7 @@ import os
 import re
 from os.path import abspath, dirname
 from pathlib import Path
-from typing import Callable, NamedTuple, Optional, Tuple, Union
+from typing import Callable, Iterable, NamedTuple, Optional, Tuple, Union
 
 PathOrStr = Union[str, Path]
 
@@ -16,26 +16,43 @@ def parse_gitignore(
 ) -> Callable[[PathOrStr], bool]:
     """Parse the given .gitignore file and return the resulting rules checker.
 
-    The return value is a predicate for paths to ignore, i.e. a callable that
-    returns True/False based on whether the given path should be ignored or not.
-
     The 'base_dir', if given, specifies the directory relative to which the
     parsed ignore rules will be interpreted. If not given, the parent directory
     of the 'full_path' is used instead.
+
+    See parse_gitignore_lines() for more details.
     """
     if base_dir is None:
         base_dir = dirname(full_path)
-    rules = []
     with open(full_path) as ignore_file:
-        counter = 0
-        for line in ignore_file:
-            counter += 1
-            line = line.rstrip("\n")
-            rule = rule_from_pattern(
-                line, base_path=Path(base_dir).resolve(), source=(full_path, counter)
-            )
-            if rule:
-                rules.append(rule)
+        return parse_gitignore_lines(ignore_file, base_dir, full_path)
+
+
+def parse_gitignore_lines(
+    lines: Iterable[str],
+    base_dir: Optional[PathOrStr] = None,
+    file_hint: Optional[PathOrStr] = None,
+) -> Callable[[PathOrStr], bool]:
+    """Parse gitignore lines and return the resulting rules checker.
+
+    The return value is a predicate for paths to ignore, i.e. a callable that
+    returns True/False based on whether a given path should be ignored or not.
+
+    The 'base_dir', if given, specifies the directory relative to which the
+    parsed ignore rules will be interpreted. If not given, the given rules
+    cannot be anchored.
+    """
+    rules = []
+    for lineno, line in enumerate(lines, start=1):
+        source = None if file_hint is None else (file_hint, lineno)
+        line = line.rstrip("\n")
+        rule = rule_from_pattern(
+            line,
+            base_path=None if base_dir is None else Path(base_dir).resolve(),
+            source=source,
+        )
+        if rule:
+            rules.append(rule)
     if not any(r.negation for r in rules):
         return lambda file_path: any(r.match(file_path) for r in rules)
 

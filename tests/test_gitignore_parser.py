@@ -3,15 +3,14 @@
 from pathlib import Path
 from textwrap import dedent
 from typing import Optional
-from unittest.mock import mock_open, patch
 
-from fawltydeps.gitignore_parser import parse_gitignore
+from fawltydeps.gitignore_parser import parse_gitignore_lines
 
 
 def _parse(data: str, fake_base_dir: Optional[str] = None):
-    with patch("builtins.open", mock_open(read_data=data)):
-        success = parse_gitignore(f"{fake_base_dir}/.gitignore", fake_base_dir)
-        return success
+    return parse_gitignore_lines(
+        data.split("\n"), fake_base_dir, Path(fake_base_dir, ".gitignore")
+    )
 
 
 def test_simple():
