@@ -2,6 +2,7 @@
 
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from textwrap import dedent
 from typing import Optional
 from unittest import TestCase, main
 from unittest.mock import mock_open, patch
@@ -99,10 +100,12 @@ class Test(TestCase):
 
     def test_negation(self):
         matches = _parse_gitignore_string(
-            """
-*.ignore
-!keep.ignore
-            """,
+            dedent(
+                """
+                *.ignore
+                !keep.ignore
+                """
+            ),
             fake_base_dir="/home/michael",
         )
         self.assertTrue(matches("/home/michael/trash.ignore"))
@@ -145,12 +148,14 @@ class Test(TestCase):
 
     def test_directory_only_negation(self):
         matches = _parse_gitignore_string(
-            """
-data/**
-!data/**/
-!.gitkeep
-!data/01_raw/*
-            """,
+            dedent(
+                """
+                data/**
+                !data/**/
+                !.gitkeep
+                !data/01_raw/*
+                """
+            ),
             fake_base_dir="/home/michael",
         )
         self.assertFalse(matches("/home/michael/data/01_raw/"))
