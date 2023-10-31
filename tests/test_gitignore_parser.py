@@ -1,7 +1,6 @@
 """Verify behavior of gitignore_parser."""
 
 from pathlib import Path
-from tempfile import TemporaryDirectory
 from textwrap import dedent
 from typing import Optional
 from unittest.mock import mock_open, patch
@@ -202,17 +201,15 @@ def test_slash_in_range_does_not_match_dirs():
     assert not matches("/home/michael/abcXYZdef")
 
 
-def test_symlink_to_another_directory():
-    with TemporaryDirectory() as project_dir, TemporaryDirectory() as another_dir:
-        matches = _parse("link", fake_base_dir=project_dir)
+def test_symlink_to_another_directory(tmp_path):
+    project_dir = tmp_path / "project_dir"
+    link = project_dir / "link"
+    target = tmp_path / "another_dir/target"
 
-        # Create a symlink to another directory.
-        link = Path(project_dir, "link")
-        target = Path(another_dir, "target")
-        link.symlink_to(target)
+    project_dir.mkdir(parents=True, exist_ok=True)
+    link.symlink_to(target)
 
-        # Check the intended behavior according to
-        # https://git-scm.com/docs/gitignore#_notes:
-        # Symbolic links are not followed and are matched as if they were
-        # regular files.
-        assert matches(link)
+    matches = _parse("link", fake_base_dir=project_dir)
+    # Verify behavior according to https://git-scm.com/docs/gitignore#_notes:
+    # Symlinks are not followed and are matched as if they were regular files.
+    assert matches(link)
