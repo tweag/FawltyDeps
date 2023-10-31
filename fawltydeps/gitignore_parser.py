@@ -1,16 +1,17 @@
 import collections
 import os
 import re
-
 from os.path import abspath, dirname
 from pathlib import Path
 from typing import Reversible, Union
+
 
 def handle_negation(file_path, rules: Reversible["IgnoreRule"]):
     for rule in reversed(rules):
         if rule.match(file_path):
             return not rule.negation
     return False
+
 
 def parse_gitignore(full_path, base_dir=None):
     if base_dir is None:
@@ -20,9 +21,10 @@ def parse_gitignore(full_path, base_dir=None):
         counter = 0
         for line in ignore_file:
             counter += 1
-            line = line.rstrip('\n')
-            rule = rule_from_pattern(line, base_path=Path(base_dir).resolve(),
-                                     source=(full_path, counter))
+            line = line.rstrip("\n")
+            rule = rule_from_pattern(
+                line, base_path=Path(base_dir).resolve(), source=(full_path, counter)
+            )
             if rule:
                 rules.append(rule)
     if not any(r.negation for r in rules):
@@ -31,6 +33,7 @@ def parse_gitignore(full_path, base_dir=None):
         # We have negation rules. We can't use a simple "any" to evaluate them.
         # Later rules override earlier rules.
         return lambda file_path: handle_negation(file_path, rules)
+
 
 def rule_from_pattern(pattern, base_path=None, source=None):
     """
@@ -42,51 +45,51 @@ def rule_from_pattern(pattern, base_path=None, source=None):
     is required for correct behavior. The base path should be absolute.
     """
     if base_path and base_path != Path(base_path).resolve():
-        raise ValueError('base_path must be absolute')
+        raise ValueError("base_path must be absolute")
     # Store the exact pattern for our repr and string functions
     orig_pattern = pattern
     # Early returns follow
     # Discard comments and separators
-    if pattern.strip() == '' or pattern[0] == '#':
+    if pattern.strip() == "" or pattern[0] == "#":
         return
     # Strip leading bang before examining double asterisks
-    if pattern[0] == '!':
+    if pattern[0] == "!":
         negation = True
         pattern = pattern[1:]
     else:
         negation = False
     # Multi-asterisks not surrounded by slashes (or at the start/end) should
     # be treated like single-asterisks.
-    pattern = re.sub(r'([^/])\*{2,}', r'\1*', pattern)
-    pattern = re.sub(r'\*{2,}([^/])', r'*\1', pattern)
+    pattern = re.sub(r"([^/])\*{2,}", r"\1*", pattern)
+    pattern = re.sub(r"\*{2,}([^/])", r"*\1", pattern)
 
     # Special-casing '/', which doesn't match any files or directories
-    if pattern.rstrip() == '/':
+    if pattern.rstrip() == "/":
         return
 
-    directory_only = pattern[-1] == '/'
+    directory_only = pattern[-1] == "/"
     # A slash is a sign that we're tied to the base_path of our rule
     # set.
-    anchored = '/' in pattern[:-1]
-    if pattern[0] == '/':
+    anchored = "/" in pattern[:-1]
+    if pattern[0] == "/":
         pattern = pattern[1:]
-    if pattern[0] == '*' and len(pattern) >= 2 and pattern[1] == '*':
+    if pattern[0] == "*" and len(pattern) >= 2 and pattern[1] == "*":
         pattern = pattern[2:]
         anchored = False
-    if pattern[0] == '/':
+    if pattern[0] == "/":
         pattern = pattern[1:]
-    if pattern[-1] == '/':
+    if pattern[-1] == "/":
         pattern = pattern[:-1]
     # patterns with leading hashes or exclamation marks are escaped with a
     # backslash in front, unescape it
-    if pattern[0] == '\\' and pattern[1] in ('#', '!'):
+    if pattern[0] == "\\" and pattern[1] in ("#", "!"):
         pattern = pattern[1:]
     # trailing spaces are ignored unless they are escaped with a backslash
-    i = len(pattern)-1
+    i = len(pattern) - 1
     striptrailingspaces = True
-    while i > 1 and pattern[i] == ' ':
-        if pattern[i-1] == '\\':
-            pattern = pattern[:i-1] + pattern[i:]
+    while i > 1 and pattern[i] == " ":
+        if pattern[i - 1] == "\\":
+            pattern = pattern[: i - 1] + pattern[i:]
             i = i - 1
             striptrailingspaces = False
         else:
@@ -103,24 +106,27 @@ def rule_from_pattern(pattern, base_path=None, source=None):
         directory_only=directory_only,
         anchored=anchored,
         base_path=_normalize_path(base_path) if base_path else None,
-        source=source
+        source=source,
     )
 
 
 IGNORE_RULE_FIELDS = [
-    'pattern', 'regex',  # Basic values
-    'negation', 'directory_only', 'anchored',  # Behavior flags
-    'base_path',  # Meaningful for gitignore-style behavior
-    'source'  # (file, line) tuple for reporting
+    "pattern",
+    "regex",  # Basic values
+    "negation",
+    "directory_only",
+    "anchored",  # Behavior flags
+    "base_path",  # Meaningful for gitignore-style behavior
+    "source",  # (file, line) tuple for reporting
 ]
 
 
-class IgnoreRule(collections.namedtuple('IgnoreRule_', IGNORE_RULE_FIELDS)):
+class IgnoreRule(collections.namedtuple("IgnoreRule_", IGNORE_RULE_FIELDS)):
     def __str__(self):
         return self.pattern
 
     def __repr__(self):
-        return ''.join(['IgnoreRule(\'', self.pattern, '\')'])
+        return "".join(["IgnoreRule('", self.pattern, "')"])
 
     def match(self, abs_path: Union[str, Path]):
         matched = False
@@ -130,9 +136,9 @@ class IgnoreRule(collections.namedtuple('IgnoreRule_', IGNORE_RULE_FIELDS)):
             rel_path = str(_normalize_path(abs_path))
         # Path() strips the trailing slash, so we need to preserve it
         # in case of directory-only negation
-        if self.negation and type(abs_path) == str and abs_path[-1] == '/':
-            rel_path += '/'
-        if rel_path.startswith('./'):
+        if self.negation and type(abs_path) == str and abs_path[-1] == "/":
+            rel_path += "/"
+        if rel_path.startswith("./"):
             rel_path = rel_path[2:]
         if re.search(self.regex, rel_path):
             matched = True
@@ -153,61 +159,61 @@ def fnmatch_pathname_to_regex(
     seps = [re.escape(os.sep)]
     if os.altsep is not None:
         seps.append(re.escape(os.altsep))
-    seps_group = '[' + '|'.join(seps) + ']'
-    nonsep = r'[^{}]'.format('|'.join(seps))
+    seps_group = "[" + "|".join(seps) + "]"
+    nonsep = r"[^{}]".format("|".join(seps))
 
     res = []
     while i < n:
         c = pattern[i]
         i += 1
-        if c == '*':
+        if c == "*":
             try:
-                if pattern[i] == '*':
+                if pattern[i] == "*":
                     i += 1
-                    if i < n and pattern[i] == '/':
+                    if i < n and pattern[i] == "/":
                         i += 1
-                        res.append(''.join(['(.*', seps_group, ')?']))
+                        res.append("".join(["(.*", seps_group, ")?"]))
                     else:
-                        res.append('.*')
+                        res.append(".*")
                 else:
-                    res.append(''.join([nonsep, '*']))
+                    res.append("".join([nonsep, "*"]))
             except IndexError:
-                res.append(''.join([nonsep, '*']))
-        elif c == '?':
+                res.append("".join([nonsep, "*"]))
+        elif c == "?":
             res.append(nonsep)
-        elif c == '/':
+        elif c == "/":
             res.append(seps_group)
-        elif c == '[':
+        elif c == "[":
             j = i
-            if j < n and pattern[j] == '!':
+            if j < n and pattern[j] == "!":
                 j += 1
-            if j < n and pattern[j] == ']':
+            if j < n and pattern[j] == "]":
                 j += 1
-            while j < n and pattern[j] != ']':
+            while j < n and pattern[j] != "]":
                 j += 1
             if j >= n:
-                res.append('\\[')
+                res.append("\\[")
             else:
-                stuff = pattern[i:j].replace('\\', '\\\\').replace('/', '')
+                stuff = pattern[i:j].replace("\\", "\\\\").replace("/", "")
                 i = j + 1
-                if stuff[0] == '!':
-                    stuff = ''.join(['^', stuff[1:]])
-                elif stuff[0] == '^':
-                    stuff = ''.join('\\' + stuff)
-                res.append('[{}]'.format(stuff))
+                if stuff[0] == "!":
+                    stuff = "".join(["^", stuff[1:]])
+                elif stuff[0] == "^":
+                    stuff = "".join("\\" + stuff)
+                res.append("[{}]".format(stuff))
         else:
             res.append(re.escape(c))
     if anchored:
-        res.insert(0, '^')
+        res.insert(0, "^")
     else:
         res.insert(0, f"(^|{seps_group})")
     if not directory_only:
-        res.append('$')
+        res.append("$")
     elif directory_only and negation:
-        res.append('/$')
+        res.append("/$")
     else:
-        res.append('($|\\/)')
-    return ''.join(res)
+        res.append("($|\\/)")
+    return "".join(res)
 
 
 def _normalize_path(path: Union[str, Path]) -> Path:
