@@ -17,39 +17,39 @@ def _parse(data: str, fake_base_dir: Optional[str] = None):
 def test_simple():
     matches = _parse(
         "\n".join(["__pycache__/", "*.py[cod]"]),
-        fake_base_dir="/home/michael",
+        fake_base_dir="/some/dir",
     )
-    assert not matches("/home/michael/main.py")
-    assert matches("/home/michael/main.pyc")
-    assert matches("/home/michael/dir/main.pyc")
-    assert matches("/home/michael/__pycache__")
+    assert not matches("/some/dir/main.py")
+    assert matches("/some/dir/main.pyc")
+    assert matches("/some/dir/dir/main.pyc")
+    assert matches("/some/dir/__pycache__")
 
 
 def test_incomplete_filename():
-    matches = _parse("o.py", fake_base_dir="/home/michael")
-    assert matches("/home/michael/o.py")
-    assert not matches("/home/michael/foo.py")
-    assert not matches("/home/michael/o.pyc")
-    assert matches("/home/michael/dir/o.py")
-    assert not matches("/home/michael/dir/foo.py")
-    assert not matches("/home/michael/dir/o.pyc")
+    matches = _parse("o.py", fake_base_dir="/some/dir")
+    assert matches("/some/dir/o.py")
+    assert not matches("/some/dir/foo.py")
+    assert not matches("/some/dir/o.pyc")
+    assert matches("/some/dir/dir/o.py")
+    assert not matches("/some/dir/dir/foo.py")
+    assert not matches("/some/dir/dir/o.pyc")
 
 
 def test_wildcard():
-    matches = _parse("hello.*", fake_base_dir="/home/michael")
-    assert matches("/home/michael/hello.txt")
-    assert matches("/home/michael/hello.foobar/")
-    assert matches("/home/michael/dir/hello.txt")
-    assert matches("/home/michael/hello.")
-    assert not matches("/home/michael/hello")
-    assert not matches("/home/michael/helloX")
+    matches = _parse("hello.*", fake_base_dir="/some/dir")
+    assert matches("/some/dir/hello.txt")
+    assert matches("/some/dir/hello.foobar/")
+    assert matches("/some/dir/dir/hello.txt")
+    assert matches("/some/dir/hello.")
+    assert not matches("/some/dir/hello")
+    assert not matches("/some/dir/helloX")
 
 
 def test_anchored_wildcard():
-    matches = _parse("/hello.*", fake_base_dir="/home/michael")
-    assert matches("/home/michael/hello.txt")
-    assert matches("/home/michael/hello.c")
-    assert not matches("/home/michael/a/hello.java")
+    matches = _parse("/hello.*", fake_base_dir="/some/dir")
+    assert matches("/some/dir/hello.txt")
+    assert matches("/some/dir/hello.c")
+    assert not matches("/some/dir/a/hello.java")
 
 
 def test_trailingspaces():
@@ -60,47 +60,47 @@ def test_trailingspaces():
         "partiallyignoredspace2 \\  ",
         "notignoredmultiplespace\\ \\ \\ ",
     ]
-    matches = _parse("\n".join(patterns), fake_base_dir="/home/michael")
-    assert matches("/home/michael/ignoretrailingspace")
-    assert not matches("/home/michael/ignoretrailingspace ")
-    assert matches("/home/michael/partiallyignoredspace ")
-    assert not matches("/home/michael/partiallyignoredspace  ")
-    assert not matches("/home/michael/partiallyignoredspace")
-    assert matches("/home/michael/partiallyignoredspace2  ")
-    assert not matches("/home/michael/partiallyignoredspace2   ")
-    assert not matches("/home/michael/partiallyignoredspace2 ")
-    assert not matches("/home/michael/partiallyignoredspace2")
-    assert matches("/home/michael/notignoredspace ")
-    assert not matches("/home/michael/notignoredspace")
-    assert matches("/home/michael/notignoredmultiplespace   ")
-    assert not matches("/home/michael/notignoredmultiplespace")
+    matches = _parse("\n".join(patterns), fake_base_dir="/some/dir")
+    assert matches("/some/dir/ignoretrailingspace")
+    assert not matches("/some/dir/ignoretrailingspace ")
+    assert matches("/some/dir/partiallyignoredspace ")
+    assert not matches("/some/dir/partiallyignoredspace  ")
+    assert not matches("/some/dir/partiallyignoredspace")
+    assert matches("/some/dir/partiallyignoredspace2  ")
+    assert not matches("/some/dir/partiallyignoredspace2   ")
+    assert not matches("/some/dir/partiallyignoredspace2 ")
+    assert not matches("/some/dir/partiallyignoredspace2")
+    assert matches("/some/dir/notignoredspace ")
+    assert not matches("/some/dir/notignoredspace")
+    assert matches("/some/dir/notignoredmultiplespace   ")
+    assert not matches("/some/dir/notignoredmultiplespace")
 
 
 def test_comment():
     matches = _parse(
         "\n".join(["somematch", "#realcomment", "othermatch", "\\#imnocomment"]),
-        fake_base_dir="/home/michael",
+        fake_base_dir="/some/dir",
     )
-    assert matches("/home/michael/somematch")
-    assert not matches("/home/michael/#realcomment")
-    assert matches("/home/michael/othermatch")
-    assert matches("/home/michael/#imnocomment")
+    assert matches("/some/dir/somematch")
+    assert not matches("/some/dir/#realcomment")
+    assert matches("/some/dir/othermatch")
+    assert matches("/some/dir/#imnocomment")
 
 
 def test_ignore_directory():
-    matches = _parse(".venv/", fake_base_dir="/home/michael")
-    assert matches("/home/michael/.venv")
-    assert matches("/home/michael/.venv/folder")
-    assert matches("/home/michael/.venv/file.txt")
-    assert not matches("/home/michael/.venv_other_folder")
-    assert not matches("/home/michael/.venv_no_folder.py")
+    matches = _parse(".venv/", fake_base_dir="/some/dir")
+    assert matches("/some/dir/.venv")
+    assert matches("/some/dir/.venv/folder")
+    assert matches("/some/dir/.venv/file.txt")
+    assert not matches("/some/dir/.venv_other_folder")
+    assert not matches("/some/dir/.venv_no_folder.py")
 
 
 def test_ignore_directory_asterisk():
-    matches = _parse(".venv/*", fake_base_dir="/home/michael")
-    assert not matches("/home/michael/.venv")
-    assert matches("/home/michael/.venv/folder")
-    assert matches("/home/michael/.venv/file.txt")
+    matches = _parse(".venv/*", fake_base_dir="/some/dir")
+    assert not matches("/some/dir/.venv")
+    assert matches("/some/dir/.venv/folder")
+    assert matches("/some/dir/.venv/file.txt")
 
 
 def test_negation():
@@ -111,49 +111,49 @@ def test_negation():
             !keep.ignore
             """
         ),
-        fake_base_dir="/home/michael",
+        fake_base_dir="/some/dir",
     )
-    assert matches("/home/michael/trash.ignore")
-    assert not matches("/home/michael/keep.ignore")
-    assert matches("/home/michael/waste.ignore")
+    assert matches("/some/dir/trash.ignore")
+    assert not matches("/some/dir/keep.ignore")
+    assert matches("/some/dir/waste.ignore")
 
 
 def test_literal_exclamation_mark():
     matches = _parse(
-        "\\!ignore_me!", fake_base_dir="/home/michael"
+        "\\!ignore_me!", fake_base_dir="/some/dir"
     )
-    assert matches("/home/michael/!ignore_me!")
-    assert not matches("/home/michael/ignore_me!")
-    assert not matches("/home/michael/ignore_me")
+    assert matches("/some/dir/!ignore_me!")
+    assert not matches("/some/dir/ignore_me!")
+    assert not matches("/some/dir/ignore_me")
 
 
 def test_double_asterisks():
-    matches = _parse("foo/**/Bar", fake_base_dir="/home/michael")
-    assert matches("/home/michael/foo/hello/Bar")
-    assert matches("/home/michael/foo/world/Bar")
-    assert matches("/home/michael/foo/Bar")
-    assert not matches("/home/michael/foo/BarBar")
+    matches = _parse("foo/**/Bar", fake_base_dir="/some/dir")
+    assert matches("/some/dir/foo/hello/Bar")
+    assert matches("/some/dir/foo/world/Bar")
+    assert matches("/some/dir/foo/Bar")
+    assert not matches("/some/dir/foo/BarBar")
 
 
 def test_double_asterisk_without_slashes_handled_like_single_asterisk():
-    matches = _parse("a/b**c/d", fake_base_dir="/home/michael")
-    assert matches("/home/michael/a/bc/d")
-    assert matches("/home/michael/a/bXc/d")
-    assert matches("/home/michael/a/bbc/d")
-    assert matches("/home/michael/a/bcc/d")
-    assert not matches("/home/michael/a/bcd")
-    assert not matches("/home/michael/a/b/c/d")
-    assert not matches("/home/michael/a/bb/cc/d")
-    assert not matches("/home/michael/a/bb/XX/cc/d")
+    matches = _parse("a/b**c/d", fake_base_dir="/some/dir")
+    assert matches("/some/dir/a/bc/d")
+    assert matches("/some/dir/a/bXc/d")
+    assert matches("/some/dir/a/bbc/d")
+    assert matches("/some/dir/a/bcc/d")
+    assert not matches("/some/dir/a/bcd")
+    assert not matches("/some/dir/a/b/c/d")
+    assert not matches("/some/dir/a/bb/cc/d")
+    assert not matches("/some/dir/a/bb/XX/cc/d")
 
 
 def test_more_asterisks_handled_like_single_asterisk():
-    matches = _parse("***a/b", fake_base_dir="/home/michael")
-    assert matches("/home/michael/XYZa/b")
-    assert not matches("/home/michael/foo/a/b")
-    matches = _parse("a/b***", fake_base_dir="/home/michael")
-    assert matches("/home/michael/a/bXYZ")
-    assert not matches("/home/michael/a/b/foo")
+    matches = _parse("***a/b", fake_base_dir="/some/dir")
+    assert matches("/some/dir/XYZa/b")
+    assert not matches("/some/dir/foo/a/b")
+    matches = _parse("a/b***", fake_base_dir="/some/dir")
+    assert matches("/some/dir/a/bXYZ")
+    assert not matches("/some/dir/a/b/foo")
 
 
 def test_directory_only_negation():
@@ -166,39 +166,39 @@ def test_directory_only_negation():
             !data/01_raw/*
             """
         ),
-        fake_base_dir="/home/michael",
+        fake_base_dir="/some/dir",
     )
-    assert not matches("/home/michael/data/01_raw/")
-    assert not matches("/home/michael/data/01_raw/.gitkeep")
-    assert not matches("/home/michael/data/01_raw/raw_file.csv")
-    assert not matches("/home/michael/data/02_processed/")
-    assert not matches("/home/michael/data/02_processed/.gitkeep")
-    assert matches("/home/michael/data/02_processed/processed_file.csv")
+    assert not matches("/some/dir/data/01_raw/")
+    assert not matches("/some/dir/data/01_raw/.gitkeep")
+    assert not matches("/some/dir/data/01_raw/raw_file.csv")
+    assert not matches("/some/dir/data/02_processed/")
+    assert not matches("/some/dir/data/02_processed/.gitkeep")
+    assert matches("/some/dir/data/02_processed/processed_file.csv")
 
 
 def test_single_asterisk():
-    matches = _parse("*", fake_base_dir="/home/michael")
-    assert matches("/home/michael/file.txt")
-    assert matches("/home/michael/directory")
-    assert matches("/home/michael/directory-trailing/")
+    matches = _parse("*", fake_base_dir="/some/dir")
+    assert matches("/some/dir/file.txt")
+    assert matches("/some/dir/directory")
+    assert matches("/some/dir/directory-trailing/")
 
 
 def test_supports_path_type_argument():
     matches = _parse(
-        "file1\n!file2", fake_base_dir="/home/michael"
+        "file1\n!file2", fake_base_dir="/some/dir"
     )
-    assert matches(Path("/home/michael/file1"))
-    assert not matches(Path("/home/michael/file2"))
+    assert matches(Path("/some/dir/file1"))
+    assert not matches(Path("/some/dir/file2"))
 
 
 def test_slash_in_range_does_not_match_dirs():
-    matches = _parse("abc[X-Z/]def", fake_base_dir="/home/michael")
-    assert not matches("/home/michael/abcdef")
-    assert matches("/home/michael/abcXdef")
-    assert matches("/home/michael/abcYdef")
-    assert matches("/home/michael/abcZdef")
-    assert not matches("/home/michael/abc/def")
-    assert not matches("/home/michael/abcXYZdef")
+    matches = _parse("abc[X-Z/]def", fake_base_dir="/some/dir")
+    assert not matches("/some/dir/abcdef")
+    assert matches("/some/dir/abcXdef")
+    assert matches("/some/dir/abcYdef")
+    assert matches("/some/dir/abcZdef")
+    assert not matches("/some/dir/abc/def")
+    assert not matches("/some/dir/abcXYZdef")
 
 
 def test_symlink_to_another_directory(tmp_path):
