@@ -1,3 +1,5 @@
+"""Verify behavior of gitignore_parser."""
+
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Optional
@@ -8,9 +10,12 @@ from fawltydeps.gitignore_parser import parse_gitignore
 
 
 class Test(TestCase):
+    """gitinore_parser test cases."""
+
     def test_simple(self):
         matches = _parse_gitignore_string(
-            "__pycache__/\n" "*.py[cod]", fake_base_dir="/home/michael"
+            "\n".join(["__pycache__/", "*.py[cod]"]),
+            fake_base_dir="/home/michael",
         )
         self.assertFalse(matches("/home/michael/main.py"))
         self.assertTrue(matches("/home/michael/main.pyc"))
@@ -43,11 +48,15 @@ class Test(TestCase):
 
     def test_trailingspaces(self):
         matches = _parse_gitignore_string(
-            "ignoretrailingspace \n"
-            "notignoredspace\\ \n"
-            "partiallyignoredspace\\  \n"
-            "partiallyignoredspace2 \\  \n"
-            "notignoredmultiplespace\\ \\ \\ ",
+            "\n".join(
+                [
+                    "ignoretrailingspace ",
+                    "notignoredspace\\ ",
+                    "partiallyignoredspace\\  ",
+                    "partiallyignoredspace2 \\  ",
+                    "notignoredmultiplespace\\ \\ \\ ",
+                ]
+            ),
             fake_base_dir="/home/michael",
         )
         self.assertTrue(matches("/home/michael/ignoretrailingspace"))
@@ -66,7 +75,7 @@ class Test(TestCase):
 
     def test_comment(self):
         matches = _parse_gitignore_string(
-            "somematch\n" "#realcomment\n" "othermatch\n" "\\#imnocomment",
+            "\n".join(["somematch", "#realcomment", "othermatch", "\\#imnocomment"]),
             fake_base_dir="/home/michael",
         )
         self.assertTrue(matches("/home/michael/somematch"))

@@ -1,24 +1,28 @@
+"""A spec-compliant gitignore parser for Python."""
+
 from __future__ import annotations
 
 import os
 import re
 from os.path import abspath, dirname
 from pathlib import Path
-from typing import Callable, NamedTuple, Optional, Reversible, Tuple, Union
+from typing import Callable, NamedTuple, Optional, Tuple, Union
 
 PathOrStr = Union[str, Path]
-
-
-def handle_negation(file_path: PathOrStr, rules: Reversible[Rule]) -> bool:
-    for rule in reversed(rules):
-        if rule.match(file_path):
-            return not rule.negation
-    return False
 
 
 def parse_gitignore(
     full_path: PathOrStr, base_dir: Optional[PathOrStr] = None
 ) -> Callable[[PathOrStr], bool]:
+    """Parse the given .gitignore file and return the resulting rules checker.
+
+    The return value is a predicate for paths to ignore, i.e. a callable that
+    returns True/False based on whether the given path should be ignored or not.
+
+    The 'base_dir', if given, specifies the directory relative to which the
+    parsed ignore rules will be interpreted. If not given, the parent directory
+    of the 'full_path' is used instead.
+    """
     if base_dir is None:
         base_dir = dirname(full_path)
     rules = []
@@ -34,13 +38,19 @@ def parse_gitignore(
                 rules.append(rule)
     if not any(r.negation for r in rules):
         return lambda file_path: any(r.match(file_path) for r in rules)
-    else:
-        # We have negation rules. We can't use a simple "any" to evaluate them.
-        # Later rules override earlier rules.
-        return lambda file_path: handle_negation(file_path, rules)
+
+    # We have negation rules. We can't use a simple "any" to evaluate them.
+    # Later rules override earlier rules.
+    def handle_negation(file_path: PathOrStr) -> bool:
+        for rule in reversed(rules):
+            if rule.match(file_path):
+                return not rule.negation
+        return False
+
+    return handle_negation
 
 
-def rule_from_pattern(
+def rule_from_pattern(  # pylint: disable=too-many-branches
     pattern: str,
     base_path: Optional[Path] = None,
     source: Optional[Tuple[PathOrStr, int]] = None,
@@ -119,6 +129,8 @@ def rule_from_pattern(
 
 
 class Rule(NamedTuple):
+    """A single ignore rule, parsed from a gitignore pattern string."""
+
     # Basic values
     pattern: str
     regex: str
@@ -136,6 +148,7 @@ class Rule(NamedTuple):
         return "".join(["Rule('", self.pattern, "')"])
 
     def match(self, abs_path: PathOrStr) -> bool:
+        """Return True iff the given 'abs_path' should be ignored."""
         matched = False
         if self.base_path:
             rel_path = str(_normalize_path(abs_path).relative_to(self.base_path))
@@ -143,7 +156,7 @@ class Rule(NamedTuple):
             rel_path = str(_normalize_path(abs_path))
         # Path() strips the trailing slash, so we need to preserve it
         # in case of directory-only negation
-        if self.negation and type(abs_path) == str and abs_path[-1] == "/":
+        if self.negation and isinstance(abs_path, str) and abs_path[-1] == "/":
             rel_path += "/"
         if rel_path.startswith("./"):
             rel_path = rel_path[2:]
@@ -154,10 +167,11 @@ class Rule(NamedTuple):
 
 # Frustratingly, python's fnmatch doesn't provide the FNM_PATHNAME
 # option that .gitignore's behavior depends on.
-def fnmatch_pathname_to_regex(
+def fnmatch_pathname_to_regex(  # pylint: disable=too-many-branches,too-many-statements
     pattern: str, directory_only: bool, negation: bool, anchored: bool = False
 ) -> str:
-    """
+    """Convert the given fnmatch-style pattern to the equivalent regex.
+
     Implements fnmatch style-behavior, as though with FNM_PATHNAME flagged;
     the path separator will not match shell-style '*' and '.' wildcards.
     """
@@ -167,7 +181,7 @@ def fnmatch_pathname_to_regex(
     if os.altsep is not None:
         seps.append(re.escape(os.altsep))
     seps_group = "[" + "|".join(seps) + "]"
-    nonsep = r"[^{}]".format("|".join(seps))
+    nonsep = rf"[^{'|'.join(seps)}]"
 
     res = []
     while i < n:
@@ -207,7 +221,7 @@ def fnmatch_pathname_to_regex(
                     stuff = "".join(["^", stuff[1:]])
                 elif stuff[0] == "^":
                     stuff = "".join("\\" + stuff)
-                res.append("[{}]".format(stuff))
+                res.append(f"[{stuff}]")
         else:
             res.append(re.escape(c))
     if anchored:
