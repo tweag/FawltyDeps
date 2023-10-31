@@ -2,22 +2,17 @@
 
 from pathlib import Path
 from textwrap import dedent
-from typing import Optional
+from typing import List
 
 from fawltydeps.gitignore_parser import parse_gitignore_lines
 
 
-def _parse(data: str, fake_base_dir: Optional[str] = None):
-    return parse_gitignore_lines(
-        data.split("\n"), fake_base_dir, Path(fake_base_dir, ".gitignore")
-    )
+def _parse(lines: List[str], *, base_dir: str = "/some/dir"):
+    return parse_gitignore_lines(lines, base_dir, Path(base_dir, ".gitignore"))
 
 
 def test_simple():
-    matches = _parse(
-        "\n".join(["__pycache__/", "*.py[cod]"]),
-        fake_base_dir="/some/dir",
-    )
+    matches = _parse(["__pycache__/", "*.py[cod]"])
     assert not matches("/some/dir/main.py")
     assert matches("/some/dir/main.pyc")
     assert matches("/some/dir/dir/main.pyc")
@@ -25,7 +20,7 @@ def test_simple():
 
 
 def test_incomplete_filename():
-    matches = _parse("o.py", fake_base_dir="/some/dir")
+    matches = _parse(["o.py"])
     assert matches("/some/dir/o.py")
     assert not matches("/some/dir/foo.py")
     assert not matches("/some/dir/o.pyc")
@@ -35,7 +30,7 @@ def test_incomplete_filename():
 
 
 def test_wildcard():
-    matches = _parse("hello.*", fake_base_dir="/some/dir")
+    matches = _parse(["hello.*"])
     assert matches("/some/dir/hello.txt")
     assert matches("/some/dir/hello.foobar/")
     assert matches("/some/dir/dir/hello.txt")
@@ -45,7 +40,7 @@ def test_wildcard():
 
 
 def test_anchored_wildcard():
-    matches = _parse("/hello.*", fake_base_dir="/some/dir")
+    matches = _parse(["/hello.*"])
     assert matches("/some/dir/hello.txt")
     assert matches("/some/dir/hello.c")
     assert not matches("/some/dir/a/hello.java")
@@ -59,7 +54,7 @@ def test_trailingspaces():
         "partiallyignoredspace2 \\  ",
         "notignoredmultiplespace\\ \\ \\ ",
     ]
-    matches = _parse("\n".join(patterns), fake_base_dir="/some/dir")
+    matches = _parse(patterns)
     assert matches("/some/dir/ignoretrailingspace")
     assert not matches("/some/dir/ignoretrailingspace ")
     assert matches("/some/dir/partiallyignoredspace ")
@@ -76,10 +71,7 @@ def test_trailingspaces():
 
 
 def test_comment():
-    matches = _parse(
-        "\n".join(["somematch", "#realcomment", "othermatch", "\\#imnocomment"]),
-        fake_base_dir="/some/dir",
-    )
+    matches = _parse(["somematch", "#realcomment", "othermatch", "\\#imnocomment"])
     assert matches("/some/dir/somematch")
     assert not matches("/some/dir/#realcomment")
     assert matches("/some/dir/othermatch")
@@ -87,7 +79,7 @@ def test_comment():
 
 
 def test_ignore_directory():
-    matches = _parse(".venv/", fake_base_dir="/some/dir")
+    matches = _parse([".venv/"])
     assert matches("/some/dir/.venv")
     assert matches("/some/dir/.venv/folder")
     assert matches("/some/dir/.venv/file.txt")
@@ -96,7 +88,7 @@ def test_ignore_directory():
 
 
 def test_ignore_directory_asterisk():
-    matches = _parse(".venv/*", fake_base_dir="/some/dir")
+    matches = _parse([".venv/*"])
     assert not matches("/some/dir/.venv")
     assert matches("/some/dir/.venv/folder")
     assert matches("/some/dir/.venv/file.txt")
@@ -109,8 +101,7 @@ def test_negation():
             *.ignore
             !keep.ignore
             """
-        ),
-        fake_base_dir="/some/dir",
+        ).splitlines()
     )
     assert matches("/some/dir/trash.ignore")
     assert not matches("/some/dir/keep.ignore")
@@ -118,16 +109,14 @@ def test_negation():
 
 
 def test_literal_exclamation_mark():
-    matches = _parse(
-        "\\!ignore_me!", fake_base_dir="/some/dir"
-    )
+    matches = _parse(["\\!ignore_me!"])
     assert matches("/some/dir/!ignore_me!")
     assert not matches("/some/dir/ignore_me!")
     assert not matches("/some/dir/ignore_me")
 
 
 def test_double_asterisks():
-    matches = _parse("foo/**/Bar", fake_base_dir="/some/dir")
+    matches = _parse(["foo/**/Bar"])
     assert matches("/some/dir/foo/hello/Bar")
     assert matches("/some/dir/foo/world/Bar")
     assert matches("/some/dir/foo/Bar")
@@ -135,7 +124,7 @@ def test_double_asterisks():
 
 
 def test_double_asterisk_without_slashes_handled_like_single_asterisk():
-    matches = _parse("a/b**c/d", fake_base_dir="/some/dir")
+    matches = _parse(["a/b**c/d"])
     assert matches("/some/dir/a/bc/d")
     assert matches("/some/dir/a/bXc/d")
     assert matches("/some/dir/a/bbc/d")
@@ -147,10 +136,10 @@ def test_double_asterisk_without_slashes_handled_like_single_asterisk():
 
 
 def test_more_asterisks_handled_like_single_asterisk():
-    matches = _parse("***a/b", fake_base_dir="/some/dir")
+    matches = _parse(["***a/b"])
     assert matches("/some/dir/XYZa/b")
     assert not matches("/some/dir/foo/a/b")
-    matches = _parse("a/b***", fake_base_dir="/some/dir")
+    matches = _parse(["a/b***"])
     assert matches("/some/dir/a/bXYZ")
     assert not matches("/some/dir/a/b/foo")
 
@@ -164,8 +153,7 @@ def test_directory_only_negation():
             !.gitkeep
             !data/01_raw/*
             """
-        ),
-        fake_base_dir="/some/dir",
+        ).splitlines()
     )
     assert not matches("/some/dir/data/01_raw/")
     assert not matches("/some/dir/data/01_raw/.gitkeep")
@@ -176,22 +164,20 @@ def test_directory_only_negation():
 
 
 def test_single_asterisk():
-    matches = _parse("*", fake_base_dir="/some/dir")
+    matches = _parse(["*"])
     assert matches("/some/dir/file.txt")
     assert matches("/some/dir/directory")
     assert matches("/some/dir/directory-trailing/")
 
 
 def test_supports_path_type_argument():
-    matches = _parse(
-        "file1\n!file2", fake_base_dir="/some/dir"
-    )
+    matches = _parse(["file1", "!file2"])
     assert matches(Path("/some/dir/file1"))
     assert not matches(Path("/some/dir/file2"))
 
 
 def test_slash_in_range_does_not_match_dirs():
-    matches = _parse("abc[X-Z/]def", fake_base_dir="/some/dir")
+    matches = _parse(["abc[X-Z/]def"])
     assert not matches("/some/dir/abcdef")
     assert matches("/some/dir/abcXdef")
     assert matches("/some/dir/abcYdef")
@@ -208,7 +194,7 @@ def test_symlink_to_another_directory(tmp_path):
     project_dir.mkdir(parents=True, exist_ok=True)
     link.symlink_to(target)
 
-    matches = _parse("link", fake_base_dir=project_dir)
+    matches = _parse(["link"], base_dir=project_dir)
     # Verify behavior according to https://git-scm.com/docs/gitignore#_notes:
     # Symlinks are not followed and are matched as if they were regular files.
     assert matches(link)
