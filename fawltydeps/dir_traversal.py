@@ -17,8 +17,7 @@ from typing import (
     TypeVar,
 )
 
-import gitignore_parser  # type: ignore
-
+from fawltydeps import gitignore_parser
 from fawltydeps.utils import dirs_between
 
 T = TypeVar("T")
@@ -150,12 +149,6 @@ class DirectoryTraversal(Generic[T]):  # type: ignore
 
         Files that match an exclude pattern will not be part of the step.files
         returned while traversing the parent.
-
-        TODO: Consider building our own gitignore parse based on
-        fnmatch_pathname_to_regex() from
-        https://github.com/mherrmann/gitignore_parser/blob/8ea4444243e79aa6a359d58b9e9196c15ae6d2d8/gitignore_parser.py#L151
-        which itself is based on
-        https://github.com/snark/ignorance/blob/c9ec7881165e309c6d18cf00d8d62c9b80ea1168/ignorance/utils.py#L44
         """
         logger.debug(f"Parsing rule from pattern {pattern!r}")
         rule = gitignore_parser.rule_from_pattern(pattern.rstrip("\n"), base_dir)

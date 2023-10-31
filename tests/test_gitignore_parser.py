@@ -3,7 +3,7 @@ from tempfile import TemporaryDirectory
 from unittest import TestCase, main
 from unittest.mock import mock_open, patch
 
-from gitignore_parser import parse_gitignore
+from fawltydeps.gitignore_parser import parse_gitignore
 
 
 class Test(TestCase):
