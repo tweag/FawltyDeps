@@ -1,19 +1,24 @@
-import collections
+from __future__ import annotations
+
 import os
 import re
 from os.path import abspath, dirname
 from pathlib import Path
-from typing import Reversible, Union
+from typing import Callable, NamedTuple, Optional, Reversible, Tuple, Union
+
+PathOrStr = Union[str, Path]
 
 
-def handle_negation(file_path, rules: Reversible["IgnoreRule"]):
+def handle_negation(file_path: PathOrStr, rules: Reversible[Rule]) -> bool:
     for rule in reversed(rules):
         if rule.match(file_path):
             return not rule.negation
     return False
 
 
-def parse_gitignore(full_path, base_dir=None):
+def parse_gitignore(
+    full_path: PathOrStr, base_dir: Optional[PathOrStr] = None
+) -> Callable[[PathOrStr], bool]:
     if base_dir is None:
         base_dir = dirname(full_path)
     rules = []
@@ -35,14 +40,17 @@ def parse_gitignore(full_path, base_dir=None):
         return lambda file_path: handle_negation(file_path, rules)
 
 
-def rule_from_pattern(pattern, base_path=None, source=None):
+def rule_from_pattern(
+    pattern: str,
+    base_path: Optional[Path] = None,
+    source: Optional[Tuple[PathOrStr, int]] = None,
+) -> Optional[Rule]:
     """
     Take a .gitignore match pattern, such as "*.py[cod]" or "**/*.bak",
-    and return an IgnoreRule suitable for matching against files and
-    directories. Patterns which do not match files, such as comments
-    and blank lines, will return None.
-    Because git allows for nested .gitignore files, a base_path value
-    is required for correct behavior. The base path should be absolute.
+    and return a Rule suitable for matching against files and directories.
+    Patterns which do not match files, such as comments and blank lines, will
+    return None. Because git allows for nested .gitignore files, a base_path
+    value is required for correct behavior. The base path should be absolute.
     """
     if base_path and base_path != Path(base_path).resolve():
         raise ValueError("base_path must be absolute")
@@ -51,7 +59,7 @@ def rule_from_pattern(pattern, base_path=None, source=None):
     # Early returns follow
     # Discard comments and separators
     if pattern.strip() == "" or pattern[0] == "#":
-        return
+        return None
     # Strip leading bang before examining double asterisks
     if pattern[0] == "!":
         negation = True
@@ -65,7 +73,7 @@ def rule_from_pattern(pattern, base_path=None, source=None):
 
     # Special-casing '/', which doesn't match any files or directories
     if pattern.rstrip() == "/":
-        return
+        return None
 
     directory_only = pattern[-1] == "/"
     # A slash is a sign that we're tied to the base_path of our rule
@@ -99,7 +107,7 @@ def rule_from_pattern(pattern, base_path=None, source=None):
     regex = fnmatch_pathname_to_regex(
         pattern, directory_only, negation, anchored=bool(anchored)
     )
-    return IgnoreRule(
+    return Rule(
         pattern=orig_pattern,
         regex=regex,
         negation=negation,
@@ -110,25 +118,24 @@ def rule_from_pattern(pattern, base_path=None, source=None):
     )
 
 
-IGNORE_RULE_FIELDS = [
-    "pattern",
-    "regex",  # Basic values
-    "negation",
-    "directory_only",
-    "anchored",  # Behavior flags
-    "base_path",  # Meaningful for gitignore-style behavior
-    "source",  # (file, line) tuple for reporting
-]
+class Rule(NamedTuple):
+    # Basic values
+    pattern: str
+    regex: str
+    # Behavior flags
+    negation: bool
+    directory_only: bool
+    anchored: bool
+    base_path: Optional[Path]  # meaningful for gitignore-style behavior
+    source: Optional[Tuple[PathOrStr, int]]  # (file, line) tuple for reporting
 
-
-class IgnoreRule(collections.namedtuple("IgnoreRule_", IGNORE_RULE_FIELDS)):
-    def __str__(self):
+    def __str__(self) -> str:
         return self.pattern
 
-    def __repr__(self):
-        return "".join(["IgnoreRule('", self.pattern, "')"])
+    def __repr__(self) -> str:
+        return "".join(["Rule('", self.pattern, "')"])
 
-    def match(self, abs_path: Union[str, Path]):
+    def match(self, abs_path: PathOrStr) -> bool:
         matched = False
         if self.base_path:
             rel_path = str(_normalize_path(abs_path).relative_to(self.base_path))
@@ -148,8 +155,8 @@ class IgnoreRule(collections.namedtuple("IgnoreRule_", IGNORE_RULE_FIELDS)):
 # Frustratingly, python's fnmatch doesn't provide the FNM_PATHNAME
 # option that .gitignore's behavior depends on.
 def fnmatch_pathname_to_regex(
-    pattern, directory_only: bool, negation: bool, anchored: bool = False
-):
+    pattern: str, directory_only: bool, negation: bool, anchored: bool = False
+) -> str:
     """
     Implements fnmatch style-behavior, as though with FNM_PATHNAME flagged;
     the path separator will not match shell-style '*' and '.' wildcards.
@@ -216,7 +223,7 @@ def fnmatch_pathname_to_regex(
     return "".join(res)
 
 
-def _normalize_path(path: Union[str, Path]) -> Path:
+def _normalize_path(path: PathOrStr) -> Path:
     """Normalize a path without resolving symlinks.
 
     This is equivalent to `Path.resolve()` except that it does not resolve symlinks.
