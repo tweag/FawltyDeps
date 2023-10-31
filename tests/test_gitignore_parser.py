@@ -1,189 +1,230 @@
 """Verify behavior of gitignore_parser."""
 
 from pathlib import Path
-from textwrap import dedent
-from typing import List
+from typing import List, NamedTuple, Union
+
+import pytest
 
 from fawltydeps.gitignore_parser import parse_gitignore_lines
 
-
-def _parse(lines: List[str], *, base_dir: str = "/some/dir"):
-    return parse_gitignore_lines(lines, base_dir, Path(base_dir, ".gitignore"))
+PathOrStr = Union[str, Path]
 
 
-def test_simple():
-    matches = _parse(["__pycache__/", "*.py[cod]"])
-    assert not matches("/some/dir/main.py")
-    assert matches("/some/dir/main.pyc")
-    assert matches("/some/dir/dir/main.pyc")
-    assert matches("/some/dir/__pycache__")
+class GitignoreParserTestVector(NamedTuple):
+    """Test patterns expected matches/non-matches."""
+
+    id: str
+    patterns: List[str]
+    does_match: List[PathOrStr]
+    doesnt_match: List[PathOrStr]
+    base_dir: str = "/some/dir"
 
 
-def test_incomplete_filename():
-    matches = _parse(["o.py"])
-    assert matches("/some/dir/o.py")
-    assert not matches("/some/dir/foo.py")
-    assert not matches("/some/dir/o.pyc")
-    assert matches("/some/dir/dir/o.py")
-    assert not matches("/some/dir/dir/foo.py")
-    assert not matches("/some/dir/dir/o.pyc")
+test_vectors = [
+    GitignoreParserTestVector(
+        "simple",
+        ["__pycache__/", "*.py[cod]"],
+        does_match=[
+            "/some/dir/main.pyc",
+            "/some/dir/dir/main.pyc",
+            "/some/dir/__pycache__",
+        ],
+        doesnt_match=["/some/dir/main.py"],
+    ),
+    GitignoreParserTestVector(
+        "incomplete_filename",
+        ["o.py"],
+        does_match=[
+            "/some/dir/o.py",
+            "/some/dir/dir/o.py",
+        ],
+        doesnt_match=[
+            "/some/dir/foo.py",
+            "/some/dir/o.pyc",
+            "/some/dir/dir/foo.py",
+            "/some/dir/dir/o.pyc",
+        ],
+    ),
+    GitignoreParserTestVector(
+        "wildcard",
+        ["hello.*"],
+        does_match=[
+            "/some/dir/hello.txt",
+            "/some/dir/hello.foobar/",
+            "/some/dir/dir/hello.txt",
+            "/some/dir/hello.",
+        ],
+        doesnt_match=[
+            "/some/dir/hello",
+            "/some/dir/helloX",
+        ],
+    ),
+    GitignoreParserTestVector(
+        "anchored_wildcard",
+        ["/hello.*"],
+        does_match=["/some/dir/hello.txt", "/some/dir/hello.c"],
+        doesnt_match=["/some/dir/a/hello.java"],
+    ),
+    GitignoreParserTestVector(
+        "trailing_spaces",
+        [
+            "ignoretrailingspace ",
+            "notignoredspace\\ ",
+            "partiallyignoredspace\\  ",
+            "partiallyignoredspace2 \\  ",
+            "notignoredmultiplespace\\ \\ \\ ",
+        ],
+        does_match=[
+            "/some/dir/ignoretrailingspace",
+            "/some/dir/partiallyignoredspace ",
+            "/some/dir/partiallyignoredspace2  ",
+            "/some/dir/notignoredspace ",
+            "/some/dir/notignoredmultiplespace   ",
+        ],
+        doesnt_match=[
+            "/some/dir/ignoretrailingspace ",
+            "/some/dir/partiallyignoredspace  ",
+            "/some/dir/partiallyignoredspace",
+            "/some/dir/partiallyignoredspace2   ",
+            "/some/dir/partiallyignoredspace2 ",
+            "/some/dir/partiallyignoredspace2",
+            "/some/dir/notignoredspace",
+            "/some/dir/notignoredmultiplespace",
+        ],
+    ),
+    GitignoreParserTestVector(
+        "comment",
+        ["somematch", "#realcomment", "othermatch", "\\#imnocomment"],
+        does_match=[
+            "/some/dir/somematch",
+            "/some/dir/othermatch",
+            "/some/dir/#imnocomment",
+        ],
+        doesnt_match=["/some/dir/#realcomment"],
+    ),
+    GitignoreParserTestVector(
+        "ignore_directory",
+        [".venv/"],
+        does_match=[
+            "/some/dir/.venv",
+            "/some/dir/.venv/folder",
+            "/some/dir/.venv/file.txt",
+        ],
+        doesnt_match=[
+            "/some/dir/.venv_other_folder",
+            "/some/dir/.venv_no_folder.py",
+        ],
+    ),
+    GitignoreParserTestVector(
+        "ignore_directory_asterisk",
+        [".venv/*"],
+        does_match=["/some/dir/.venv/folder", "/some/dir/.venv/file.txt"],
+        doesnt_match=["/some/dir/.venv"],
+    ),
+    GitignoreParserTestVector(
+        "negation",
+        ["*.ignore", "!keep.ignore"],
+        does_match=["/some/dir/trash.ignore", "/some/dir/waste.ignore"],
+        doesnt_match=["/some/dir/keep.ignore"],
+    ),
+    GitignoreParserTestVector(
+        "literal_exclamation_mark",
+        ["\\!ignore_me!"],
+        does_match=["/some/dir/!ignore_me!"],
+        doesnt_match=["/some/dir/ignore_me!", "/some/dir/ignore_me"],
+    ),
+    GitignoreParserTestVector(
+        "double_asterisks",
+        ["foo/**/Bar"],
+        does_match=[
+            "/some/dir/foo/hello/Bar",
+            "/some/dir/foo/world/Bar",
+            "/some/dir/foo/Bar",
+        ],
+        doesnt_match=["/some/dir/foo/BarBar"],
+    ),
+    GitignoreParserTestVector(
+        "double_asterisk_without_slashes_handled_like_single_asterisk",
+        ["a/b**c/d"],
+        does_match=[
+            "/some/dir/a/bc/d",
+            "/some/dir/a/bXc/d",
+            "/some/dir/a/bbc/d",
+            "/some/dir/a/bcc/d",
+        ],
+        doesnt_match=[
+            "/some/dir/a/bcd",
+            "/some/dir/a/b/c/d",
+            "/some/dir/a/bb/cc/d",
+            "/some/dir/a/bb/XX/cc/d",
+        ],
+    ),
+    GitignoreParserTestVector(
+        "more_asterisks_handled_like_single_asterisk_1",
+        ["***a/b"],
+        does_match=["/some/dir/XYZa/b"],
+        doesnt_match=["/some/dir/foo/a/b"],
+    ),
+    GitignoreParserTestVector(
+        "more_asterisks_handled_like_single_asterisk_2",
+        ["a/b***"],
+        does_match=["/some/dir/a/bXYZ"],
+        doesnt_match=["/some/dir/a/b/foo"],
+    ),
+    GitignoreParserTestVector(
+        "directory_only_negation",
+        ["data/**", "!data/**/", "!.gitkeep", "!data/01_raw/*"],
+        does_match=["/some/dir/data/02_processed/processed_file.csv"],
+        doesnt_match=[
+            "/some/dir/data/01_raw/",
+            "/some/dir/data/01_raw/.gitkeep",
+            "/some/dir/data/01_raw/raw_file.csv",
+            "/some/dir/data/02_processed/",
+            "/some/dir/data/02_processed/.gitkeep",
+        ],
+    ),
+    GitignoreParserTestVector(
+        "single_asterisk",
+        ["*"],
+        does_match=[
+            "/some/dir/file.txt",
+            "/some/dir/directory",
+            "/some/dir/directory-trailing/",
+        ],
+        doesnt_match=[],
+    ),
+    GitignoreParserTestVector(
+        "supports_path_type_argument",
+        ["file1", "!file2"],
+        does_match=[Path("/some/dir/file1")],
+        doesnt_match=[Path("/some/dir/file2")],
+    ),
+    GitignoreParserTestVector(
+        "slash_in_range_does_not_match_dirs",
+        ["abc[X-Z/]def"],
+        does_match=[
+            "/some/dir/abcXdef",
+            "/some/dir/abcYdef",
+            "/some/dir/abcZdef",
+        ],
+        doesnt_match=[
+            "/some/dir/abcdef",
+            "/some/dir/abc/def",
+            "/some/dir/abcXYZdef",
+        ],
+    ),
+]
 
 
-def test_wildcard():
-    matches = _parse(["hello.*"])
-    assert matches("/some/dir/hello.txt")
-    assert matches("/some/dir/hello.foobar/")
-    assert matches("/some/dir/dir/hello.txt")
-    assert matches("/some/dir/hello.")
-    assert not matches("/some/dir/hello")
-    assert not matches("/some/dir/helloX")
-
-
-def test_anchored_wildcard():
-    matches = _parse(["/hello.*"])
-    assert matches("/some/dir/hello.txt")
-    assert matches("/some/dir/hello.c")
-    assert not matches("/some/dir/a/hello.java")
-
-
-def test_trailingspaces():
-    patterns = [
-        "ignoretrailingspace ",
-        "notignoredspace\\ ",
-        "partiallyignoredspace\\  ",
-        "partiallyignoredspace2 \\  ",
-        "notignoredmultiplespace\\ \\ \\ ",
-    ]
-    matches = _parse(patterns)
-    assert matches("/some/dir/ignoretrailingspace")
-    assert not matches("/some/dir/ignoretrailingspace ")
-    assert matches("/some/dir/partiallyignoredspace ")
-    assert not matches("/some/dir/partiallyignoredspace  ")
-    assert not matches("/some/dir/partiallyignoredspace")
-    assert matches("/some/dir/partiallyignoredspace2  ")
-    assert not matches("/some/dir/partiallyignoredspace2   ")
-    assert not matches("/some/dir/partiallyignoredspace2 ")
-    assert not matches("/some/dir/partiallyignoredspace2")
-    assert matches("/some/dir/notignoredspace ")
-    assert not matches("/some/dir/notignoredspace")
-    assert matches("/some/dir/notignoredmultiplespace   ")
-    assert not matches("/some/dir/notignoredmultiplespace")
-
-
-def test_comment():
-    matches = _parse(["somematch", "#realcomment", "othermatch", "\\#imnocomment"])
-    assert matches("/some/dir/somematch")
-    assert not matches("/some/dir/#realcomment")
-    assert matches("/some/dir/othermatch")
-    assert matches("/some/dir/#imnocomment")
-
-
-def test_ignore_directory():
-    matches = _parse([".venv/"])
-    assert matches("/some/dir/.venv")
-    assert matches("/some/dir/.venv/folder")
-    assert matches("/some/dir/.venv/file.txt")
-    assert not matches("/some/dir/.venv_other_folder")
-    assert not matches("/some/dir/.venv_no_folder.py")
-
-
-def test_ignore_directory_asterisk():
-    matches = _parse([".venv/*"])
-    assert not matches("/some/dir/.venv")
-    assert matches("/some/dir/.venv/folder")
-    assert matches("/some/dir/.venv/file.txt")
-
-
-def test_negation():
-    matches = _parse(
-        dedent(
-            """
-            *.ignore
-            !keep.ignore
-            """
-        ).splitlines()
+@pytest.mark.parametrize("vector", [pytest.param(v, id=v.id) for v in test_vectors])
+def test_gitignore_parser(vector: GitignoreParserTestVector):
+    matches = parse_gitignore_lines(
+        vector.patterns, vector.base_dir, Path(vector.base_dir, ".gitignore")
     )
-    assert matches("/some/dir/trash.ignore")
-    assert not matches("/some/dir/keep.ignore")
-    assert matches("/some/dir/waste.ignore")
-
-
-def test_literal_exclamation_mark():
-    matches = _parse(["\\!ignore_me!"])
-    assert matches("/some/dir/!ignore_me!")
-    assert not matches("/some/dir/ignore_me!")
-    assert not matches("/some/dir/ignore_me")
-
-
-def test_double_asterisks():
-    matches = _parse(["foo/**/Bar"])
-    assert matches("/some/dir/foo/hello/Bar")
-    assert matches("/some/dir/foo/world/Bar")
-    assert matches("/some/dir/foo/Bar")
-    assert not matches("/some/dir/foo/BarBar")
-
-
-def test_double_asterisk_without_slashes_handled_like_single_asterisk():
-    matches = _parse(["a/b**c/d"])
-    assert matches("/some/dir/a/bc/d")
-    assert matches("/some/dir/a/bXc/d")
-    assert matches("/some/dir/a/bbc/d")
-    assert matches("/some/dir/a/bcc/d")
-    assert not matches("/some/dir/a/bcd")
-    assert not matches("/some/dir/a/b/c/d")
-    assert not matches("/some/dir/a/bb/cc/d")
-    assert not matches("/some/dir/a/bb/XX/cc/d")
-
-
-def test_more_asterisks_handled_like_single_asterisk():
-    matches = _parse(["***a/b"])
-    assert matches("/some/dir/XYZa/b")
-    assert not matches("/some/dir/foo/a/b")
-    matches = _parse(["a/b***"])
-    assert matches("/some/dir/a/bXYZ")
-    assert not matches("/some/dir/a/b/foo")
-
-
-def test_directory_only_negation():
-    matches = _parse(
-        dedent(
-            """
-            data/**
-            !data/**/
-            !.gitkeep
-            !data/01_raw/*
-            """
-        ).splitlines()
-    )
-    assert not matches("/some/dir/data/01_raw/")
-    assert not matches("/some/dir/data/01_raw/.gitkeep")
-    assert not matches("/some/dir/data/01_raw/raw_file.csv")
-    assert not matches("/some/dir/data/02_processed/")
-    assert not matches("/some/dir/data/02_processed/.gitkeep")
-    assert matches("/some/dir/data/02_processed/processed_file.csv")
-
-
-def test_single_asterisk():
-    matches = _parse(["*"])
-    assert matches("/some/dir/file.txt")
-    assert matches("/some/dir/directory")
-    assert matches("/some/dir/directory-trailing/")
-
-
-def test_supports_path_type_argument():
-    matches = _parse(["file1", "!file2"])
-    assert matches(Path("/some/dir/file1"))
-    assert not matches(Path("/some/dir/file2"))
-
-
-def test_slash_in_range_does_not_match_dirs():
-    matches = _parse(["abc[X-Z/]def"])
-    assert not matches("/some/dir/abcdef")
-    assert matches("/some/dir/abcXdef")
-    assert matches("/some/dir/abcYdef")
-    assert matches("/some/dir/abcZdef")
-    assert not matches("/some/dir/abc/def")
-    assert not matches("/some/dir/abcXYZdef")
+    for path in vector.does_match:
+        assert matches(path)
+    for path in vector.doesnt_match:
+        assert not matches(path)
 
 
 def test_symlink_to_another_directory(tmp_path):
@@ -194,7 +235,7 @@ def test_symlink_to_another_directory(tmp_path):
     project_dir.mkdir(parents=True, exist_ok=True)
     link.symlink_to(target)
 
-    matches = _parse(["link"], base_dir=project_dir)
+    matches = parse_gitignore_lines(["link"], project_dir, project_dir / ".gitignore")
     # Verify behavior according to https://git-scm.com/docs/gitignore#_notes:
     # Symlinks are not followed and are matched as if they were regular files.
     assert matches(link)
