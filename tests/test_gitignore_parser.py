@@ -218,13 +218,12 @@ test_vectors = [
 
 @pytest.mark.parametrize("vector", [pytest.param(v, id=v.id) for v in test_vectors])
 def test_gitignore_parser(vector: GitignoreParserTestVector):
-    matches = parse_gitignore_lines(
-        vector.patterns, vector.base_dir, Path(vector.base_dir, ".gitignore")
-    )
+    base_dir = Path(vector.base_dir)
+    matches = parse_gitignore_lines(vector.patterns, base_dir, base_dir / ".gitignore")
     for path in vector.does_match:
-        assert matches(path)
+        assert matches(Path(path), isinstance(path, str) and path.endswith("/"))
     for path in vector.doesnt_match:
-        assert not matches(path)
+        assert not matches(Path(path), isinstance(path, str) and path.endswith("/"))
 
 
 def test_symlink_to_another_directory(tmp_path):
@@ -238,4 +237,4 @@ def test_symlink_to_another_directory(tmp_path):
     matches = parse_gitignore_lines(["link"], project_dir, project_dir / ".gitignore")
     # Verify behavior according to https://git-scm.com/docs/gitignore#_notes:
     # Symlinks are not followed and are matched as if they were regular files.
-    assert matches(link)
+    assert matches(link, False)

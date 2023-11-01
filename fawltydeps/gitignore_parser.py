@@ -4,16 +4,14 @@ from __future__ import annotations
 
 import os
 import re
-from os.path import abspath, dirname
+from os.path import abspath
 from pathlib import Path
-from typing import Callable, Iterable, NamedTuple, Optional, Tuple, Union
-
-PathOrStr = Union[str, Path]
+from typing import Callable, Iterable, NamedTuple, Optional, Tuple
 
 
 def parse_gitignore(
-    full_path: PathOrStr, base_dir: Optional[PathOrStr] = None
-) -> Callable[[PathOrStr], bool]:
+    full_path: Path, base_dir: Optional[Path] = None
+) -> Callable[[Path, bool], bool]:
     """Parse the given .gitignore file and return the resulting rules checker.
 
     The 'base_dir', if given, specifies the directory relative to which the
@@ -23,16 +21,16 @@ def parse_gitignore(
     See parse_gitignore_lines() for more details.
     """
     if base_dir is None:
-        base_dir = dirname(full_path)
+        base_dir = full_path.parent
     with open(full_path) as ignore_file:
         return parse_gitignore_lines(ignore_file, base_dir, full_path)
 
 
 def parse_gitignore_lines(
     lines: Iterable[str],
-    base_dir: Optional[PathOrStr] = None,
-    file_hint: Optional[PathOrStr] = None,
-) -> Callable[[PathOrStr], bool]:
+    base_dir: Optional[Path] = None,
+    file_hint: Optional[Path] = None,
+) -> Callable[[Path, bool], bool]:
     """Parse gitignore lines and return the resulting rules checker.
 
     The return value is a predicate for paths to ignore, i.e. a callable that
@@ -48,19 +46,23 @@ def parse_gitignore_lines(
         line = line.rstrip("\n")
         rule = rule_from_pattern(
             line,
-            base_path=None if base_dir is None else Path(base_dir).resolve(),
+            base_path=None if base_dir is None else base_dir.resolve(),
             source=source,
         )
         if rule:
             rules.append(rule)
     if not any(r.negation for r in rules):
-        return lambda file_path: any(r.match(file_path) for r in rules)
+
+        def handle_straightforward(file_path: Path, is_dir: bool) -> bool:
+            return any(r.match(file_path, is_dir) for r in rules)
+
+        return handle_straightforward
 
     # We have negation rules. We can't use a simple "any" to evaluate them.
     # Later rules override earlier rules.
-    def handle_negation(file_path: PathOrStr) -> bool:
+    def handle_negation(file_path: Path, is_dir: bool) -> bool:
         for rule in reversed(rules):
-            if rule.match(file_path):
+            if rule.match(file_path, is_dir):
                 return not rule.negation
         return False
 
@@ -70,7 +72,7 @@ def parse_gitignore_lines(
 def rule_from_pattern(  # pylint: disable=too-many-branches
     pattern: str,
     base_path: Optional[Path] = None,
-    source: Optional[Tuple[PathOrStr, int]] = None,
+    source: Optional[Tuple[Path, int]] = None,
 ) -> Optional[Rule]:
     """
     Take a .gitignore match pattern, such as "*.py[cod]" or "**/*.bak",
@@ -79,7 +81,7 @@ def rule_from_pattern(  # pylint: disable=too-many-branches
     return None. Because git allows for nested .gitignore files, a base_path
     value is required for correct behavior. The base path should be absolute.
     """
-    if base_path and base_path != Path(base_path).resolve():
+    if base_path is not None and base_path != base_path.resolve():
         raise ValueError("base_path must be absolute")
     # Store the exact pattern for our repr and string functions
     orig_pattern = pattern
@@ -156,7 +158,7 @@ class Rule(NamedTuple):
     directory_only: bool
     anchored: bool
     base_path: Optional[Path]  # meaningful for gitignore-style behavior
-    source: Optional[Tuple[PathOrStr, int]]  # (file, line) tuple for reporting
+    source: Optional[Tuple[Path, int]]  # (file, line) tuple for reporting
 
     def __str__(self) -> str:
         return self.pattern
@@ -164,7 +166,7 @@ class Rule(NamedTuple):
     def __repr__(self) -> str:
         return "".join(["Rule('", self.pattern, "')"])
 
-    def match(self, abs_path: PathOrStr) -> bool:
+    def match(self, abs_path: Path, is_dir: bool) -> bool:
         """Return True iff the given 'abs_path' should be ignored."""
         matched = False
         if self.base_path:
@@ -173,7 +175,7 @@ class Rule(NamedTuple):
             rel_path = str(_normalize_path(abs_path))
         # Path() strips the trailing slash, so we need to preserve it
         # in case of directory-only negation
-        if self.negation and isinstance(abs_path, str) and abs_path[-1] == "/":
+        if self.negation and is_dir:
             rel_path += "/"
         if rel_path.startswith("./"):
             rel_path = rel_path[2:]
@@ -254,7 +256,7 @@ def fnmatch_pathname_to_regex(  # pylint: disable=too-many-branches,too-many-sta
     return "".join(res)
 
 
-def _normalize_path(path: PathOrStr) -> Path:
+def _normalize_path(path: Path) -> Path:
     """Normalize a path without resolving symlinks.
 
     This is equivalent to `Path.resolve()` except that it does not resolve symlinks.

@@ -162,10 +162,10 @@ class DirectoryTraversal(Generic[T]):
 
     def _do_exclude(self, path: Path, is_dir: bool) -> bool:
         """Check if given path is excluded by any of our exclude rules."""
-        abs_path = str(path.resolve())
+        abs_path = path.resolve()
         for rule in reversed(self.exclude_rules):
             try:
-                if rule.match(abs_path):
+                if rule.match(abs_path, is_dir):
                     if rule.directory_only and not is_dir:
                         continue  # this rule does not match after all
                     logger.debug(f"    exclude rule {rule!r} matches {abs_path}")
