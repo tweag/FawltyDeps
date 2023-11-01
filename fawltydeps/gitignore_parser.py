@@ -6,7 +6,9 @@ import os
 import re
 from os.path import abspath
 from pathlib import Path
-from typing import Callable, Iterable, NamedTuple, Optional, Tuple
+from typing import Callable, Iterable, NamedTuple, Optional
+
+from fawltydeps.types import Location
 
 
 def parse_gitignore(
@@ -42,7 +44,7 @@ def parse_gitignore_lines(
     """
     rules = []
     for lineno, line in enumerate(lines, start=1):
-        source = None if file_hint is None else (file_hint, lineno)
+        source = None if file_hint is None else Location(file_hint, lineno=lineno)
         line = line.rstrip("\n")
         rule = rule_from_pattern(
             line,
@@ -72,7 +74,7 @@ def parse_gitignore_lines(
 def rule_from_pattern(  # pylint: disable=too-many-branches
     pattern: str,
     base_path: Optional[Path] = None,
-    source: Optional[Tuple[Path, int]] = None,
+    source: Optional[Location] = None,
 ) -> Optional[Rule]:
     """
     Take a .gitignore match pattern, such as "*.py[cod]" or "**/*.bak",
@@ -158,7 +160,7 @@ class Rule(NamedTuple):
     directory_only: bool
     anchored: bool
     base_path: Optional[Path]  # meaningful for gitignore-style behavior
-    source: Optional[Tuple[Path, int]]  # (file, line) tuple for reporting
+    source: Optional[Location]
 
     def __str__(self) -> str:
         return self.pattern
