@@ -3,6 +3,7 @@
     description: "FawltyDeps: Check for undeclared dependencies"
     entry: fawltydeps --check-undeclared
     language: python
+    files: ".*\\.py|ipynb"
     args:
       - --code
     pass_filenames: true
