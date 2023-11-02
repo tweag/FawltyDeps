@@ -54,7 +54,7 @@ def parse_gitignore_lines(
         rule = rule_from_pattern(line, base_dir, source)
         if rule:
             rules.append(rule)
-    if not any(r.negation for r in rules):
+    if not any(r.negated for r in rules):
 
         def handle_straightforward(file_path: Path, is_dir: bool) -> bool:
             return any(r.match(file_path, is_dir) for r in rules)
@@ -66,38 +66,41 @@ def parse_gitignore_lines(
     def handle_negation(file_path: Path, is_dir: bool) -> bool:
         for rule in reversed(rules):
             if rule.match(file_path, is_dir):
-                return not rule.negation
+                return not rule.negated
         return False
 
     return handle_negation
 
 
-def rule_from_pattern(  # pylint: disable=too-many-branches
+def rule_from_pattern(
     pattern: str,
-    base_path: Optional[Path] = None,
+    base_dir: Optional[Path] = None,
     source: Optional[Location] = None,
 ) -> Optional[Rule]:
-    """
-    Take a .gitignore match pattern, such as "*.py[cod]" or "**/*.bak",
-    and return a Rule suitable for matching against files and directories.
+    """Build a Rule object from the given .gitignore pattern string.
+
+    Take a .gitignore match pattern, such as "*.py[cod]" or "**/*.bak", and
+    return a Rule instance suitable for matching against files and directories.
     Patterns which do not match files, such as comments and blank lines, will
-    return None. Because git allows for nested .gitignore files, a base_path
-    value is required for correct behavior. The base path should be absolute.
+    return None.
+
+    Because git allows for nested .gitignore files, a base_dir value is required
+    for correct behavior. The base path should be absolute.
     """
-    if base_path is not None and not base_path.is_absolute():
-        raise ValueError("base_path must be absolute: {base_path}")
+    if base_dir is not None and not base_dir.is_absolute():
+        raise ValueError("base_dir must be absolute: {base_dir}")
+
     # Store the exact pattern for our repr and string functions
     orig_pattern = pattern
-    # Early returns follow
+
     # Discard comments and separators
     if pattern.strip() == "" or pattern[0] == "#":
         return None
     # Strip leading bang before examining double asterisks
-    if pattern[0] == "!":
-        negation = True
+    negated = pattern.startswith("!")
+    if negated:
         pattern = pattern[1:]
-    else:
-        negation = False
+
     # Multi-asterisks not surrounded by slashes (or at the start/end) should
     # be treated like single-asterisks.
     pattern = re.sub(r"([^/])\*{2,}", r"\1*", pattern)
@@ -107,45 +110,34 @@ def rule_from_pattern(  # pylint: disable=too-many-branches
     if pattern.rstrip() == "/":
         return None
 
-    directory_only = pattern[-1] == "/"
-    # A slash is a sign that we're tied to the base_path of our rule
-    # set.
+    dir_only = pattern.endswith("/")
+    # A slash is a sign that we're tied to the base_dir of our rule set.
     anchored = "/" in pattern[:-1]
-    if pattern[0] == "/":
+    if pattern.startswith("/"):
         pattern = pattern[1:]
-    if pattern[0] == "*" and len(pattern) >= 2 and pattern[1] == "*":
+    if pattern.startswith("**"):
         pattern = pattern[2:]
         anchored = False
-    if pattern[0] == "/":
+    if pattern.startswith("/"):
         pattern = pattern[1:]
-    if pattern[-1] == "/":
+    if pattern.endswith("/"):
         pattern = pattern[:-1]
     # patterns with leading hashes or exclamation marks are escaped with a
     # backslash in front, unescape it
-    if pattern[0] == "\\" and pattern[1] in ("#", "!"):
+    if pattern.startswith(("\\#", "\\!")):
         pattern = pattern[1:]
     # trailing spaces are ignored unless they are escaped with a backslash
-    i = len(pattern) - 1
-    striptrailingspaces = True
-    while i > 1 and pattern[i] == " ":
-        if pattern[i - 1] == "\\":
-            pattern = pattern[: i - 1] + pattern[i:]
-            i = i - 1
-            striptrailingspaces = False
-        else:
-            if striptrailingspaces:
-                pattern = pattern[:i]
-        i = i - 1
-    regex = fnmatch_pathname_to_regex(
-        pattern, directory_only, negation, anchored=bool(anchored)
-    )
+    while pattern.endswith(" ") and not pattern.endswith("\\ "):
+        pattern = pattern[:-1]
+    pattern = pattern.replace("\\ ", " ")  # unescape remaining spaces
+
     return Rule(
         pattern=orig_pattern,
-        regex=regex,
-        negation=negation,
-        directory_only=directory_only,
+        regex=fnmatch_pathname_to_regex(pattern, dir_only, negated, anchored),
+        negated=negated,
+        dir_only=dir_only,
         anchored=anchored,
-        base_path=base_path,
+        base_dir=base_dir,
         source=source,
     )
 
@@ -157,10 +149,10 @@ class Rule(NamedTuple):
     pattern: str
     regex: CompiledRegex
     # Behavior flags
-    negation: bool
-    directory_only: bool
+    negated: bool
+    dir_only: bool
     anchored: bool
-    base_path: Optional[Path]  # meaningful for gitignore-style behavior
+    base_dir: Optional[Path]  # meaningful for gitignore-style behavior
     source: Optional[Location]
 
     def __str__(self) -> str:
@@ -172,13 +164,13 @@ class Rule(NamedTuple):
     def match(self, abs_path: Path, is_dir: bool) -> bool:
         """Return True iff the given 'abs_path' should be ignored."""
         matched = False
-        if self.base_path:
-            rel_path = str(abs_path.relative_to(self.base_path))
+        if self.base_dir:
+            rel_path = str(abs_path.relative_to(self.base_dir))
         else:
             rel_path = str(abs_path)
         # Path() strips the trailing slash, so we need to preserve it
         # in case of directory-only negation
-        if self.negation and is_dir:
+        if self.negated and is_dir:
             rel_path += "/"
         if rel_path.startswith("./"):
             rel_path = rel_path[2:]
