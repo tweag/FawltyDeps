@@ -25,7 +25,7 @@ except ModuleNotFoundError:
 from fawltydeps import extract_declared_dependencies, extract_imports
 from fawltydeps.check import calculate_undeclared, calculate_unused
 from fawltydeps.cli_parser import build_parser
-from fawltydeps.dir_traversal import ExcludeRuleError, ExcludeRuleMissing
+from fawltydeps.gitignore_parser import RuleError as ExcludeRuleError
 from fawltydeps.packages import (
     BasePackageResolver,
     Package,
@@ -366,8 +366,8 @@ def main(
         analysis = Analysis.create(settings, stdin)
     except UnparseablePathException as exc:
         return parser.error(exc.msg)  # exit code 2
-    except (ExcludeRuleMissing, ExcludeRuleError) as exc:
-        return parser.error(f"Error while parsing exclude pattern: {exc.args[0]}")
+    except ExcludeRuleError as exc:
+        return parser.error(f"Error while parsing exclude pattern: {exc}")
     except UnresolvedDependenciesError as exc:
         logger.error(
             "%s\nFawltyDeps is unable to find the above packages with the "

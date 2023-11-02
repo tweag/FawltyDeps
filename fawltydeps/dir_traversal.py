@@ -44,14 +44,6 @@ class DirId(NamedTuple):
         return cls(dir_stat.st_dev, dir_stat.st_ino)
 
 
-class ExcludeRuleMissing(Exception):
-    """A blank line or comment passed to DirectoryTraversal.exclude()."""
-
-
-class ExcludeRuleError(ValueError):
-    """Error while parsing an exclude pattern in DirectoryTraversal.exclude()."""
-
-
 @dataclass(frozen=True, order=True)
 class TraversalStep(Generic[T]):
     """Encapsulate a single step/directory in an ongoing directory traversal.
@@ -152,10 +144,10 @@ class DirectoryTraversal(Generic[T]):
         """
         logger.debug(f"Parsing rule from pattern {pattern!r}")
         rule = gitignore_parser.rule_from_pattern(pattern.rstrip("\n"), base_dir)
-        if rule is None:
-            raise ExcludeRuleMissing(f"No rule found in {pattern!r}")
         if rule.anchored and base_dir is None:
-            raise ExcludeRuleError(f"Anchored pattern without base_dir in {pattern!r}")
+            raise gitignore_parser.RuleError(
+                "Anchored pattern without base_dir", pattern
+            )
 
         logger.debug(f"Adding rule {rule!r} @ {rule.base_dir!r}")
         self.exclude_rules.append(rule)

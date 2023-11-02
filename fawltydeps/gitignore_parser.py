@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import os
 import re
 import sys
@@ -14,6 +15,26 @@ if TYPE_CHECKING or sys.version_info >= (3, 9):
     CompiledRegex = re.Pattern[str]  # pylint: disable=unsubscriptable-object
 else:  # re.Pattern not subscriptable before Python 3.9
     CompiledRegex = re.Pattern
+
+logger = logging.getLogger(__name__)
+
+
+class RuleError(ValueError):
+    """Error while parsing an ignore pattern in DirectoryTraversal.ignore()."""
+
+    def __init__(self, msg: str, pattern: str, source: Optional[Location] = None):
+        self.msg = msg
+        self.pattern = pattern
+        self.source = source
+
+    def __str__(self) -> str:
+        if self.source is not None:
+            return f"{self.msg}: {self.pattern!r} ({self.source})"
+        return f"{self.msg}: {self.pattern!r}"
+
+
+class RuleMissing(RuleError):
+    """A blank line or comment passed to DirectoryTraversal.ignore()."""
 
 
 def parse_gitignore(
@@ -51,9 +72,12 @@ def parse_gitignore_lines(
     for lineno, line in enumerate(lines, start=1):
         source = None if file_hint is None else Location(file_hint, lineno=lineno)
         line = line.rstrip("\n")
-        rule = rule_from_pattern(line, base_dir, source)
-        if rule:
-            rules.append(rule)
+        try:
+            rules.append(rule_from_pattern(line, base_dir, source))
+        except RuleMissing as exc:
+            # Blank lines and comments are ok when parsing multiple lines
+            logger.debug(str(exc))
+
     if not any(r.negated for r in rules):
 
         def handle_straightforward(file_path: Path, is_dir: bool) -> bool:
@@ -76,7 +100,7 @@ def rule_from_pattern(
     pattern: str,
     base_dir: Optional[Path] = None,
     source: Optional[Location] = None,
-) -> Optional[Rule]:
+) -> Rule:
     """Build a Rule object from the given .gitignore pattern string.
 
     Take a .gitignore match pattern, such as "*.py[cod]" or "**/*.bak", and
@@ -88,14 +112,14 @@ def rule_from_pattern(
     for correct behavior. The base path should be absolute.
     """
     if base_dir is not None and not base_dir.is_absolute():
-        raise ValueError("base_dir must be absolute: {base_dir}")
+        raise RuleError("base_dir must be absolute", str(base_dir), source)
 
     # Store the exact pattern for our repr and string functions
     orig_pattern = pattern
 
     # Discard comments and separators
     if pattern.strip() == "" or pattern[0] == "#":
-        return None
+        raise RuleMissing("No rule found", pattern, source)
     # Strip leading bang before examining double asterisks
     negated = pattern.startswith("!")
     if negated:
@@ -108,7 +132,7 @@ def rule_from_pattern(
 
     # Special-casing '/', which doesn't match any files or directories
     if pattern.rstrip() == "/":
-        return None
+        raise RuleMissing("Pattern does not match anything", pattern, source)
 
     dir_only = pattern.endswith("/")
     # A slash is a sign that we're tied to the base_dir of our rule set.
