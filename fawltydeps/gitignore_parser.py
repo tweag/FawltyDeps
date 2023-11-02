@@ -73,7 +73,7 @@ def parse_gitignore_lines(
         source = None if file_hint is None else Location(file_hint, lineno=lineno)
         line = line.rstrip("\n")
         try:
-            rules.append(rule_from_pattern(line, base_dir, source))
+            rules.append(Rule.from_pattern(line, base_dir, source))
         except RuleMissing as exc:
             # Blank lines and comments are ok when parsing multiple lines
             logger.debug(str(exc))
@@ -96,76 +96,6 @@ def parse_gitignore_lines(
     return handle_negation
 
 
-def rule_from_pattern(
-    pattern: str,
-    base_dir: Optional[Path] = None,
-    source: Optional[Location] = None,
-) -> Rule:
-    """Build a Rule object from the given .gitignore pattern string.
-
-    Take a .gitignore match pattern, such as "*.py[cod]" or "**/*.bak", and
-    return a Rule instance suitable for matching against files and directories.
-    Patterns which do not match files, such as comments and blank lines, will
-    return None.
-
-    Because git allows for nested .gitignore files, a base_dir value is required
-    for correct behavior. The base path should be absolute.
-    """
-    if base_dir is not None and not base_dir.is_absolute():
-        raise RuleError("base_dir must be absolute", str(base_dir), source)
-
-    # Store the exact pattern for our repr and string functions
-    orig_pattern = pattern
-
-    # Discard comments and separators
-    if pattern.strip() == "" or pattern[0] == "#":
-        raise RuleMissing("No rule found", pattern, source)
-    # Strip leading bang before examining double asterisks
-    negated = pattern.startswith("!")
-    if negated:
-        pattern = pattern[1:]
-
-    # Multi-asterisks not surrounded by slashes (or at the start/end) should
-    # be treated like single-asterisks.
-    pattern = re.sub(r"([^/])\*{2,}", r"\1*", pattern)
-    pattern = re.sub(r"\*{2,}([^/])", r"*\1", pattern)
-
-    # Special-casing '/', which doesn't match any files or directories
-    if pattern.rstrip() == "/":
-        raise RuleMissing("Pattern does not match anything", pattern, source)
-
-    dir_only = pattern.endswith("/")
-    # A slash is a sign that we're tied to the base_dir of our rule set.
-    anchored = "/" in pattern[:-1]
-    if pattern.startswith("/"):
-        pattern = pattern[1:]
-    if pattern.startswith("**"):
-        pattern = pattern[2:]
-        anchored = False
-    if pattern.startswith("/"):
-        pattern = pattern[1:]
-    if pattern.endswith("/"):
-        pattern = pattern[:-1]
-    # patterns with leading hashes or exclamation marks are escaped with a
-    # backslash in front, unescape it
-    if pattern.startswith(("\\#", "\\!")):
-        pattern = pattern[1:]
-    # trailing spaces are ignored unless they are escaped with a backslash
-    while pattern.endswith(" ") and not pattern.endswith("\\ "):
-        pattern = pattern[:-1]
-    pattern = pattern.replace("\\ ", " ")  # unescape remaining spaces
-
-    return Rule(
-        pattern=orig_pattern,
-        regex=fnmatch_pathname_to_regex(pattern, dir_only, negated, anchored),
-        negated=negated,
-        dir_only=dir_only,
-        anchored=anchored,
-        base_dir=base_dir,
-        source=source,
-    )
-
-
 class Rule(NamedTuple):
     """A single ignore rule, parsed from a gitignore pattern string."""
 
@@ -184,6 +114,78 @@ class Rule(NamedTuple):
 
     def __repr__(self) -> str:
         return f"Rule({self.pattern!r}, {self.regex!r}, ...)"
+
+    @classmethod
+    def from_pattern(
+        cls,
+        pattern: str,
+        base_dir: Optional[Path] = None,
+        source: Optional[Location] = None,
+    ) -> Rule:
+        """Build a Rule object from the given .gitignore pattern string.
+
+        Take a .gitignore match pattern, such as "*.py[cod]" or "**/*.bak", and
+        return an instance suitable for matching against files and directories.
+        Patterns which do not match files, such as comments and blank lines,
+        will raise RuleMissing, and other errors while parsing will raise
+        RuleError.
+
+        Because git allows for nested .gitignore files, a base_dir value is
+        required for correct behavior. The base path should be absolute.
+        """
+        if base_dir is not None and not base_dir.is_absolute():
+            raise RuleError("base_dir must be absolute", str(base_dir), source)
+
+        # Store the exact pattern for our repr and string functions
+        orig_pattern = pattern
+
+        # Discard comments and separators
+        if pattern.strip() == "" or pattern[0] == "#":
+            raise RuleMissing("No rule found", pattern, source)
+        # Strip leading bang before examining double asterisks
+        negated = pattern.startswith("!")
+        if negated:
+            pattern = pattern[1:]
+
+        # Multi-asterisks not surrounded by slashes (or at the start/end) should
+        # be treated like single-asterisks.
+        pattern = re.sub(r"([^/])\*{2,}", r"\1*", pattern)
+        pattern = re.sub(r"\*{2,}([^/])", r"*\1", pattern)
+
+        # Special-casing '/', which doesn't match any files or directories
+        if pattern.rstrip() == "/":
+            raise RuleMissing("Pattern does not match anything", pattern, source)
+
+        dir_only = pattern.endswith("/")
+        # A slash is a sign that we're tied to the base_dir of our rule set.
+        anchored = "/" in pattern[:-1]
+        if pattern.startswith("/"):
+            pattern = pattern[1:]
+        if pattern.startswith("**"):
+            pattern = pattern[2:]
+            anchored = False
+        if pattern.startswith("/"):
+            pattern = pattern[1:]
+        if pattern.endswith("/"):
+            pattern = pattern[:-1]
+        # patterns with leading hashes or exclamation marks are escaped with a
+        # backslash in front, unescape it
+        if pattern.startswith(("\\#", "\\!")):
+            pattern = pattern[1:]
+        # trailing spaces are ignored unless they are escaped with a backslash
+        while pattern.endswith(" ") and not pattern.endswith("\\ "):
+            pattern = pattern[:-1]
+        pattern = pattern.replace("\\ ", " ")  # unescape remaining spaces
+
+        return cls(
+            pattern=orig_pattern,
+            regex=fnmatch_pathname_to_regex(pattern, dir_only, negated, anchored),
+            negated=negated,
+            dir_only=dir_only,
+            anchored=anchored,
+            base_dir=base_dir,
+            source=source,
+        )
 
     def match(self, abs_path: Path, is_dir: bool) -> bool:
         """Return True iff the given 'abs_path' should be ignored."""
