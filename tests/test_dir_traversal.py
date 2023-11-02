@@ -7,12 +7,8 @@ from typing import Generic, List, Optional, Tuple, Type, TypeVar, Union
 
 import pytest
 
-from fawltydeps.dir_traversal import (
-    DirectoryTraversal,
-    ExcludeRuleError,
-    ExcludeRuleMissing,
-    TraversalStep,
-)
+from fawltydeps.dir_traversal import DirectoryTraversal, TraversalStep
+from fawltydeps.gitignore_parser import RuleError, RuleMissing
 
 from .utils import assert_unordered_equivalence
 
@@ -116,7 +112,7 @@ class ExcludePattern:
     # Here, instead, we default base_dir to "" (which is automatically prefixed
     # by tmp_path in the test code below). This makes it easier to test anchored
     # exclude patterns. Pass None explicitly to test the default .exclude()
-    # behavior (which will cause anchored patterns to raise ExcludeRuleError).
+    # behavior (which will cause anchored patterns to raise RuleError).
     base_dir: Optional[str] = ""
 
 
@@ -345,7 +341,7 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
         "gitignore_parsing__disregard_blank_lines",
         given=[File("dir/file")],
         exclude_patterns=[ExcludePattern(""), ExcludePattern("")],
-        exclude_exceptions=[ExcludeRuleMissing, ExcludeRuleMissing],
+        exclude_exceptions=[RuleMissing, RuleMissing],
         expect=[
             ExpectedTraverseStep(".", subdirs=["dir"]),
             ExpectedTraverseStep("dir", files=["file"]),
@@ -363,7 +359,7 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
             ExcludePattern("#do_not_exclude"),  # comment
             ExcludePattern("\\#do_exclude"),  # match literal '#'
         ],
-        exclude_exceptions=[ExcludeRuleMissing],
+        exclude_exceptions=[RuleMissing],
         expect=[
             ExpectedTraverseStep(
                 ".", files=["#do_not_exclude"], excluded_files=["#do_exclude"]
@@ -464,7 +460,7 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
         "anchored_pattern__must_have_base_dir",
         given=[File("file")],
         exclude_patterns=[ExcludePattern("/file", None)],
-        exclude_exceptions=[ExcludeRuleError],
+        exclude_exceptions=[RuleError],
         expect=[ExpectedTraverseStep(".", files=["file"])],
     ),
     DirectoryTraversalVector(

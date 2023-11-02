@@ -274,7 +274,7 @@ def test_list_imports__missing_exclude_pattern__fails_with_exit_code_2(tmp_path)
     _output, errors, returncode = run_fawltydeps_subprocess(
         "--list-imports", "--exclude="
     )
-    assert "Error while parsing exclude pattern: No rule found in ''" in errors
+    assert "Error while parsing exclude pattern: No rule found: ''" in errors
     assert returncode == 2
 
 
@@ -282,7 +282,7 @@ def test_list_imports__comment_in_exclude_pattern__fails_with_exit_code_2(tmp_pa
     _output, errors, returncode = run_fawltydeps_subprocess(
         "--list-imports", "--exclude", "# comment"
     )
-    assert "Error while parsing exclude pattern: No rule found in '# comment'" in errors
+    assert "Error while parsing exclude pattern: No rule found: '# comment'" in errors
     assert returncode == 2
 
 
@@ -291,7 +291,7 @@ def test_list_imports__error_in_exclude_pattern__fails_with_exit_code_2(tmp_path
         "--list-imports", "--exclude=foo/bar"
     )
     assert (
-        "Error while parsing exclude pattern: Anchored pattern without base_dir in 'foo/bar'"
+        "Error while parsing exclude pattern: Anchored pattern without base_dir: 'foo/bar'"
         in errors
     )
     assert returncode == 2
