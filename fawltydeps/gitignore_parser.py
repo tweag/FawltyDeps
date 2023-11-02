@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import os
 import re
-from os.path import abspath
 from pathlib import Path
 from typing import Callable, Iterable, NamedTuple, Optional
 
@@ -144,7 +143,7 @@ def rule_from_pattern(  # pylint: disable=too-many-branches
         negation=negation,
         directory_only=directory_only,
         anchored=anchored,
-        base_path=_normalize_path(base_path) if base_path else None,
+        base_path=base_path,
         source=source,
     )
 
@@ -172,9 +171,9 @@ class Rule(NamedTuple):
         """Return True iff the given 'abs_path' should be ignored."""
         matched = False
         if self.base_path:
-            rel_path = str(_normalize_path(abs_path).relative_to(self.base_path))
+            rel_path = str(abs_path.relative_to(self.base_path))
         else:
-            rel_path = str(_normalize_path(abs_path))
+            rel_path = str(abs_path)
         # Path() strips the trailing slash, so we need to preserve it
         # in case of directory-only negation
         if self.negation and is_dir:
@@ -256,13 +255,3 @@ def fnmatch_pathname_to_regex(  # pylint: disable=too-many-branches,too-many-sta
     else:
         res.append("($|\\/)")
     return "".join(res)
-
-
-def _normalize_path(path: Path) -> Path:
-    """Normalize a path without resolving symlinks.
-
-    This is equivalent to `Path.resolve()` except that it does not resolve symlinks.
-    Note that this simplifies paths by removing double slashes, `..`, `.` etc. like
-    `Path.resolve()` does.
-    """
-    return Path(abspath(path))
