@@ -143,7 +143,7 @@ class DirectoryTraversal(Generic[T]):
         returned while traversing the parent.
         """
         logger.debug(f"Parsing rule from pattern {pattern!r}")
-        rule = gitignore_parser.rule_from_pattern(pattern.rstrip("\n"), base_dir)
+        rule = gitignore_parser.Rule.from_pattern(pattern.rstrip("\n"), base_dir)
         if rule.anchored and base_dir is None:
             raise gitignore_parser.RuleError(
                 "Anchored pattern without base_dir", pattern
