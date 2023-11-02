@@ -79,7 +79,7 @@ def rule_from_pattern(  # pylint: disable=too-many-branches
     value is required for correct behavior. The base path should be absolute.
     """
     if base_path is not None and not base_path.is_absolute():
-        raise ValueError("base_path must be absolute")
+        raise ValueError("base_path must be absolute: {base_path}")
     # Store the exact pattern for our repr and string functions
     orig_pattern = pattern
     # Early returns follow
@@ -161,7 +161,7 @@ class Rule(NamedTuple):
         return self.pattern
 
     def __repr__(self) -> str:
-        return "".join(["Rule('", self.pattern, "')"])
+        return f"Rule({self.pattern!r}, {self.regex!r}, ...)"
 
     def match(self, abs_path: Path, is_dir: bool) -> bool:
         """Return True iff the given 'abs_path' should be ignored."""
