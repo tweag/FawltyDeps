@@ -17,7 +17,7 @@ from typing import (
     TypeVar,
 )
 
-from fawltydeps import gitignore_parser
+from fawltydeps.gitignore_parser import Rule as ExcludeRule
 from fawltydeps.utils import dirs_between
 
 T = TypeVar("T")
@@ -97,7 +97,7 @@ class DirectoryTraversal(Generic[T]):
     to_traverse: Dict[Path, DirId] = field(default_factory=dict)
     skip_dirs: Set[DirId] = field(default_factory=set)  # includes already-traversed
     attached: Dict[DirId, List[T]] = field(default_factory=dict)
-    exclude_rules: List[gitignore_parser.Rule] = field(default_factory=list)
+    exclude_rules: List[ExcludeRule] = field(default_factory=list)
 
     def add(self, dir_path: Path, *attach_data: T) -> None:
         """Add one directory to this traversal, optionally w/attached data.
@@ -143,11 +143,7 @@ class DirectoryTraversal(Generic[T]):
         returned while traversing the parent.
         """
         logger.debug(f"Parsing rule from pattern {pattern!r}")
-        rule = gitignore_parser.Rule.from_pattern(pattern.rstrip("\n"), base_dir)
-        if rule.anchored and base_dir is None:
-            raise gitignore_parser.RuleError(
-                "Anchored pattern without base_dir", pattern
-            )
+        rule = ExcludeRule.from_pattern(pattern.rstrip("\n"), base_dir)
 
         logger.debug(f"Adding rule {rule!r} @ {rule.base_dir!r}")
         self.exclude_rules.append(rule)

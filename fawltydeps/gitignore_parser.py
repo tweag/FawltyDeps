@@ -177,6 +177,9 @@ class Rule(NamedTuple):
             pattern = pattern[:-1]
         pattern = pattern.replace("\\ ", " ")  # unescape remaining spaces
 
+        if anchored and base_dir is None:
+            raise RuleError("Anchored pattern without base_dir", pattern, source)
+
         return cls(
             pattern=orig_pattern,
             regex=fnmatch_pathname_to_regex(pattern, dir_only, negated, anchored),
