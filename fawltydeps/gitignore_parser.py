@@ -4,10 +4,16 @@ from __future__ import annotations
 
 import os
 import re
+import sys
 from pathlib import Path
-from typing import Callable, Iterable, NamedTuple, Optional
+from typing import TYPE_CHECKING, Callable, Dict, Iterable, NamedTuple, Optional, Tuple
 
 from fawltydeps.types import Location
+
+if TYPE_CHECKING or sys.version_info >= (3, 9):
+    CompiledRegex = re.Pattern[str]  # pylint: disable=unsubscriptable-object
+else:  # re.Pattern not subscriptable before Python 3.9
+    CompiledRegex = re.Pattern
 
 
 def parse_gitignore(
@@ -149,7 +155,7 @@ class Rule(NamedTuple):
 
     # Basic values
     pattern: str
-    regex: str
+    regex: CompiledRegex
     # Behavior flags
     negation: bool
     directory_only: bool
@@ -176,78 +182,72 @@ class Rule(NamedTuple):
             rel_path += "/"
         if rel_path.startswith("./"):
             rel_path = rel_path[2:]
-        if re.search(self.regex, rel_path):
+        if self.regex.search(rel_path):
             matched = True
         return matched
 
 
-# Frustratingly, python's fnmatch doesn't provide the FNM_PATHNAME
-# option that .gitignore's behavior depends on.
-def fnmatch_pathname_to_regex(  # pylint: disable=too-many-branches,too-many-statements
-    pattern: str, directory_only: bool, negation: bool, anchored: bool = False
-) -> str:
+# Static regex fragments used below:
+SEPS = [re.escape(os.sep)] + ([] if os.altsep is None else [re.escape(os.altsep)])
+SEPS_GROUP = "[" + "|".join(SEPS) + "]"
+NONSEP = rf"[^{'|'.join(SEPS)}]"
+
+
+# Frustratingly, python's fnmatch doesn't provide the FNM_PATHNAME option that
+# .gitignore's behavior depends on, so convert the pattern to a regex instead.
+def fnmatch_pathname_to_regex(
+    pattern: str, dir_only: bool, negated: bool, anchored: bool = False
+) -> CompiledRegex:  # pylint: disable=unsubscriptable-object
     """Convert the given fnmatch-style pattern to the equivalent regex.
 
     Implements fnmatch style-behavior, as though with FNM_PATHNAME flagged;
     the path separator will not match shell-style '*' and '.' wildcards.
     """
-    i, n = 0, len(pattern)
+    result = []
 
-    seps = [re.escape(os.sep)]
-    if os.altsep is not None:
-        seps.append(re.escape(os.altsep))
-    seps_group = "[" + "|".join(seps) + "]"
-    nonsep = rf"[^{'|'.join(seps)}]"
+    def handle_character_set(pattern: str) -> Tuple[str, str]:
+        assert pattern.startswith("[")  # precondition
+        try:
+            end = pattern.index("]")
+        except ValueError:  # "]" not found
+            return "\\[", pattern[1:]
 
-    res = []
-    while i < n:
-        c = pattern[i]
-        i += 1
-        if c == "*":
-            try:
-                if pattern[i] == "*":
-                    i += 1
-                    if i < n and pattern[i] == "/":
-                        i += 1
-                        res.append("".join(["(.*", seps_group, ")?"]))
-                    else:
-                        res.append(".*")
-                else:
-                    res.append("".join([nonsep, "*"]))
-            except IndexError:
-                res.append("".join([nonsep, "*"]))
-        elif c == "?":
-            res.append(nonsep)
-        elif c == "/":
-            res.append(seps_group)
-        elif c == "[":
-            j = i
-            if j < n and pattern[j] == "!":
-                j += 1
-            if j < n and pattern[j] == "]":
-                j += 1
-            while j < n and pattern[j] != "]":
-                j += 1
-            if j >= n:
-                res.append("\\[")
-            else:
-                stuff = pattern[i:j].replace("\\", "\\\\").replace("/", "")
-                i = j + 1
-                if stuff[0] == "!":
-                    stuff = "".join(["^", stuff[1:]])
-                elif stuff[0] == "^":
-                    stuff = "".join("\\" + stuff)
-                res.append(f"[{stuff}]")
+        inside, rest = pattern[1:end], pattern[end + 1 :]
+        inside = inside.replace("\\", "\\\\").replace("/", "")
+        if inside.startswith("^"):  # -> literal "^"
+            inside = "\\" + inside
+        elif inside.startswith("!"):  # -> negated character set -> [^...]
+            inside = "^" + inside[1:]
+        return f"[{inside}]", rest
+
+    handlers: Dict[str, Callable[[str], Tuple[str, str]]] = {
+        # pattern prefix -> callable that given pattern returns (result, rest)
+        "**/": lambda pattern: (f"(.*{SEPS_GROUP})?", pattern[3:]),
+        "**": lambda pattern: (".*", pattern[2:]),
+        "*": lambda pattern: (f"{NONSEP}*", pattern[1:]),
+        "?": lambda pattern: (NONSEP, pattern[1:]),
+        "/": lambda pattern: (SEPS_GROUP, pattern[1:]),
+        "[": handle_character_set,
+        "": lambda pattern: (re.escape(pattern[0]), pattern[1:]),
+    }
+    while pattern:
+        for prefix, func in handlers.items():
+            if pattern.startswith(prefix):
+                fragment, pattern = func(pattern)
+                result.append(fragment)
+                break
         else:
-            res.append(re.escape(c))
+            raise RuntimeError("FRAGMENTS is incomplete!")
+
     if anchored:
-        res.insert(0, "^")
+        result.insert(0, "^")
     else:
-        res.insert(0, f"(^|{seps_group})")
-    if not directory_only:
-        res.append("$")
-    elif directory_only and negation:
-        res.append("/$")
+        result.insert(0, f"(^|{SEPS_GROUP})")
+    if not dir_only:
+        result.append("$")
+    elif dir_only and negated:
+        result.append("/$")
     else:
-        res.append("($|\\/)")
-    return "".join(res)
+        result.append("($|\\/)")
+
+    return re.compile("".join(result))
