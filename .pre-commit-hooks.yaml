@@ -1,5 +1,5 @@
 -   id: check-undeclared
-    name: FawltyDeps
+    name: FawltyDeps-undeclared
     description: "FawltyDeps: Check for undeclared dependencies"
     entry: fawltydeps --check-undeclared
     language: python
@@ -8,8 +8,8 @@
       - --code
     pass_filenames: true
 -   id: check-unused
-    name: FawltyDeps
-    description: "FawltyDeps: Check for undeclared dependencies"
+    name: FawltyDeps-unused
+    description: "FawltyDeps: Check for unused dependencies"
     entry: fawltydeps --check-unused
     language: python
     files: ".*\\.py|ipynb"
