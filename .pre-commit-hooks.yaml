@@ -3,7 +3,9 @@
     description: "FawltyDeps: Check for undeclared dependencies"
     entry: fawltydeps --check-undeclared
     language: python
-    pass_filenames: false
+    args:
+      - --code
+    pass_filenames: true
 -   id: check-unused
     name: FawltyDeps
     description: "FawltyDeps: Check for undeclared dependencies"
