@@ -192,7 +192,6 @@ class Rule(NamedTuple):
 
     def match(self, abs_path: Path, is_dir: bool) -> bool:
         """Return True iff the given 'abs_path' should be ignored."""
-        matched = False
         if self.base_dir:
             rel_path = str(abs_path.relative_to(self.base_dir))
         else:
@@ -203,9 +202,12 @@ class Rule(NamedTuple):
             rel_path += "/"
         if rel_path.startswith("./"):
             rel_path = rel_path[2:]
-        if self.regex.search(rel_path):
-            matched = True
-        return matched
+        match = self.regex.search(rel_path)
+        if match:
+            if self.dir_only and not is_dir and match.end() == match.endpos:
+                return False
+            return True
+        return False
 
 
 # Static regex fragments used below:

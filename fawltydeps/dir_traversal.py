@@ -154,8 +154,6 @@ class DirectoryTraversal(Generic[T]):
         for rule in reversed(self.exclude_rules):
             try:
                 if rule.match(abs_path, is_dir):
-                    if rule.dir_only and not is_dir:
-                        continue  # this rule does not match after all
                     logger.debug(f"    exclude rule {rule!r} matches {abs_path}")
                     return not rule.negated
             except ValueError:  # abs_path not relative to rule.base_path

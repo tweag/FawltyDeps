@@ -106,11 +106,12 @@ test_vectors = [
         "ignore_directory",
         [".venv/"],
         does_match=[
-            "/some/dir/.venv/",
+            "/some/dir/.venv/",  # a dir
             "/some/dir/.venv/folder/",
             "/some/dir/.venv/file.txt",
         ],
         doesnt_match=[
+            "/some/dir/.venv",  # not a dir
             "/some/dir/.venv_other_folder",
             "/some/dir/.venv_no_folder.py",
         ],
