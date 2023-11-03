@@ -18,6 +18,7 @@ from typing import (
 )
 
 from fawltydeps.gitignore_parser import Rule as ExcludeRule
+from fawltydeps.gitignore_parser import match_rules
 from fawltydeps.utils import dirs_between
 
 T = TypeVar("T")
@@ -150,15 +151,7 @@ class DirectoryTraversal(Generic[T]):
 
     def _do_exclude(self, path: Path, is_dir: bool) -> bool:
         """Check if given path is excluded by any of our exclude rules."""
-        abs_path = path.resolve()
-        for rule in reversed(self.exclude_rules):
-            try:
-                if rule.match(abs_path, is_dir):
-                    logger.debug(f"    exclude rule {rule!r} matches {abs_path}")
-                    return not rule.negated
-            except ValueError:  # abs_path not relative to rule.base_path
-                pass
-        return False
+        return match_rules(self.exclude_rules, path.resolve(), is_dir)
 
     def traverse(self) -> Iterator[TraversalStep[T]]:
         """Perform the traversal of the added directories.
