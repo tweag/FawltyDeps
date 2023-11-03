@@ -193,7 +193,10 @@ class Rule(NamedTuple):
     def match(self, abs_path: Path, is_dir: bool) -> bool:
         """Return True iff the given 'abs_path' should be ignored."""
         if self.base_dir:
-            rel_path = str(abs_path.relative_to(self.base_dir))
+            try:
+                rel_path = str(abs_path.relative_to(self.base_dir))
+            except ValueError:  # abs_path not relative to self.base_dir
+                return False
         else:
             rel_path = str(abs_path)
         # Path() strips the trailing slash, so we need to preserve it
