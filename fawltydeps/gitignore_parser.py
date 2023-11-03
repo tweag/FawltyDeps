@@ -2,12 +2,22 @@
 
 from __future__ import annotations
 
+import functools
 import logging
 import os
 import re
 import sys
 from pathlib import Path
-from typing import TYPE_CHECKING, Callable, Dict, Iterable, NamedTuple, Optional, Tuple
+from typing import (
+    TYPE_CHECKING,
+    Callable,
+    Dict,
+    Iterable,
+    List,
+    NamedTuple,
+    Optional,
+    Tuple,
+)
 
 from fawltydeps.types import Location
 
@@ -78,22 +88,15 @@ def parse_gitignore_lines(
             # Blank lines and comments are ok when parsing multiple lines
             logger.debug(str(exc))
 
-    if not any(r.negated for r in rules):
+    return functools.partial(match_rules, rules)
 
-        def handle_straightforward(file_path: Path, is_dir: bool) -> bool:
-            return any(r.match(file_path, is_dir) for r in rules)
 
-        return handle_straightforward
-
-    # We have negation rules. We can't use a simple "any" to evaluate them.
-    # Later rules override earlier rules.
-    def handle_negation(file_path: Path, is_dir: bool) -> bool:
-        for rule in reversed(rules):
-            if rule.match(file_path, is_dir):
-                return not rule.negated
-        return False
-
-    return handle_negation
+def match_rules(rules: List[Rule], path: Path, is_dir: bool) -> bool:
+    """Match the given path against the given list of rules."""
+    for rule in reversed(rules):
+        if rule.match(path, is_dir):
+            return not rule.negated
+    return False
 
 
 class Rule(NamedTuple):
