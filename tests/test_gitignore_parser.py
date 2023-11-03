@@ -27,7 +27,7 @@ test_vectors = [
         does_match=[
             "/some/dir/main.pyc",
             "/some/dir/dir/main.pyc",
-            "/some/dir/__pycache__",
+            "/some/dir/__pycache__/",
         ],
         doesnt_match=["/some/dir/main.py"],
     ),
@@ -106,8 +106,8 @@ test_vectors = [
         "ignore_directory",
         [".venv/"],
         does_match=[
-            "/some/dir/.venv",
-            "/some/dir/.venv/folder",
+            "/some/dir/.venv/",
+            "/some/dir/.venv/folder/",
             "/some/dir/.venv/file.txt",
         ],
         doesnt_match=[
@@ -118,7 +118,7 @@ test_vectors = [
     GitignoreParserTestVector(
         "ignore_directory_asterisk",
         [".venv/*"],
-        does_match=["/some/dir/.venv/folder", "/some/dir/.venv/file.txt"],
+        does_match=["/some/dir/.venv/folder/", "/some/dir/.venv/file.txt"],
         doesnt_match=["/some/dir/.venv"],
     ),
     GitignoreParserTestVector(
@@ -188,7 +188,7 @@ test_vectors = [
         ["*"],
         does_match=[
             "/some/dir/file.txt",
-            "/some/dir/directory",
+            "/some/dir/directory/",
             "/some/dir/directory-trailing/",
         ],
         doesnt_match=[],
@@ -220,6 +220,8 @@ test_vectors = [
 def test_gitignore_parser(vector: GitignoreParserTestVector):
     base_dir = Path(vector.base_dir)
     matches = parse_gitignore_lines(vector.patterns, base_dir, base_dir / ".gitignore")
+    # Use a trailing '/' in the test vectors to signal is_dir=True.
+    # This trailing slash is stripped by Path() in any case.
     for path in vector.does_match:
         assert matches(Path(path), isinstance(path, str) and path.endswith("/"))
     for path in vector.doesnt_match:
