@@ -115,7 +115,7 @@ def parse_code(
                                     name = alias.name.split(".", 1)[0]
                                     if is_external_import(name):
                                         yield {
-                                            "Alternative imports": ParsedImport(
+                                            "Alternative imports (primary)": ParsedImport(
                                                 name=name,
                                                 source=source.supply(
                                                     lineno=node.lineno
@@ -134,7 +134,7 @@ def parse_code(
                                     name = node_import.module.split(".", 1)[0]
                                     if is_external_import(name):
                                         yield {
-                                            "Alternative imports": ParsedImport(
+                                            "Alternative imports (primary)": ParsedImport(
                                                 name=name,
                                                 source=source.supply(
                                                     lineno=node.lineno
