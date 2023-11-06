@@ -182,13 +182,22 @@ def parse_code(
                 isinstance(node, ast.Assign) or isinstance(node, ast.Expr)
             ) and isinstance(node.value, ast.Call):
                 if (
-                    isinstance(node.value.func, ast.Attribute)
-                    and isinstance(node.value.func.value, ast.Name)
-                    and node.value.func.value.id == "importlib"
-                    and node.value.func.attr == "import_module"
-                ) or (
-                    isinstance(node.value.func, ast.Name)
-                    and node.value.func.id == "import_module"
+                    (
+                        isinstance(node.value.func, ast.Attribute)
+                        and isinstance(node.value.func.value, ast.Name)
+                        and node.value.func.value.id == "importlib"
+                        and node.value.func.attr == "import_module"
+                    )
+                    or (
+                        isinstance(node.value.func, ast.Name)
+                        and node.value.func.id == "import_module"
+                    )
+                    or (
+                        isinstance(node.value.func, ast.Attribute)
+                        and isinstance(node.value.func.value, ast.Name)
+                        and node.value.func.value.id == "pytest"
+                        and node.value.func.attr == "importorskip"
+                    )
                 ):
                     for imp in node.value.args:
                         if isinstance(imp, ast.Constant):
