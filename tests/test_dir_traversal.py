@@ -3,6 +3,7 @@ import sys
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from pathlib import Path
+from textwrap import dedent
 from typing import Generic, List, Optional, Tuple, Type, TypeVar, Union
 
 import pytest
@@ -124,6 +125,7 @@ class DirectoryTraversalVector:
     add: List[AddCall] = field(default_factory=lambda: [AddCall(path=".")])
     skip_dirs: List[str] = field(default_factory=list)
     exclude_patterns: List[ExcludePattern] = field(default_factory=list)
+    exclude_from: List[str] = field(default_factory=list)
     exclude_exceptions: List[Type[Exception]] = field(default_factory=list)
     expect: List[ExpectedTraverseStep] = field(default_factory=list)
     expect_alternatives: Optional[List[List[ExpectedTraverseStep]]] = None
@@ -156,6 +158,11 @@ class DirectoryTraversalVector:
             base_dir = None if ipat.base_dir is None else setup_dir / ipat.base_dir
             try:
                 traversal.exclude(ipat.pattern, base_dir=base_dir)
+            except Exception as e:
+                exceptions_from_exclude.append(e)
+        for exclude_file in self.exclude_from:
+            try:
+                traversal.exclude_from(setup_dir / exclude_file)
             except Exception as e:
                 exceptions_from_exclude.append(e)
         if not self.exclude_exceptions:  # no exceptions are expected
@@ -383,7 +390,7 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
         ],
     ),
     #
-    # Testing exclude patterns
+    # Testing exclude patterns stand-alone
     #
     # The following tests are based on the pattern format rules listed in
     # `git help ignore` (https://git-scm.com/docs/gitignore#_pattern_format).
@@ -884,6 +891,118 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
             ExpectedTraverseStep("a/b", subdirs=["c"]),
             ExpectedTraverseStep("a/b/c", files=["d"]),
             ExpectedTraverseStep("x", files=["foo"]),
+        ],
+    ),
+    #
+    # Testing exclude patterns read from (and interpreted relative to) files.
+    #
+    DirectoryTraversalVector(
+        "gitignore_file__disregard_blank_lines_and_comments",
+        given=[
+            File(
+                ".gitignore",
+                dedent(
+                    """\
+                    # A comment
+                        \\
+
+                    \t
+                    #another comment
+                    exclude_this_file
+                    """
+                ),
+            ),
+            File("exclude_this_file"),
+        ],
+        exclude_from=[".gitignore"],
+        expect=[
+            ExpectedTraverseStep(
+                ".", files=[".gitignore"], excluded_files=["exclude_this_file"]
+            ),
+        ],
+    ),
+    DirectoryTraversalVector(
+        "gitignore_file__does_not_apply_to_parent_or_sibling_dirs",
+        given=[
+            File("foo"),
+            File("sibling/foo"),
+            File("sub/.gitignore", "foo"),  # exclude foo underneath sub/
+            File("sub/foo"),  # excluded
+            File("sub/bar/foo"),  # also excluded
+        ],
+        exclude_from=["sub/.gitignore"],
+        expect=[
+            ExpectedTraverseStep(".", subdirs=["sibling", "sub"], files=["foo"]),
+            ExpectedTraverseStep("sibling", files=["foo"]),
+            ExpectedTraverseStep(
+                "sub", subdirs=["bar"], files=[".gitignore"], excluded_files=["foo"]
+            ),
+            ExpectedTraverseStep("sub/bar", excluded_files=["foo"]),
+        ],
+    ),
+    DirectoryTraversalVector(
+        "gitignore_file__anchored_pattern_only_applies_to_parent_or_sibling_dirs",
+        given=[
+            File("foo"),
+            File("sub/.gitignore", "/foo"),  # exclude foo only in sub/ itself
+            File("sub/foo"),  # excluded
+            File("sub/bar/foo"),
+        ],
+        exclude_from=["sub/.gitignore"],
+        expect=[
+            ExpectedTraverseStep(".", subdirs=["sub"], files=["foo"]),
+            ExpectedTraverseStep(
+                "sub", subdirs=["bar"], files=[".gitignore"], excluded_files=["foo"]
+            ),
+            ExpectedTraverseStep("sub/bar", files=["foo"]),
+        ],
+    ),
+    DirectoryTraversalVector(
+        "gitignore_file__cannot_exclude_files_in_parent_dir",
+        given=[
+            File("foo"),
+            File("bar"),
+            File("sub/.gitignore", "../bar"),  # try (and fail) to exclude ../bar
+        ],
+        exclude_from=["sub/.gitignore"],
+        expect=[
+            ExpectedTraverseStep(".", subdirs=["sub"], files=["foo", "bar"]),
+            ExpectedTraverseStep("sub", files=[".gitignore"]),
+        ],
+    ),
+    DirectoryTraversalVector(
+        "gitignore_file__can_be_used_to_exclude_this_dir",
+        given=[
+            File("foo"),
+            File("sub/.gitignore", "."),  # exclude all of sub/
+            File("sub/foo"),  # excluded
+        ],
+        exclude_from=["sub/.gitignore"],
+        expect=[
+            ExpectedTraverseStep(".", files=["foo"], excluded_subdirs=["sub"]),
+        ],
+    ),
+    DirectoryTraversalVector(
+        "gitignore_file__parse_multiple_gitignores__and_use_patterns_from_all",
+        given=[
+            File(".gitignore", "foo"),  # exclude foo in ./ and ./sub/
+            File("foo"),
+            File("bar"),
+            File("sub/.gitignore", "bar"),  # exclude bar in sub/ only
+            File("sub/foo"),
+            File("sub/bar"),
+        ],
+        exclude_from=[".gitignore", "sub/.gitignore"],
+        expect=[
+            ExpectedTraverseStep(
+                ".",
+                subdirs=["sub"],
+                files=[".gitignore", "bar"],
+                excluded_files=["foo"],
+            ),
+            ExpectedTraverseStep(
+                "sub", files=[".gitignore"], excluded_files=["foo", "bar"]
+            ),
         ],
     ),
 ]
