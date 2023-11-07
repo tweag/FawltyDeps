@@ -182,22 +182,13 @@ def parse_code(
                 isinstance(node, ast.Assign) or isinstance(node, ast.Expr)
             ) and isinstance(node.value, ast.Call):
                 if (
-                    (
-                        isinstance(node.value.func, ast.Attribute)
-                        and isinstance(node.value.func.value, ast.Name)
-                        and node.value.func.value.id == "importlib"
-                        and node.value.func.attr == "import_module"
-                    )
-                    or (
-                        isinstance(node.value.func, ast.Name)
-                        and node.value.func.id == "import_module"
-                    )
-                    or (
-                        isinstance(node.value.func, ast.Attribute)
-                        and isinstance(node.value.func.value, ast.Name)
-                        and node.value.func.value.id == "pytest"
-                        and node.value.func.attr == "importorskip"
-                    )
+                    isinstance(node.value.func, ast.Attribute)
+                    and isinstance(node.value.func.value, ast.Name)
+                    and node.value.func.value.id == "importlib"
+                    and node.value.func.attr == "import_module"
+                ) or (
+                    isinstance(node.value.func, ast.Name)
+                    and node.value.func.id == "import_module"
                 ):
                     for imp in node.value.args:
                         if isinstance(imp, ast.Constant):
@@ -207,6 +198,66 @@ def parse_code(
                                     source=source.supply(lineno=node.lineno),
                                 )
                             }
+                elif (
+                    isinstance(node.value.func, ast.Attribute)
+                    and isinstance(node.value.func.value, ast.Name)
+                    and node.value.func.value.id == "pytest"
+                    and node.value.func.attr == "importorskip"
+                ):
+                    for imp in node.value.args:
+                        if isinstance(imp, ast.Constant):
+                            yield {
+                                "Dynamic imports (pytest)": ParsedImport(
+                                    name=imp.value,
+                                    source=source.supply(lineno=node.lineno),
+                                )
+                            }
+
+    def docstring(parsed_code: ast.Module):
+        for node in ast.walk(parsed_code):
+            # Only these types of nodes have docstring attributes.
+            # See https://docs.python.org/3/library/ast.html#ast.get_docstring.
+            if (
+                isinstance(node, ast.FunctionDef)
+                or isinstance(node, ast.AsyncFunctionDef)
+                or isinstance(node, ast.ClassDef)
+                or isinstance(node, ast.Module)
+            ) and ast.get_docstring(node):
+                docstring = ast.get_docstring(node).split("\n")
+                for ds in docstring:
+                    if ds.lstrip().startswith(">>>"):
+                        node_ds = ast.parse(ds.removeprefix(">>>").lstrip())
+                        for node_import in node_ds.body:
+                            if isinstance(node_import, ast.Import):
+                                for alias in node_import.names:
+                                    name = alias.name.split(".", 1)[0]
+                                    if is_external_import(name):
+                                        yield {
+                                            "Docstring": ParsedImport(
+                                                name=name,
+                                                source=source.supply(
+                                                    lineno=node.body[0].lineno
+                                                ),
+                                            )
+                                        }
+                            elif isinstance(node_import, ast.ImportFrom):
+                                # Relative imports are always relative to the current package, and
+                                # will therefore not resolve to a third-party package.
+                                # They are therefore uninteresting to us.
+                                if (
+                                    node_import.level == 0
+                                    and node_import.module is not None
+                                ):
+                                    name = node_import.module.split(".", 1)[0]
+                                    if is_external_import(name):
+                                        yield {
+                                            "Docstring": ParsedImport(
+                                                name=name,
+                                                source=source.supply(
+                                                    lineno=node.body[0].lineno
+                                                ),
+                                            )
+                                        }
 
     try:
         parsed_code = ast.parse(code, filename=str(source.path))
@@ -216,6 +267,7 @@ def parse_code(
     yield from conditional_imports(parsed_code)
     yield from alternative_imports(parsed_code)
     yield from dynamic_imports(parsed_code)
+    yield from docstring(parsed_code)
 
 
 def parse_notebook_file(
