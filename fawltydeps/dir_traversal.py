@@ -20,7 +20,7 @@ from typing import (
 )
 
 from fawltydeps.gitignore_parser import Rule as ExcludeRule
-from fawltydeps.gitignore_parser import match_rules
+from fawltydeps.gitignore_parser import match_rules, parse_gitignore
 from fawltydeps.utils import dirs_between
 
 T = TypeVar("T")
@@ -160,6 +160,20 @@ class DirectoryTraversal(Generic[T]):
 
         logger.debug(f"Adding rule {rule!r} @ {rule.base_dir!r}")
         self.exclude_rules.append(rule)
+
+    def exclude_from(self, file_with_exclude_patterns: Path) -> None:
+        """Read exclude patterns from the given file and add to this traversal.
+
+        The base_dir is automatically taken to be the directory containing the
+        given file.
+
+        Empty lines and comments in this file are automatically skipped,
+        but other parse errors from gitignore_parser are propagated.
+
+        See .exclude() for details about how each gitignore pattern is used.
+        """
+        logger.debug(f"Reading exclude patterns from {file_with_exclude_patterns}...")
+        self.exclude_rules.extend(parse_gitignore(file_with_exclude_patterns))
 
     def is_excluded(self, path: Path, is_dir: bool) -> bool:
         """Check if given path is excluded by any of our exclude rules."""
