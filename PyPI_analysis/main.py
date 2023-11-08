@@ -137,21 +137,6 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
     def print_human_readable(self, out: TextIO, detailed: bool = True) -> None:
         """Print a human-readable rendering of this analysis to 'out'."""
 
-        def render_sources() -> Iterator[str]:
-            if detailed:
-                # Sort sources by type, then by path
-                source_types = [
-                    (CodeSource, "Sources of Python code:"),
-                    (DepsSource, "Sources of declared dependencies:"),
-                ]
-                for source_type, heading in source_types:
-                    filtered = {s for s in self.sources if s.source_type is source_type}
-                    if filtered:
-                        yield "\n" + heading
-                        yield from sorted([f"  {src.render(True)}" for src in filtered])
-            else:
-                yield from sorted({src.render(False) for src in self.sources})
-
         def render_dep_files() -> Iterator[str]:
             if detailed:
                 yield "Dependency declaration files:"
