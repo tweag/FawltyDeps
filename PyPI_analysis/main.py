@@ -71,7 +71,12 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
         return set(
             find_sources(
                 self.settings,
-                set.union(*[source_types[action] for action in {Action.LIST_IMPORTS}]),
+                set.union(
+                    *[
+                        source_types[action]
+                        for action in {Action.LIST_IMPORTS, Action.LIST_SOURCES}
+                    ]
+                ),
             )
         )
 
@@ -100,6 +105,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
         """
         ret = cls(settings, stdin)
 
+        ret.sources
         ret.imports
 
         return ret
@@ -122,7 +128,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
             # Using properties with an underscore do not trigger computations.
             # They are populated only if the computations were already required
             # by settings.actions.
-            "sources": self._sources,
+            "deps_file": {src for src in self._sources if isinstance(src, DepsSource)},
             "imports": self._imports,
             "version": self.version,
         }
@@ -136,6 +142,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
                 # Sort sources by type, then by path
                 source_types = [
                     (CodeSource, "Sources of Python code:"),
+                    (DepsSource, "Sources of declared dependencies:"),
                 ]
                 for source_type, heading in source_types:
                     filtered = {s for s in self.sources if s.source_type is source_type}
@@ -145,10 +152,30 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
             else:
                 yield from sorted({src.render(False) for src in self.sources})
 
+        def render_dep_files() -> Iterator[str]:
+            if detailed:
+                yield "Dependency declaration files:"
+                yield from sorted(
+                    {
+                        f"  {src.parser_choice}: {src.render(False)}"
+                        for src in self.sources
+                        if isinstance(src, DepsSource)
+                    }
+                )
+            else:
+                yield from sorted(
+                    {
+                        f"{src.parser_choice}: {src.render(False)}"
+                        for src in self.sources
+                        if isinstance(src, DepsSource)
+                    }
+                )
+
         def render_imports() -> Iterator[str]:
             if detailed:
+                yield "\n" + "Patterns of imports:"
                 for imp in self.imports:
-                    yield f"{list(imp.keys())[0]}: {imp[list(imp.keys())[0]].source}: {imp[list(imp.keys())[0]].name}"
+                    yield f"  {list(imp.keys())[0]}: {imp[list(imp.keys())[0]].source}: {imp[list(imp.keys())[0]].name}"
             else:
                 unique_imports = {
                     list(imp.keys())[0] + ": " + imp[list(imp.keys())[0]].name
@@ -160,6 +187,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
             for line in lines:
                 print(line, file=out)
 
+        output(render_dep_files())
         output(render_imports())
 
     @staticmethod
