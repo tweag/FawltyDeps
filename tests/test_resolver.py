@@ -193,6 +193,7 @@ def test_resolve_dependencies__generates_expected_mappings(
                 if custom_mapping_file
                 else None,
                 custom_mapping=user_config_mapping,
+                use_current_env=True,
                 install_deps=install_deps,
             ),
         )

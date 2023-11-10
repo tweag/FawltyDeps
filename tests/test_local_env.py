@@ -145,7 +145,7 @@ def test_local_env__current_venv__contains_prepared_packages(isolate_default_res
             "pytest": {"pytest"},
         }
     )
-    lpl = LocalPackageResolver()
+    lpl = LocalPackageResolver(use_current_env=True)
     expect_package_names = ["pip", "setuptools", "isort", "pydantic", "pytest"]
     for package_name in expect_package_names:
         assert package_name in lpl.packages
@@ -160,7 +160,7 @@ def test_local_env__prefers_first_package_found_in_sys_path(isolate_default_reso
     site_dir2 = isolate_default_resolver({"other": {"actual"}})
     assert site_dir1 != site_dir2
     assert sys.path[0] == str(site_dir2)
-    actual = LocalPackageResolver().lookup_packages({"other"})
+    actual = LocalPackageResolver(use_current_env=True).lookup_packages({"other"})
     assert actual == {
         "other": Package(
             "other", {"actual"}, LocalPackageResolver, {str(site_dir2): {"actual"}}
@@ -268,17 +268,17 @@ def test_resolve_dependencies__in_2_fake_venvs__returns_local_and_id_deps(fake_v
 
 def test_resolve_dependencies__when_no_env_found__fallback_to_current():
     # When no Python env is found by traverse_project, we end up with zero
-    # PyEnvSource objects in Analysis.sources. This is communicated to
-    # setup_resolvers() as an empty set.
-    resolvers = list(setup_resolvers(pyenv_srcs=set()))
+    # PyEnvSource objects in Analysis.sources, and Analysis.resolved_deps uses
+    # enables the use_current_env flag to setup_resolvers() in this case.
+    resolvers = list(setup_resolvers(use_current_env=True))
 
     # The resulting resolvers should include a single LocalPackageResolver whose
-    # .package_dirs is empty. This signals that the current env (aka. sys.path)
-    # should be used instead.
+    # .package_dirs is empty and .use_current_env is True.
     local_resolvers = [r for r in resolvers if isinstance(r, LocalPackageResolver)]
     assert len(local_resolvers) == 1
     lpr = local_resolvers[0]
     assert lpr.package_dirs == set()
+    assert lpr.use_current_env is True
 
     # The only thing we can assume about the _current_ env (in which FD runs)
     # is that "fawltydeps" is installed (hence resolved via our 'lpr'), and that

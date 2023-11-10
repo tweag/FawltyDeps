@@ -208,16 +208,21 @@ class UserDefinedMapping(BasePackageResolver):
 class LocalPackageResolver(BasePackageResolver):
     """Lookup imports exposed by packages installed in a Python environment."""
 
-    def __init__(self, srcs: AbstractSet[PyEnvSource] = frozenset()) -> None:
+    def __init__(
+        self,
+        srcs: AbstractSet[PyEnvSource] = frozenset(),
+        use_current_env: bool = False,
+    ) -> None:
         """Lookup packages installed in the given Python environments.
 
-        Default to the current python environment (aka. sys.path) if `srcs` is
-        empty (the default).
+        If 'use_current_env' is enabled, then the current python environment
+        (aka. sys.path) will also be included in the lookup.
 
         Use importlib_metadata to look up the mapping between packages and their
         provided import names.
         """
         self.package_dirs: Set[Path] = set(src.path for src in srcs)
+        self.use_current_env: bool = use_current_env
         # We enumerate packages for pyenv_path _once_ and cache the result here:
         self._packages: Optional[Dict[str, Package]] = None
 
@@ -312,11 +317,10 @@ class LocalPackageResolver(BasePackageResolver):
         """
 
         def _pyenvs() -> Iterator[Tuple[CustomMapping, str]]:
-            if not self.package_dirs:  # No pyenvs given, fall back to sys.path
+            for package_dir in self.package_dirs:
+                yield from self._from_one_env([str(package_dir)])
+            if self.use_current_env:
                 yield from self._from_one_env(sys.path)
-            else:
-                for package_dir in self.package_dirs:
-                    yield from self._from_one_env([str(package_dir)])
 
         return accumulate_mappings(self.__class__, _pyenvs())
 
@@ -485,9 +489,11 @@ class IdentityMapping(BasePackageResolver):
 
 
 def setup_resolvers(
+    *,
     custom_mapping_files: Optional[Set[Path]] = None,
     custom_mapping: Optional[CustomMapping] = None,
     pyenv_srcs: AbstractSet[PyEnvSource] = frozenset(),
+    use_current_env: bool = False,
     install_deps: bool = False,
 ) -> Iterator[BasePackageResolver]:
     """Configure a sequence of resolvers according to the given arguments.
@@ -499,7 +505,7 @@ def setup_resolvers(
         mapping_paths=custom_mapping_files or set(), custom_mapping=custom_mapping
     )
 
-    yield LocalPackageResolver(pyenv_srcs)
+    yield LocalPackageResolver(pyenv_srcs, use_current_env)
 
     if install_deps:
         yield TemporaryPipInstallResolver()
