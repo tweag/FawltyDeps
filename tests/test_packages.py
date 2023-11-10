@@ -282,7 +282,7 @@ def test_LocalPackageResolver_lookup_packages(
     isolate_default_resolver, dep_name, expect_import_names
 ):
     isolate_default_resolver(default_sys_path_env_for_tests)
-    lpl = LocalPackageResolver()
+    lpl = LocalPackageResolver(use_current_env=True)
     actual = lpl.lookup_packages({dep_name})
     if expect_import_names is None:
         assert actual == {}
@@ -296,7 +296,7 @@ def test_resolve_dependencies(vector, isolate_default_resolver):
     dep_names = [dd.name for dd in vector.declared_deps]
     isolate_default_resolver(default_sys_path_env_for_tests)
     actual = ignore_package_debug_info(
-        resolve_dependencies(dep_names, setup_resolvers())
+        resolve_dependencies(dep_names, setup_resolvers(use_current_env=True))
     )
     assert actual == vector.expect_resolved_deps
 
@@ -319,7 +319,7 @@ def test_resolve_dependencies__informs_once_when_id_mapping_is_used(
     ]
     caplog.set_level(logging.INFO)
     actual = ignore_package_debug_info(
-        resolve_dependencies(dep_names, setup_resolvers())
+        resolve_dependencies(dep_names, setup_resolvers(use_current_env=True))
     )
     assert actual == expect
     assert caplog.record_tuples == expect_log

@@ -140,14 +140,14 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
     @calculated_once
     def resolved_deps(self) -> Dict[str, Package]:
         """The resolved mapping of dependency names to provided import names."""
+        pyenv_srcs = {src for src in self.sources if isinstance(src, PyEnvSource)}
         return resolve_dependencies(
             (dep.name for dep in self.declared_deps),
             setup_resolvers(
                 custom_mapping_files=self.settings.custom_mapping_file,
                 custom_mapping=self.settings.custom_mapping,
-                pyenv_srcs={
-                    src for src in self.sources if isinstance(src, PyEnvSource)
-                },
+                pyenv_srcs=pyenv_srcs,
+                use_current_env=not pyenv_srcs,
                 install_deps=self.settings.install_deps,
             ),
         )
