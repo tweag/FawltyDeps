@@ -177,8 +177,7 @@ def populate_parser_paths_options(parser: argparse._ActionsContainer) -> None:
         help=(
             "Where to search for Python environments that have project"
             " dependencies installed. Defaults to searching under basepaths"
-            " (see above). If no environments are found, fall back to using the"
-            " Python environment where FawltyDeps is installed."
+            " (see above)."
         ),
     )
     parser.add_argument(

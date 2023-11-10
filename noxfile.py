@@ -88,7 +88,7 @@ def self_test(session):
     install_groups(session, include=["nox", "test", "lint", "format", "dev"])
     # For --pyenv, use Nox's virtualenv, or fall back to current virtualenv
     venv_path = getattr(session.virtualenv, "location", sys.prefix)
-    session.run("fawltydeps", f"--pyenv={venv_path}")
+    session.run("fawltydeps")
 
 
 @nox.session(python=python_versions)
