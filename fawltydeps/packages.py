@@ -205,26 +205,109 @@ class UserDefinedMapping(BasePackageResolver):
         }
 
 
-class LocalPackageResolver(BasePackageResolver):
+class InstalledPackageResolver(BasePackageResolver):
     """Lookup imports exposed by packages installed in a Python environment."""
 
-    def __init__(
-        self,
-        srcs: AbstractSet[PyEnvSource] = frozenset(),
-        use_current_env: bool = False,
-    ) -> None:
-        """Lookup packages installed in the given Python environments.
+    def __init__(self) -> None:
+        """Lookup packages installed in some Python environments.
 
-        If 'use_current_env' is enabled, then the current python environment
-        (aka. sys.path) will also be included in the lookup.
+        Uses importlib_metadata to look up the mapping between packages and
+        their provided import names.
+        """
+        # We enumerate packages _once_ and cache the result here:
+        self._packages: Optional[Dict[str, Package]] = None
+
+    def _from_one_env(
+        self, env_paths: List[str]
+    ) -> Iterator[Tuple[CustomMapping, str]]:
+        """Return package-name-to-import-names mapping from one Python env.
+
+        This is roughly equivalent to calling importlib_metadata's
+        packages_distributions(), except that instead of implicitly querying
+        sys.path, we query the given env_paths instead.
+
+        Also, we are able to return packages that map to zero import names,
+        whereas packages_distributions() cannot.
+        """
+        seen = set()  # Package names (normalized) seen earlier in env_paths
+
+        # We're reaching into the internals of importlib_metadata here, which
+        # Mypy is not overly fond of, hence lots of "type: ignore"...
+        context = DistributionFinder.Context(path=env_paths)  # type: ignore
+        for dist in MetadataPathFinder().find_distributions(context):
+            normalized_name = Package.normalize_name(dist.name)
+            parent_dir = dist.locate_file("")
+            if normalized_name in seen:
+                # We already found another instance of this package earlier in
+                # env_paths. Assume that the earlier package is what Python's
+                # import machinery will choose, and that this later package is
+                # not interesting.
+                logger.debug(f"Skip {dist.name} {dist.version} under {parent_dir}")
+                continue
+
+            logger.debug(f"Found {dist.name} {dist.version} under {parent_dir}")
+            seen.add(normalized_name)
+            imports = list(
+                _top_level_declared(dist)  # type: ignore
+                or _top_level_inferred(dist)  # type: ignore
+            )
+            yield {dist.name: imports}, str(parent_dir)
+
+    @property
+    @abstractmethod
+    def packages(self) -> Dict[str, Package]:
+        """Return mapping of package names to Package objects."""
+        raise NotImplementedError
+
+    def lookup_packages(self, package_names: Set[str]) -> Dict[str, Package]:
+        """Convert package names to locally available Package objects.
+
+        (Although this function generally works with _all_ locally available
+        packages, we apply it only to the subset that is the dependencies of
+        the current project.)
+
+        Return a dict mapping package names to the Package objects that
+        encapsulate the package-name-to-import-names mappings.
+
+        Only return dict entries for the packages that we manage to find in the
+        local environment. Omit any packages for which we're unable to determine
+        what imports names they provide. This applies to packages that are
+        missing from the local environment, or packages where we fail to
+        determine its provided import names.
+        """
+        return {
+            name: self.packages[Package.normalize_name(name)]
+            for name in package_names
+            if Package.normalize_name(name) in self.packages
+        }
+
+
+class SysPathPackageResolver(InstalledPackageResolver):
+    """Lookup imports exposed by packages installed in sys.path."""
+
+    @property
+    @calculated_once
+    def packages(self) -> Dict[str, Package]:
+        """Return mapping of package names to Package objects.
+
+        This enumerates the available packages in the current Python environment
+        (aka. sys.path) _once_, and caches the result for the remainder of this
+        object's life.
+        """
+        return accumulate_mappings(self.__class__, self._from_one_env(sys.path))
+
+
+class LocalPackageResolver(InstalledPackageResolver):
+    """Lookup imports packages installed in the given Python environments."""
+
+    def __init__(self, srcs: AbstractSet[PyEnvSource] = frozenset()) -> None:
+        """Lookup packages installed in the given Python environments.
 
         Use importlib_metadata to look up the mapping between packages and their
         provided import names.
         """
+        super().__init__()
         self.package_dirs: Set[Path] = set(src.path for src in srcs)
-        self.use_current_env: bool = use_current_env
-        # We enumerate packages for pyenv_path _once_ and cache the result here:
-        self._packages: Optional[Dict[str, Package]] = None
 
     @classmethod
     def find_package_dirs(cls, path: Path) -> Iterator[Path]:
@@ -270,42 +353,6 @@ class LocalPackageResolver(BasePackageResolver):
                     package_dir.relative_to(path)  # ValueError if not relative
                     yield package_dir
 
-    def _from_one_env(
-        self, env_paths: List[str]
-    ) -> Iterator[Tuple[CustomMapping, str]]:
-        """Return package-name-to-import-names mapping from one Python env.
-
-        This is roughly equivalent to calling importlib_metadata's
-        packages_distributions(), except that instead of implicitly querying
-        sys.path, we query env_paths instead.
-
-        Also, we are able to return packages that map to zero import names,
-        whereas packages_distributions() cannot.
-        """
-        seen = set()  # Package names (normalized) seen earlier in env_paths
-
-        # We're reaching into the internals of importlib_metadata here, which
-        # Mypy is not overly fond of, hence lots of "type: ignore"...
-        context = DistributionFinder.Context(path=env_paths)  # type: ignore
-        for dist in MetadataPathFinder().find_distributions(context):
-            normalized_name = Package.normalize_name(dist.name)
-            parent_dir = dist.locate_file("")
-            if normalized_name in seen:
-                # We already found another instance of this package earlier in
-                # env_paths. Assume that the earlier package is what Python's
-                # import machinery will choose, and that this later package is
-                # not interesting.
-                logger.debug(f"Skip {dist.name} {dist.version} under {parent_dir}")
-                continue
-
-            logger.debug(f"Found {dist.name} {dist.version} under {parent_dir}")
-            seen.add(normalized_name)
-            imports = list(
-                _top_level_declared(dist)  # type: ignore
-                or _top_level_inferred(dist)  # type: ignore
-            )
-            yield {dist.name: imports}, str(parent_dir)
-
     @property
     @calculated_once
     def packages(self) -> Dict[str, Package]:
@@ -319,32 +366,8 @@ class LocalPackageResolver(BasePackageResolver):
         def _pyenvs() -> Iterator[Tuple[CustomMapping, str]]:
             for package_dir in self.package_dirs:
                 yield from self._from_one_env([str(package_dir)])
-            if self.use_current_env:
-                yield from self._from_one_env(sys.path)
 
         return accumulate_mappings(self.__class__, _pyenvs())
-
-    def lookup_packages(self, package_names: Set[str]) -> Dict[str, Package]:
-        """Convert package names to locally available Package objects.
-
-        (Although this function generally works with _all_ locally available
-        packages, we apply it only to the subset that is the dependencies of
-        the current project.)
-
-        Return a dict mapping package names to the Package objects that
-        encapsulate the package-name-to-import-names mappings.
-
-        Only return dict entries for the packages that we manage to find in the
-        local environment. Omit any packages for which we're unable to determine
-        what imports names they provide. This applies to packages that are
-        missing from the local environment, or packages where we fail to
-        determine its provided import names.
-        """
-        return {
-            name: self.packages[Package.normalize_name(name)]
-            for name in package_names
-            if Package.normalize_name(name) in self.packages
-        }
 
 
 def pyenv_sources(*pyenv_paths: Path) -> Set[PyEnvSource]:
@@ -505,10 +528,10 @@ def setup_resolvers(
         mapping_paths=custom_mapping_files or set(), custom_mapping=custom_mapping
     )
 
-    yield LocalPackageResolver(pyenv_srcs, False)
+    yield LocalPackageResolver(pyenv_srcs)
 
     if use_current_env:
-        yield LocalPackageResolver(frozenset(), True)
+        yield SysPathPackageResolver()
 
     if install_deps:
         yield TemporaryPipInstallResolver()

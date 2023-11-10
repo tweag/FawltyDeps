@@ -10,7 +10,7 @@ from textwrap import dedent
 from typing import Any, Dict, Iterable, Iterator, List, Optional, Tuple, Union
 
 from fawltydeps.main import main
-from fawltydeps.packages import IdentityMapping, LocalPackageResolver, Package
+from fawltydeps.packages import IdentityMapping, Package, SysPathPackageResolver
 from fawltydeps.types import (
     DeclaredDependency,
     Location,
@@ -79,7 +79,7 @@ def resolved_factory(*deps: str) -> Dict[str, Package]:
     def make_package(dep: str) -> Package:
         imports = default_sys_path_env_for_tests.get(dep, None)
         if imports is not None:  # exists in local env
-            return Package(dep, imports, LocalPackageResolver)
+            return Package(dep, imports, SysPathPackageResolver)
         # fall back to identity mapping
         return Package(dep, {dep}, IdentityMapping)
 
@@ -285,8 +285,8 @@ test_vectors = [
             DeclaredDependency(name="pip", source=Location(Path("requirements2.txt"))),
         ],
         expect_resolved_deps={
-            "Pip": Package("pip", {"pip"}, LocalPackageResolver),
-            "pip": Package("pip", {"pip"}, LocalPackageResolver),
+            "Pip": Package("pip", {"pip"}, SysPathPackageResolver),
+            "pip": Package("pip", {"pip"}, SysPathPackageResolver),
         },
         expect_unused_deps=[
             UnusedDependency("Pip", [Location(Path("requirements1.txt"))]),

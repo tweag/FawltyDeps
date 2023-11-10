@@ -9,6 +9,7 @@ from fawltydeps.packages import (
     IdentityMapping,
     LocalPackageResolver,
     Package,
+    SysPathPackageResolver,
     UserDefinedMapping,
     resolve_dependencies,
     setup_resolvers,
@@ -278,12 +279,12 @@ def test_user_defined_mapping__no_input__returns_empty_mapping():
         ),
     ],
 )
-def test_LocalPackageResolver_lookup_packages(
+def test_SysPathPackageResolver_lookup_packages(
     isolate_default_resolver, dep_name, expect_import_names
 ):
     isolate_default_resolver(default_sys_path_env_for_tests)
-    lpl = LocalPackageResolver(use_current_env=True)
-    actual = lpl.lookup_packages({dep_name})
+    sys_path = SysPathPackageResolver()
+    actual = sys_path.lookup_packages({dep_name})
     if expect_import_names is None:
         assert actual == {}
     else:
@@ -307,7 +308,7 @@ def test_resolve_dependencies__informs_once_when_id_mapping_is_used(
     dep_names = ["some-foo", "pip", "some-foo"]
     isolate_default_resolver(default_sys_path_env_for_tests)
     expect = {
-        "pip": Package("pip", {"pip"}, LocalPackageResolver),
+        "pip": Package("pip", {"pip"}, SysPathPackageResolver),
         "some-foo": Package("some-foo", {"some_foo"}, IdentityMapping),
     }
     expect_log = [
