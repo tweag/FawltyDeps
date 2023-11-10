@@ -10,6 +10,7 @@ from fawltydeps.packages import (
     IdentityMapping,
     LocalPackageResolver,
     Package,
+    SysPathPackageResolver,
     pyenv_sources,
     resolve_dependencies,
     setup_resolvers,
@@ -135,7 +136,7 @@ def test_local_env__default_venv__contains_pip(tmp_path):
     assert str(expect_location) in pip.debug_info
 
 
-def test_local_env__current_venv__contains_prepared_packages(isolate_default_resolver):
+def test_sys_path_env__contains_prepared_packages(isolate_default_resolver):
     isolate_default_resolver(
         {
             "pip": {"pip"},
@@ -145,13 +146,13 @@ def test_local_env__current_venv__contains_prepared_packages(isolate_default_res
             "pytest": {"pytest"},
         }
     )
-    lpl = LocalPackageResolver(use_current_env=True)
+    sys_path = SysPathPackageResolver()
     expect_package_names = ["pip", "setuptools", "isort", "pydantic", "pytest"]
     for package_name in expect_package_names:
-        assert package_name in lpl.packages
+        assert package_name in sys_path.packages
 
 
-def test_local_env__prefers_first_package_found_in_sys_path(isolate_default_resolver):
+def test_sys_path_env__prefers_first_package_found(isolate_default_resolver):
     # Add the same package twice, The one that ends up _first_ in sys.path is
     # the one that Python would end up importing, and it is therefore also the
     # one that we should resolve to.
@@ -160,10 +161,10 @@ def test_local_env__prefers_first_package_found_in_sys_path(isolate_default_reso
     site_dir2 = isolate_default_resolver({"other": {"actual"}})
     assert site_dir1 != site_dir2
     assert sys.path[0] == str(site_dir2)
-    actual = LocalPackageResolver(use_current_env=True).lookup_packages({"other"})
+    actual = SysPathPackageResolver().lookup_packages({"other"})
     assert actual == {
         "other": Package(
-            "other", {"actual"}, LocalPackageResolver, {str(site_dir2): {"actual"}}
+            "other", {"actual"}, SysPathPackageResolver, {str(site_dir2): {"actual"}}
         ),
     }
 
@@ -272,19 +273,16 @@ def test_resolve_dependencies__when_no_env_found__fallback_to_current():
     # enables the use_current_env flag to setup_resolvers() in this case.
     resolvers = list(setup_resolvers(use_current_env=True))
 
-    # The resulting resolvers should include a single LocalPackageResolver whose
-    # .package_dirs is empty and .use_current_env is True.
-    local_resolvers = [r for r in resolvers if isinstance(r, LocalPackageResolver)]
-    assert len(local_resolvers) == 1
-    lpr = local_resolvers[0]
-    assert lpr.package_dirs == set()
-    assert lpr.use_current_env is True
+    # The resulting resolvers should include a single SysPathPackageResolver.
+    syspath_resolvers = [r for r in resolvers if isinstance(r, SysPathPackageResolver)]
+    assert len(syspath_resolvers) == 1
+    spr = syspath_resolvers[0]
 
     # The only thing we can assume about the _current_ env (in which FD runs)
-    # is that "fawltydeps" is installed (hence resolved via our 'lpr'), and that
-    # "other_module" is not installed (and thus resolved with id mapping).
+    # is that "fawltydeps" is installed (hence resolved via our 'spr'), and that
+    # "other_module" is not installed (and thus resolved with IdentityMapping).
     actual = resolve_dependencies(["fawltydeps", "other_module"], resolvers)
     assert actual == {
-        "fawltydeps": lpr.lookup_packages({"fawltydeps"})["fawltydeps"],
+        "fawltydeps": spr.lookup_packages({"fawltydeps"})["fawltydeps"],
         "other_module": Package("other_module", {"other_module"}, IdentityMapping),
     }
