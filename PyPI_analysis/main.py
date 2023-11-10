@@ -1,7 +1,9 @@
 import json
 import logging
 import sys
+from collections import Counter
 from functools import partial
+from pathlib import Path
 from typing import Dict, Iterator, List, Optional, Set, TextIO, Type
 
 try:  # import from Pydantic V2
@@ -54,6 +56,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
         # @property @calculated_once methods below:
         self._sources: Optional[Set[Source]] = None
         self._imports: Optional[List[Dict[str, ParsedImport]]] = None
+        self._code_dir: Optional[Dict[Path, int]] = None
 
     def is_enabled(self, *args: Action) -> bool:
         """Return True if any of the given actions are in self.settings."""
@@ -91,6 +94,26 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
             )
         )
 
+    @property
+    @calculated_once
+    def code_dir(self) -> Dict[Path, int]:
+        """The directory that contains the main code"""
+        code_paths = [
+            src.path
+            for src in self.sources
+            if isinstance(src, CodeSource)
+            and len(src.path.parts) > 1
+            and src.path.parts[0] != "tests"
+            and not src.path.name.startswith("test_")
+        ]
+        directories = [path.parts[0] for path in code_paths]
+        directory_counts = Counter(directories)
+        # Find the directory with the most Python files
+        most_python_files_directory = max(directory_counts, key=directory_counts.get)
+        return {
+            most_python_files_directory: directory_counts[most_python_files_directory]
+        }
+
     @classmethod
     def create(cls, settings: Settings, stdin: Optional[TextIO] = None) -> "Analysis":
         """Exercise FawltyDeps' core logic according to the given settings.
@@ -107,6 +130,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
 
         ret.sources
         ret.imports
+        ret.code_dir
 
         return ret
 
@@ -137,9 +161,17 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
     def print_human_readable(self, out: TextIO, detailed: bool = True) -> None:
         """Print a human-readable rendering of this analysis to 'out'."""
 
+        def render_code_directory() -> Iterator[str]:
+            code_directory, code_counts = list(self.code_dir.items())[0]
+            if detailed:
+                yield "Main code directory: "
+                yield f"  {code_directory}: {code_counts} Python files"
+            else:
+                yield code_directory
+
         def render_dep_files() -> Iterator[str]:
             if detailed:
-                yield "Dependency declaration files:"
+                yield "\nDependency declaration files:"
                 yield from sorted(
                     {
                         f"  {src.parser_choice}: {src.render(False)}"
@@ -172,6 +204,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
             for line in lines:
                 print(line, file=out)
 
+        output(render_code_directory())
         output(render_dep_files())
         output(render_imports())
 
