@@ -505,7 +505,10 @@ def setup_resolvers(
         mapping_paths=custom_mapping_files or set(), custom_mapping=custom_mapping
     )
 
-    yield LocalPackageResolver(pyenv_srcs, use_current_env)
+    yield LocalPackageResolver(pyenv_srcs, False)
+
+    if use_current_env:
+        yield LocalPackageResolver(frozenset(), True)
 
     if install_deps:
         yield TemporaryPipInstallResolver()
