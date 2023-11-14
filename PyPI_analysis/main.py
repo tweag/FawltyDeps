@@ -103,7 +103,8 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
             for src in self.sources
             if isinstance(src, CodeSource)
             and len(src.path.parts) > 1
-            and src.path.parts[0] != "tests"
+            and "test" not in src.path.parts[0]
+            and "example" not in src.path.parts[0]
             and not src.path.name.startswith("test_")
         ]
         directories = [path.parts[0] for path in code_paths]

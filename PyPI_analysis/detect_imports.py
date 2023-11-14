@@ -6,6 +6,7 @@ Reuse of Fawltydeps extract_imports code.
 import ast
 import json
 import logging
+import re
 from pathlib import Path
 from typing import Dict, Iterable, Iterator, Optional, TextIO, Tuple
 
@@ -223,10 +224,21 @@ def parse_code(
                 or isinstance(node, ast.ClassDef)
                 or isinstance(node, ast.Module)
             ) and ast.get_docstring(node):
-                docstring = ast.get_docstring(node).split("\n")
+                # Select the lines starting with >>> or ... in the docstring.
+                docstring = re.findall(
+                    r"(?:(?:>>>|\.{3}).*(?:\n\s*\.{3}.*)*)",
+                    ast.get_docstring(node),
+                )
                 for ds in docstring:
                     if ds.lstrip().startswith(">>>"):
-                        node_ds = ast.parse(ds.removeprefix(">>>").lstrip())
+                        ds = re.sub(r"\.{3}\s+\.{3}\s", "...\n", ds)
+                        ds = ds.removeprefix(">>>").replace("...", "   ").lstrip()
+                        # Avoid indent error
+                        ds = re.sub(r"\n\s{4}", "\n", ds)
+                        try:
+                            node_ds = ast.parse(ds)
+                        except SyntaxError:
+                            continue
                         for node_import in node_ds.body:
                             if isinstance(node_import, ast.Import):
                                 for alias in node_import.names:
