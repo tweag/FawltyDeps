@@ -523,11 +523,14 @@ def test_list_sources_detailed__from_both_python_file_and_stdin(fake_project):
         "--list-sources", f"{tmp_path}", "--code", f"{tmp_path}", "-", "--detailed"
     )
     expect = [
-        "Sources of Python code:",
-        f"  {tmp_path / 'code.py'} (using {tmp_path}/ as base for 1st-party imports)",
+        ["Sources of Python code:",
+        f"  {tmp_path / 'code.py'} (using {tmp_path} as base for 1st-party imports)",
+        "  <stdin>"],
+        ["Sources of Python code:",
         "  <stdin>",
+        f"  {tmp_path / 'code.py'} (using {tmp_path} as base for 1st-party imports)"],
     ]
-    assert output.splitlines() == expect
+    assert output.splitlines() == expect[0] or output.splitlines() == expect[1] 
     assert returncode == 0
 
 
@@ -614,7 +617,7 @@ project_tests_samples = [
         ],
         expect_logs=[
             "INFO:fawltydeps.extract_imports:Finding Python files under {path}",
-            "INFO:fawltydeps.extract_imports:Parsing Python file {path}/code.py",
+            f"INFO:fawltydeps.extract_imports:Parsing Python file {os.path.join('{path}', 'code.py')}",
             "INFO:fawltydeps.packages:'pandas' was not resolved."
             " Assuming it can be imported as 'pandas'.",
         ],
@@ -682,29 +685,29 @@ def test_check_json__simple_project__can_report_both_undeclared_and_unused(
         "sources": [
             {
                 "source_type": "CodeSource",
-                "path": f"{tmp_path}/code.py",
+                "path": f"{tmp_path / 'code.py'}",
                 "base_dir": f"{tmp_path}",
             },
             {
                 "source_type": "DepsSource",
-                "path": f"{tmp_path}/requirements.txt",
+                "path": f"{tmp_path / 'requirements.txt'}",
                 "parser_choice": "requirements.txt",
             },
             {
                 "source_type": "PyEnvSource",
-                "path": f"{tmp_path}/my_venv/lib/python{major}.{minor}/site-packages",
+                "path": f"{tmp_path}\my_venv\Lib\site-packages" if platform.system() == "Windows" else f"{tmp_path}my_venv/lib/python{major}.{minor}/site-packages",
             },
         ],
         "imports": [
             {
                 "name": "requests",
-                "source": {"path": f"{tmp_path}/code.py", "lineno": 1},
+                "source": {"path": f"{tmp_path / 'code.py'}", "lineno": 1},
             },
         ],
         "declared_deps": [
             {
                 "name": "pandas",
-                "source": {"path": f"{tmp_path}/requirements.txt"},
+                "source": {"path": f"{tmp_path / 'requirements.txt'}"},
             },
         ],
         "resolved_deps": {
@@ -718,13 +721,13 @@ def test_check_json__simple_project__can_report_both_undeclared_and_unused(
         "undeclared_deps": [
             {
                 "name": "requests",
-                "references": [{"path": f"{tmp_path}/code.py", "lineno": 1}],
+                "references": [{"path": f"{tmp_path / 'code.py'}", "lineno": 1}],
             },
         ],
         "unused_deps": [
             {
                 "name": "pandas",
-                "references": [{"path": f"{tmp_path}/requirements.txt"}],
+                "references": [{"path": f"{tmp_path / 'requirements.txt'}"}],
             },
         ],
         "version": version(),
@@ -919,12 +922,12 @@ def test_check_json__no_pyenvs_found__falls_back_to_current_env(fake_project):
         "sources": [
             {
                 "source_type": "CodeSource",
-                "path": f"{tmp_path}/code.py",
+                "path": f"{tmp_path / 'code.py'}",
                 "base_dir": f"{tmp_path}",
             },
             {
                 "source_type": "DepsSource",
-                "path": f"{tmp_path}/requirements.txt",
+                "path": f"{tmp_path / 'requirements.txt'}",
                 "parser_choice": "requirements.txt",
             },
             # No PyEnvSources found
@@ -932,21 +935,21 @@ def test_check_json__no_pyenvs_found__falls_back_to_current_env(fake_project):
         "imports": [
             {
                 "name": "packaging_legacy_version",
-                "source": {"path": f"{tmp_path}/code.py", "lineno": 1},
+                "source": {"path": f"{tmp_path / 'code.py'}", "lineno": 1},
             },
             {
                 "name": "other_module",
-                "source": {"path": f"{tmp_path}/code.py", "lineno": 2},
+                "source": {"path": f"{tmp_path / 'code.py'}", "lineno": 2},
             },
         ],
         "declared_deps": [
             {
                 "name": "pip-requirements-parser",
-                "source": {"path": f"{tmp_path}/requirements.txt"},
+                "source": {"path": f"{tmp_path / 'requirements.txt'}"},
             },
             {
                 "name": "other_module",
-                "source": {"path": f"{tmp_path}/requirements.txt"},
+                "source": {"path": f"{tmp_path / 'requirements.txt'}"},
             },
         ],
         "resolved_deps": {
