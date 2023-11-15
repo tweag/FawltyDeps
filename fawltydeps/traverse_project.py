@@ -1,7 +1,7 @@
 """Traverse a project to identify appropriate inputs to FawltyDeps."""
 import logging
 from pathlib import Path
-from typing import AbstractSet, Iterator, Optional, Set, Type, Union
+from typing import AbstractSet, Iterator, Optional, Set, Tuple, Type, Union
 
 from fawltydeps.dir_traversal import DirectoryTraversal
 from fawltydeps.extract_declared_dependencies import validate_deps_source
@@ -17,6 +17,16 @@ from fawltydeps.types import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+# When setting up the traversal, we .add() directories to be traverse and attach
+# information about what we're looking for during the traversal. These are the
+# types of data we're allowed to attach:
+AttachedData = Union[
+    Tuple[Type[CodeSource], Path],  # Look for Python code, with a base_dir
+    Type[DepsSource],  # Look for files with dependency declarations
+    Type[PyEnvSource],  # Look for Python environments
+]
 
 
 def find_sources(  # pylint: disable=too-many-branches,too-many-statements
@@ -52,7 +62,7 @@ def find_sources(  # pylint: disable=too-many-branches,too-many-statements
     logger.debug(f"    deps:   {settings.deps}")
     logger.debug(f"    pyenvs: {settings.pyenvs}")
 
-    traversal: DirectoryTraversal[Union[Type[Source], Path]] = DirectoryTraversal()
+    traversal: DirectoryTraversal[AttachedData] = DirectoryTraversal()
 
     for path_or_special in settings.code if CodeSource in source_types else []:
         # exceptions raised by validate_code_source() are propagated here
@@ -64,7 +74,7 @@ def find_sources(  # pylint: disable=too-many-branches,too-many-statements
             # sanity check: convince mypy that SpecialPath is already handled
             assert isinstance(path_or_special, Path)
             # record also base dir for later
-            traversal.add(path_or_special, CodeSource, path_or_special)
+            traversal.add(path_or_special, (CodeSource, path_or_special))
 
     for path in settings.deps if DepsSource in source_types else []:
         # exceptions raised by validate_deps_source() are propagated here
@@ -92,8 +102,16 @@ def find_sources(  # pylint: disable=too-many-branches,too-many-statements
             if subdir.name.startswith("."):
                 traversal.skip_dir(subdir)
 
-        types = {t for t in step.attached if t in source_types}
+        # Extract the Source types we're looking for in this directory.
+        # Sanity checks:
+        #   - We should not traverse into a directory unless we're looking for
+        #     at least _one_ source type.
+        #   - We should not be looking for any _other_ source types than those
+        #     that were given in our `source_types` argument.
+        types = {t[0] if isinstance(t, tuple) else t for t in step.attached}
         assert len(types) > 0
+        assert all(t in source_types for t in types)
+
         if PyEnvSource in types:
             for path in step.subdirs:
                 package_dirs = validate_pyenv_source(path)
@@ -101,9 +119,10 @@ def find_sources(  # pylint: disable=too-many-branches,too-many-statements
                     yield from package_dirs
                     traversal.skip_dir(path)  # don't recurse into Python environment
         if CodeSource in types:
-            # Retrieve base_dir from closest ancestor, i.e. last Path in attached
+            # Retrieve base_dir from closest ancestor, i.e. last CodeSource in .attached:
             base_dir = next(
-                (x for x in reversed(step.attached) if isinstance(x, Path)), None
+                (t[1] for t in reversed(step.attached) if isinstance(t, tuple)),
+                None,
             )
             assert base_dir is not None  # sanity check: No CodeSource w/o base_dir
             for path in step.files:
