@@ -455,7 +455,7 @@ def test_list_sources__in_varied_project__lists_all_files(fake_project):
             "pyproject.toml",
             "setup.py",
             "setup.cfg",
-            os.path.join("my_venv\Lib\site-packages") if platform.system() == "Windows" else f"my_venv/lib/python{major}.{minor}/site-packages",
+            "my_venv\Lib\site-packages" if platform.system() == "Windows" else f"my_venv/lib/python{major}.{minor}/site-packages",
         ]
     ]
     assert_unordered_equivalence(output.splitlines()[:-2], expect)
@@ -481,7 +481,7 @@ def test_list_sources_detailed__in_varied_project__lists_all_files(fake_project)
         "--list-sources", str(tmp_path), "--detailed"
     )
     expect_code_lines = [
-        f"  {os.path.join(tmp_path, filename)} (using {tmp_path} as base for 1st-party imports)"
+        f"  {tmp_path / filename} (using {tmp_path} as base for 1st-party imports)"
         for filename in [
             "code.py",
             "setup.py",  # This is both a CodeSource and an DepsSource!
@@ -490,7 +490,7 @@ def test_list_sources_detailed__in_varied_project__lists_all_files(fake_project)
         ]
     ]
     expect_deps_lines = [
-        f"  {os.path.join(tmp_path, filename)} (parsed as a {filename} file)"
+        f"  { tmp_path / filename} (parsed as a {filename} file)"
         for filename in [
             "pyproject.toml",
             "requirements.txt",
@@ -500,7 +500,7 @@ def test_list_sources_detailed__in_varied_project__lists_all_files(fake_project)
     ]
     major, minor = sys.version_info[:2]
     expect_pyenv_lines = [
-        f"  {os.path.join(tmp_path, 'my_venv', 'lib', f'python{major}.{minor}', 'site-packages')} "
+        (f"  {tmp_path / "my_venv" / "Lib" / "site-packages"} " if platform.system() == "Windows" else f"my_venv/lib/python{major}.{minor}/site-packages")
         + "(as a source of Python packages)",
     ]
     expect = [
