@@ -523,8 +523,10 @@ def test_list_sources_detailed__from_both_python_file_and_stdin(fake_project):
         "--list-sources", f"{tmp_path}", "--code", f"{tmp_path}", "-", "--detailed"
     )
     expect = [
-        "Sources of Python code:",
-        f"  {tmp_path / 'code.py'} (using {tmp_path}/ as base for 1st-party imports)",
+        ["Sources of Python code:",
+        f"  {tmp_path / 'code.py'} (using {tmp_path} as base for 1st-party imports)",
+        "  <stdin>"],
+        ["Sources of Python code:",
         "  <stdin>",
         f"  {tmp_path / 'code.py'} (using {tmp_path} as base for 1st-party imports)"],
     ]
