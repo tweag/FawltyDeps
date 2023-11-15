@@ -48,10 +48,18 @@ def walk_dir(path: Path) -> Iterator[Path]:
 
 def assert_unordered_equivalence(actual: Iterable[Any], expect: Iterable[Any]):
     actual_s = sorted(actual)
+<<<<<<< HEAD
     expect_s = sorted(expect)
     assert (
         actual_s == expect_s
     ), f"--- EXPECTED ---\n{pformat(expect_s)}\n--- BUT GOT ---\n{pformat(actual_s)}"
+=======
+    expected_s = sorted(expected)
+    print("\n".join(actual_s))
+    print("---")
+    print("\n".join(expected_s))
+    assert actual_s == expected_s, f"{actual_s!r} != {expected_s!r}"
+>>>>>>> 3ef301e (WIP adjust tests to work on windows)
 
 
 def collect_dep_names(deps: Iterable[DeclaredDependency]) -> Iterable[str]:
@@ -149,7 +157,11 @@ def run_fawltydeps_subprocess(
 
 def run_fawltydeps_function(
     *args: str,
+<<<<<<< HEAD
     config_file: Path = config_file_name(),
+=======
+    config_file: Path = _config_file_name(),
+>>>>>>> 3ef301e (WIP adjust tests to work on windows)
     to_stdin: Optional[Union[str, bytes]] = None,
     basepath: Optional[Path] = None,
 ) -> Tuple[str, int]:

@@ -8,7 +8,10 @@ core exhaustively (which is what the other unit tests are for.
 import json
 import logging
 import os
+<<<<<<< HEAD
 import platform
+=======
+>>>>>>> 3ef301e (WIP adjust tests to work on windows)
 import sys
 from dataclasses import dataclass, field
 from itertools import dropwhile
@@ -455,7 +458,11 @@ def test_list_sources__in_varied_project__lists_all_files(fake_project):
             "pyproject.toml",
             "setup.py",
             "setup.cfg",
+<<<<<<< HEAD
             "my_venv\Lib\site-packages" if platform.system() == "Windows" else f"my_venv/lib/python{major}.{minor}/site-packages",
+=======
+            os.path.join("my_venv", "lib", f"python{major}.{minor}", "site-packages"),
+>>>>>>> 3ef301e (WIP adjust tests to work on windows)
         ]
     ]
     assert_unordered_equivalence(output.splitlines()[:-2], expect)
@@ -481,7 +488,11 @@ def test_list_sources_detailed__in_varied_project__lists_all_files(fake_project)
         "--list-sources", str(tmp_path), "--detailed"
     )
     expect_code_lines = [
+<<<<<<< HEAD
         f"  {tmp_path / filename} (using {tmp_path} as base for 1st-party imports)"
+=======
+        f"  {os.path.join(tmp_path, filename)} (using {tmp_path} as base for 1st-party imports)"
+>>>>>>> 3ef301e (WIP adjust tests to work on windows)
         for filename in [
             "code.py",
             "setup.py",  # This is both a CodeSource and an DepsSource!
@@ -490,7 +501,11 @@ def test_list_sources_detailed__in_varied_project__lists_all_files(fake_project)
         ]
     ]
     expect_deps_lines = [
+<<<<<<< HEAD
         f"  { tmp_path / filename} (parsed as a {filename} file)"
+=======
+        f"  {os.path.join(tmp_path, filename)} (parsed as a {filename} file)"
+>>>>>>> 3ef301e (WIP adjust tests to work on windows)
         for filename in [
             "pyproject.toml",
             "requirements.txt",
@@ -500,7 +515,11 @@ def test_list_sources_detailed__in_varied_project__lists_all_files(fake_project)
     ]
     major, minor = sys.version_info[:2]
     expect_pyenv_lines = [
+<<<<<<< HEAD
         (f"  {tmp_path / "my_venv" / "Lib" / "site-packages"} " if platform.system() == "Windows" else f"my_venv/lib/python{major}.{minor}/site-packages")
+=======
+        f"  {os.path.join(tmp_path, 'my_venv', 'lib', f'python{major}.{minor}', 'site-packages')} "
+>>>>>>> 3ef301e (WIP adjust tests to work on windows)
         + "(as a source of Python packages)",
     ]
     expect = [
@@ -523,10 +542,15 @@ def test_list_sources_detailed__from_both_python_file_and_stdin(fake_project):
         "--list-sources", f"{tmp_path}", "--code", f"{tmp_path}", "-", "--detailed"
     )
     expect = [
+<<<<<<< HEAD
         ["Sources of Python code:",
         f"  {tmp_path / 'code.py'} (using {tmp_path} as base for 1st-party imports)",
         "  <stdin>"],
         ["Sources of Python code:",
+=======
+        "Sources of Python code:",
+        f"  {tmp_path / 'code.py'} (using {tmp_path}/ as base for 1st-party imports)",
+>>>>>>> 3ef301e (WIP adjust tests to work on windows)
         "  <stdin>",
         f"  {tmp_path / 'code.py'} (using {tmp_path} as base for 1st-party imports)"],
     ]
