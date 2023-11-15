@@ -1,6 +1,7 @@
 """ Test the determination of strategy to parse dependency declarations. """
 
 import logging
+import os
 import shutil
 from pathlib import Path
 
@@ -29,20 +30,20 @@ from .utils import assert_unordered_equivalence, collect_dep_names
             ("setup.cfg", ParserChoice.SETUP_CFG),
             ("pyproject.toml", ParserChoice.PYPROJECT_TOML),
             ("anything_else", None),
-            ("sub/requirements.txt", ParserChoice.REQUIREMENTS_TXT),
-            ("sub/setup.py", ParserChoice.SETUP_PY),
-            ("sub/setup.cfg", ParserChoice.SETUP_CFG),
-            ("sub/pyproject.toml", ParserChoice.PYPROJECT_TOML),
-            ("sub/anything_else", None),
-            ("/abs/requirements.txt", ParserChoice.REQUIREMENTS_TXT),
-            ("/abs/setup.py", ParserChoice.SETUP_PY),
-            ("/abs/setup.cfg", ParserChoice.SETUP_CFG),
-            ("/abs/pyproject.toml", ParserChoice.PYPROJECT_TOML),
-            ("/abs/anything_else", None),
-            ("requirements.txt/wat", None),
-            ("setup.py/wat", None),
-            ("setup.cfg/wat", None),
-            ("pyproject.toml/wat", None),
+            (os.path.join("sub", "requirements.txt"), ParserChoice.REQUIREMENTS_TXT),
+            (os.path.join("sub", "setup.py"), ParserChoice.SETUP_PY),
+            (os.path.join("sub", "setup.cfg"), ParserChoice.SETUP_CFG),
+            (os.path.join("sub", "pyproject.toml"), ParserChoice.PYPROJECT_TOML),
+            (os.path.join("sub", "anything_else"), None),
+            (os.path.join("abs", "requirements.txt"), ParserChoice.REQUIREMENTS_TXT),
+            (os.path.join("abs", "setup.py"), ParserChoice.SETUP_PY),
+            (os.path.join("abs", "setup.cfg"), ParserChoice.SETUP_CFG),
+            (os.path.join("abs", "pyproject.toml"), ParserChoice.PYPROJECT_TOML),
+            (os.path.join("abs", "anything_else"), None),
+            (os.path.join("requirements.txt", "wat"), None),
+            (os.path.join("setup.py", "wat"), None),
+            (os.path.join("setup.cfg", "wat"), None),
+            (os.path.join("pyproject.toml", "wat"), None),
             ("requirements-dev.txt", ParserChoice.REQUIREMENTS_TXT),
             ("test-requirements.txt", ParserChoice.REQUIREMENTS_TXT),
             ("extra-requirements-dev.txt", ParserChoice.REQUIREMENTS_TXT),

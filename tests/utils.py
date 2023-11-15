@@ -106,7 +106,7 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
     return [UnusedDependency(dep, [Location(Path("foo"))]) for dep in deps]
 
 
-def _config_file_name():
+def config_file_name():
     if platform.system() == "Windows":
         return Path("NUL")
     return Path("/dev/null")
@@ -114,7 +114,7 @@ def _config_file_name():
 
 def run_fawltydeps_subprocess(
     *args: str,
-    config_file: Path = _config_file_name(),
+    config_file: Path = config_file_name(),
     to_stdin: Optional[str] = None,
     cwd: Optional[Path] = None,
 ) -> Tuple[str, str, int]:
@@ -149,7 +149,7 @@ def run_fawltydeps_subprocess(
 
 def run_fawltydeps_function(
     *args: str,
-    config_file: Path = _config_file_name(),
+    config_file: Path = config_file_name(),
     to_stdin: Optional[Union[str, bytes]] = None,
     basepath: Optional[Path] = None,
 ) -> Tuple[str, int]:
