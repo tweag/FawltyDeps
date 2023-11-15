@@ -8,6 +8,7 @@ core exhaustively (which is what the other unit tests are for.
 import json
 import logging
 import os
+import platform
 import sys
 from dataclasses import dataclass, field
 from itertools import dropwhile
@@ -441,6 +442,7 @@ def test_list_sources__in_varied_project__lists_all_files(fake_project):
         },
         fake_venvs={"my_venv": {}},
     )
+    print("TMP PATH:", os.listdir(tmp_path / "my_venv" / "Lib"))
     output, returncode = run_fawltydeps_function("--list-sources", f"{tmp_path}")
     major, minor = sys.version_info[:2]
     expect = [
@@ -453,7 +455,7 @@ def test_list_sources__in_varied_project__lists_all_files(fake_project):
             "pyproject.toml",
             "setup.py",
             "setup.cfg",
-            os.path.join("my_venv", "lib", f"python{major}.{minor}", "site-packages"),
+            os.path.join("my_venv\Lib\site-packages") if platform.system() == "Windows" else f"my_venv/lib/python{major}.{minor}/site-packages",
         ]
     ]
     assert_unordered_equivalence(output.splitlines()[:-2], expect)

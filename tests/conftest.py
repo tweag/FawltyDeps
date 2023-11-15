@@ -1,4 +1,5 @@
 """Fixtures for tests"""
+import os
 import platform
 import sys
 import venv
@@ -58,7 +59,7 @@ def fake_venv(tmp_path):
 
         def _env_site_packages():
             if platform.system() == "Windows":
-                return venv_dir /  "Lib" / "site-packages"
+                return venv_dir /   "Lib" / "site-packages"
             return venv_dir / "my_venv" /  "lib" / f"python{major}.{minor}" / "site-packages"
         
         site_dir = _env_site_packages()
