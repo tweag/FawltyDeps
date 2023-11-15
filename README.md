@@ -600,9 +600,8 @@ tool, you can add something like this to your project's
 ```yaml
 repos:
   - repo: https://github.com/tweag/FawltyDeps
-    rev: v0.13.2
+    rev: v0.13.3
     hooks:
-      - id: check
-        args:
-          - --detailed
+      - id: check-undeclared
+      - id: check-unused
 ```
