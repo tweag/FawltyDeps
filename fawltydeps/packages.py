@@ -346,7 +346,7 @@ class LocalPackageResolver(InstalledPackageResolver):
                     found = True
             if found:
                 return
-            
+
         # Check for packages on Windows
         if platform.system() == "Windows":
             for site_packages in path.glob("Lib\site-packages"):

@@ -155,8 +155,14 @@ def test_list_imports_json__from_py_file__prints_imports_from_file(write_tmp_fil
                 "name": "requests",
                 "source": {"path": f"{tmp_path / 'myfile.py'}", "lineno": 4},
             },
-            {"name": "foo", "source": {"path": f"{tmp_path / 'myfile.py'}", "lineno": 5}},
-            {"name": "numpy", "source": {"path": f"{tmp_path / 'myfile.py'}", "lineno": 6}},
+            {
+                "name": "foo",
+                "source": {"path": f"{tmp_path / 'myfile.py'}", "lineno": 5},
+            },
+            {
+                "name": "numpy",
+                "source": {"path": f"{tmp_path / 'myfile.py'}", "lineno": 6},
+            },
         ],
         "declared_deps": None,
         "resolved_deps": None,
@@ -442,7 +448,6 @@ def test_list_sources__in_varied_project__lists_all_files(fake_project):
         },
         fake_venvs={"my_venv": {}},
     )
-    print("TMP PATH:", os.listdir(tmp_path / "my_venv" / "Lib"))
     output, returncode = run_fawltydeps_function("--list-sources", f"{tmp_path}")
     major, minor = sys.version_info[:2]
     expect = [
@@ -455,7 +460,9 @@ def test_list_sources__in_varied_project__lists_all_files(fake_project):
             "pyproject.toml",
             "setup.py",
             "setup.cfg",
-            "my_venv\Lib\site-packages" if platform.system() == "Windows" else f"my_venv/lib/python{major}.{minor}/site-packages",
+            "my_venv\Lib\site-packages"
+            if platform.system() == "Windows"
+            else f"my_venv/lib/python{major}.{minor}/site-packages",
         ]
     ]
     assert_unordered_equivalence(output.splitlines()[:-2], expect)
@@ -500,8 +507,19 @@ def test_list_sources_detailed__in_varied_project__lists_all_files(fake_project)
     ]
     major, minor = sys.version_info[:2]
     expect_pyenv_lines = [
-        (f"  {tmp_path / "my_venv" / "Lib" / "site-packages"} " if platform.system() == "Windows" else f"my_venv/lib/python{major}.{minor}/site-packages")
-        + "(as a source of Python packages)",
+        (
+            str(tmp_path / "my_venv" / "Lib" / "site-packages")
+            if platform.system() == "Windows"
+            else "  "
+            + str(
+                tmp_path
+                / "my_venv"
+                / "lib"
+                / f"python{major}.{minor}"
+                / "site-packages"
+            )
+        )
+        + " (as a source of Python packages)",
     ]
     expect = [
         "Sources of Python code:",
@@ -523,14 +541,18 @@ def test_list_sources_detailed__from_both_python_file_and_stdin(fake_project):
         "--list-sources", f"{tmp_path}", "--code", f"{tmp_path}", "-", "--detailed"
     )
     expect = [
-        ["Sources of Python code:",
-        f"  {tmp_path / 'code.py'} (using {tmp_path} as base for 1st-party imports)",
-        "  <stdin>"],
-        ["Sources of Python code:",
-        "  <stdin>",
-        f"  {tmp_path / 'code.py'} (using {tmp_path} as base for 1st-party imports)"],
+        [
+            "Sources of Python code:",
+            f"  {tmp_path / 'code.py'} (using {tmp_path} as base for 1st-party imports)",
+            "  <stdin>",
+        ],
+        [
+            "Sources of Python code:",
+            "  <stdin>",
+            f"  {tmp_path / 'code.py'} (using {tmp_path} as base for 1st-party imports)",
+        ],
     ]
-    assert output.splitlines() == expect[0] or output.splitlines() == expect[1] 
+    assert output.splitlines() == expect[0] or output.splitlines() == expect[1]
     assert returncode == 0
 
 
@@ -569,7 +591,6 @@ project_tests_samples = [
             "These imports appear to be undeclared dependencies:",
             "- 'requests' imported at:",
             f"    {os.path.join('{path}', 'code.py')}:1",
-
         ],
         expect_returncode=3,
     ),
@@ -695,7 +716,9 @@ def test_check_json__simple_project__can_report_both_undeclared_and_unused(
             },
             {
                 "source_type": "PyEnvSource",
-                "path": f"{tmp_path}\my_venv\Lib\site-packages" if platform.system() == "Windows" else f"{tmp_path}my_venv/lib/python{major}.{minor}/site-packages",
+                "path": f"{tmp_path}\my_venv\Lib\site-packages"
+                if platform.system() == "Windows"
+                else f"{tmp_path}/my_venv/lib/python{major}.{minor}/site-packages",
             },
         ],
         "imports": [

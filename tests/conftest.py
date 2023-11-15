@@ -68,6 +68,7 @@ def fake_venv(tmp_path):
             if platform.system() == "Windows":
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                 return venv_dir /   "Lib" / "site-packages"
 =======
                 return venv_dir /  "Lib" / "site-packages"
@@ -76,6 +77,10 @@ def fake_venv(tmp_path):
                 return venv_dir /   "Lib" / "site-packages"
 >>>>>>> 07559cf (Fix more tests)
             return venv_dir / "my_venv" /  "lib" / f"python{major}.{minor}" / "site-packages"
+=======
+                return venv_dir / "Lib" / "site-packages"
+            return venv_dir / "lib" / f"python{major}.{minor}" / "site-packages"
+>>>>>>> 3698cda (FIX tests for Linux)
         
         site_dir = _env_site_packages()
         assert site_dir.is_dir()
