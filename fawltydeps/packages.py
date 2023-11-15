@@ -1,6 +1,7 @@
 """Encapsulate the lookup of packages and their provided import names."""
 
 import logging
+import platform
 import subprocess
 import sys
 import tempfile
@@ -328,7 +329,8 @@ class LocalPackageResolver(InstalledPackageResolver):
         # Note that we must also accept lib/pythonX.Y/site-packages for python
         # versions X.Y that are different from the current Python version.
         found = False
-        if (path / "bin/python").is_file():
+
+        if (path / "bin" / "python").is_file():
             for site_packages in path.glob("lib/python?.*/site-packages"):
                 if site_packages.is_dir():
                     yield site_packages
@@ -339,6 +341,15 @@ class LocalPackageResolver(InstalledPackageResolver):
         # Workaround for projects using PEP582:
         if path.name == "__pypackages__":
             for site_packages in path.glob("?.*/lib"):
+                if site_packages.is_dir():
+                    yield site_packages
+                    found = True
+            if found:
+                return
+            
+        # Check for packages on Windows
+        if platform.system() == "Windows":
+            for site_packages in path.glob("Lib\site-packages"):
                 if site_packages.is_dir():
                     yield site_packages
                     found = True
@@ -379,6 +390,7 @@ def pyenv_sources(*pyenv_paths: Path) -> Set[PyEnvSource]:
     ret: Set[PyEnvSource] = set()
     for path in pyenv_paths:
         package_dirs = set(LocalPackageResolver.find_package_dirs(path))
+
         if not package_dirs:
             logger.debug(f"Could not find a Python env at {path}!")
         ret.update(PyEnvSource(d) for d in package_dirs)
