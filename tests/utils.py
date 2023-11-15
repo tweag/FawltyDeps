@@ -149,7 +149,7 @@ def run_fawltydeps_subprocess(
 
 def run_fawltydeps_function(
     *args: str,
-    config_file: Path = Path("/dev/null"),
+    config_file: Path = _config_file_name(),
     to_stdin: Optional[Union[str, bytes]] = None,
     basepath: Optional[Path] = None,
 ) -> Tuple[str, int]:

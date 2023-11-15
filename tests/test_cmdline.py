@@ -7,6 +7,7 @@ core exhaustively (which is what the other unit tests are for.
 
 import json
 import logging
+import os
 import sys
 from dataclasses import dataclass, field
 from itertools import dropwhile
@@ -111,11 +112,11 @@ def test_list_imports__from_py_file__prints_imports_from_file(write_tmp_files):
     )
 
     expect = [
-        f"{tmp_path}/myfile.py:{n}: {i}"
+        f"{tmp_path / 'myfile.py'}:{n}: {i}"
         for i, n in [("requests", 4), ("foo", 5), ("numpy", 6)]
     ]
     output, returncode = run_fawltydeps_function(
-        "--list-imports", "--detailed", f"--code={tmp_path}/myfile.py"
+        "--list-imports", "--detailed", f"--code={tmp_path / 'myfile.py'}"
     )
     assert output.splitlines() == expect
     assert returncode == 0
@@ -138,23 +139,23 @@ def test_list_imports_json__from_py_file__prints_imports_from_file(write_tmp_fil
     expect = {
         "settings": make_json_settings_dict(
             actions=["list_imports"],
-            code=[f"{tmp_path}/myfile.py"],
+            code=[f"{tmp_path / 'myfile.py'}"],
             output_format="json",
         ),
         "sources": [
             {
                 "source_type": "CodeSource",
-                "path": f"{tmp_path}/myfile.py",
+                "path": f"{tmp_path / 'myfile.py'}",
                 "base_dir": None,
             },
         ],
         "imports": [
             {
                 "name": "requests",
-                "source": {"path": f"{tmp_path}/myfile.py", "lineno": 4},
+                "source": {"path": f"{tmp_path / 'myfile.py'}", "lineno": 4},
             },
-            {"name": "foo", "source": {"path": f"{tmp_path}/myfile.py", "lineno": 5}},
-            {"name": "numpy", "source": {"path": f"{tmp_path}/myfile.py", "lineno": 6}},
+            {"name": "foo", "source": {"path": f"{tmp_path / 'myfile.py'}", "lineno": 5}},
+            {"name": "numpy", "source": {"path": f"{tmp_path / 'myfile.py'}", "lineno": 6}},
         ],
         "declared_deps": None,
         "resolved_deps": None,
@@ -163,7 +164,7 @@ def test_list_imports_json__from_py_file__prints_imports_from_file(write_tmp_fil
         "version": version(),
     }
     output, returncode = run_fawltydeps_function(
-        "--list-imports", "--json", f"--code={tmp_path}/myfile.py"
+        "--list-imports", "--json", f"--code={tmp_path / 'myfile.py'}"
     )
     assert json.loads(output) == expect
     assert returncode == 0
@@ -176,9 +177,9 @@ def test_list_imports__from_ipynb_file__prints_imports_from_file(write_tmp_files
         }
     )
 
-    expect = [f"{tmp_path}/myfile.ipynb[1]:1: pytorch"]
+    expect = [f"{tmp_path / 'myfile.ipynb'}[1]:1: pytorch"]
     output, returncode = run_fawltydeps_function(
-        "--list-imports", "--detailed", f"--code={tmp_path}/myfile.ipynb"
+        "--list-imports", "--detailed", f"--code={tmp_path / 'myfile.ipynb'}"
     )
     assert output.splitlines() == expect
     assert returncode == 0
@@ -204,9 +205,9 @@ def test_list_imports__from_dir__prints_imports_from_py_and_ipynb_files_only(
     )
 
     expect = [
-        f"{tmp_path}/file1.py:{n}: {i}"
+        f"{tmp_path / 'file1.py'}:{n}: {i}"
         for i, n in [("my_pathlib", 1), ("pandas", 2), ("scipy", 2)]
-    ] + [f"{tmp_path}/file3.ipynb[1]:1: pytorch"]
+    ] + [f"{tmp_path / 'file3.ipynb'}[1]:1: pytorch"]
     output, returncode = run_fawltydeps_function(
         "--list-imports", "--detailed", f"--code={tmp_path}"
     )
@@ -309,8 +310,8 @@ def test_list_deps_detailed__dir__prints_deps_from_requirements_txt(fake_project
     )
 
     expect = [
-        f"{tmp_path}/requirements.txt: pandas",
-        f"{tmp_path}/requirements.txt: requests",
+        f"{tmp_path / 'requirements.txt'}: pandas",
+        f"{tmp_path / 'requirements.txt'}: requests",
     ]
     output, returncode = run_fawltydeps_function(
         "--list-deps", "--detailed", f"--deps={tmp_path}"
@@ -332,7 +333,7 @@ def test_list_deps_json__dir__prints_deps_from_requirements_txt(fake_project):
         "sources": [
             {
                 "source_type": "DepsSource",
-                "path": f"{tmp_path}/requirements.txt",
+                "path": f"{tmp_path / 'requirements.txt'}",
                 "parser_choice": "requirements.txt",
             },
         ],
@@ -340,11 +341,11 @@ def test_list_deps_json__dir__prints_deps_from_requirements_txt(fake_project):
         "declared_deps": [
             {
                 "name": "requests",
-                "source": {"path": f"{tmp_path}/requirements.txt"},
+                "source": {"path": f"{tmp_path / 'requirements.txt'}"},
             },
             {
                 "name": "pandas",
-                "source": {"path": f"{tmp_path}/requirements.txt"},
+                "source": {"path": f"{tmp_path / 'requirements.txt'}"},
             },
         ],
         "resolved_deps": None,
@@ -429,8 +430,8 @@ def test_list_sources__in_varied_project__lists_all_files(fake_project):
     tmp_path = fake_project(
         files_with_imports={
             "code.py": ["foo"],
-            "subdir/other.py": ["foo"],
-            "subdir/notebook.ipynb": ["foo"],
+            os.path.join("subdir", "other.py"): ["foo"],
+            os.path.join("subdir", "notebook.ipynb"): ["foo"],
         },
         files_with_declared_deps={
             "requirements.txt": ["foo"],
@@ -446,13 +447,13 @@ def test_list_sources__in_varied_project__lists_all_files(fake_project):
         str(tmp_path / filename)
         for filename in [
             "code.py",
-            "subdir/other.py",
-            "subdir/notebook.ipynb",
+            os.path.join("subdir", "other.py"),
+            os.path.join("subdir", "notebook.ipynb"),
             "requirements.txt",
             "pyproject.toml",
             "setup.py",
             "setup.cfg",
-            f"my_venv/lib/python{major}.{minor}/site-packages",
+            os.path.join("my_venv", "lib", f"python{major}.{minor}", "site-packages"),
         ]
     ]
     assert_unordered_equivalence(output.splitlines()[:-2], expect)
@@ -463,8 +464,8 @@ def test_list_sources_detailed__in_varied_project__lists_all_files(fake_project)
     tmp_path = fake_project(
         files_with_imports={
             "code.py": ["foo"],
-            "subdir/notebook.ipynb": ["foo"],
-            "subdir/other.py": ["foo"],
+            os.path.join("subdir", "notebook.ipynb"): ["foo"],
+            os.path.join("subdir", "other.py"): ["foo"],
         },
         files_with_declared_deps={
             "pyproject.toml": ["foo"],
@@ -475,19 +476,19 @@ def test_list_sources_detailed__in_varied_project__lists_all_files(fake_project)
         fake_venvs={"my_venv": {}},
     )
     output, returncode = run_fawltydeps_function(
-        "--list-sources", f"{tmp_path}", "--detailed"
+        "--list-sources", str(tmp_path), "--detailed"
     )
     expect_code_lines = [
-        f"  {tmp_path / filename} (using {tmp_path}/ as base for 1st-party imports)"
+        f"  {os.path.join(tmp_path, filename)} (using {tmp_path} as base for 1st-party imports)"
         for filename in [
             "code.py",
             "setup.py",  # This is both a CodeSource and an DepsSource!
-            "subdir/notebook.ipynb",
-            "subdir/other.py",
+            os.path.join("subdir", "notebook.ipynb"),
+            os.path.join("subdir", "other.py"),
         ]
     ]
     expect_deps_lines = [
-        f"  {tmp_path / filename} (parsed as a {filename} file)"
+        f"  {os.path.join(tmp_path, filename)} (parsed as a {filename} file)"
         for filename in [
             "pyproject.toml",
             "requirements.txt",
@@ -497,7 +498,7 @@ def test_list_sources_detailed__in_varied_project__lists_all_files(fake_project)
     ]
     major, minor = sys.version_info[:2]
     expect_pyenv_lines = [
-        f"  {tmp_path}/my_venv/lib/python{major}.{minor}/site-packages "
+        f"  {os.path.join(tmp_path, 'my_venv', 'lib', f'python{major}.{minor}', 'site-packages')} "
         + "(as a source of Python packages)",
     ]
     expect = [
@@ -521,7 +522,7 @@ def test_list_sources_detailed__from_both_python_file_and_stdin(fake_project):
     )
     expect = [
         "Sources of Python code:",
-        f"  {tmp_path}/code.py (using {tmp_path}/ as base for 1st-party imports)",
+        f"  {tmp_path / 'code.py'} (using {tmp_path}/ as base for 1st-party imports)",
         "  <stdin>",
     ]
     assert output.splitlines() == expect
@@ -562,7 +563,8 @@ project_tests_samples = [
         expect_output=[
             "These imports appear to be undeclared dependencies:",
             "- 'requests' imported at:",
-            "    {path}/code.py:1",
+            f"    {os.path.join('{path}', 'code.py')}:1",
+
         ],
         expect_returncode=3,
     ),
@@ -574,7 +576,7 @@ project_tests_samples = [
         expect_output=[
             "These dependencies appear to be unused (i.e. not imported):",
             "- 'pandas' declared in:",
-            "    {path}/requirements.txt",
+            f"    {os.path.join('{path}', 'requirements.txt')}",
         ],
         expect_returncode=4,
     ),
@@ -586,11 +588,11 @@ project_tests_samples = [
         expect_output=[
             "These imports appear to be undeclared dependencies:",
             "- 'requests' imported at:",
-            "    {path}/code.py:1",
+            f"    {os.path.join('{path}', 'code.py')}:1",
             "",
             "These dependencies appear to be unused (i.e. not imported):",
             "- 'pandas' declared in:",
-            "    {path}/requirements.txt",
+            f"    {os.path.join('{path}', 'requirements.txt')}",
         ],
         expect_returncode=3,  # undeclared is more important than unused
     ),
@@ -624,11 +626,11 @@ project_tests_samples = [
         expect_output=[
             "These imports appear to be undeclared dependencies:",
             "- 'requests' imported at:",
-            "    {path}/code.py:1",
+            f"    {os.path.join('{path}', 'code.py')}:1",
             "",
             "These dependencies appear to be unused (i.e. not imported):",
             "- 'pandas' declared in:",
-            "    {path}/requirements.txt",
+            f"    {os.path.join('{path}', 'requirements.txt')}",
         ],
         expect_returncode=3,  # undeclared is more important than unused
     ),

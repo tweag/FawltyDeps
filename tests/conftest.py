@@ -1,4 +1,5 @@
 """Fixtures for tests"""
+import platform
 import sys
 import venv
 from pathlib import Path
@@ -54,7 +55,13 @@ def fake_venv(tmp_path):
 
         # Create fake packages
         major, minor = py_version
-        site_dir = venv_dir / f"lib/python{major}.{minor}/site-packages"
+
+        def _env_site_packages():
+            if platform.system() == "Windows":
+                return venv_dir /  "Lib" / "site-packages"
+            return venv_dir / "my_venv" /  "lib" / f"python{major}.{minor}" / "site-packages"
+        
+        site_dir = _env_site_packages()
         assert site_dir.is_dir()
         for package_name, import_names in fake_packages.items():
             # Create just enough files under site_dir to fool importlib_metadata
