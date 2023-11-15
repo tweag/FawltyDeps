@@ -4,6 +4,7 @@ import io
 import logging
 import os
 import subprocess
+import sys
 import platform
 from dataclasses import dataclass, field, replace
 from pathlib import Path
@@ -118,8 +119,18 @@ def run_fawltydeps_subprocess(
     cwd: Optional[Path] = None,
 ) -> Tuple[str, str, int]:
     """Run FawltyDeps as a subprocess. Designed for integration tests."""
+    # proc = subprocess.run(
+    #     ["fawltydeps", f"--config-file={config_file}"] + list(args),
+    #     input=to_stdin,
+    #     stdout=subprocess.PIPE,
+    #     stderr=subprocess.PIPE,
+    #     universal_newlines=True,
+    #     check=False,
+    #     cwd=cwd,
+    # )
+
     proc = subprocess.run(
-        ["fawltydeps", f"--config-file={config_file}"] + list(args),
+        [sys.executable, "-m", "fawltydeps", f"--config-file={config_file}"] + list(args),
         input=to_stdin,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
