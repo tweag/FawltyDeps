@@ -237,7 +237,10 @@ def parse_code(
                         ds = re.sub(r"\n\s{4}", "\n", ds)
                         try:
                             node_ds = ast.parse(ds)
-                        except SyntaxError:
+                        except SyntaxError as exc:
+                            logger.debug(
+                                f"There is a syntax error in docstring from {source}: {exc}. Skipping."
+                            )
                             continue
                         for node_import in node_ds.body:
                             if isinstance(node_import, ast.Import):
