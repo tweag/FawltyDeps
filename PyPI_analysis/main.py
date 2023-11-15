@@ -96,7 +96,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
 
     @property
     @calculated_once
-    def code_dir(self) -> Dict[Path, int]:
+    def code_dir(self) -> Optional[Dict[Path, int]]:
         """The directory that contains the main code"""
         code_paths = [
             src.path
@@ -110,10 +110,14 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
         directories = [path.parts[0] for path in code_paths]
         directory_counts = Counter(directories)
         # Find the directory with the most Python files
-        most_python_files_directory = max(directory_counts, key=directory_counts.get)
-        return {
-            most_python_files_directory: directory_counts[most_python_files_directory]
-        }
+        if directory_counts:
+            most_python_files_directory = max(
+                directory_counts, key=directory_counts.get
+            )
+            return {
+                "path": most_python_files_directory,
+                "counts": directory_counts[most_python_files_directory],
+            }
 
     @classmethod
     def create(cls, settings: Settings, stdin: Optional[TextIO] = None) -> "Analysis":
@@ -153,6 +157,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
             # Using properties with an underscore do not trigger computations.
             # They are populated only if the computations were already required
             # by settings.actions.
+            "main_code_dir": self.code_dir,
             "deps_file": {src for src in self._sources if isinstance(src, DepsSource)},
             "imports": self._imports,
             "version": self.version,
@@ -163,23 +168,30 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
         """Print a human-readable rendering of this analysis to 'out'."""
 
         def render_code_directory() -> Iterator[str]:
-            code_directory, code_counts = list(self.code_dir.items())[0]
             if detailed:
                 yield "Main code directory: "
-                yield f"  {code_directory}: {code_counts} Python files"
+                if self.code_dir:
+                    yield f"  {self.code_dir['path']}: {self.code_dir['counts']} Python files"
+                else:
+                    yield "  There is no main code directory found under the current directory."
             else:
-                yield code_directory
+                if self.code_dir:
+                    yield self.code_dir["path"]
 
         def render_dep_files() -> Iterator[str]:
             if detailed:
                 yield "\nDependency declaration files:"
-                yield from sorted(
+                dep_files = sorted(
                     {
                         f"  {src.parser_choice}: {src.render(False)}"
                         for src in self.sources
                         if isinstance(src, DepsSource)
                     }
                 )
+                if dep_files:
+                    yield from dep_files
+                else:
+                    yield "  There is no dependency declaration file found."
             else:
                 yield from sorted(
                     {
@@ -190,10 +202,14 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
                 )
 
         def render_imports() -> Iterator[str]:
+            # if self.imports:
             if detailed:
                 yield "\n" + "Patterns of imports:"
-                for imp in self.imports:
-                    yield f"  {list(imp.keys())[0]}: {imp[list(imp.keys())[0]].source}: {imp[list(imp.keys())[0]].name}"
+                if self.imports:
+                    for imp in self.imports:
+                        yield f"  {list(imp.keys())[0]}: {imp[list(imp.keys())[0]].source}: {imp[list(imp.keys())[0]].name}"
+                else:
+                    yield "  There is no import pattern found."
             else:
                 unique_imports = {
                     list(imp.keys())[0] + ": " + imp[list(imp.keys())[0]].name
