@@ -202,7 +202,6 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
                 )
 
         def render_imports() -> Iterator[str]:
-            # if self.imports:
             if detailed:
                 yield "\n" + "Patterns of imports:"
                 if self.imports:
