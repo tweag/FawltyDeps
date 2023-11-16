@@ -152,8 +152,8 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.fawltydeps]
-code = ["fawltydeps"]
-deps = ["pyproject.toml"]
+code = ["PyPI_analysis", "fawltydeps"]
+deps = ["PyPI_analysis", "pyproject.toml"]
 ignore_unused = [
     "black",
     "codespell",
@@ -163,3 +163,4 @@ ignore_unused = [
     "pylint",
     "pytest",
 ]
+ignore_undeclared = ["fawltydeps"]
