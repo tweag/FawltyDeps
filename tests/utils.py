@@ -48,11 +48,16 @@ def walk_dir(path: Path) -> Iterator[Path]:
 
 def assert_unordered_equivalence(actual: Iterable[Any], expect: Iterable[Any]):
     actual_s = sorted(actual)
+<<<<<<< HEAD
     expect_s = sorted(expect)
     print("\n".join(actual_s))
     print("---")
     print("\n".join(expect_s))
     assert actual_s == expect_s, f"--- EXPECTED ---\n{pformat(expect_s)}\n--- BUT GOT ---\n{pformat(actual_s)}"
+=======
+    expected_s = sorted(expected)
+    assert actual_s == expected_s, f"{actual_s!r} != {expected_s!r}"
+>>>>>>> 813c4e8 (Skip tests for symlinks on Windows - only administrator can create symlinks there)
 
 
 def collect_dep_names(deps: Iterable[DeclaredDependency]) -> Iterable[str]:
