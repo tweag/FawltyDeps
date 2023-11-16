@@ -1,0 +1,2 @@
+[tool.poetry.dependencies]
+alternative_1 = "^0.0.1"
