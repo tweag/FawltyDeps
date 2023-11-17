@@ -47,10 +47,13 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
     - .imports contains the imports found by parsing the CodeSources.
     """
 
-    def __init__(self, settings: Settings, stdin: Optional[TextIO] = None):
+    def __init__(
+        self, settings: Settings, project_name: str, stdin: Optional[TextIO] = None
+    ):
         self.settings = settings
         self.stdin = stdin
         self.version = version()
+        self.project_name = project_name
 
         # The following members are calculated once, on-demand, by the
         # @property @calculated_once methods below:
@@ -120,7 +123,12 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
             }
 
     @classmethod
-    def create(cls, settings: Settings, stdin: Optional[TextIO] = None) -> "Analysis":
+    def create(
+        cls,
+        settings: Settings,
+        project_name: str,
+        stdin: Optional[TextIO] = None,
+    ) -> "Analysis":
         """Exercise FawltyDeps' core logic according to the given settings.
 
         Perform the actions specified in 'settings.actions' and apply the other
@@ -131,7 +139,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
         this can also be called from other Python contexts without having to go
         via the command-line.
         """
-        ret = cls(settings, stdin)
+        ret = cls(settings, project_name, stdin)
 
         ret.sources
         ret.imports
@@ -157,10 +165,11 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
             # Using properties with an underscore do not trigger computations.
             # They are populated only if the computations were already required
             # by settings.actions.
+            "project_name": self.project_name,
             "main_code_dir": self.code_dir,
             "deps_file": {src for src in self._sources if isinstance(src, DepsSource)},
             "imports": self._imports,
-            "version": self.version,
+            "fawltydeps_version": self.version,
         }
         json.dump(json_dict, out, indent=2, default=encoder)
 
@@ -274,7 +283,7 @@ def main(
     logging.basicConfig(level=logging.WARNING - 10 * settings.verbosity)
 
     try:
-        analysis = Analysis.create(settings, stdin)
+        analysis = Analysis.create(settings, args.project_name, stdin)
     except UnparseablePathException as exc:
         return parser.error(exc.msg)  # exit code 2
     except UnresolvedDependenciesError as exc:

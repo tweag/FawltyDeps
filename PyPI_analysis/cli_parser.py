@@ -90,6 +90,11 @@ def populate_parser_paths_options(parser: argparse._ActionsContainer) -> None:
             " '-' to read code from stdin). Defaults to basepaths (see above)."
         ),
     )
+    parser.add_argument(
+        "--project-name",
+        default="",
+        help="The name of the PyPI project to analyze.",
+    )
 
 
 def populate_parser_configuration(parser: argparse._ActionsContainer) -> None:
