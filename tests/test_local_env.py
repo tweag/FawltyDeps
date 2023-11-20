@@ -48,6 +48,9 @@ windows_subdirs = [
 ]
 
 
+@pytest.mark.skipif(
+    platform.system() != "Windows", reason="Not relevant to Windows virtual environment"
+)
 @pytest.mark.parametrize(
     "subdir", [pytest.param(d, id=f"venv:{d}") for d in windows_subdirs]
 )
