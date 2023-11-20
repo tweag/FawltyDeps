@@ -1,6 +1,7 @@
 """Test how settings cascade/combine across command-line, config file, etc."""
 import argparse
 import logging
+import platform
 import random
 import string
 import sys
@@ -477,7 +478,12 @@ def test_settings__missing_config_file__uses_defaults_and_warns(tmp_path, caplog
     settings = Settings.config(config_file=missing_file)()
     assert settings.dict() == make_settings_dict()
     assert "Failed to load configuration file:" in caplog.text
-    assert str(missing_file) in caplog.text
+    # On Windows path escape sequences are doubled in repr()
+    assert (
+        repr(str(missing_file))
+        if platform.system() == "Windows"
+        else str(missing_file) in caplog.text
+    )
 
 
 def to_path_set(ps: Iterable[str]) -> Set[Path]:
