@@ -149,7 +149,7 @@ def parse_setup_cfg(path: Path) -> Iterator[DeclaredDependency]:
         # TODO: try leveraging RequirementsFile.from_string once
         #       pip-requirements-parser updates.
         # See:  https://github.com/nexB/pip-requirements-parser/pull/17
-        with NamedTemporaryFile(mode="wt") as tmp:
+        with NamedTemporaryFile(mode="wt", delete=False) as tmp:
             tmp.write(value)
             tmp.flush()
             for dep in parse_requirements_txt(Path(tmp.name)):
