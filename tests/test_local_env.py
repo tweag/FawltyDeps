@@ -51,7 +51,7 @@ windows_subdirs = [
 @pytest.mark.parametrize(
     "subdir", [pytest.param(d, id=f"venv:{d}") for d in windows_subdirs]
 )
-def test_find_package_dirs__various_paths_in_venv_on_windows(tmp_path, subdir):
+def test_find_package_dirs__various_paths_in_venv(tmp_path, subdir):
     venv.create(tmp_path, with_pip=False)
     path = tmp_path / subdir
     expect = {tmp_path / "Lib" / "site-packages"}
