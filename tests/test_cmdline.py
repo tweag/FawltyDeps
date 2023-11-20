@@ -508,7 +508,7 @@ def test_list_sources_detailed__in_varied_project__lists_all_files(fake_project)
     major, minor = sys.version_info[:2]
     expect_pyenv_lines = [
         (
-            "  " +  str(tmp_path / "my_venv" / "Lib" / "site-packages")
+            "  " + str(tmp_path / "my_venv" / "Lib" / "site-packages")
             if platform.system() == "Windows"
             else "  "
             + str(

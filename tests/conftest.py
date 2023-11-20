@@ -61,7 +61,7 @@ def fake_venv(tmp_path):
             if platform.system() == "Windows":
                 return venv_dir / "Lib" / "site-packages"
             return venv_dir / "lib" / f"python{major}.{minor}" / "site-packages"
-        
+
         site_dir = _env_site_packages()
         assert site_dir.is_dir()
         for package_name, import_names in fake_packages.items():

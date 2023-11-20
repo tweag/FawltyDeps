@@ -1,4 +1,5 @@
 """Verify behavior of package module looking at a given Python environment."""
+import platform
 import sys
 import venv
 from pathlib import Path
@@ -37,7 +38,29 @@ pep582_subdirs = [
     f"__pypackages__/{major}.{minor}/lib",
 ]
 
+# When the user gives us a --pyenv arg that points to a Python virtualenv
+# on Windows, what are the the possible paths inside that Python environment
+# that they might point at (and that we should accept)?
+windows_subdirs = [
+    "",
+    "Lib",
+    f"Lib\site-packages",
+]
 
+
+@pytest.mark.parametrize(
+    "subdir", [pytest.param(d, id=f"venv:{d}") for d in windows_subdirs]
+)
+def test_find_package_dirs__various_paths_in_venv_on_windows(tmp_path, subdir):
+    venv.create(tmp_path, with_pip=False)
+    path = tmp_path / subdir
+    expect = {tmp_path / "Lib" / "site-packages"}
+    assert set(LocalPackageResolver.find_package_dirs(path)) == expect
+
+
+@pytest.mark.skipif(
+    platform.system() == "Windows", reason="Not relevant to Windows virtual environment"
+)
 @pytest.mark.parametrize(
     "subdir", [pytest.param(d, id=f"venv:{d}") for d in env_subdirs]
 )
@@ -48,6 +71,9 @@ def test_find_package_dirs__various_paths_in_venv(tmp_path, subdir):
     assert set(LocalPackageResolver.find_package_dirs(path)) == expect
 
 
+@pytest.mark.skipif(
+    platform.system() == "Windows", reason="Not relevant to Windows virtual environment"
+)
 @pytest.mark.parametrize(
     "subdir", [pytest.param(d, id=f"poetry2nix:{d}") for d in env_subdirs]
 )
@@ -64,6 +90,9 @@ def test_find_package_dirs__various_paths_in_poetry2nix_env(write_tmp_files, sub
     assert set(LocalPackageResolver.find_package_dirs(path)) == expect
 
 
+@pytest.mark.skipif(
+    platform.system() == "Windows", reason="Not relevant to Windows virtual environment"
+)
 @pytest.mark.parametrize(
     "subdir", [pytest.param(d, id=f"pep582:{d}") for d in pep582_subdirs]
 )
@@ -79,6 +108,9 @@ def test_find_package_dirs__various_paths_in_pypackages(write_tmp_files, subdir)
     assert set(LocalPackageResolver.find_package_dirs(path)) == expect
 
 
+@pytest.mark.skipif(
+    platform.system() == "Windows", reason="Not relevant to Windows virtual environment"
+)
 @pytest.mark.parametrize(
     "subdir",
     [pytest.param(d, id=f"pep582:{d}") for d in pep582_subdirs]
@@ -128,7 +160,11 @@ def test_local_env__default_venv__contains_pip(tmp_path):
     # "pip" package is installed, and that it provides a "pip" import name.
     venv.create(tmp_path, with_pip=True)
     lpl = LocalPackageResolver(pyenv_sources(tmp_path))
-    expect_location = tmp_path / f"lib/python{major}.{minor}/site-packages"
+    expect_location = (
+        tmp_path / "Lib" / "site-packages"
+        if platform.system() == "Windows"
+        else tmp_path / f"lib/python{major}.{minor}/site-packages"
+    )
     assert "pip" in lpl.packages
     pip = lpl.packages["pip"]
     assert pip.package_name == "pip"

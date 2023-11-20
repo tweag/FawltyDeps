@@ -1,6 +1,8 @@
 """Common helpers shared between test_real_project and test_sample_projects."""
 import hashlib
 import logging
+import os
+import platform
 import shlex
 import subprocess
 import sys
@@ -100,7 +102,7 @@ class TarballPackage:
 
     @property
     def cache_key(self) -> str:
-        return f"fawltydeps/{self.tarball_name()}"
+        return os.path.join("fawltydeps", f"{self.tarball_name()}")
 
     def tarball_path(self, cache: pytest.Cache) -> Path:
         return self.cache_dir(cache) / self.tarball_name()
@@ -126,18 +128,25 @@ class CachedExperimentVenv:
     requirements: List[str]  # PEP 508 requirements, passed to 'pip install'
 
     def venv_script_lines(self, venv_path: Path) -> List[str]:
+        rm_command = "rd /s /q" if platform.system() == "Windows" else "rm -rf"
+        pip_path = (
+            venv_path / "Scripts" / "pip.exe"
+            if platform.system() == "Windows"
+            else venv_path / "bin" / "pip"
+        )
+        create_empty_file = "type nul > " if platform.system() == "Windows" else "touch"
         return (
             [
-                f"rm -rf {venv_path}",
-                f"python3 -m venv {venv_path}",
-                f"{venv_path}/bin/pip install --upgrade pip",
+                f"{rm_command} {venv_path}",
+                f"{sys.executable} -m venv {venv_path}",
+                f"{pip_path} install --upgrade pip",
             ]
             + [
-                f"{venv_path}/bin/pip install --no-deps {shlex.quote(req)}"
+                f"{pip_path} install --no-deps {shlex.quote(req)}"
                 for req in self.requirements
             ]
             + [
-                f"touch {venv_path}/.installed",
+                f"{create_empty_file} {venv_path}/.installed",
             ]
         )
 
@@ -150,7 +159,7 @@ class CachedExperimentVenv:
         The Python version currently used to run the tests is used to compute
         the hash and create the venv.
         """
-        dummy_script = self.venv_script_lines(Path("/dev/null"))
+        dummy_script = self.venv_script_lines(Path(os.devnull))
         py_version = f"{sys.version_info.major},{sys.version_info.minor}"
         script_and_version_bytes = ("".join(dummy_script) + py_version).encode()
         return hashlib.sha256(script_and_version_bytes).hexdigest()
@@ -165,7 +174,7 @@ class CachedExperimentVenv:
         script or the requirements to create that venv change.
         """
         # We cache venv dirs using the hash from create_venv_hash
-        cached_str = cache.get(f"fawltydeps/{self.venv_hash()}", None)
+        cached_str = cache.get(os.path.join("fawltydeps", f"{self.venv_hash()}"), None)
         if cached_str is not None and Path(cached_str, ".installed").is_file():
             return Path(cached_str)  # already cached
 
@@ -180,7 +189,7 @@ class CachedExperimentVenv:
         )
         # Make sure the venv has been installed
         assert (venv_dir / ".installed").is_file()
-        cache.set(f"fawltydeps/{self.venv_hash()}", str(venv_dir))
+        cache.set(os.path.join("fawltydeps", f"{self.venv_hash()}"), str(venv_dir))
         return venv_dir
 
 
