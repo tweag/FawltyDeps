@@ -1,4 +1,5 @@
 """Verify behavior of package module looking at a given Python environment."""
+import os
 import platform
 import sys
 import venv
@@ -44,7 +45,7 @@ pep582_subdirs = [
 windows_subdirs = [
     "",
     "Lib",
-    f"Lib\site-packages",
+    os.path.join("Lib", "site-packages"),
 ]
 
 

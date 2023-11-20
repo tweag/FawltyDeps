@@ -1,5 +1,4 @@
 """Fixtures for tests"""
-import os
 import platform
 import sys
 import venv

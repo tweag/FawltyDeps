@@ -1,5 +1,6 @@
 """Common types used across FawltyDeps."""
 
+import os
 import platform
 import sys
 from abc import ABC, abstractmethod
@@ -157,7 +158,9 @@ class PyEnvSource(Source):
             return  # also ok
 
         # Support Windows projects
-        if platform.system() == "Windows" and self.path.match("Lib\site-packages"):
+        if platform.system() == "Windows" and self.path.match(
+            os.path.join("Lib", "site-packages")
+        ):
             return  # also ok
 
         raise ValueError(f"{self.path} is not a valid dir for Python packages!")

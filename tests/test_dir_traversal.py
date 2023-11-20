@@ -1,8 +1,8 @@
 """Test core functionality of DirectoryTraversal class."""
-from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
 import os
 import platform
+from abc import ABC, abstractmethod
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Generic, List, Optional, Tuple, TypeVar, Union
 
@@ -281,8 +281,7 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
             marks=pytest.mark.skipif(
                 platform.system() == "Windows"
                 and any(
-                    isinstance(entry, RelativeSymlink)
-                    or isinstance(entry, AbsoluteSymlink)
+                    isinstance(entry, (RelativeSymlink, AbsoluteSymlink))
                     for entry in v.given
                 ),
                 reason="Symlinks on Windows may be created only by administrators",

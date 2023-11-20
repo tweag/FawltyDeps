@@ -5,7 +5,6 @@ import logging
 import os
 import subprocess
 import sys
-import platform
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 from pprint import pformat

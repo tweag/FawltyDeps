@@ -1,6 +1,7 @@
 """Encapsulate the lookup of packages and their provided import names."""
 
 import logging
+import os
 import platform
 import subprocess
 import sys
@@ -311,7 +312,9 @@ class LocalPackageResolver(InstalledPackageResolver):
         self.package_dirs: Set[Path] = set(src.path for src in srcs)
 
     @classmethod
-    def find_package_dirs(cls, path: Path) -> Iterator[Path]:
+    def find_package_dirs(  # pylint: disable=too-many-branches,
+        cls, path: Path
+    ) -> Iterator[Path]:  # pylint: disable=too-many-branches,
         """Return the packages directories corresponding to the given path.
 
         The given 'path' is a user-provided directory path meant to point to
@@ -349,7 +352,7 @@ class LocalPackageResolver(InstalledPackageResolver):
 
         # Check for packages on Windows
         if platform.system() == "Windows":
-            for site_packages in path.glob("Lib\site-packages"):
+            for site_packages in path.glob(os.path.join("Lib", "site-packages")):
                 if site_packages.is_dir():
                     yield site_packages
                     found = True
