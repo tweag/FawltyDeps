@@ -16,6 +16,7 @@ The strategy construction can be viewed as a reference
 to how the CLI options are expected to be used.
 """
 import io
+import os
 import string
 from functools import reduce
 from pathlib import Path
@@ -27,7 +28,7 @@ from hypothesis import given
 
 from fawltydeps.main import main
 
-from .utils import SAMPLE_PROJECTS_DIR, walk_dir, config_file_name
+from .utils import SAMPLE_PROJECTS_DIR, walk_dir
 
 project_with_no_issues = SAMPLE_PROJECTS_DIR / "no_issues"
 CODE_STDIN_MARKER = "-"
@@ -192,7 +193,7 @@ def test_options_interactions__correct_options__does_not_abort(cli_arguments):
     )
     args = basepath + drawn_args
 
-    with open(config_file_name(), "w") as f_out:
+    with open(os.devnull, "w") as f_out:
         exit_code = main(cmdline_args=args, stdin=io.StringIO(to_stdin), stdout=f_out)
 
     assert exit_code in {0, 3, 4}
