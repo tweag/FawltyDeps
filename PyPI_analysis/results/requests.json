@@ -1,0 +1,64 @@
+{
+  "project_name": "requests",
+  "main_code_dir": {
+    "path": "src",
+    "counts": 18
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "docs/requirements.txt",
+      "parser_choice": "requirements.txt"
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "pyproject.toml",
+      "parser_choice": "pyproject.toml"
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "requirements-dev.txt",
+      "parser_choice": "requirements.txt"
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg"
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py"
+    }
+  ],
+  "imports": [
+    {
+      "Alternative imports (primary)": {
+        "name": "chardet",
+        "source": {
+          "path": "src/requests/compat.py",
+          "lineno": 10
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "charset_normalizer",
+        "source": {
+          "path": "src/requests/compat.py",
+          "lineno": 10
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "simplejson",
+        "source": {
+          "path": "src/requests/compat.py",
+          "lineno": 32
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

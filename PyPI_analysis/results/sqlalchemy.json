@@ -1,0 +1,50 @@
+{
+  "project_name": "sqlalchemy",
+  "main_code_dir": {
+    "path": "lib",
+    "counts": 239
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "doc/build/requirements.txt",
+      "parser_choice": "requirements.txt"
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "pyproject.toml",
+      "parser_choice": "pyproject.toml"
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg"
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py"
+    }
+  ],
+  "imports": [
+    {
+      "Conditional imports": {
+        "name": "sqlcipher3",
+        "source": {
+          "path": "lib/sqlalchemy/dialects/sqlite/pysqlcipher.py",
+          "lineno": 111
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "cx_Oracle",
+        "source": {
+          "path": "lib/sqlalchemy/dialects/oracle/cx_oracle.py",
+          "lineno": 9
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

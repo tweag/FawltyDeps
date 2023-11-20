@@ -1,0 +1,46 @@
+{
+  "project_name": "opencv-python",
+  "main_code_dir": {
+    "path": "opencv",
+    "counts": 302
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "opencv/doc/pattern_tools/test_requirements.txt",
+      "parser_choice": "requirements.txt"
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "opencv/modules/python/package/setup.py",
+      "parser_choice": "setup.py"
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "opencv/samples/dnn/dnn_model_runner/dnn_conversion/requirements.txt",
+      "parser_choice": "requirements.txt"
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "pyproject.toml",
+      "parser_choice": "pyproject.toml"
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py"
+    }
+  ],
+  "imports": [
+    {
+      "Dynamic imports": {
+        "name": "cv2",
+        "source": {
+          "path": "opencv/modules/python/package/cv2/__init__.py",
+          "lineno": 153
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,31 @@
+{
+  "project_name": "pygame",
+  "main_code_dir": {
+    "path": "src_py",
+    "counts": 22
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg"
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py"
+    }
+  ],
+  "imports": [
+    {
+      "Conditional imports": {
+        "name": "bdist_mpkg_support",
+        "source": {
+          "path": "setup.py",
+          "lineno": 350
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}
