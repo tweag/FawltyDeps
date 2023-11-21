@@ -192,7 +192,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
                 yield "\nDependency declaration files:"
                 dep_files = sorted(
                     {
-                        f"  {src.parser_choice}: {src.render(False)}"
+                        f"  {src.parser_choice}: {src.render(True)}"
                         for src in self.sources
                         if isinstance(src, DepsSource)
                     }
