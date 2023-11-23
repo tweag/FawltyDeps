@@ -59,7 +59,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
         # @property @calculated_once methods below:
         self._sources: Optional[Set[Source]] = None
         self._imports: Optional[List[Dict[str, ParsedImport]]] = None
-        self._code_dir: Optional[Dict[Path, int]] = None
+        self._code_dirs: Optional[Dict[Path, int]] = None
 
     def is_enabled(self, *args: Action) -> bool:
         """Return True if any of the given actions are in self.settings."""
@@ -99,7 +99,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
 
     @property
     @calculated_once
-    def code_dir(self) -> Optional[Dict[Path, int]]:
+    def code_dirs(self) -> Optional[Dict[Path, int]]:
         """The directory that contains the main code"""
         code_paths = [
             src.path
@@ -108,19 +108,12 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
             and len(src.path.parts) > 1
             and "test" not in src.path.parts[0]
             and "example" not in src.path.parts[0]
-            and not src.path.name.startswith("test_")
+            and "test" not in src.path.name
         ]
         directories = [path.parts[0] for path in code_paths]
         directory_counts = Counter(directories)
-        # Find the directory with the most Python files
         if directory_counts:
-            most_python_files_directory = max(
-                directory_counts, key=directory_counts.get
-            )
-            return {
-                "path": most_python_files_directory,
-                "counts": directory_counts[most_python_files_directory],
-            }
+            return dict(directory_counts.most_common())
 
     @classmethod
     def create(
@@ -143,7 +136,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
 
         ret.sources
         ret.imports
-        ret.code_dir
+        ret.code_dirs
 
         return ret
 
@@ -166,7 +159,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
             # They are populated only if the computations were already required
             # by settings.actions.
             "project_name": self.project_name,
-            "main_code_dir": self.code_dir,
+            "code_dirs": self.code_dirs,
             "deps_file": {src for src in self._sources if isinstance(src, DepsSource)},
             "imports": self._imports,
             "fawltydeps_version": self.version,
@@ -178,14 +171,16 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
 
         def render_code_directory() -> Iterator[str]:
             if detailed:
-                yield "Main code directory: "
-                if self.code_dir:
-                    yield f"  {self.code_dir['path']}: {self.code_dir['counts']} Python files"
+                yield "Code directories: "
+                if self.code_dirs:
+                    for code_dir, count in self.code_dirs.items():
+                        yield f"  {code_dir}: {count} Python files"
                 else:
                     yield "  There is no main code directory found under the current directory."
             else:
-                if self.code_dir:
-                    yield self.code_dir["path"]
+                if self.code_dirs:
+                    for code_dir, _count in self.code_dirs.items():
+                        yield code_dir
 
         def render_dep_files() -> Iterator[str]:
             if detailed:
