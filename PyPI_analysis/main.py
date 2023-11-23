@@ -113,7 +113,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
         directories = [path.parts[0] for path in code_paths]
         directory_counts = Counter(directories)
         if directory_counts:
-            return dict(directory_counts)
+            return dict(directory_counts.most_common())
 
     @classmethod
     def create(
