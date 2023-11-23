@@ -1,8 +1,9 @@
 {
   "project_name": "sqlalchemy",
-  "main_code_dir": {
-    "path": "lib",
-    "counts": 239
+  "code_dirs": {
+    "lib": 238,
+    "tools": 6,
+    "doc": 1
   },
   "deps_file": [
     {

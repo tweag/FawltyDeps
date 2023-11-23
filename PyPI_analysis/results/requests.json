@@ -1,8 +1,8 @@
 {
   "project_name": "requests",
-  "main_code_dir": {
-    "path": "src",
-    "counts": 18
+  "code_dirs": {
+    "src": 18,
+    "docs": 2
   },
   "deps_file": [
     {
