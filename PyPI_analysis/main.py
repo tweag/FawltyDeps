@@ -173,14 +173,14 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
             if detailed:
                 yield "Code directories: "
                 if self.code_dirs:
-                    for code_dir in self.code_dirs.items():
-                        yield f"  {code_dir[0]}: {code_dir[1]} Python files"
+                    for code_dir, count in self.code_dirs.items():
+                        yield f"  {code_dir}: {count} Python files"
                 else:
                     yield "  There is no main code directory found under the current directory."
             else:
                 if self.code_dirs:
-                    for code_dir in self.code_dirs.items():
-                        yield code_dir[0]
+                    for code_dir, _count in self.code_dirs.items():
+                        yield code_dir
 
         def render_dep_files() -> Iterator[str]:
             if detailed:
