@@ -9,6 +9,8 @@ The name is inspired by the Monty Python-adjacent
 
 ![FawltyDeps demo](https://github.com/tweag/FawltyDeps/raw/main/docs/fawltydeps_demo_tqdm.gif)
 
+We [invite you](https://discord.gg/53XwX7Ft) to join our [Discord channel](https://discord.com/channels/1174731094726295632/1176462512212951090)! It's a great place to ask questions, share your ideas, and collaborate with other contributors.
+
 ## Table of contents
 
 [Key Concepts](#key-concepts)
