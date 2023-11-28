@@ -717,9 +717,11 @@ def test_check_json__simple_project__can_report_both_undeclared_and_unused(
             },
             {
                 "source_type": "PyEnvSource",
-                "path": tmp_path / "my_venv" / "Lib" / "site-packages"
-                if platform.system() == "Windows"
-                else f"{tmp_path}/my_venv/lib/python{major}.{minor}/site-packages",
+                "path": (
+                    f"{tmp_path / 'my_venv' / 'Lib' / 'site-packages'}"
+                    if platform.system() == "Windows"
+                    else f"{tmp_path}/my_venv/lib/python{major}.{minor}/site-packages"
+                ),
             },
         ],
         "imports": [
