@@ -146,7 +146,7 @@ class CachedExperimentVenv:
                 for req in self.requirements
             ]
             + [
-                f"{create_empty_file} {venv_path}/.installed",
+                f"{create_empty_file} {venv_path / '.installed'}",
             ]
         )
 
