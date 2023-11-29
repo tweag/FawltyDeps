@@ -118,7 +118,7 @@ def lint(session):
 def format(session):
     install_groups(session, include=["format"], include_self=False)
     session.run(
-        "codespell", "--enable-colors", "--skip=./PyPI_analysis/results/*.ipynb"
+        "codespell", "--enable-colors", "--skip=./PyPI_analysis/notebooks/*.ipynb"
     )
     session.run("isort", "fawltydeps", "tests", "--check", "--diff", "--color")
     session.run("black", ".", "--check", "--diff", "--color")
@@ -128,7 +128,7 @@ def format(session):
 def reformat(session):
     install_groups(session, include=["format"], include_self=False)
     session.run(
-        "codespell", "--write-changes", "--skip=./PyPI_analysis/results/*.ipynb"
+        "codespell", "--write-changes", "--skip=./PyPI_analysis/notebooks/*.ipynb"
     )
     session.run("isort", "fawltydeps", "tests")
     session.run("black", ".")
