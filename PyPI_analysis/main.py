@@ -99,7 +99,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
 
     @property
     @calculated_once
-    def code_dirs(self) -> Optional[Dict[Path, int]]:
+    def code_dirs(self) -> Optional[Dict[str, Dict[str, int]]]:
         """The directory that contains the main code"""
         code_paths = [
             src.path
@@ -110,10 +110,31 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
             and "example" not in src.path.parts[0]
             and "test" not in src.path.name
         ]
-        directories = [path.parts[0] for path in code_paths]
-        directory_counts = Counter(directories)
-        if directory_counts:
-            return dict(directory_counts.most_common())
+        directories_py = [path.parts[0] for path in code_paths if path.suffix == ".py"]
+        directories_ipynb = [
+            path.parts[0] for path in code_paths if path.suffix == ".ipynb"
+        ]
+        directories_py_counts = Counter(directories_py)
+        directories_ipynb_counts = Counter(directories_ipynb)
+
+        # Create a dictionary to combine two counters
+        combined_dict = {}
+        for key, value in directories_py_counts.items():
+            combined_dict[key] = {"py": value, "ipynb": 0, "total": value}
+
+        for key, value in directories_ipynb_counts.items():
+            if key in combined_dict:
+                combined_dict[key]["ipynb"] = value
+                combined_dict[key]["total"] += value
+            else:
+                combined_dict[key] = {"py": 0, "ipynb": value, "total": value}
+
+        sorted_combined_dict = dict(
+            sorted(combined_dict.items(), key=lambda x: x[1]["total"], reverse=True)
+        )
+
+        if sorted_combined_dict:
+            return sorted_combined_dict
 
     @classmethod
     def create(
@@ -174,7 +195,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
                 yield "Code directories: "
                 if self.code_dirs:
                     for code_dir, count in self.code_dirs.items():
-                        yield f"  {code_dir}: {count} Python files"
+                        yield f"  {code_dir}: {count['total']} Python file(s) ({count['py']} '.py' file(s) and {count['ipynb']} '.ipynb' file(s))"
                 else:
                     yield "  There is no main code directory found under the current directory."
             else:
