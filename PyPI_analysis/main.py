@@ -11,11 +11,13 @@ try:  # import from Pydantic V2
 except ModuleNotFoundError:
     from pydantic.json import custom_pydantic_encoder  # type: ignore[no-redef]
 
+from fawltydeps import extract_declared_dependencies
 from fawltydeps.packages import BasePackageResolver
 from fawltydeps.settings import Action, OutputFormat, Settings
 from fawltydeps.traverse_project import find_sources
 from fawltydeps.types import (
     CodeSource,
+    DeclaredDependency,
     DepsSource,
     ParsedImport,
     PyEnvSource,
@@ -58,8 +60,10 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
         # The following members are calculated once, on-demand, by the
         # @property @calculated_once methods below:
         self._sources: Optional[Set[Source]] = None
-        self._imports: Optional[List[Dict[str, ParsedImport]]] = None
+        self._declared_deps: Optional[List[DeclaredDependency]] = None
+        self._detected_imports: Optional[List[Dict[str, ParsedImport]]] = None
         self._code_dirs: Optional[Dict[Path, int]] = None
+        self._dep_files = None
 
     def is_enabled(self, *args: Action) -> bool:
         """Return True if any of the given actions are in self.settings."""
@@ -88,7 +92,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
 
     @property
     @calculated_once
-    def imports(self) -> List[ParsedImport]:
+    def detected_imports(self) -> List[ParsedImport]:
         """The list of 3rd-party imports parsed from this project."""
         return list(
             detect_imports.parse_sources(
@@ -99,8 +103,36 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
 
     @property
     @calculated_once
+    def declared_deps(self) -> List[DeclaredDependency]:
+        """The list of declared dependencies parsed from this project."""
+        return list(
+            extract_declared_dependencies.parse_sources(
+                (src for src in self.sources if isinstance(src, DepsSource))
+            )
+        )
+
+    @property
+    @calculated_once
+    def dep_files(self) -> Dict[DepsSource, int]:
+        """The dictionary of dependency declaration files and dependency count"""
+        dep_sources = {src for src in self._sources if isinstance(src, DepsSource)}
+        declared_deps_counts = dict(
+            Counter(str(dep.source.path) for dep in self.declared_deps)
+        )
+        for dep_source in dep_sources:
+            if str(dep_source.path) not in declared_deps_counts.keys():
+                declared_deps_counts[str(dep_source.path)] = 0
+        return {
+            src: count
+            for src in dep_sources
+            for path, count in declared_deps_counts.items()
+            if str(src.path) == path
+        }
+
+    @property
+    @calculated_once
     def code_dirs(self) -> Optional[Dict[str, Dict[str, int]]]:
-        """The directory that contains the main code"""
+        """The directory that contains the code directory and Python files count"""
         code_paths = [
             src.path
             for src in self.sources
@@ -156,8 +188,9 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
         ret = cls(settings, project_name, stdin)
 
         ret.sources
-        ret.imports
+        ret.detected_imports
         ret.code_dirs
+        ret.dep_files
 
         return ret
 
@@ -181,8 +214,16 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
             # by settings.actions.
             "project_name": self.project_name,
             "code_dirs": self.code_dirs,
-            "deps_file": {src for src in self._sources if isinstance(src, DepsSource)},
-            "imports": self._imports,
+            "deps_file": [
+                {
+                    "source_type": dep.source_type,
+                    "path": dep.path,
+                    "parser_choice": dep.parser_choice,
+                    "deps_count": count,
+                }
+                for dep, count in self.dep_files.items()
+            ],
+            "imports": self._detected_imports,
             "fawltydeps_version": self.version,
         }
         json.dump(json_dict, out, indent=2, default=encoder)
@@ -208,9 +249,8 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
                 yield "\nDependency declaration files:"
                 dep_files = sorted(
                     {
-                        f"  {src.parser_choice}: {src.render(True)}"
-                        for src in self.sources
-                        if isinstance(src, DepsSource)
+                        f"  {dep.parser_choice}: {dep.render(False)} ({count} dependencies declared)"
+                        for dep, count in self.dep_files.items()
                     }
                 )
                 if dep_files:
@@ -220,24 +260,23 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
             else:
                 yield from sorted(
                     {
-                        f"{src.parser_choice}: {src.render(False)}"
-                        for src in self.sources
-                        if isinstance(src, DepsSource)
+                        f"{dep.parser_choice}: {dep.render(False)}"
+                        for dep in self.dep_files
                     }
                 )
 
         def render_imports() -> Iterator[str]:
             if detailed:
                 yield "\n" + "Patterns of imports:"
-                if self.imports:
-                    for imp in self.imports:
+                if self.detected_imports:
+                    for imp in self.detected_imports:
                         yield f"  {list(imp.keys())[0]}: {imp[list(imp.keys())[0]].source}: {imp[list(imp.keys())[0]].name}"
                 else:
                     yield "  There is no import pattern found."
             else:
                 unique_imports = {
                     list(imp.keys())[0] + ": " + imp[list(imp.keys())[0]].name
-                    for imp in self.imports
+                    for imp in self.detected_imports
                 }
                 yield from sorted(unique_imports)
 
