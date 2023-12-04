@@ -1,9 +1,21 @@
 {
   "project_name": "sqlalchemy",
   "code_dirs": {
-    "lib": 238,
-    "tools": 6,
-    "doc": 1
+    "lib": {
+      "py": 238,
+      "ipynb": 0,
+      "total": 238
+    },
+    "tools": {
+      "py": 6,
+      "ipynb": 0,
+      "total": 6
+    },
+    "doc": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
   },
   "deps_file": [
     {
@@ -29,20 +41,20 @@
   ],
   "imports": [
     {
-      "Conditional imports": {
-        "name": "sqlcipher3",
-        "source": {
-          "path": "lib/sqlalchemy/dialects/sqlite/pysqlcipher.py",
-          "lineno": 111
-        }
-      }
-    },
-    {
       "Docstring": {
         "name": "cx_Oracle",
         "source": {
           "path": "lib/sqlalchemy/dialects/oracle/cx_oracle.py",
           "lineno": 9
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "sqlcipher3",
+        "source": {
+          "path": "lib/sqlalchemy/dialects/sqlite/pysqlcipher.py",
+          "lineno": 111
         }
       }
     }

@@ -1,8 +1,16 @@
 {
   "project_name": "requests",
   "code_dirs": {
-    "src": 18,
-    "docs": 2
+    "src": {
+      "py": 18,
+      "ipynb": 0,
+      "total": 18
+    },
+    "docs": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    }
   },
   "deps_file": [
     {

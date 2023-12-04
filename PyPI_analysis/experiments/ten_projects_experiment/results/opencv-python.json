@@ -1,12 +1,36 @@
 {
   "project_name": "opencv-python",
   "code_dirs": {
-    "opencv": 286,
-    "opencv_contrib": 60,
-    "opencv_extra": 14,
-    "cv2": 2,
-    "multibuild": 1,
-    "scripts": 1
+    "opencv": {
+      "py": 286,
+      "ipynb": 0,
+      "total": 286
+    },
+    "opencv_contrib": {
+      "py": 59,
+      "ipynb": 1,
+      "total": 60
+    },
+    "opencv_extra": {
+      "py": 14,
+      "ipynb": 0,
+      "total": 14
+    },
+    "cv2": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    },
+    "scripts": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "multibuild": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
   },
   "deps_file": [
     {

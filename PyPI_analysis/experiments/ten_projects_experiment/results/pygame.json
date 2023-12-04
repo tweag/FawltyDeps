@@ -1,9 +1,21 @@
 {
   "project_name": "pygame",
   "code_dirs": {
-    "src_py": 22,
-    "buildconfig": 19,
-    "docs": 13
+    "src_py": {
+      "py": 22,
+      "ipynb": 0,
+      "total": 22
+    },
+    "buildconfig": {
+      "py": 19,
+      "ipynb": 0,
+      "total": 19
+    },
+    "docs": {
+      "py": 13,
+      "ipynb": 0,
+      "total": 13
+    }
   },
   "deps_file": [
     {

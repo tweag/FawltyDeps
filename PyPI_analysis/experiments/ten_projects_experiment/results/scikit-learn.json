@@ -1,12 +1,36 @@
 {
   "project_name": "scikit-learn",
   "code_dirs": {
-    "sklearn": 308,
-    "benchmarks": 41,
-    "doc": 16,
-    "asv_benchmarks": 13,
-    "build_tools": 7,
-    "maint_tools": 3
+    "sklearn": {
+      "py": 308,
+      "ipynb": 0,
+      "total": 308
+    },
+    "benchmarks": {
+      "py": 41,
+      "ipynb": 0,
+      "total": 41
+    },
+    "doc": {
+      "py": 16,
+      "ipynb": 0,
+      "total": 16
+    },
+    "asv_benchmarks": {
+      "py": 13,
+      "ipynb": 0,
+      "total": 13
+    },
+    "build_tools": {
+      "py": 7,
+      "ipynb": 0,
+      "total": 7
+    },
+    "maint_tools": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    }
   },
   "deps_file": [
     {
@@ -47,11 +71,74 @@
   ],
   "imports": [
     {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "sklearn/decomposition/_truncated_svd.py",
+          "lineno": 32
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/decomposition/_truncated_svd.py",
+          "lineno": 32
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/cluster/_bicluster.py",
+          "lineno": 210
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/cluster/_bicluster.py",
+          "lineno": 365
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/ensemble/_hist_gradient_boosting/tests/test_gradient_boosting.py",
+          "lineno": 1010
+        }
+      }
+    },
+    {
       "Dynamic imports (pytest)": {
-        "name": "tomllib",
+        "name": "pandas",
         "source": {
-          "path": "sklearn/tests/test_min_dependencies_readme.py",
-          "lineno": 59
+          "path": "sklearn/ensemble/_hist_gradient_boosting/tests/test_gradient_boosting.py",
+          "lineno": 1119
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/ensemble/_hist_gradient_boosting/tests/test_gradient_boosting.py",
+          "lineno": 1300
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/ensemble/_hist_gradient_boosting/tests/test_gradient_boosting.py",
+          "lineno": 1176
         }
       }
     },
@@ -59,8 +146,35 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/covariance/_elliptic_envelope.py",
-          "lineno": 17
+          "path": "sklearn/cluster/_dbscan.py",
+          "lineno": 176
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numpydoc",
+        "source": {
+          "path": "sklearn/tests/test_docstring_parameters.py",
+          "lineno": 82
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numpydoc",
+        "source": {
+          "path": "sklearn/tests/test_docstring_parameters.py",
+          "lineno": 186
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/datasets/tests/test_covtype.py",
+          "lineno": 35
         }
       }
     },
@@ -68,35 +182,233 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/cluster/_bisect_k_means.py",
-          "lineno": 77
+          "path": "sklearn/decomposition/_nmf.py",
+          "lineno": 927
         }
       }
     },
     {
       "Docstring": {
-        "name": "matplotlib",
+        "name": "numpy",
         "source": {
-          "path": "sklearn/metrics/_plot/confusion_matrix.py",
-          "lineno": 12
+          "path": "sklearn/decomposition/_nmf.py",
+          "lineno": 1365
         }
       }
     },
     {
       "Docstring": {
-        "name": "matplotlib",
+        "name": "numpy",
         "source": {
-          "path": "sklearn/metrics/_plot/confusion_matrix.py",
-          "lineno": 217
+          "path": "sklearn/decomposition/_nmf.py",
+          "lineno": 1805
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/inspection/tests/test_partial_dependence.py",
+          "lineno": 184
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/inspection/tests/test_partial_dependence.py",
+          "lineno": 200
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/inspection/tests/test_partial_dependence.py",
+          "lineno": 554
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/inspection/tests/test_partial_dependence.py",
+          "lineno": 690
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/inspection/tests/test_partial_dependence.py",
+          "lineno": 743
         }
       }
     },
     {
       "Docstring": {
-        "name": "matplotlib",
+        "name": "numpy",
         "source": {
-          "path": "sklearn/metrics/_plot/confusion_matrix.py",
-          "lineno": 358
+          "path": "sklearn/preprocessing/_function_transformer.py",
+          "lineno": 23
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/kernel_ridge.py",
+          "lineno": 18
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/neural_network/_rbm.py",
+          "lineno": 30
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/neighbors/_nearest_centroid.py",
+          "lineno": 28
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/utils/tests/test_validation.py",
+          "lineno": 450
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/utils/tests/test_validation.py",
+          "lineno": 479
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/utils/tests/test_validation.py",
+          "lineno": 500
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/utils/tests/test_validation.py",
+          "lineno": 1547
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/utils/tests/test_validation.py",
+          "lineno": 1581
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/utils/tests/test_validation.py",
+          "lineno": 1623
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/utils/tests/test_validation.py",
+          "lineno": 1695
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/utils/tests/test_validation.py",
+          "lineno": 1706
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/utils/tests/test_validation.py",
+          "lineno": 1748
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/utils/tests/test_validation.py",
+          "lineno": 1779
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/utils/tests/test_validation.py",
+          "lineno": 1826
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/utils/tests/test_validation.py",
+          "lineno": 1949
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/utils/tests/test_validation.py",
+          "lineno": 454
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/neural_network/tests/test_mlp.py",
+          "lineno": 906
         }
       }
     },
@@ -131,8 +443,17 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/utils/extmath.py",
-          "lineno": 89
+          "path": "sklearn/utils/__init__.py",
+          "lineno": 483
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "sklearn/utils/__init__.py",
+          "lineno": 483
         }
       }
     },
@@ -140,8 +461,638 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/utils/extmath.py",
-          "lineno": 354
+          "path": "sklearn/utils/__init__.py",
+          "lineno": 633
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "sklearn/utils/__init__.py",
+          "lineno": 633
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/utils/__init__.py",
+          "lineno": 882
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/utils/__init__.py",
+          "lineno": 1067
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/utils/__init__.py",
+          "lineno": 1101
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/inspection/tests/test_permutation_importance.py",
+          "lineno": 67
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/inspection/tests/test_permutation_importance.py",
+          "lineno": 214
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/inspection/tests/test_permutation_importance.py",
+          "lineno": 301
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/impute/_knn.py",
+          "lineno": 21
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/semi_supervised/_label_propagation.py",
+          "lineno": 2
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/semi_supervised/_label_propagation.py",
+          "lineno": 339
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/semi_supervised/_label_propagation.py",
+          "lineno": 487
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/cluster/_mean_shift.py",
+          "lineno": 281
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/impute/_iterative.py",
+          "lineno": 51
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/cross_decomposition/tests/test_pls.py",
+          "lineno": 618
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/preprocessing/_label.py",
+          "lineno": 169
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/covariance/_shrunk_covariance.py",
+          "lineno": 149
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/covariance/_shrunk_covariance.py",
+          "lineno": 432
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/covariance/_shrunk_covariance.py",
+          "lineno": 635
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/cluster/_agglomerative.py",
+          "lineno": 764
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/cluster/_agglomerative.py",
+          "lineno": 1130
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/metrics/_classification.py",
+          "lineno": 147
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/metrics/_classification.py",
+          "lineno": 401
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/metrics/_classification.py",
+          "lineno": 722
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/metrics/_classification.py",
+          "lineno": 989
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/metrics/_classification.py",
+          "lineno": 1092
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/metrics/_classification.py",
+          "lineno": 1274
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/metrics/_classification.py",
+          "lineno": 1557
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/metrics/_classification.py",
+          "lineno": 1804
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/metrics/_classification.py",
+          "lineno": 1992
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/metrics/_classification.py",
+          "lineno": 2162
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/metrics/_classification.py",
+          "lineno": 2647
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/metrics/_classification.py",
+          "lineno": 2933
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/metrics/_classification.py",
+          "lineno": 3085
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/covariance/_empirical_covariance.py",
+          "lineno": 117
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/datasets/tests/test_20news.py",
+          "lineno": 105
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "Cython",
+        "source": {
+          "path": "sklearn/tests/test_common.py",
+          "lineno": 166
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "PIL.Image",
+        "source": {
+          "path": "sklearn/datasets/tests/test_lfw.py",
+          "lineno": 41
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/datasets/tests/test_arff_parser.py",
+          "lineno": 48
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/datasets/tests/test_arff_parser.py",
+          "lineno": 84
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/datasets/tests/test_arff_parser.py",
+          "lineno": 151
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/datasets/tests/test_arff_parser.py",
+          "lineno": 218
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "sklearn/metrics/_plot/precision_recall_curve.py",
+          "lineno": 8
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "sklearn/metrics/_plot/precision_recall_curve.py",
+          "lineno": 252
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "sklearn/metrics/_plot/precision_recall_curve.py",
+          "lineno": 385
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/metrics/pairwise.py",
+          "lineno": 1171
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/metrics/pairwise.py",
+          "lineno": 1926
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/tests/test_isotonic.py",
+          "lineno": 693
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/neighbors/tests/test_neighbors.py",
+          "lineno": 2305
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lightgbm",
+        "source": {
+          "path": "sklearn/ensemble/_hist_gradient_boosting/tests/test_compare_lightgbm.py",
+          "lineno": 60
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lightgbm",
+        "source": {
+          "path": "sklearn/ensemble/_hist_gradient_boosting/tests/test_compare_lightgbm.py",
+          "lineno": 134
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lightgbm",
+        "source": {
+          "path": "sklearn/ensemble/_hist_gradient_boosting/tests/test_compare_lightgbm.py",
+          "lineno": 207
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/utils/tests/test_multiclass.py",
+          "lineno": 350
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/utils/tests/test_multiclass.py",
+          "lineno": 360
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/utils/tests/test_multiclass.py",
+          "lineno": 385
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/utils/tests/test_utils.py",
+          "lineno": 423
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/utils/tests/test_utils.py",
+          "lineno": 463
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/utils/tests/test_utils.py",
+          "lineno": 487
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/utils/tests/test_utils.py",
+          "lineno": 498
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/utils/tests/test_utils.py",
+          "lineno": 444
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/utils/tests/test_estimator_checks.py",
+          "lineno": 578
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "array_api_compat",
+        "source": {
+          "path": "sklearn/utils/tests/test_estimator_checks.py",
+          "lineno": 505
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "numpy.array_api",
+        "source": {
+          "path": "sklearn/utils/tests/test_estimator_checks.py",
+          "lineno": 509
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "array_api_compat",
+        "source": {
+          "path": "sklearn/decomposition/tests/test_pca.py",
+          "lineno": 761
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numpy.array_api",
+        "source": {
+          "path": "sklearn/decomposition/tests/test_pca.py",
+          "lineno": 762
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numpydoc",
+        "source": {
+          "path": "sklearn/utils/tests/test_testing.py",
+          "lineno": 438
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/compose/_target.py",
+          "lineno": 27
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "matplotlib",
+        "source": {
+          "path": "doc/conftest.py",
+          "lineno": 165
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/preprocessing/_target_encoder.py",
+          "lineno": 19
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/decomposition/_sparse_pca.py",
+          "lineno": 159
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/decomposition/_sparse_pca.py",
+          "lineno": 339
         }
       }
     },
@@ -290,11 +1241,308 @@
       }
     },
     {
-      "Dynamic imports (pytest)": {
-        "name": "PIL.Image",
+      "Docstring": {
+        "name": "numpy",
         "source": {
-          "path": "sklearn/datasets/tests/test_lfw.py",
-          "lineno": 41
+          "path": "sklearn/random_projection.py",
+          "lineno": 467
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/random_projection.py",
+          "lineno": 608
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "pytest",
+        "source": {
+          "path": "sklearn/utils/_testing.py",
+          "lineno": 366
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/utils/_testing.py",
+          "lineno": 817
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "sklearn/utils/_testing.py",
+          "lineno": 820
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "polars",
+        "source": {
+          "path": "sklearn/utils/_testing.py",
+          "lineno": 827
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/utils/_testing.py",
+          "lineno": 830
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/utils/_testing.py",
+          "lineno": 833
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/utils/_testing.py",
+          "lineno": 232
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/impute/tests/test_impute.py",
+          "lineno": 118
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/impute/tests/test_impute.py",
+          "lineno": 380
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/impute/tests/test_impute.py",
+          "lineno": 482
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/impute/tests/test_impute.py",
+          "lineno": 1563
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/impute/tests/test_impute.py",
+          "lineno": 1624
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/impute/tests/test_impute.py",
+          "lineno": 291
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "sklearn/metrics/_plot/roc_curve.py",
+          "lineno": 6
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/metrics/_plot/roc_curve.py",
+          "lineno": 6
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "sklearn/metrics/_plot/roc_curve.py",
+          "lineno": 192
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "sklearn/metrics/_plot/roc_curve.py",
+          "lineno": 312
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "sklearn/model_selection/_search_successive_halving.py",
+          "lineno": 718
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/model_selection/_search_successive_halving.py",
+          "lineno": 718
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/neighbors/_base.py",
+          "lineno": 1069
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "sklearn/metrics/_plot/confusion_matrix.py",
+          "lineno": 12
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "sklearn/metrics/_plot/confusion_matrix.py",
+          "lineno": 217
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "sklearn/metrics/_plot/confusion_matrix.py",
+          "lineno": 358
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/model_selection/tests/test_successive_halving.py",
+          "lineno": 562
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/model_selection/tests/test_successive_halving.py",
+          "lineno": 662
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/multioutput.py",
+          "lineno": 335
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/multioutput.py",
+          "lineno": 438
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/multiclass.py",
+          "lineno": 192
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/preprocessing/tests/test_data.py",
+          "lineno": 2532
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/dummy.py",
+          "lineno": 34
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/dummy.py",
+          "lineno": 455
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/linear_model/_sag.py",
+          "lineno": 104
         }
       }
     },
@@ -302,143 +1550,8 @@
       "Conditional imports": {
         "name": "pandas",
         "source": {
-          "path": "sklearn/utils/tests/test_estimator_checks.py",
-          "lineno": 578
-        }
-      }
-    },
-    {
-      "Dynamic imports": {
-        "name": "array_api_compat",
-        "source": {
-          "path": "sklearn/utils/tests/test_estimator_checks.py",
-          "lineno": 505
-        }
-      }
-    },
-    {
-      "Dynamic imports": {
-        "name": "numpy.array_api",
-        "source": {
-          "path": "sklearn/utils/tests/test_estimator_checks.py",
-          "lineno": 509
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/ensemble/tests/test_iforest.py",
-          "lineno": 350
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/inspection/_plot/partial_dependence.py",
-          "lineno": 24
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "matplotlib",
-        "source": {
-          "path": "sklearn/inspection/_plot/partial_dependence.py",
-          "lineno": 24
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "matplotlib",
-        "source": {
-          "path": "sklearn/inspection/_plot/partial_dependence.py",
-          "lineno": 272
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "matplotlib",
-        "source": {
-          "path": "sklearn/metrics/_plot/precision_recall_curve.py",
-          "lineno": 8
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "matplotlib",
-        "source": {
-          "path": "sklearn/metrics/_plot/precision_recall_curve.py",
-          "lineno": 252
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "matplotlib",
-        "source": {
-          "path": "sklearn/metrics/_plot/precision_recall_curve.py",
-          "lineno": 385
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/linear_model/_ridge.py",
-          "lineno": 935
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/inspection/_plot/tests/test_plot_partial_dependence.py",
-          "lineno": 511
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/inspection/_plot/tests/test_plot_partial_dependence.py",
-          "lineno": 724
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "matplotlib",
-        "source": {
-          "path": "sklearn/inspection/_plot/tests/test_plot_partial_dependence.py",
-          "lineno": 763
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "matplotlib",
-        "source": {
-          "path": "sklearn/inspection/_plot/tests/test_plot_partial_dependence.py",
-          "lineno": 928
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/inspection/_plot/tests/test_plot_partial_dependence.py",
-          "lineno": 194
+          "path": "sklearn/model_selection/tests/test_validation.py",
+          "lineno": 625
         }
       }
     },
@@ -446,44 +1559,17 @@
       "Conditional imports": {
         "name": "pandas",
         "source": {
-          "path": "sklearn/ensemble/_hist_gradient_boosting/tests/test_gradient_boosting.py",
-          "lineno": 1010
+          "path": "sklearn/model_selection/tests/test_validation.py",
+          "lineno": 1122
         }
       }
     },
     {
-      "Dynamic imports (pytest)": {
+      "Conditional imports": {
         "name": "pandas",
         "source": {
-          "path": "sklearn/ensemble/_hist_gradient_boosting/tests/test_gradient_boosting.py",
-          "lineno": 1119
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/ensemble/_hist_gradient_boosting/tests/test_gradient_boosting.py",
-          "lineno": 1300
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/ensemble/_hist_gradient_boosting/tests/test_gradient_boosting.py",
-          "lineno": 1176
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/datasets/tests/test_california_housing.py",
-          "lineno": 23
+          "path": "sklearn/model_selection/tests/test_validation.py",
+          "lineno": 2079
         }
       }
     },
@@ -491,8 +1577,89 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/cluster/_affinity_propagation.py",
-          "lineno": 299
+          "path": "sklearn/utils/extmath.py",
+          "lineno": 89
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/utils/extmath.py",
+          "lineno": 354
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/linear_model/_coordinate_descent.py",
+          "lineno": 210
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "sklearn/linear_model/_coordinate_descent.py",
+          "lineno": 210
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/datasets/tests/test_common.py",
+          "lineno": 64
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/preprocessing/_data.py",
+          "lineno": 2441
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/preprocessing/_data.py",
+          "lineno": 2884
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/preprocessing/_data.py",
+          "lineno": 3013
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/preprocessing/_data.py",
+          "lineno": 3439
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/feature_selection/tests/test_base.py",
+          "lineno": 125
         }
       }
     },
@@ -623,56 +1790,20 @@
       }
     },
     {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/linear_model/tests/test_base.py",
+          "lineno": 384
+        }
+      }
+    },
+    {
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/utils/graph.py",
-          "lineno": 32
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/utils/tests/test_utils.py",
-          "lineno": 423
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/utils/tests/test_utils.py",
-          "lineno": 463
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/utils/tests/test_utils.py",
-          "lineno": 487
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/utils/tests/test_utils.py",
-          "lineno": 498
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/utils/tests/test_utils.py",
-          "lineno": 444
+          "path": "sklearn/inspection/_plot/partial_dependence.py",
+          "lineno": 24
         }
       }
     },
@@ -680,17 +1811,8 @@
       "Docstring": {
         "name": "matplotlib",
         "source": {
-          "path": "sklearn/metrics/_plot/roc_curve.py",
-          "lineno": 6
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/metrics/_plot/roc_curve.py",
-          "lineno": 6
+          "path": "sklearn/inspection/_plot/partial_dependence.py",
+          "lineno": 24
         }
       }
     },
@@ -698,17 +1820,8 @@
       "Docstring": {
         "name": "matplotlib",
         "source": {
-          "path": "sklearn/metrics/_plot/roc_curve.py",
-          "lineno": 192
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "matplotlib",
-        "source": {
-          "path": "sklearn/metrics/_plot/roc_curve.py",
-          "lineno": 312
+          "path": "sklearn/inspection/_plot/partial_dependence.py",
+          "lineno": 272
         }
       }
     },
@@ -716,8 +1829,8 @@
       "Dynamic imports (pytest)": {
         "name": "pandas",
         "source": {
-          "path": "sklearn/datasets/tests/test_20news.py",
-          "lineno": 105
+          "path": "sklearn/feature_selection/tests/test_feature_select.py",
+          "lineno": 959
         }
       }
     },
@@ -725,8 +1838,8 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/neighbors/_nearest_centroid.py",
-          "lineno": 28
+          "path": "sklearn/covariance/_elliptic_envelope.py",
+          "lineno": 17
         }
       }
     },
@@ -734,350 +1847,8 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/cluster/_agglomerative.py",
-          "lineno": 764
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/cluster/_agglomerative.py",
-          "lineno": 1130
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/utils/tests/test_multiclass.py",
-          "lineno": 350
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/utils/tests/test_multiclass.py",
-          "lineno": 360
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/utils/tests/test_multiclass.py",
-          "lineno": 385
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/datasets/tests/test_openml.py",
-          "lineno": 234
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/datasets/tests/test_openml.py",
-          "lineno": 302
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/datasets/tests/test_openml.py",
-          "lineno": 334
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/datasets/tests/test_openml.py",
-          "lineno": 403
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/datasets/tests/test_openml.py",
-          "lineno": 431
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/datasets/tests/test_openml.py",
-          "lineno": 483
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/datasets/tests/test_openml.py",
-          "lineno": 519
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/datasets/tests/test_openml.py",
-          "lineno": 551
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/datasets/tests/test_openml.py",
-          "lineno": 578
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/datasets/tests/test_openml.py",
-          "lineno": 942
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/datasets/tests/test_openml.py",
-          "lineno": 1063
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/datasets/tests/test_openml.py",
-          "lineno": 1088
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/datasets/tests/test_openml.py",
-          "lineno": 1102
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/datasets/tests/test_openml.py",
-          "lineno": 1166
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/datasets/tests/test_openml.py",
-          "lineno": 1361
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/datasets/tests/test_openml.py",
-          "lineno": 1615
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/datasets/tests/test_openml.py",
-          "lineno": 1644
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/datasets/tests/test_openml.py",
-          "lineno": 1662
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/datasets/tests/test_openml.py",
-          "lineno": 1679
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/datasets/tests/test_openml.py",
-          "lineno": 1256
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/datasets/tests/test_openml.py",
-          "lineno": 1519
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/datasets/tests/test_openml.py",
-          "lineno": 1595
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/neural_network/_rbm.py",
-          "lineno": 30
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/impute/tests/test_impute.py",
-          "lineno": 118
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/impute/tests/test_impute.py",
-          "lineno": 380
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/impute/tests/test_impute.py",
-          "lineno": 482
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/impute/tests/test_impute.py",
-          "lineno": 1563
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/impute/tests/test_impute.py",
-          "lineno": 1624
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/impute/tests/test_impute.py",
-          "lineno": 291
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "numpydoc",
-        "source": {
-          "path": "sklearn/tests/test_docstring_parameters.py",
-          "lineno": 82
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "numpydoc",
-        "source": {
-          "path": "sklearn/tests/test_docstring_parameters.py",
-          "lineno": 186
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/ensemble/_hist_gradient_boosting/tests/test_monotonic_contraints.py",
-          "lineno": 302
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/linear_model/_coordinate_descent.py",
-          "lineno": 210
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "scipy",
-        "source": {
-          "path": "sklearn/linear_model/_coordinate_descent.py",
-          "lineno": 210
+          "path": "sklearn/neighbors/_kde.py",
+          "lineno": 36
         }
       }
     },
@@ -1101,10 +1872,10 @@
     },
     {
       "Docstring": {
-        "name": "matplotlib",
+        "name": "numpy",
         "source": {
-          "path": "sklearn/inspection/_plot/decision_boundary.py",
-          "lineno": 64
+          "path": "sklearn/covariance/_graph_lasso.py",
+          "lineno": 390
         }
       }
     },
@@ -1112,17 +1883,17 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/inspection/_plot/decision_boundary.py",
-          "lineno": 64
+          "path": "sklearn/covariance/_graph_lasso.py",
+          "lineno": 710
         }
       }
     },
     {
-      "Docstring": {
-        "name": "matplotlib",
+      "Conditional imports": {
+        "name": "pandas",
         "source": {
-          "path": "sklearn/inspection/_plot/decision_boundary.py",
-          "lineno": 214
+          "path": "sklearn/metrics/tests/test_classification.py",
+          "lineno": 2700
         }
       }
     },
@@ -1130,152 +1901,8 @@
       "Dynamic imports (pytest)": {
         "name": "pandas",
         "source": {
-          "path": "sklearn/cross_decomposition/tests/test_pls.py",
-          "lineno": 618
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/neighbors/tests/test_neighbors.py",
-          "lineno": 2305
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/svm/_classes.py",
-          "lineno": 627
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/svm/_classes.py",
-          "lineno": 903
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/svm/_classes.py",
-          "lineno": 1180
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/svm/_classes.py",
-          "lineno": 1395
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/utils/multiclass.py",
-          "lineno": 125
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/utils/multiclass.py",
-          "lineno": 224
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/preprocessing/_function_transformer.py",
-          "lineno": 23
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/discriminant_analysis.py",
-          "lineno": 183
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/discriminant_analysis.py",
-          "lineno": 759
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/naive_bayes.py",
-          "lineno": 148
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/naive_bayes.py",
-          "lineno": 787
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/naive_bayes.py",
-          "lineno": 913
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/naive_bayes.py",
-          "lineno": 1066
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/naive_bayes.py",
-          "lineno": 1236
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/preprocessing/_label.py",
-          "lineno": 169
+          "path": "sklearn/metrics/tests/test_classification.py",
+          "lineno": 1170
         }
       }
     },
@@ -1292,7 +1919,16 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/impute/_iterative.py",
+          "path": "sklearn/compose/_column_transformer.py",
+          "lineno": 51
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/compose/_column_transformer.py",
           "lineno": 51
         }
       }
@@ -1301,152 +1937,17 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/decomposition/_sparse_pca.py",
-          "lineno": 159
+          "path": "sklearn/compose/_column_transformer.py",
+          "lineno": 1259
         }
       }
     },
     {
       "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/decomposition/_sparse_pca.py",
-          "lineno": 339
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "matplotlib",
-        "source": {
-          "path": "sklearn/metrics/_plot/det_curve.py",
-          "lineno": 8
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "matplotlib",
-        "source": {
-          "path": "sklearn/metrics/_plot/det_curve.py",
-          "lineno": 92
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "matplotlib",
-        "source": {
-          "path": "sklearn/metrics/_plot/det_curve.py",
-          "lineno": 194
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/kernel_ridge.py",
-          "lineno": 18
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/random_projection.py",
-          "lineno": 467
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/random_projection.py",
-          "lineno": 608
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
         "name": "pandas",
         "source": {
-          "path": "sklearn/feature_selection/tests/test_from_model.py",
-          "lineno": 607
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/feature_selection/tests/test_from_model.py",
-          "lineno": 654
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/inspection/tests/test_partial_dependence.py",
-          "lineno": 184
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/inspection/tests/test_partial_dependence.py",
-          "lineno": 200
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/inspection/tests/test_partial_dependence.py",
-          "lineno": 554
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/inspection/tests/test_partial_dependence.py",
-          "lineno": 690
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/inspection/tests/test_partial_dependence.py",
-          "lineno": 743
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/utils/tests/test_parallel.py",
-          "lineno": 62
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "matplotlib",
-        "source": {
-          "path": "sklearn/datasets/_base.py",
-          "lineno": 872
+          "path": "sklearn/compose/_column_transformer.py",
+          "lineno": 1259
         }
       }
     },
@@ -1454,484 +1955,7 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/covariance/_shrunk_covariance.py",
-          "lineno": 149
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/covariance/_shrunk_covariance.py",
-          "lineno": 432
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/covariance/_shrunk_covariance.py",
-          "lineno": 635
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/preprocessing/_target_encoder.py",
-          "lineno": 19
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/cluster/_bicluster.py",
-          "lineno": 210
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/cluster/_bicluster.py",
-          "lineno": 365
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/compose/_target.py",
-          "lineno": 27
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/neighbors/_graph.py",
-          "lineno": 492
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/linear_model/_quantile.py",
-          "lineno": 21
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/preprocessing/_encoders.py",
-          "lineno": 445
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/preprocessing/_encoders.py",
-          "lineno": 1244
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/tests/test_base.py",
-          "lineno": 659
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/tests/test_base.py",
-          "lineno": 738
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/cross_decomposition/_pls.py",
-          "lineno": 888
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/multiclass.py",
-          "lineno": 192
-        }
-      }
-    },
-    {
-      "Conditional imports": {
-        "name": "matplotlib",
-        "source": {
-          "path": "doc/conftest.py",
-          "lineno": 165
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/covariance/_empirical_covariance.py",
-          "lineno": 117
-        }
-      }
-    },
-    {
-      "Conditional imports": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/model_selection/tests/test_search.py",
-          "lineno": 798
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/inspection/tests/test_permutation_importance.py",
-          "lineno": 67
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/inspection/tests/test_permutation_importance.py",
-          "lineno": 214
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/inspection/tests/test_permutation_importance.py",
-          "lineno": 301
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/linear_model/_sag.py",
-          "lineno": 104
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/datasets/tests/test_arff_parser.py",
-          "lineno": 48
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/datasets/tests/test_arff_parser.py",
-          "lineno": 84
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/datasets/tests/test_arff_parser.py",
-          "lineno": 151
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/datasets/tests/test_arff_parser.py",
-          "lineno": 218
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/utils/tests/test_set_output.py",
-          "lineno": 19
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/utils/tests/test_set_output.py",
-          "lineno": 32
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/utils/tests/test_set_output.py",
-          "lineno": 127
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/utils/tests/test_set_output.py",
-          "lineno": 233
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/utils/tests/test_set_output.py",
-          "lineno": 291
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/utils/tests/test_set_output.py",
-          "lineno": 339
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/linear_model/_base.py",
-          "lineno": 535
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/multioutput.py",
-          "lineno": 335
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/multioutput.py",
-          "lineno": 438
-        }
-      }
-    },
-    {
-      "Conditional imports": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/model_selection/tests/test_validation.py",
-          "lineno": 625
-        }
-      }
-    },
-    {
-      "Conditional imports": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/model_selection/tests/test_validation.py",
-          "lineno": 1122
-        }
-      }
-    },
-    {
-      "Conditional imports": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/model_selection/tests/test_validation.py",
-          "lineno": 2079
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/metrics/pairwise.py",
-          "lineno": 1171
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/metrics/pairwise.py",
-          "lineno": 1926
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/metrics/_ranking.py",
-          "lineno": 53
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/metrics/_ranking.py",
-          "lineno": 130
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/metrics/_ranking.py",
-          "lineno": 283
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/metrics/_ranking.py",
-          "lineno": 430
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/metrics/_ranking.py",
-          "lineno": 865
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/metrics/_ranking.py",
-          "lineno": 1006
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/metrics/_ranking.py",
-          "lineno": 1153
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/metrics/_ranking.py",
-          "lineno": 1539
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/metrics/_ranking.py",
-          "lineno": 1705
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/metrics/_ranking.py",
-          "lineno": 1839
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "matplotlib",
-        "source": {
-          "path": "sklearn/metrics/_plot/regression.py",
-          "lineno": 9
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "matplotlib",
-        "source": {
-          "path": "sklearn/metrics/_plot/regression.py",
-          "lineno": 195
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "matplotlib",
-        "source": {
-          "path": "sklearn/metrics/_plot/regression.py",
-          "lineno": 299
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/metrics/_classification.py",
+          "path": "sklearn/impute/_base.py",
           "lineno": 147
         }
       }
@@ -1940,8 +1964,8 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/metrics/_classification.py",
-          "lineno": 401
+          "path": "sklearn/impute/_base.py",
+          "lineno": 705
         }
       }
     },
@@ -1949,107 +1973,17 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/metrics/_classification.py",
-          "lineno": 722
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/metrics/_classification.py",
-          "lineno": 989
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/metrics/_classification.py",
-          "lineno": 1092
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/metrics/_classification.py",
-          "lineno": 1274
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/metrics/_classification.py",
-          "lineno": 1557
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/metrics/_classification.py",
-          "lineno": 1804
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/metrics/_classification.py",
-          "lineno": 1992
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/metrics/_classification.py",
-          "lineno": 2162
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/metrics/_classification.py",
-          "lineno": 2647
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/metrics/_classification.py",
-          "lineno": 2933
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/metrics/_classification.py",
-          "lineno": 3085
+          "path": "sklearn/mixture/_bayesian_mixture.py",
+          "lineno": 75
         }
       }
     },
     {
       "Dynamic imports (pytest)": {
-        "name": "numpydoc.validate",
+        "name": "pandas",
         "source": {
-          "path": "sklearn/tests/test_docstrings.py",
-          "lineno": 14
+          "path": "sklearn/preprocessing/tests/test_common.py",
+          "lineno": 162
         }
       }
     },
@@ -2135,74 +2069,101 @@
       }
     },
     {
-      "Docstring": {
-        "name": "numpy",
+      "Dynamic imports (pytest)": {
+        "name": "numpydoc.validate",
         "source": {
-          "path": "sklearn/semi_supervised/_self_training.py",
-          "lineno": 32
+          "path": "sklearn/tests/test_docstrings.py",
+          "lineno": 14
         }
       }
     },
     {
-      "Docstring": {
-        "name": "numpy",
+      "Conditional imports": {
+        "name": "pandas",
         "source": {
-          "path": "sklearn/impute/_knn.py",
-          "lineno": 21
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/preprocessing/_polynomial.py",
-          "lineno": 99
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/preprocessing/_polynomial.py",
-          "lineno": 580
+          "path": "sklearn/model_selection/tests/test_split.py",
+          "lineno": 1408
         }
       }
     },
     {
       "Dynamic imports (pytest)": {
-        "name": "numpydoc",
+        "name": "pandas",
         "source": {
-          "path": "sklearn/utils/tests/test_testing.py",
-          "lineno": 438
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/impute/_base.py",
-          "lineno": 147
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/impute/_base.py",
-          "lineno": 705
+          "path": "sklearn/ensemble/tests/test_iforest.py",
+          "lineno": 350
         }
       }
     },
     {
       "Dynamic imports (pytest)": {
-        "name": "Cython",
+        "name": "pandas",
         "source": {
-          "path": "sklearn/tests/test_common.py",
-          "lineno": 166
+          "path": "sklearn/tests/test_pipeline.py",
+          "lineno": 1603
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/tests/test_pipeline.py",
+          "lineno": 1619
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/tests/test_pipeline.py",
+          "lineno": 1668
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/cluster/_spectral.py",
+          "lineno": 367
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "sklearn/metrics/_plot/det_curve.py",
+          "lineno": 8
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "sklearn/metrics/_plot/det_curve.py",
+          "lineno": 92
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "sklearn/metrics/_plot/det_curve.py",
+          "lineno": 194
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "cython",
+        "source": {
+          "path": "sklearn/utils/tests/test_cython_blas.py",
+          "lineno": 25
         }
       }
     },
@@ -2210,8 +2171,8 @@
       "Docstring": {
         "name": "scipy",
         "source": {
-          "path": "sklearn/model_selection/_search_successive_halving.py",
-          "lineno": 718
+          "path": "sklearn/model_selection/_search.py",
+          "lineno": 215
         }
       }
     },
@@ -2219,44 +2180,8 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/model_selection/_search_successive_halving.py",
-          "lineno": 718
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/preprocessing/_data.py",
-          "lineno": 2441
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/preprocessing/_data.py",
-          "lineno": 2884
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/preprocessing/_data.py",
-          "lineno": 3013
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/preprocessing/_data.py",
-          "lineno": 3439
+          "path": "sklearn/model_selection/_search.py",
+          "lineno": 215
         }
       }
     },
@@ -2264,8 +2189,8 @@
       "Docstring": {
         "name": "scipy",
         "source": {
-          "path": "sklearn/decomposition/_incremental_pca.py",
-          "lineno": 20
+          "path": "sklearn/model_selection/_search.py",
+          "lineno": 1531
         }
       }
     },
@@ -2273,8 +2198,8 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/decomposition/_incremental_pca.py",
-          "lineno": 368
+          "path": "sklearn/discriminant_analysis.py",
+          "lineno": 183
         }
       }
     },
@@ -2282,17 +2207,17 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/compose/_column_transformer.py",
-          "lineno": 51
+          "path": "sklearn/discriminant_analysis.py",
+          "lineno": 759
         }
       }
     },
     {
       "Docstring": {
-        "name": "pandas",
+        "name": "matplotlib",
         "source": {
-          "path": "sklearn/compose/_column_transformer.py",
-          "lineno": 51
+          "path": "sklearn/inspection/_plot/decision_boundary.py",
+          "lineno": 64
         }
       }
     },
@@ -2300,44 +2225,26 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/compose/_column_transformer.py",
-          "lineno": 1259
+          "path": "sklearn/inspection/_plot/decision_boundary.py",
+          "lineno": 64
         }
       }
     },
     {
       "Docstring": {
-        "name": "pandas",
+        "name": "matplotlib",
         "source": {
-          "path": "sklearn/compose/_column_transformer.py",
-          "lineno": 1259
+          "path": "sklearn/inspection/_plot/decision_boundary.py",
+          "lineno": 214
         }
       }
     },
     {
-      "Dynamic imports (pytest)": {
-        "name": "lightgbm",
+      "Docstring": {
+        "name": "numpy",
         "source": {
-          "path": "sklearn/ensemble/_hist_gradient_boosting/tests/test_compare_lightgbm.py",
-          "lineno": 60
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "lightgbm",
-        "source": {
-          "path": "sklearn/ensemble/_hist_gradient_boosting/tests/test_compare_lightgbm.py",
-          "lineno": 134
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "lightgbm",
-        "source": {
-          "path": "sklearn/ensemble/_hist_gradient_boosting/tests/test_compare_lightgbm.py",
-          "lineno": 207
+          "path": "sklearn/manifold/_t_sne.py",
+          "lineno": 553
         }
       }
     },
@@ -2345,8 +2252,89 @@
       "Dynamic imports (pytest)": {
         "name": "pandas",
         "source": {
-          "path": "sklearn/neural_network/tests/test_mlp.py",
-          "lineno": 906
+          "path": "sklearn/manifold/tests/test_t_sne.py",
+          "lineno": 1178
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/decomposition/_dict_learning.py",
+          "lineno": 1316
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/decomposition/_dict_learning.py",
+          "lineno": 1526
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/decomposition/_dict_learning.py",
+          "lineno": 1869
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/naive_bayes.py",
+          "lineno": 148
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/naive_bayes.py",
+          "lineno": 787
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/naive_bayes.py",
+          "lineno": 913
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/naive_bayes.py",
+          "lineno": 1066
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/naive_bayes.py",
+          "lineno": 1236
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/mixture/_gaussian_mixture.py",
+          "lineno": 511
         }
       }
     },
@@ -2361,127 +2349,10 @@
     },
     {
       "Docstring": {
-        "name": "scipy",
+        "name": "matplotlib",
         "source": {
-          "path": "sklearn/decomposition/_truncated_svd.py",
-          "lineno": 32
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/decomposition/_truncated_svd.py",
-          "lineno": 32
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/feature_selection/tests/test_feature_select.py",
-          "lineno": 959
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/semi_supervised/_label_propagation.py",
-          "lineno": 2
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/semi_supervised/_label_propagation.py",
-          "lineno": 339
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/semi_supervised/_label_propagation.py",
-          "lineno": 487
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/preprocessing/tests/test_target_encoder.py",
-          "lineno": 362
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/preprocessing/tests/test_target_encoder.py",
-          "lineno": 412
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/inspection/_plot/tests/test_boundary_decision_display.py",
-          "lineno": 287
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/inspection/_plot/tests/test_boundary_decision_display.py",
-          "lineno": 348
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/neighbors/_lof.py",
-          "lineno": 21
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/preprocessing/tests/test_data.py",
-          "lineno": 2532
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/neighbors/_kde.py",
-          "lineno": 36
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/cluster/_mean_shift.py",
-          "lineno": 281
+          "path": "sklearn/datasets/_base.py",
+          "lineno": 872
         }
       }
     },
@@ -2558,11 +2429,29 @@
       }
     },
     {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
+      "Docstring": {
+        "name": "numpy",
         "source": {
-          "path": "sklearn/utils/tests/test_validation.py",
-          "lineno": 450
+          "path": "sklearn/neighbors/_lof.py",
+          "lineno": 21
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/ensemble/_voting.py",
+          "lineno": 160
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/ensemble/_voting.py",
+          "lineno": 487
         }
       }
     },
@@ -2570,8 +2459,8 @@
       "Dynamic imports (pytest)": {
         "name": "pandas",
         "source": {
-          "path": "sklearn/utils/tests/test_validation.py",
-          "lineno": 479
+          "path": "sklearn/preprocessing/tests/test_target_encoder.py",
+          "lineno": 362
         }
       }
     },
@@ -2579,98 +2468,8 @@
       "Dynamic imports (pytest)": {
         "name": "pandas",
         "source": {
-          "path": "sklearn/utils/tests/test_validation.py",
-          "lineno": 500
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/utils/tests/test_validation.py",
-          "lineno": 1547
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/utils/tests/test_validation.py",
-          "lineno": 1581
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/utils/tests/test_validation.py",
-          "lineno": 1623
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/utils/tests/test_validation.py",
-          "lineno": 1695
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/utils/tests/test_validation.py",
-          "lineno": 1706
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/utils/tests/test_validation.py",
-          "lineno": 1748
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/utils/tests/test_validation.py",
-          "lineno": 1779
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/utils/tests/test_validation.py",
-          "lineno": 1826
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/utils/tests/test_validation.py",
-          "lineno": 1949
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/utils/tests/test_validation.py",
-          "lineno": 454
+          "path": "sklearn/preprocessing/tests/test_target_encoder.py",
+          "lineno": 412
         }
       }
     },
@@ -2684,11 +2483,11 @@
       }
     },
     {
-      "Docstring": {
-        "name": "numpy",
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
         "source": {
-          "path": "sklearn/mixture/_bayesian_mixture.py",
-          "lineno": 75
+          "path": "sklearn/inspection/_plot/tests/test_boundary_decision_display.py",
+          "lineno": 287
         }
       }
     },
@@ -2696,8 +2495,26 @@
       "Dynamic imports (pytest)": {
         "name": "pandas",
         "source": {
-          "path": "sklearn/preprocessing/tests/test_common.py",
-          "lineno": 162
+          "path": "sklearn/inspection/_plot/tests/test_boundary_decision_display.py",
+          "lineno": 348
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/utils/multiclass.py",
+          "lineno": 125
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/utils/multiclass.py",
+          "lineno": 224
         }
       }
     },
@@ -2957,8 +2774,8 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/linear_model/_stochastic_gradient.py",
-          "lineno": 921
+          "path": "sklearn/linear_model/_ridge.py",
+          "lineno": 935
         }
       }
     },
@@ -2966,8 +2783,8 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/linear_model/_stochastic_gradient.py",
-          "lineno": 1735
+          "path": "sklearn/linear_model/_quantile.py",
+          "lineno": 21
         }
       }
     },
@@ -2975,26 +2792,71 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/linear_model/_stochastic_gradient.py",
-          "lineno": 2021
+          "path": "sklearn/neighbors/_unsupervised.py",
+          "lineno": 7
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/cluster/_kmeans.py",
+          "lineno": 81
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/cluster/_kmeans.py",
+          "lineno": 1212
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/cluster/_kmeans.py",
+          "lineno": 1699
         }
       }
     },
     {
       "Dynamic imports (pytest)": {
-        "name": "array_api_compat",
+        "name": "pandas",
         "source": {
-          "path": "sklearn/decomposition/tests/test_pca.py",
-          "lineno": 761
+          "path": "sklearn/datasets/tests/test_california_housing.py",
+          "lineno": 23
         }
       }
     },
     {
       "Dynamic imports (pytest)": {
-        "name": "numpy.array_api",
+        "name": "pandas",
         "source": {
-          "path": "sklearn/decomposition/tests/test_pca.py",
-          "lineno": 762
+          "path": "sklearn/tests/test_base.py",
+          "lineno": 659
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/tests/test_base.py",
+          "lineno": 738
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/ensemble/_hist_gradient_boosting/tests/test_monotonic_contraints.py",
+          "lineno": 302
         }
       }
     },
@@ -3002,8 +2864,8 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/neighbors/_base.py",
-          "lineno": 1069
+          "path": "sklearn/linear_model/_base.py",
+          "lineno": 535
         }
       }
     },
@@ -3074,8 +2936,8 @@
       "Dynamic imports (pytest)": {
         "name": "pandas",
         "source": {
-          "path": "sklearn/tests/test_pipeline.py",
-          "lineno": 1603
+          "path": "sklearn/inspection/_plot/tests/test_plot_partial_dependence.py",
+          "lineno": 511
         }
       }
     },
@@ -3083,8 +2945,26 @@
       "Dynamic imports (pytest)": {
         "name": "pandas",
         "source": {
-          "path": "sklearn/tests/test_pipeline.py",
-          "lineno": 1619
+          "path": "sklearn/inspection/_plot/tests/test_plot_partial_dependence.py",
+          "lineno": 724
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib",
+        "source": {
+          "path": "sklearn/inspection/_plot/tests/test_plot_partial_dependence.py",
+          "lineno": 763
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib",
+        "source": {
+          "path": "sklearn/inspection/_plot/tests/test_plot_partial_dependence.py",
+          "lineno": 928
         }
       }
     },
@@ -3092,8 +2972,215 @@
       "Dynamic imports (pytest)": {
         "name": "pandas",
         "source": {
-          "path": "sklearn/tests/test_pipeline.py",
-          "lineno": 1668
+          "path": "sklearn/inspection/_plot/tests/test_plot_partial_dependence.py",
+          "lineno": 194
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/datasets/tests/test_openml.py",
+          "lineno": 234
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/datasets/tests/test_openml.py",
+          "lineno": 302
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/datasets/tests/test_openml.py",
+          "lineno": 334
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/datasets/tests/test_openml.py",
+          "lineno": 403
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/datasets/tests/test_openml.py",
+          "lineno": 431
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/datasets/tests/test_openml.py",
+          "lineno": 483
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/datasets/tests/test_openml.py",
+          "lineno": 519
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/datasets/tests/test_openml.py",
+          "lineno": 551
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/datasets/tests/test_openml.py",
+          "lineno": 578
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/datasets/tests/test_openml.py",
+          "lineno": 942
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/datasets/tests/test_openml.py",
+          "lineno": 1063
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/datasets/tests/test_openml.py",
+          "lineno": 1088
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/datasets/tests/test_openml.py",
+          "lineno": 1102
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/datasets/tests/test_openml.py",
+          "lineno": 1166
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/datasets/tests/test_openml.py",
+          "lineno": 1361
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/datasets/tests/test_openml.py",
+          "lineno": 1615
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/datasets/tests/test_openml.py",
+          "lineno": 1644
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/datasets/tests/test_openml.py",
+          "lineno": 1662
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/datasets/tests/test_openml.py",
+          "lineno": 1679
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/datasets/tests/test_openml.py",
+          "lineno": 1256
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/datasets/tests/test_openml.py",
+          "lineno": 1519
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/datasets/tests/test_openml.py",
+          "lineno": 1595
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/model_selection/tests/test_search.py",
+          "lineno": 798
         }
       }
     },
@@ -3101,8 +3188,143 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/cluster/_dbscan.py",
-          "lineno": 176
+          "path": "sklearn/cluster/_affinity_propagation.py",
+          "lineno": 299
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/feature_selection/tests/test_from_model.py",
+          "lineno": 607
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/feature_selection/tests/test_from_model.py",
+          "lineno": 654
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/utils/graph.py",
+          "lineno": 32
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/utils/tests/test_parallel.py",
+          "lineno": 62
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/cluster/_bisect_k_means.py",
+          "lineno": 77
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/preprocessing/_polynomial.py",
+          "lineno": 99
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/preprocessing/_polynomial.py",
+          "lineno": 580
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/utils/tests/test_set_output.py",
+          "lineno": 19
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/utils/tests/test_set_output.py",
+          "lineno": 32
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/utils/tests/test_set_output.py",
+          "lineno": 127
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/utils/tests/test_set_output.py",
+          "lineno": 233
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/utils/tests/test_set_output.py",
+          "lineno": 291
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/utils/tests/test_set_output.py",
+          "lineno": 339
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/neighbors/_graph.py",
+          "lineno": 492
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "tomllib",
+        "source": {
+          "path": "sklearn/tests/test_min_dependencies_readme.py",
+          "lineno": 59
         }
       }
     },
@@ -3116,119 +3338,11 @@
       }
     },
     {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/datasets/tests/test_covtype.py",
-          "lineno": 35
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/manifold/_t_sne.py",
-          "lineno": 553
-        }
-      }
-    },
-    {
-      "Conditional imports": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/metrics/tests/test_classification.py",
-          "lineno": 2700
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/metrics/tests/test_classification.py",
-          "lineno": 1170
-        }
-      }
-    },
-    {
-      "Conditional imports": {
-        "name": "pytest",
-        "source": {
-          "path": "sklearn/utils/_testing.py",
-          "lineno": 366
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/utils/_testing.py",
-          "lineno": 817
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pyarrow",
-        "source": {
-          "path": "sklearn/utils/_testing.py",
-          "lineno": 820
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "polars",
-        "source": {
-          "path": "sklearn/utils/_testing.py",
-          "lineno": 827
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/utils/_testing.py",
-          "lineno": 830
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/utils/_testing.py",
-          "lineno": 833
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/utils/_testing.py",
-          "lineno": 232
-        }
-      }
-    },
-    {
-      "Conditional imports": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/model_selection/tests/test_split.py",
-          "lineno": 1408
-        }
-      }
-    },
-    {
       "Docstring": {
         "name": "scipy",
         "source": {
-          "path": "sklearn/model_selection/_search.py",
-          "lineno": 215
+          "path": "sklearn/decomposition/_incremental_pca.py",
+          "lineno": 20
         }
       }
     },
@@ -3236,17 +3350,8 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/model_selection/_search.py",
-          "lineno": 215
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "scipy",
-        "source": {
-          "path": "sklearn/model_selection/_search.py",
-          "lineno": 1531
+          "path": "sklearn/decomposition/_incremental_pca.py",
+          "lineno": 368
         }
       }
     },
@@ -3254,8 +3359,8 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/cluster/_kmeans.py",
-          "lineno": 81
+          "path": "sklearn/preprocessing/_encoders.py",
+          "lineno": 445
         }
       }
     },
@@ -3263,8 +3368,8 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/cluster/_kmeans.py",
-          "lineno": 1212
+          "path": "sklearn/preprocessing/_encoders.py",
+          "lineno": 1244
         }
       }
     },
@@ -3272,35 +3377,8 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/cluster/_kmeans.py",
-          "lineno": 1699
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/utils/tests/test_param_validation.py",
-          "lineno": 632
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "cython",
-        "source": {
-          "path": "sklearn/utils/tests/test_cython_blas.py",
-          "lineno": 25
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/tests/test_isotonic.py",
-          "lineno": 693
+          "path": "sklearn/metrics/_ranking.py",
+          "lineno": 53
         }
       }
     },
@@ -3308,8 +3386,8 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/dummy.py",
-          "lineno": 34
+          "path": "sklearn/metrics/_ranking.py",
+          "lineno": 130
         }
       }
     },
@@ -3317,8 +3395,8 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/dummy.py",
-          "lineno": 455
+          "path": "sklearn/metrics/_ranking.py",
+          "lineno": 283
         }
       }
     },
@@ -3326,26 +3404,8 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/mixture/_gaussian_mixture.py",
-          "lineno": 511
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/model_selection/tests/test_successive_halving.py",
-          "lineno": 562
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/model_selection/tests/test_successive_halving.py",
-          "lineno": 662
+          "path": "sklearn/metrics/_ranking.py",
+          "lineno": 430
         }
       }
     },
@@ -3353,8 +3413,8 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/cluster/_spectral.py",
-          "lineno": 367
+          "path": "sklearn/metrics/_ranking.py",
+          "lineno": 865
         }
       }
     },
@@ -3362,8 +3422,8 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/decomposition/_nmf.py",
-          "lineno": 927
+          "path": "sklearn/metrics/_ranking.py",
+          "lineno": 1006
         }
       }
     },
@@ -3371,8 +3431,8 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/decomposition/_nmf.py",
-          "lineno": 1365
+          "path": "sklearn/metrics/_ranking.py",
+          "lineno": 1153
         }
       }
     },
@@ -3380,8 +3440,8 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/decomposition/_nmf.py",
-          "lineno": 1805
+          "path": "sklearn/metrics/_ranking.py",
+          "lineno": 1539
         }
       }
     },
@@ -3389,17 +3449,8 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/utils/__init__.py",
-          "lineno": 483
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "scipy",
-        "source": {
-          "path": "sklearn/utils/__init__.py",
-          "lineno": 483
+          "path": "sklearn/metrics/_ranking.py",
+          "lineno": 1705
         }
       }
     },
@@ -3407,62 +3458,8 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/utils/__init__.py",
-          "lineno": 633
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "scipy",
-        "source": {
-          "path": "sklearn/utils/__init__.py",
-          "lineno": 633
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/utils/__init__.py",
-          "lineno": 882
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/utils/__init__.py",
-          "lineno": 1067
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/utils/__init__.py",
-          "lineno": 1101
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/manifold/tests/test_t_sne.py",
-          "lineno": 1178
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/neighbors/_unsupervised.py",
-          "lineno": 7
+          "path": "sklearn/metrics/_ranking.py",
+          "lineno": 1839
         }
       }
     },
@@ -3479,8 +3476,8 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/ensemble/_voting.py",
-          "lineno": 160
+          "path": "sklearn/svm/_classes.py",
+          "lineno": 627
         }
       }
     },
@@ -3488,8 +3485,80 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/ensemble/_voting.py",
-          "lineno": 487
+          "path": "sklearn/svm/_classes.py",
+          "lineno": 903
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/svm/_classes.py",
+          "lineno": 1180
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/svm/_classes.py",
+          "lineno": 1395
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/semi_supervised/_self_training.py",
+          "lineno": 32
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "sklearn/metrics/_plot/regression.py",
+          "lineno": 9
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "sklearn/metrics/_plot/regression.py",
+          "lineno": 195
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "sklearn/metrics/_plot/regression.py",
+          "lineno": 299
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas",
+        "source": {
+          "path": "sklearn/utils/tests/test_param_validation.py",
+          "lineno": 632
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "sklearn/cross_decomposition/_pls.py",
+          "lineno": 888
         }
       }
     },
@@ -3506,8 +3575,8 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/decomposition/_dict_learning.py",
-          "lineno": 1316
+          "path": "sklearn/linear_model/_stochastic_gradient.py",
+          "lineno": 921
         }
       }
     },
@@ -3515,8 +3584,8 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/decomposition/_dict_learning.py",
-          "lineno": 1526
+          "path": "sklearn/linear_model/_stochastic_gradient.py",
+          "lineno": 1735
         }
       }
     },
@@ -3524,53 +3593,8 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "sklearn/decomposition/_dict_learning.py",
-          "lineno": 1869
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/feature_selection/tests/test_base.py",
-          "lineno": 125
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/covariance/_graph_lasso.py",
-          "lineno": 390
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "sklearn/covariance/_graph_lasso.py",
-          "lineno": 710
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/datasets/tests/test_common.py",
-          "lineno": 64
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "pandas",
-        "source": {
-          "path": "sklearn/linear_model/tests/test_base.py",
-          "lineno": 384
+          "path": "sklearn/linear_model/_stochastic_gradient.py",
+          "lineno": 2021
         }
       }
     }
