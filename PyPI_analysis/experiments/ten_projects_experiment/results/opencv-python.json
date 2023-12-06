@@ -1,8 +1,12 @@
 {
   "project_name": "opencv-python",
-  "main_code_dir": {
-    "path": "opencv",
-    "counts": 302
+  "code_dirs": {
+    "opencv": 286,
+    "opencv_contrib": 60,
+    "opencv_extra": 14,
+    "cv2": 2,
+    "multibuild": 1,
+    "scripts": 1
   },
   "deps_file": [
     {

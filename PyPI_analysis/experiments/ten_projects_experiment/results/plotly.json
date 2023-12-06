@@ -1,8 +1,8 @@
 {
   "project_name": "plotly.py",
-  "main_code_dir": {
-    "path": "packages",
-    "counts": 12454
+  "code_dirs": {
+    "packages": 12453,
+    "doc": 2
   },
   "deps_file": [
     {
@@ -143,8 +143,62 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "packages/python/plotly/plotly/figure_factory/_ternary_contour.py",
-          "lineno": 531
+          "path": "packages/python/plotly/plotly/figure_factory/_quiver.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_quiver.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_quiver.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "PIL",
+        "source": {
+          "path": "packages/python/plotly/_plotly_utils/basevalidators.py",
+          "lineno": 2344
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "plotly.graph_objs",
+        "source": {
+          "path": "packages/python/plotly/_plotly_utils/basevalidators.py",
+          "lineno": 2638
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_streamline.py",
+          "lineno": 40
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_streamline.py",
+          "lineno": 40
         }
       }
     },
@@ -152,8 +206,134 @@
       "Docstring": {
         "name": "pandas",
         "source": {
-          "path": "packages/python/plotly/plotly/figure_factory/_ohlc.py",
-          "lineno": 134
+          "path": "packages/python/plotly/plotly/figure_factory/_bullet.py",
+          "lineno": 197
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_2d_density.py",
+          "lineno": 32
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_2d_density.py",
+          "lineno": 32
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_dendrogram.py",
+          "lineno": 23
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_dendrogram.py",
+          "lineno": 23
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_dendrogram.py",
+          "lineno": 23
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_dendrogram.py",
+          "lineno": 23
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_violin.py",
+          "lineno": 451
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_violin.py",
+          "lineno": 451
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_violin.py",
+          "lineno": 451
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_violin.py",
+          "lineno": 451
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_violin.py",
+          "lineno": 451
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_violin.py",
+          "lineno": 451
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_violin.py",
+          "lineno": 451
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_violin.py",
+          "lineno": 451
         }
       }
     },
@@ -258,55 +438,10 @@
     },
     {
       "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "packages/python/plotly/plotly/figure_factory/_2d_density.py",
-          "lineno": 32
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "packages/python/plotly/plotly/figure_factory/_2d_density.py",
-          "lineno": 32
-        }
-      }
-    },
-    {
-      "Docstring": {
         "name": "pandas",
         "source": {
-          "path": "packages/python/plotly/plotly/figure_factory/_bullet.py",
-          "lineno": 197
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "pandas",
-        "source": {
-          "path": "packages/python/plotly/plotly/figure_factory/_table.py",
-          "lineno": 36
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "packages/python/plotly/plotly/figure_factory/_streamline.py",
-          "lineno": 40
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "packages/python/plotly/plotly/figure_factory/_streamline.py",
-          "lineno": 40
+          "path": "packages/python/plotly/plotly/figure_factory/_ohlc.py",
+          "lineno": 134
         }
       }
     },
@@ -415,177 +550,6 @@
         "source": {
           "path": "packages/python/plotly/plotly/figure_factory/_scatterplot.py",
           "lineno": 852
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "pandas",
-        "source": {
-          "path": "packages/python/plotly/plotly/figure_factory/_candlestick.py",
-          "lineno": 99
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "pandas",
-        "source": {
-          "path": "packages/python/plotly/plotly/figure_factory/_candlestick.py",
-          "lineno": 99
-        }
-      }
-    },
-    {
-      "Dynamic imports": {
-        "name": "PIL",
-        "source": {
-          "path": "packages/python/plotly/_plotly_utils/basevalidators.py",
-          "lineno": 2344
-        }
-      }
-    },
-    {
-      "Dynamic imports": {
-        "name": "plotly.graph_objs",
-        "source": {
-          "path": "packages/python/plotly/_plotly_utils/basevalidators.py",
-          "lineno": 2638
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "packages/python/plotly/plotly/figure_factory/_dendrogram.py",
-          "lineno": 23
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "packages/python/plotly/plotly/figure_factory/_dendrogram.py",
-          "lineno": 23
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "packages/python/plotly/plotly/figure_factory/_dendrogram.py",
-          "lineno": 23
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "pandas",
-        "source": {
-          "path": "packages/python/plotly/plotly/figure_factory/_dendrogram.py",
-          "lineno": 23
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "packages/python/plotly/plotly/figure_factory/_violin.py",
-          "lineno": 451
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "scipy",
-        "source": {
-          "path": "packages/python/plotly/plotly/figure_factory/_violin.py",
-          "lineno": 451
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "packages/python/plotly/plotly/figure_factory/_violin.py",
-          "lineno": 451
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "pandas",
-        "source": {
-          "path": "packages/python/plotly/plotly/figure_factory/_violin.py",
-          "lineno": 451
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "scipy",
-        "source": {
-          "path": "packages/python/plotly/plotly/figure_factory/_violin.py",
-          "lineno": 451
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "packages/python/plotly/plotly/figure_factory/_violin.py",
-          "lineno": 451
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "pandas",
-        "source": {
-          "path": "packages/python/plotly/plotly/figure_factory/_violin.py",
-          "lineno": 451
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "scipy",
-        "source": {
-          "path": "packages/python/plotly/plotly/figure_factory/_violin.py",
-          "lineno": 451
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "pandas",
-        "source": {
-          "path": "packages/python/plotly/plotly/figure_factory/_facet_grid.py",
-          "lineno": 673
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "pandas",
-        "source": {
-          "path": "packages/python/plotly/plotly/figure_factory/_facet_grid.py",
-          "lineno": 673
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "pandas",
-        "source": {
-          "path": "packages/python/plotly/plotly/figure_factory/_facet_grid.py",
-          "lineno": 673
         }
       }
     },
@@ -602,26 +566,62 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "packages/python/plotly/plotly/figure_factory/_quiver.py",
-          "lineno": 11
+          "path": "packages/python/plotly/plotly/figure_factory/_ternary_contour.py",
+          "lineno": 531
         }
       }
     },
     {
       "Docstring": {
-        "name": "numpy",
+        "name": "pandas",
         "source": {
-          "path": "packages/python/plotly/plotly/figure_factory/_quiver.py",
-          "lineno": 11
+          "path": "packages/python/plotly/plotly/figure_factory/_facet_grid.py",
+          "lineno": 673
         }
       }
     },
     {
       "Docstring": {
-        "name": "numpy",
+        "name": "pandas",
         "source": {
-          "path": "packages/python/plotly/plotly/figure_factory/_quiver.py",
-          "lineno": 11
+          "path": "packages/python/plotly/plotly/figure_factory/_facet_grid.py",
+          "lineno": 673
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_facet_grid.py",
+          "lineno": 673
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_table.py",
+          "lineno": 36
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_candlestick.py",
+          "lineno": 99
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_candlestick.py",
+          "lineno": 99
         }
       }
     }

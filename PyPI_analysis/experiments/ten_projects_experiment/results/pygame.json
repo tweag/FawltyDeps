@@ -1,8 +1,9 @@
 {
   "project_name": "pygame",
-  "main_code_dir": {
-    "path": "src_py",
-    "counts": 22
+  "code_dirs": {
+    "src_py": 22,
+    "buildconfig": 19,
+    "docs": 13
   },
   "deps_file": [
     {
