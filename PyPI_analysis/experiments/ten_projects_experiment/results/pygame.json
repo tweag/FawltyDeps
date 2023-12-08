@@ -20,13 +20,17 @@
   "deps_file": [
     {
       "source_type": "DepsSource",
-      "path": "setup.cfg",
-      "parser_choice": "setup.cfg"
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
     },
     {
       "source_type": "DepsSource",
-      "path": "setup.py",
-      "parser_choice": "setup.py"
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
     }
   ],
   "imports": [

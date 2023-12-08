@@ -21,12 +21,12 @@
       "ipynb": 0,
       "total": 2
     },
-    "scripts": {
+    "multibuild": {
       "py": 1,
       "ipynb": 0,
       "total": 1
     },
-    "multibuild": {
+    "scripts": {
       "py": 1,
       "ipynb": 0,
       "total": 1
@@ -35,28 +35,38 @@
   "deps_file": [
     {
       "source_type": "DepsSource",
-      "path": "opencv/doc/pattern_tools/test_requirements.txt",
-      "parser_choice": "requirements.txt"
+      "path": "pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
     },
     {
       "source_type": "DepsSource",
       "path": "opencv/modules/python/package/setup.py",
-      "parser_choice": "setup.py"
-    },
-    {
-      "source_type": "DepsSource",
-      "path": "opencv/samples/dnn/dnn_model_runner/dnn_conversion/requirements.txt",
-      "parser_choice": "requirements.txt"
-    },
-    {
-      "source_type": "DepsSource",
-      "path": "pyproject.toml",
-      "parser_choice": "pyproject.toml"
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
     },
     {
       "source_type": "DepsSource",
       "path": "setup.py",
-      "parser_choice": "setup.py"
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "opencv/doc/pattern_tools/test_requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 2,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "opencv/samples/dnn/dnn_model_runner/dnn_conversion/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 11,
+      "warnings": false
     }
   ],
   "imports": [

@@ -21,22 +21,30 @@
     {
       "source_type": "DepsSource",
       "path": "doc/build/requirements.txt",
-      "parser_choice": "requirements.txt"
-    },
-    {
-      "source_type": "DepsSource",
-      "path": "pyproject.toml",
-      "parser_choice": "pyproject.toml"
-    },
-    {
-      "source_type": "DepsSource",
-      "path": "setup.cfg",
-      "parser_choice": "setup.cfg"
+      "parser_choice": "requirements.txt",
+      "deps_count": 6,
+      "warnings": false
     },
     {
       "source_type": "DepsSource",
       "path": "setup.py",
-      "parser_choice": "setup.py"
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 30,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
     }
   ],
   "imports": [
