@@ -108,6 +108,19 @@ class AddCall(Generic[T]):
 
 
 @dataclass(frozen=True)
+class ExcludePattern:
+    """Arguments for a call to DirectoryTraversal.exclude()."""
+
+    pattern: str
+    # DirectoryTraversal.exclude() defaults to base_dir=None.
+    # Here, instead, we default base_dir to "" (which is automatically prefixed
+    # by tmp_path in the test code below). This makes it easier to test anchored
+    # exclude patterns. Pass None explicitly to test the default .exclude()
+    # behavior (which will cause anchored patterns to raise ExcludeRuleError).
+    base_dir: Optional[str] = ""
+
+
+@dataclass(frozen=True)
 class DirectoryTraversalVector(Generic[T]):
     """Test vectors for DirectoryTraversal."""
 
@@ -115,9 +128,7 @@ class DirectoryTraversalVector(Generic[T]):
     given: List[BaseEntry]
     add: List[AddCall] = field(default_factory=lambda: [AddCall(path=".")])
     skip_dirs: List[str] = field(default_factory=list)
-    exclude_patterns: List[Union[str, Tuple[str, Optional[str]]]] = field(
-        default_factory=list
-    )
+    exclude_patterns: List[ExcludePattern] = field(default_factory=list)
     exclude_exceptions: List[Type[Exception]] = field(default_factory=list)
     expect: List[ExpectedTraverseStep] = field(default_factory=list)
     expect_alternatives: Optional[List[List[ExpectedTraverseStep]]] = None
@@ -298,7 +309,7 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
             File("dir/.venv/sub/file"),
             File("dir/foo.py"),
         ],
-        exclude_patterns=[".*"],  # exclude all paths that start with "."
+        exclude_patterns=[ExcludePattern(".*")],  # exclude paths that start with "."
         expect=[
             ExpectedTraverseStep(".", subdirs=["dir"], excluded_subdirs=[".venv"]),
             ExpectedTraverseStep("dir", files=["foo.py"], excluded_subdirs=[".venv"]),
@@ -312,7 +323,7 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
             File("dir/foo.py"),
         ],
         add=[AddCall(path=".", attach=(123,)), AddCall(path=".venv", attach=(456,))],
-        exclude_patterns=[".*"],  # exclude all paths that start with "."
+        exclude_patterns=[ExcludePattern(".*")],  # exclude paths that start with "."
         expect=[
             ExpectedTraverseStep(".", subdirs=[".venv", "dir"], attached=[123]),
             ExpectedTraverseStep(".venv", subdirs=["sub"], attached=[123, 456]),
@@ -333,7 +344,7 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
     DirectoryTraversalVector(
         "gitignore_parsing__disregard_blank_lines",
         given=[File("dir/file")],
-        exclude_patterns=["", ""],
+        exclude_patterns=[ExcludePattern(""), ExcludePattern("")],
         exclude_exceptions=[ExcludeRuleMissing, ExcludeRuleMissing],
         expect=[
             ExpectedTraverseStep(".", subdirs=["dir"]),
@@ -349,8 +360,8 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
             File("#do_exclude"),
         ],
         exclude_patterns=[
-            "#do_not_exclude",  # comment
-            "\\#do_exclude",  # match literal '#'
+            ExcludePattern("#do_not_exclude"),  # comment
+            ExcludePattern("\\#do_exclude"),  # match literal '#'
         ],
         exclude_exceptions=[ExcludeRuleMissing],
         expect=[
@@ -367,8 +378,8 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
             File("do_exclude "),
         ],
         exclude_patterns=[
-            "do_not_exclude ",  # disregard this trailing space
-            "do_exclude\\ ",  # match literal trailing space
+            ExcludePattern("do_not_exclude "),  # disregard this trailing space
+            ExcludePattern("do_exclude\\ "),  # match literal trailing space
         ],
         expect=[
             ExpectedTraverseStep(
@@ -392,8 +403,8 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
             File("do_exclude"),
         ],
         exclude_patterns=[
-            "*exclude",
-            "!do_not_exclude",
+            ExcludePattern("*exclude"),
+            ExcludePattern("!do_not_exclude"),
         ],
         expect=[
             ExpectedTraverseStep(
@@ -408,8 +419,8 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
             File("do_not_exclude"),
         ],
         exclude_patterns=[
-            "do_exclude",  # excludes directory
-            "!do_not_exclude",  # ineffective inside excluded directory
+            ExcludePattern("do_exclude"),  # excludes directory
+            ExcludePattern("!do_not_exclude"),  # ineffective inside excluded dir
         ],
         expect=[
             ExpectedTraverseStep(
@@ -423,7 +434,7 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
             File("!exclude_me!"),
             File("exclude_me!"),
         ],
-        exclude_patterns=["\\!exclude_me!"],  # matches only first entry above
+        exclude_patterns=[ExcludePattern("\\!exclude_me!")],  # matches 1st entry above
         expect=[
             ExpectedTraverseStep(
                 ".", files=["exclude_me!"], excluded_files=["!exclude_me!"]
@@ -443,7 +454,7 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
             File("a/file"),
             File("file"),
         ],
-        exclude_patterns=["/file"],  # matches second, but not first
+        exclude_patterns=[ExcludePattern("/file")],  # matches 2nd, but not 1st
         expect=[
             ExpectedTraverseStep(".", subdirs=["a"], excluded_files=["file"]),
             ExpectedTraverseStep("a", files=["file"]),
@@ -452,7 +463,7 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
     DirectoryTraversalVector(
         "anchored_pattern__must_have_base_dir",
         given=[File("file")],
-        exclude_patterns=[("/file", None)],
+        exclude_patterns=[ExcludePattern("/file", None)],
         exclude_exceptions=[ExcludeRuleError],
         expect=[ExpectedTraverseStep(".", files=["file"])],
     ),
@@ -462,7 +473,7 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
             File("a/b/file"),
             File("b/file"),
         ],
-        exclude_patterns=["b/file"],  # matches second, but not first
+        exclude_patterns=[ExcludePattern("b/file")],  # matches 2nd, but not 1st
         expect=[
             ExpectedTraverseStep(".", subdirs=["a", "b"]),
             ExpectedTraverseStep("a", subdirs=["b"]),
@@ -477,7 +488,7 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
             File("b/file"),
             File("file"),
         ],
-        exclude_patterns=["file"],  # matches all
+        exclude_patterns=[ExcludePattern("file")],  # matches all
         expect=[
             ExpectedTraverseStep(".", subdirs=["a", "b"], excluded_files=["file"]),
             ExpectedTraverseStep("a", subdirs=["b"]),
@@ -492,7 +503,7 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
             File("a/file"),
             File("a/b/file"),
         ],
-        exclude_patterns=[("file", "a/")],
+        exclude_patterns=[ExcludePattern("file", "a/")],
         expect=[
             ExpectedTraverseStep(".", subdirs=["a"], files=["file"]),
             ExpectedTraverseStep("a", subdirs=["b"], excluded_files=["file"]),
@@ -508,7 +519,7 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
             File("dir1/some_path"),  # some_path is not a dir
             File("dir2/some_path/a_file"),  # some_path is a dir
         ],
-        exclude_patterns=["some_path/"],  # matches second, but not first
+        exclude_patterns=[ExcludePattern("some_path/")],  # matches 2nd, but not 1st
         expect=[
             ExpectedTraverseStep(".", subdirs=["dir1", "dir2"]),
             ExpectedTraverseStep("dir1", files=["some_path"]),
@@ -523,7 +534,7 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
             Dir("a/a/b"),  # below pattern matches only this
             Dir("a/a/a/b"),
         ],
-        exclude_patterns=[("a/b/", "a/")],
+        exclude_patterns=[ExcludePattern("a/b/", "a/")],
         expect=[
             ExpectedTraverseStep(".", subdirs=["a", "b"]),
             ExpectedTraverseStep("a", subdirs=["a", "b"]),
@@ -543,7 +554,7 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
             Dir("doc/frotz"),
             Dir("a/doc/frotz"),
         ],
-        exclude_patterns=["doc/frotz/"],  # matches first, but not second
+        exclude_patterns=[ExcludePattern("doc/frotz/")],  # matches 1st, but not 2nd
         expect=[
             ExpectedTraverseStep(".", subdirs=["a", "doc"]),
             ExpectedTraverseStep("a", subdirs=["doc"]),
@@ -558,7 +569,7 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
             Dir("frotz"),
             Dir("a/frotz"),
         ],
-        exclude_patterns=["frotz/"],  # matches both
+        exclude_patterns=[ExcludePattern("frotz/")],  # matches both
         expect=[
             ExpectedTraverseStep(".", subdirs=["a"], excluded_subdirs=["frotz"]),
             ExpectedTraverseStep("a", excluded_subdirs=["frotz"]),
@@ -577,7 +588,7 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
             File("abcabcdef"),
             File("abc/def"),  # not matched
         ],
-        exclude_patterns=["abc*def"],
+        exclude_patterns=[ExcludePattern("abc*def")],
         expect=[
             ExpectedTraverseStep(
                 ".",
@@ -595,7 +606,7 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
             File("abcddef"),
             File("abc/def"),  # not matched
         ],
-        exclude_patterns=["abc?def"],
+        exclude_patterns=[ExcludePattern("abc?def")],
         expect=[
             ExpectedTraverseStep(
                 ".",
@@ -617,7 +628,7 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
             File("abcXYXdef"),  # not matched
             File("abc/def"),  # not matched
         ],
-        exclude_patterns=["abc[X-Z]def"],
+        exclude_patterns=[ExcludePattern("abc[X-Z]def")],
         expect=[
             ExpectedTraverseStep(
                 ".",
@@ -635,7 +646,7 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
             File("abcXdef"),
             File("abc/def"),  # not matched, see FNM_PATHNAME in fnmatch(3)
         ],
-        exclude_patterns=["abc[X-Z/]def"],
+        exclude_patterns=[ExcludePattern("abc[X-Z/]def")],
         expect=[
             ExpectedTraverseStep(
                 ".", subdirs=["abc"], files=["abcdef"], excluded_files=["abcXdef"]
@@ -658,7 +669,7 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
             File("a/b/foo"),
             File("a/c/foo/more"),
         ],
-        exclude_patterns=[("**/foo", "a/")],
+        exclude_patterns=[ExcludePattern("**/foo", "a/")],
         expect=[
             ExpectedTraverseStep(".", subdirs=["a"], files=["foo"]),
             ExpectedTraverseStep("a", subdirs=["b", "c"], excluded_files=["foo"]),
@@ -676,7 +687,7 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
             File("a/c/bar"),  # does not match
             Dir("a/c/foo/bar"),
         ],
-        exclude_patterns=[("**/foo/bar", "a/")],
+        exclude_patterns=[ExcludePattern("**/foo/bar", "a/")],
         expect=[
             ExpectedTraverseStep(".", subdirs=["a", "foo"]),
             ExpectedTraverseStep("a", subdirs=["foo", "b", "c"]),
@@ -699,7 +710,7 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
             File("abc/a/very/long/and/deeply/nested/subdir/with/files/in/it"),
             File("abx/yz"),  # not matched
         ],
-        exclude_patterns=["abc/**"],
+        exclude_patterns=[ExcludePattern("abc/**")],
         expect=[
             ExpectedTraverseStep(".", subdirs=["abc", "abx"]),
             ExpectedTraverseStep("abc", excluded_subdirs=["a"], excluded_files=["def"]),
@@ -720,7 +731,7 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
             File("a/c"),  # not matched
             File("foo/a/b/c"),  # not matched, because a/**/b is anchored
         ],
-        exclude_patterns=["a/**/b"],
+        exclude_patterns=[ExcludePattern("a/**/b")],
         expect=[
             ExpectedTraverseStep(".", subdirs=["a", "foo"]),
             ExpectedTraverseStep("a", subdirs=["x"], files=["c"], excluded_files=["b"]),
@@ -748,7 +759,7 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
             File("a/bb/cc/d"),  # not matched
             File("a/bb/XX/cc/d"),  # not matched
         ],
-        exclude_patterns=["a/b**c/d"],
+        exclude_patterns=[ExcludePattern("a/b**c/d")],
         expect=[
             ExpectedTraverseStep(".", subdirs=["a"]),
             ExpectedTraverseStep(
@@ -775,7 +786,11 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
             File("x/foo"),  # not matched
             File("barx"),
         ],
-        exclude_patterns=["a/b***c/d", "/****foo", "bar***"],
+        exclude_patterns=[
+            ExcludePattern("a/b***c/d"),
+            ExcludePattern("/****foo"),
+            ExcludePattern("bar***"),
+        ],
         expect=[
             ExpectedTraverseStep(
                 ".", subdirs=["a", "x"], excluded_files=["xfoo", "barx"]
@@ -806,14 +821,10 @@ def test_DirectoryTraversal(vector: DirectoryTraversalVector, tmp_path):
     for path in vector.skip_dirs:
         traversal.skip_dir(tmp_path / path)
     exclude_exceptions = []
-    for pattern in vector.exclude_patterns:
-        base_dir = tmp_path  # default
-        if isinstance(pattern, tuple):
-            pattern, base_dir = pattern
-            if base_dir is not None:
-                base_dir = tmp_path / base_dir
+    for ipat in vector.exclude_patterns:
+        base_dir = None if ipat.base_dir is None else tmp_path / ipat.base_dir
         try:
-            traversal.exclude(pattern, base_dir=base_dir)
+            traversal.exclude(ipat.pattern, base_dir=base_dir)
         except Exception as e:
             exclude_exceptions.append(type(e))
     assert vector.exclude_exceptions == exclude_exceptions
