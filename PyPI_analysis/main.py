@@ -116,7 +116,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
     @calculated_once
     def dep_files(self) -> Dict[DepsSource, int]:
         """The dictionary of dependency declaration files and dependency count"""
-        dep_sources = {src for src in self._sources if isinstance(src, DepsSource)}
+        dep_sources = {src for src in self.sources if isinstance(src, DepsSource)}
         declared_deps_counts = dict(
             Counter(str(dep.source.path) for dep in self.declared_deps)
         )
@@ -195,7 +195,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
 
         return ret
 
-    def print_json(self, out: TextIO, warning_files: Set) -> None:
+    def print_json(self, out: TextIO, warning_entries: Set) -> None:
         """Print the JSON representation of this analysis to 'out'."""
         # The default pydantic_encoder uses list() to serialize set objects.
         # We need a stable serialization to JSON, so let's use sorted() instead.
@@ -221,7 +221,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
                     "path": dep.path,
                     "parser_choice": dep.parser_choice,
                     "deps_count": count,
-                    "warnings": str(dep.path) in warning_files,
+                    "warnings": str(dep.path) in warning_entries,
                 }
                 for dep, count in self.dep_files.items()
             ],
@@ -231,7 +231,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
         json.dump(json_dict, out, indent=2, default=encoder)
 
     def print_human_readable(
-        self, out: TextIO, warning_files: Set, detailed: bool = True
+        self, out: TextIO, warning_entries: Set, detailed: bool = True
     ) -> None:
         """Print a human-readable rendering of this analysis to 'out'."""
 
@@ -253,7 +253,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
                 yield "\nDependency declaration files:"
                 dep_files = sorted(
                     {
-                        f"  {dep.parser_choice}: {dep.render(False)} ({count} dependencies declared, with{'' if str(dep.path) in warning_files else 'out'} warning(s))"
+                        f"  {dep.parser_choice}: {dep.render(False)} ({count} dependencies declared, with{'' if str(dep.path) in warning_entries else 'out'} warning(s))"
                         for dep, count in self.dep_files.items()
                     }
                 )
@@ -313,16 +313,16 @@ def assign_exit_code(analysis: Analysis) -> int:
 
 
 def print_output(
-    analysis: Analysis, stdout: TextIO = sys.stdout, warning_files: Set = {}
+    analysis: Analysis, stdout: TextIO = sys.stdout, warning_entries: Set = {}
 ) -> None:
     """Print the output of the given 'analysis' and set of files with warnings to 'stdout'."""
 
     if analysis.settings.output_format == OutputFormat.JSON:
-        analysis.print_json(stdout, warning_files)
+        analysis.print_json(stdout, warning_entries)
     elif analysis.settings.output_format == OutputFormat.HUMAN_DETAILED:
-        analysis.print_human_readable(stdout, warning_files, detailed=True)
+        analysis.print_human_readable(stdout, warning_entries, detailed=True)
     elif analysis.settings.output_format == OutputFormat.HUMAN_SUMMARY:
-        analysis.print_human_readable(stdout, warning_files, detailed=False)
+        analysis.print_human_readable(stdout, warning_entries, detailed=False)
         print(f"\n{VERBOSE_PROMPT}", file=stdout)
     else:
         raise NotImplementedError
@@ -361,12 +361,12 @@ def main(
     exit_code = assign_exit_code(analysis=analysis)
 
     log_contents = log_buffer.getvalue()
-    warning_files = {
+    warning_entries = {
         line.split("@")[-1].split(":")[-2].strip()
         for line in log_contents.split("\n")
         if "WARNING:fawltydeps.limited_eval" in line
     }
 
-    print_output(analysis=analysis, stdout=stdout, warning_files=warning_files)
+    print_output(analysis=analysis, stdout=stdout, warning_entries=warning_entries)
 
     return exit_code
