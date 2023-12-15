@@ -106,16 +106,21 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
     @calculated_once
     def declared_deps(self) -> List[DeclaredDependency]:
         """The list of declared dependencies parsed from this project."""
-        return list(
-            extract_declared_dependencies.parse_sources(
-                (src for src in self.sources if isinstance(src, DepsSource))
+        try:
+            return list(
+                extract_declared_dependencies.parse_sources(
+                    (src for src in self.sources if isinstance(src, DepsSource))
+                )
             )
-        )
+        except SyntaxError:
+            return False
 
     @property
     @calculated_once
     def dep_files(self) -> Dict[DepsSource, int]:
         """The dictionary of dependency declaration files and dependency count"""
+        if not self.declared_deps:
+            return {}
         dep_sources = {src for src in self.sources if isinstance(src, DepsSource)}
         declared_deps_counts = dict(
             Counter(str(dep.source.path) for dep in self.declared_deps)
