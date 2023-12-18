@@ -129,16 +129,20 @@ class CachedExperimentVenv:
 
     def venv_script_lines(self, venv_path: Path) -> List[str]:
         rm_command = "rd /s /q" if platform.system() == "Windows" else "rm -rf"
-
+        pip_path = (
+            venv_path / "Scripts" / "pip.exe"
+            if platform.system() == "Windows"
+            else venv_path / "bin" / "pip"
+        )
         create_empty_file = "type nul > " if platform.system() == "Windows" else "touch"
         return (
             [
                 f"{rm_command} {venv_path}",
                 f"{sys.executable} -m venv {venv_path}",
-                f"{sys.executable} -m pip install --upgrade pip",
+                f"{pip_path} install --upgrade pip",
             ]
             + [
-                f"{sys.executable} -m pip install "
+                f"{pip_path} install "
                 f"--no-deps {req if platform.system() == 'Windows' else shlex.quote(req)}"
                 for req in self.requirements
             ]
@@ -179,6 +183,7 @@ class CachedExperimentVenv:
         venv_dir = Path(cache.mkdir(f"fawltydeps_venv_{self.venv_hash()}"))
         logger.info(f"Creating venv at {venv_dir}...")
         venv_script = self.venv_script_lines(venv_dir)
+
         subprocess.run(
             " && ".join(venv_script),
             check=True,  # fail if any of the commands fail
