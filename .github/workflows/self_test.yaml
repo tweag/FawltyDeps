@@ -27,6 +27,6 @@ jobs:
             ~/.cache/pypoetry/virtualenvs
           key: ${{ runner.os }}-poetry-self-test-${{ hashFiles('poetry.lock') }}
       - name: Install project
-        run: poetry install --no-interaction --sync --with=nox,test,lint,format,dev
+        run: poetry install --no-interaction --sync --with=nox,test,lint,format,dev,pypi_analysis
       - name: Run fawltydeps on Python ${{ matrix.python-version }}
         run: poetry run nox --no-venv --no-install --non-interactive -s self_test -- -vv
