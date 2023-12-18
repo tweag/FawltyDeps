@@ -130,6 +130,7 @@ class CachedExperimentVenv:
     def venv_script_lines(self, venv_path: Path) -> List[str]:
         rm_command = "rd /s /q" if platform.system() == "Windows" else "rm -rf"
 
+
         create_empty_file = "type nul > " if platform.system() == "Windows" else "touch"
         return (
             [
@@ -138,7 +139,7 @@ class CachedExperimentVenv:
                 f"{sys.executable} -m pip install --upgrade pip",
             ]
             + [
-                f"{sys.executable} -m pip install --no-deps {shlex.quote(req)}"
+                f"{sys.executable} -m pip install --no-deps {req if platform.system() == "Windows" else shlex.quote(req)}"
                 for req in self.requirements
             ]
             + [
