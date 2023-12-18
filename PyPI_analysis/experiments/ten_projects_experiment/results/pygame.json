@@ -1,20 +1,36 @@
 {
   "project_name": "pygame",
   "code_dirs": {
-    "src_py": 22,
-    "buildconfig": 19,
-    "docs": 13
+    "src_py": {
+      "py": 22,
+      "ipynb": 0,
+      "total": 22
+    },
+    "buildconfig": {
+      "py": 19,
+      "ipynb": 0,
+      "total": 19
+    },
+    "docs": {
+      "py": 13,
+      "ipynb": 0,
+      "total": 13
+    }
   },
   "deps_file": [
     {
       "source_type": "DepsSource",
-      "path": "setup.cfg",
-      "parser_choice": "setup.cfg"
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
     },
     {
       "source_type": "DepsSource",
-      "path": "setup.py",
-      "parser_choice": "setup.py"
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
     }
   ],
   "imports": [

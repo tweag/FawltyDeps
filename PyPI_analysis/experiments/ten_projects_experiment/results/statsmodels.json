@@ -1,41 +1,69 @@
 {
   "project_name": "statsmodels",
   "code_dirs": {
-    "statsmodels": 770,
-    "docs": 42,
-    "tools": 8,
-    "archive": 2
+    "statsmodels": {
+      "py": 770,
+      "ipynb": 0,
+      "total": 770
+    },
+    "docs": {
+      "py": 42,
+      "ipynb": 0,
+      "total": 42
+    },
+    "tools": {
+      "py": 8,
+      "ipynb": 0,
+      "total": 8
+    },
+    "archive": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    }
   },
   "deps_file": [
     {
       "source_type": "DepsSource",
       "path": "pyproject.toml",
-      "parser_choice": "pyproject.toml"
-    },
-    {
-      "source_type": "DepsSource",
-      "path": "requirements-dev.txt",
-      "parser_choice": "requirements.txt"
-    },
-    {
-      "source_type": "DepsSource",
-      "path": "requirements-doc.txt",
-      "parser_choice": "requirements.txt"
-    },
-    {
-      "source_type": "DepsSource",
-      "path": "requirements.txt",
-      "parser_choice": "requirements.txt"
-    },
-    {
-      "source_type": "DepsSource",
-      "path": "setup.cfg",
-      "parser_choice": "setup.cfg"
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
     },
     {
       "source_type": "DepsSource",
       "path": "setup.py",
-      "parser_choice": "setup.py"
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "requirements-dev.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 12,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 7,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "requirements-doc.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 16,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
     }
   ],
   "imports": [
@@ -43,35 +71,17 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "statsmodels/robust/scale.py",
-          "lineno": 176
-        }
-      }
-    },
-    {
-      "Conditional imports": {
-        "name": "pandas",
-        "source": {
-          "path": "statsmodels/stats/descriptivestats.py",
-          "lineno": 436
-        }
-      }
-    },
-    {
-      "Conditional imports": {
-        "name": "pandas",
-        "source": {
-          "path": "statsmodels/regression/tests/test_recursive_ls.py",
-          "lineno": 266
+          "path": "statsmodels/emplike/aft_el.py",
+          "lineno": 389
         }
       }
     },
     {
       "Docstring": {
-        "name": "matplotlib",
+        "name": "scipy",
         "source": {
-          "path": "statsmodels/graphics/plot_grids.py",
-          "lineno": 43
+          "path": "statsmodels/sandbox/stats/stats_mstats_short.py",
+          "lineno": 40
         }
       }
     },
@@ -79,8 +89,71 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "statsmodels/graphics/plot_grids.py",
-          "lineno": 43
+          "path": "statsmodels/graphics/agreement.py",
+          "lineno": 15
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "statsmodels/graphics/agreement.py",
+          "lineno": 15
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "matplotlib",
+        "source": {
+          "path": "statsmodels/graphics/tests/test_tsaplots.py",
+          "lineno": 27
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "nitime",
+        "source": {
+          "path": "statsmodels/sandbox/archive/tsa.py",
+          "lineno": 1
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "statsmodels/base/model.py",
+          "lineno": 1552
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "statsmodels/base/model.py",
+          "lineno": 1694
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "statsmodels/nonparametric/smoothers_lowess.py",
+          "lineno": 15
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "statsmodels/nonparametric/smoothers_lowess.py",
+          "lineno": 15
         }
       }
     },
@@ -88,17 +161,179 @@
       "Docstring": {
         "name": "scipy",
         "source": {
-          "path": "statsmodels/sandbox/nonparametric/densityorthopoly.py",
-          "lineno": 158
+          "path": "statsmodels/nonparametric/smoothers_lowess.py",
+          "lineno": 15
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "matplotlib",
+        "source": {
+          "path": "statsmodels/genmod/tests/test_gee.py",
+          "lineno": 30
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "matplotlib",
+        "source": {
+          "path": "statsmodels/sandbox/tests/test_predict_functional.py",
+          "lineno": 10
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "matplotlib",
+        "source": {
+          "path": "statsmodels/graphics/tests/test_factorplots.py",
+          "lineno": 8
         }
       }
     },
     {
       "Docstring": {
-        "name": "scipy",
+        "name": "numpy",
         "source": {
-          "path": "statsmodels/sandbox/nonparametric/densityorthopoly.py",
-          "lineno": 214
+          "path": "statsmodels/stats/contrast.py",
+          "lineno": 188
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scikits",
+        "source": {
+          "path": "statsmodels/sandbox/tools/cross_val.py",
+          "lineno": 29
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scikits",
+        "source": {
+          "path": "statsmodels/sandbox/tools/cross_val.py",
+          "lineno": 81
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scikits",
+        "source": {
+          "path": "statsmodels/sandbox/tools/cross_val.py",
+          "lineno": 140
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scikits",
+        "source": {
+          "path": "statsmodels/sandbox/tools/cross_val.py",
+          "lineno": 205
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scikits",
+        "source": {
+          "path": "statsmodels/sandbox/tools/cross_val.py",
+          "lineno": 289
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "statsmodels/tsa/stl/mstl.py",
+          "lineno": 32
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "statsmodels/tsa/stl/mstl.py",
+          "lineno": 32
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "statsmodels/tsa/stl/mstl.py",
+          "lineno": 32
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "statsmodels/distributions/empirical_distribution.py",
+          "lineno": 38
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "statsmodels/distributions/empirical_distribution.py",
+          "lineno": 114
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "statsmodels/distributions/empirical_distribution.py",
+          "lineno": 154
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "statsmodels/emplike/descriptive.py",
+          "lineno": 603
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "statsmodels/emplike/descriptive.py",
+          "lineno": 641
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "statsmodels/tsa/filters/hp_filter.py",
+          "lineno": 9
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "statsmodels/tsa/filters/hp_filter.py",
+          "lineno": 9
         }
       }
     },
@@ -126,6 +361,141 @@
         "source": {
           "path": "statsmodels/sandbox/distributions/mv_normal.py",
           "lineno": 207
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "matplotlib",
+        "source": {
+          "path": "statsmodels/tsa/statespace/tests/test_structural.py",
+          "lineno": 106
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "pandas",
+        "source": {
+          "path": "statsmodels/tsa/statespace/tests/test_structural.py",
+          "lineno": 108
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "statsmodels/graphics/factorplots.py",
+          "lineno": 17
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "statsmodels/graphics/factorplots.py",
+          "lineno": 17
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "statsmodels/tsa/tsatools.py",
+          "lineno": 302
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "statsmodels/graphics/gofplots.py",
+          "lineno": 17
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "statsmodels/graphics/gofplots.py",
+          "lineno": 17
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "statsmodels/graphics/gofplots.py",
+          "lineno": 17
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "statsmodels/graphics/gofplots.py",
+          "lineno": 593
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "statsmodels/graphics/gofplots.py",
+          "lineno": 593
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "statsmodels/graphics/gofplots.py",
+          "lineno": 698
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "statsmodels/graphics/gofplots.py",
+          "lineno": 698
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "statsmodels/graphics/gofplots.py",
+          "lineno": 795
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "statsmodels/graphics/gofplots.py",
+          "lineno": 795
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "pandas",
+        "source": {
+          "path": "statsmodels/regression/tests/test_recursive_ls.py",
+          "lineno": 266
         }
       }
     },
@@ -178,134 +548,17 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "statsmodels/tsa/arima_process.py",
-          "lineno": 51
+          "path": "statsmodels/robust/scale.py",
+          "lineno": 176
         }
       }
     },
     {
       "Docstring": {
-        "name": "numpy",
+        "name": "patsy",
         "source": {
-          "path": "statsmodels/tsa/arima_process.py",
-          "lineno": 662
-        }
-      }
-    },
-    {
-      "Conditional imports": {
-        "name": "numdifftools",
-        "source": {
-          "path": "statsmodels/tsa/mlemodel.py",
-          "lineno": 15
-        }
-      }
-    },
-    {
-      "Conditional imports": {
-        "name": "matplotlib",
-        "source": {
-          "path": "statsmodels/graphics/tests/test_dotplot.py",
-          "lineno": 10
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "statsmodels/stats/correlation_tools.py",
-          "lineno": 544
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "statsmodels/stats/correlation_tools.py",
-          "lineno": 693
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "statsmodels/stats/correlation_tools.py",
-          "lineno": 774
-        }
-      }
-    },
-    {
-      "Conditional imports": {
-        "name": "matplotlib",
-        "source": {
-          "path": "statsmodels/graphics/tests/test_agreement.py",
-          "lineno": 7
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "examples/python/linear_regression_diagnostics_plots.py",
-          "lineno": 85
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "pandas",
-        "source": {
-          "path": "examples/python/linear_regression_diagnostics_plots.py",
-          "lineno": 85
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "scipy",
-        "source": {
-          "path": "statsmodels/sandbox/stats/stats_mstats_short.py",
-          "lineno": 40
-        }
-      }
-    },
-    {
-      "Conditional imports": {
-        "name": "matplotlib",
-        "source": {
-          "path": "statsmodels/imputation/tests/test_mice.py",
-          "lineno": 9
-        }
-      }
-    },
-    {
-      "Conditional imports": {
-        "name": "matplotlib",
-        "source": {
-          "path": "statsmodels/stats/tests/test_power.py",
+          "path": "statsmodels/stats/mediation.py",
           "lineno": 24
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "statsmodels/nonparametric/smoothers_lowess_old.py",
-          "lineno": 15
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "scipy",
-        "source": {
-          "path": "statsmodels/nonparametric/smoothers_lowess_old.py",
-          "lineno": 15
         }
       }
     },
@@ -331,8 +584,8 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "statsmodels/multivariate/pca.py",
-          "lineno": 25
+          "path": "statsmodels/tools/tools.py",
+          "lineno": 72
         }
       }
     },
@@ -340,62 +593,8 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "statsmodels/tsa/forecasting/stl.py",
-          "lineno": 67
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "pandas",
-        "source": {
-          "path": "statsmodels/tsa/forecasting/stl.py",
-          "lineno": 67
-        }
-      }
-    },
-    {
-      "Conditional imports": {
-        "name": "matplotlib",
-        "source": {
-          "path": "statsmodels/graphics/tests/test_gofplots.py",
-          "lineno": 20
-        }
-      }
-    },
-    {
-      "Conditional imports": {
-        "name": "matplotlib",
-        "source": {
-          "path": "statsmodels/graphics/tests/test_gofplots.py",
-          "lineno": 387
-        }
-      }
-    },
-    {
-      "Conditional imports": {
-        "name": "matplotlib",
-        "source": {
-          "path": "statsmodels/graphics/tests/test_gofplots.py",
-          "lineno": 467
-        }
-      }
-    },
-    {
-      "Conditional imports": {
-        "name": "matplotlib",
-        "source": {
-          "path": "statsmodels/sandbox/tests/test_predict_functional.py",
-          "lineno": 10
-        }
-      }
-    },
-    {
-      "Conditional imports": {
-        "name": "matplotlib",
-        "source": {
-          "path": "statsmodels/genmod/tests/test_gee.py",
-          "lineno": 30
+          "path": "statsmodels/tools/tools.py",
+          "lineno": 380
         }
       }
     },
@@ -403,62 +602,8 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "statsmodels/graphics/agreement.py",
-          "lineno": 15
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "matplotlib",
-        "source": {
-          "path": "statsmodels/graphics/agreement.py",
-          "lineno": 15
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "matplotlib",
-        "source": {
-          "path": "statsmodels/graphics/functional.py",
-          "lineno": 157
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "matplotlib",
-        "source": {
-          "path": "statsmodels/graphics/functional.py",
-          "lineno": 477
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "matplotlib",
-        "source": {
-          "path": "statsmodels/graphics/functional.py",
-          "lineno": 672
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "statsmodels/graphics/factorplots.py",
-          "lineno": 17
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "matplotlib",
-        "source": {
-          "path": "statsmodels/graphics/factorplots.py",
-          "lineno": 17
+          "path": "statsmodels/tools/tools.py",
+          "lineno": 380
         }
       }
     },
@@ -554,10 +699,10 @@
     },
     {
       "Docstring": {
-        "name": "numpy",
+        "name": "pandas",
         "source": {
-          "path": "statsmodels/graphics/mosaicplot.py",
-          "lineno": 473
+          "path": "statsmodels/tsa/base/datetools.py",
+          "lineno": 171
         }
       }
     },
@@ -565,8 +710,8 @@
       "Docstring": {
         "name": "pandas",
         "source": {
-          "path": "statsmodels/graphics/mosaicplot.py",
-          "lineno": 473
+          "path": "statsmodels/tsa/filters/cf_filter.py",
+          "lineno": 16
         }
       }
     },
@@ -574,8 +719,8 @@
       "Docstring": {
         "name": "matplotlib",
         "source": {
-          "path": "statsmodels/graphics/mosaicplot.py",
-          "lineno": 473
+          "path": "statsmodels/tsa/filters/cf_filter.py",
+          "lineno": 16
         }
       }
     },
@@ -583,107 +728,17 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "statsmodels/nonparametric/smoothers_lowess.py",
-          "lineno": 15
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "statsmodels/nonparametric/smoothers_lowess.py",
-          "lineno": 15
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "scipy",
-        "source": {
-          "path": "statsmodels/nonparametric/smoothers_lowess.py",
-          "lineno": 15
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "scikits",
-        "source": {
-          "path": "statsmodels/sandbox/tools/cross_val.py",
-          "lineno": 29
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "scikits",
-        "source": {
-          "path": "statsmodels/sandbox/tools/cross_val.py",
-          "lineno": 81
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "scikits",
-        "source": {
-          "path": "statsmodels/sandbox/tools/cross_val.py",
-          "lineno": 140
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "scikits",
-        "source": {
-          "path": "statsmodels/sandbox/tools/cross_val.py",
-          "lineno": 205
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "scikits",
-        "source": {
-          "path": "statsmodels/sandbox/tools/cross_val.py",
-          "lineno": 289
-        }
-      }
-    },
-    {
-      "Conditional imports": {
-        "name": "matplotlib",
-        "source": {
-          "path": "statsmodels/graphics/tests/test_boxplots.py",
+          "path": "statsmodels/imputation/bayes_mi.py",
           "lineno": 7
         }
       }
     },
     {
       "Conditional imports": {
-        "name": "sphinxcontrib",
-        "source": {
-          "path": "docs/source/conf.py",
-          "lineno": 62
-        }
-      }
-    },
-    {
-      "Conditional imports": {
         "name": "matplotlib",
         "source": {
-          "path": "statsmodels/graphics/tests/test_tsaplots.py",
-          "lineno": 27
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "pandas",
-        "source": {
-          "path": "statsmodels/tools/validation/validation.py",
-          "lineno": 48
+          "path": "statsmodels/graphics/tests/test_dotplot.py",
+          "lineno": 10
         }
       }
     },
@@ -745,53 +800,107 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "statsmodels/tsa/stattools.py",
-          "lineno": 1435
+          "path": "statsmodels/graphics/mosaicplot.py",
+          "lineno": 473
         }
       }
     },
     {
       "Docstring": {
-        "name": "numpy",
+        "name": "pandas",
         "source": {
-          "path": "statsmodels/tsa/stattools.py",
-          "lineno": 1835
+          "path": "statsmodels/graphics/mosaicplot.py",
+          "lineno": 473
         }
       }
     },
     {
       "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "statsmodels/emplike/descriptive.py",
-          "lineno": 603
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "statsmodels/emplike/descriptive.py",
-          "lineno": 641
-        }
-      }
-    },
-    {
-      "Conditional imports": {
         "name": "matplotlib",
         "source": {
-          "path": "statsmodels/graphics/tests/test_factorplots.py",
-          "lineno": 8
+          "path": "statsmodels/graphics/mosaicplot.py",
+          "lineno": 473
         }
       }
     },
     {
-      "Conditional imports": {
+      "Docstring": {
         "name": "matplotlib",
         "source": {
-          "path": "statsmodels/tsa/statespace/tests/test_structural.py",
-          "lineno": 106
+          "path": "statsmodels/distributions/edgeworth.py",
+          "lineno": 103
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "statsmodels/distributions/edgeworth.py",
+          "lineno": 103
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "statsmodels/distributions/edgeworth.py",
+          "lineno": 103
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "statsmodels/distributions/discrete.py",
+          "lineno": 369
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "examples/python/linear_regression_diagnostics_plots.py",
+          "lineno": 85
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "examples/python/linear_regression_diagnostics_plots.py",
+          "lineno": 85
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "statsmodels/stats/correlation_tools.py",
+          "lineno": 544
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "statsmodels/stats/correlation_tools.py",
+          "lineno": 693
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "statsmodels/stats/correlation_tools.py",
+          "lineno": 774
         }
       }
     },
@@ -799,98 +908,8 @@
       "Conditional imports": {
         "name": "pandas",
         "source": {
-          "path": "statsmodels/tsa/statespace/tests/test_structural.py",
-          "lineno": 108
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "statsmodels/tsa/deterministic.py",
-          "lineno": 611
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "pandas",
-        "source": {
-          "path": "statsmodels/tsa/deterministic.py",
-          "lineno": 611
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "statsmodels/tsa/deterministic.py",
-          "lineno": 707
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "pandas",
-        "source": {
-          "path": "statsmodels/tsa/deterministic.py",
-          "lineno": 707
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "statsmodels/tsa/deterministic.py",
-          "lineno": 878
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "pandas",
-        "source": {
-          "path": "statsmodels/tsa/deterministic.py",
-          "lineno": 878
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "pandas",
-        "source": {
-          "path": "statsmodels/tsa/deterministic.py",
-          "lineno": 1053
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "statsmodels/stats/weightstats.py",
-          "lineno": 42
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "statsmodels/tsa/tsatools.py",
-          "lineno": 302
-        }
-      }
-    },
-    {
-      "Conditional imports": {
-        "name": "matplotlib",
-        "source": {
-          "path": "statsmodels/duration/tests/test_survfunc.py",
-          "lineno": 14
+          "path": "statsmodels/stats/descriptivestats.py",
+          "lineno": 436
         }
       }
     },
@@ -907,71 +926,8 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "statsmodels/tsa/stl/mstl.py",
-          "lineno": 32
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "matplotlib",
-        "source": {
-          "path": "statsmodels/tsa/stl/mstl.py",
-          "lineno": 32
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "pandas",
-        "source": {
-          "path": "statsmodels/tsa/stl/mstl.py",
-          "lineno": 32
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "statsmodels/base/model.py",
-          "lineno": 1552
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "statsmodels/base/model.py",
-          "lineno": 1694
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "pandas",
-        "source": {
-          "path": "statsmodels/tsa/filters/bk_filter.py",
-          "lineno": 9
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "matplotlib",
-        "source": {
-          "path": "statsmodels/tsa/filters/bk_filter.py",
-          "lineno": 9
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "statsmodels/stats/contrast.py",
-          "lineno": 188
+          "path": "statsmodels/stats/proportion.py",
+          "lineno": 928
         }
       }
     },
@@ -979,133 +935,7 @@
       "Conditional imports": {
         "name": "matplotlib",
         "source": {
-          "path": "statsmodels/tsa/statespace/tests/test_dynamic_factor_mq.py",
-          "lineno": 1009
-        }
-      }
-    },
-    {
-      "Conditional imports": {
-        "name": "pandas",
-        "source": {
-          "path": "statsmodels/tsa/statespace/tests/test_dynamic_factor_mq.py",
-          "lineno": 1011
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "pandas",
-        "source": {
-          "path": "statsmodels/tsa/filters/cf_filter.py",
-          "lineno": 16
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "matplotlib",
-        "source": {
-          "path": "statsmodels/tsa/filters/cf_filter.py",
-          "lineno": 16
-        }
-      }
-    },
-    {
-      "Conditional imports": {
-        "name": "matplotlib",
-        "source": {
-          "path": "statsmodels/graphics/tests/test_mosaicplot.py",
-          "lineno": 15
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "matplotlib",
-        "source": {
-          "path": "statsmodels/graphics/gofplots.py",
-          "lineno": 17
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "scipy",
-        "source": {
-          "path": "statsmodels/graphics/gofplots.py",
-          "lineno": 17
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "statsmodels/graphics/gofplots.py",
-          "lineno": 17
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "matplotlib",
-        "source": {
-          "path": "statsmodels/graphics/gofplots.py",
-          "lineno": 593
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "scipy",
-        "source": {
-          "path": "statsmodels/graphics/gofplots.py",
-          "lineno": 593
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "statsmodels/graphics/gofplots.py",
-          "lineno": 698
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "matplotlib",
-        "source": {
-          "path": "statsmodels/graphics/gofplots.py",
-          "lineno": 698
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "statsmodels/graphics/gofplots.py",
-          "lineno": 795
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "matplotlib",
-        "source": {
-          "path": "statsmodels/graphics/gofplots.py",
-          "lineno": 795
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "statsmodels/imputation/bayes_mi.py",
+          "path": "statsmodels/graphics/tests/test_boxplots.py",
           "lineno": 7
         }
       }
@@ -1114,53 +944,8 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "statsmodels/distributions/empirical_distribution.py",
-          "lineno": 38
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "statsmodels/distributions/empirical_distribution.py",
-          "lineno": 114
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "statsmodels/distributions/empirical_distribution.py",
-          "lineno": 154
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "statsmodels/tools/tools.py",
-          "lineno": 72
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "statsmodels/tools/tools.py",
-          "lineno": 380
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "statsmodels/tools/tools.py",
-          "lineno": 380
+          "path": "statsmodels/graphics/correlation.py",
+          "lineno": 17
         }
       }
     },
@@ -1168,8 +953,17 @@
       "Docstring": {
         "name": "matplotlib",
         "source": {
-          "path": "statsmodels/compat/_scipy_multivariate_t.py",
-          "lineno": 256
+          "path": "statsmodels/graphics/correlation.py",
+          "lineno": 17
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "statsmodels/graphics/correlation.py",
+          "lineno": 127
         }
       }
     },
@@ -1177,8 +971,8 @@
       "Docstring": {
         "name": "matplotlib",
         "source": {
-          "path": "statsmodels/compat/_scipy_multivariate_t.py",
-          "lineno": 809
+          "path": "statsmodels/graphics/correlation.py",
+          "lineno": 127
         }
       }
     },
@@ -1255,6 +1049,377 @@
       }
     },
     {
+      "Conditional imports": {
+        "name": "sphinxcontrib",
+        "source": {
+          "path": "docs/source/conf.py",
+          "lineno": 62
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "statsmodels/tsa/forecasting/stl.py",
+          "lineno": 67
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "statsmodels/tsa/forecasting/stl.py",
+          "lineno": 67
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "statsmodels/stats/weightstats.py",
+          "lineno": 42
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "matplotlib",
+        "source": {
+          "path": "statsmodels/tsa/statespace/tests/test_dynamic_factor_mq.py",
+          "lineno": 1009
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "pandas",
+        "source": {
+          "path": "statsmodels/tsa/statespace/tests/test_dynamic_factor_mq.py",
+          "lineno": 1011
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "matplotlib",
+        "source": {
+          "path": "statsmodels/stats/tests/test_power.py",
+          "lineno": 24
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "statsmodels/tsa/deterministic.py",
+          "lineno": 611
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "statsmodels/tsa/deterministic.py",
+          "lineno": 611
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "statsmodels/tsa/deterministic.py",
+          "lineno": 707
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "statsmodels/tsa/deterministic.py",
+          "lineno": 707
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "statsmodels/tsa/deterministic.py",
+          "lineno": 878
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "statsmodels/tsa/deterministic.py",
+          "lineno": 878
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "statsmodels/tsa/deterministic.py",
+          "lineno": 1053
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "numdifftools",
+        "source": {
+          "path": "statsmodels/tsa/mlemodel.py",
+          "lineno": 15
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "statsmodels/tsa/stattools.py",
+          "lineno": 1435
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "statsmodels/tsa/stattools.py",
+          "lineno": 1835
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "matplotlib",
+        "source": {
+          "path": "statsmodels/imputation/tests/test_mice.py",
+          "lineno": 9
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "statsmodels/multivariate/pca.py",
+          "lineno": 25
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "examples/notebooks/linear_regression_diagnostics_plots.ipynb",
+          "cellno": 8,
+          "lineno": 48
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "examples/notebooks/linear_regression_diagnostics_plots.ipynb",
+          "cellno": 8,
+          "lineno": 48
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "statsmodels/nonparametric/kde.py",
+          "lineno": 49
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "statsmodels/nonparametric/smoothers_lowess_old.py",
+          "lineno": 15
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "statsmodels/nonparametric/smoothers_lowess_old.py",
+          "lineno": 15
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "statsmodels/tsa/filters/bk_filter.py",
+          "lineno": 9
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "statsmodels/tsa/filters/bk_filter.py",
+          "lineno": 9
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "statsmodels/compat/_scipy_multivariate_t.py",
+          "lineno": 256
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "statsmodels/compat/_scipy_multivariate_t.py",
+          "lineno": 809
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "matplotlib",
+        "source": {
+          "path": "statsmodels/graphics/tests/test_functional.py",
+          "lineno": 14
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "statsmodels/sandbox/nonparametric/densityorthopoly.py",
+          "lineno": 158
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "statsmodels/sandbox/nonparametric/densityorthopoly.py",
+          "lineno": 214
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "statsmodels/stats/oaxaca.py",
+          "lineno": 56
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "matplotlib",
+        "source": {
+          "path": "statsmodels/graphics/tests/test_mosaicplot.py",
+          "lineno": 15
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "statsmodels/tsa/arima_process.py",
+          "lineno": 51
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "statsmodels/tsa/arima_process.py",
+          "lineno": 662
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "statsmodels/tools/validation/validation.py",
+          "lineno": 48
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "statsmodels/stats/robust_compare.py",
+          "lineno": 17
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "matplotlib",
+        "source": {
+          "path": "statsmodels/graphics/tests/test_regressionplots.py",
+          "lineno": 22
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "statsmodels/graphics/functional.py",
+          "lineno": 157
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "statsmodels/graphics/functional.py",
+          "lineno": 477
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "statsmodels/graphics/functional.py",
+          "lineno": 672
+        }
+      }
+    },
+    {
       "Docstring": {
         "name": "numpy",
         "source": {
@@ -1276,53 +1441,6 @@
       "Docstring": {
         "name": "numpy",
         "source": {
-          "path": "examples/notebooks/linear_regression_diagnostics_plots.ipynb",
-          "cellno": 8,
-          "lineno": 48
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "pandas",
-        "source": {
-          "path": "examples/notebooks/linear_regression_diagnostics_plots.ipynb",
-          "cellno": 8,
-          "lineno": 48
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "matplotlib",
-        "source": {
-          "path": "statsmodels/distributions/edgeworth.py",
-          "lineno": 103
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "scipy",
-        "source": {
-          "path": "statsmodels/distributions/edgeworth.py",
-          "lineno": 103
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "scipy",
-        "source": {
-          "path": "statsmodels/distributions/edgeworth.py",
-          "lineno": 103
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
           "path": "statsmodels/stats/multitest.py",
           "lineno": 525
         }
@@ -1330,46 +1448,19 @@
     },
     {
       "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "statsmodels/emplike/aft_el.py",
-          "lineno": 389
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "patsy",
-        "source": {
-          "path": "statsmodels/stats/mediation.py",
-          "lineno": 24
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "scipy",
-        "source": {
-          "path": "statsmodels/stats/robust_compare.py",
-          "lineno": 17
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "pandas",
-        "source": {
-          "path": "statsmodels/tsa/base/datetools.py",
-          "lineno": 171
-        }
-      }
-    },
-    {
-      "Docstring": {
         "name": "matplotlib",
         "source": {
-          "path": "statsmodels/nonparametric/kde.py",
-          "lineno": 49
+          "path": "statsmodels/graphics/plot_grids.py",
+          "lineno": 43
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "statsmodels/graphics/plot_grids.py",
+          "lineno": 43
         }
       }
     },
@@ -1377,107 +1468,44 @@
       "Conditional imports": {
         "name": "matplotlib",
         "source": {
-          "path": "statsmodels/graphics/tests/test_regressionplots.py",
-          "lineno": 22
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "nitime",
-        "source": {
-          "path": "statsmodels/sandbox/archive/tsa.py",
-          "lineno": 1
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "pandas",
-        "source": {
-          "path": "statsmodels/tsa/filters/hp_filter.py",
-          "lineno": 9
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "matplotlib",
-        "source": {
-          "path": "statsmodels/tsa/filters/hp_filter.py",
-          "lineno": 9
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "statsmodels/stats/proportion.py",
-          "lineno": 928
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "statsmodels/graphics/correlation.py",
-          "lineno": 17
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "matplotlib",
-        "source": {
-          "path": "statsmodels/graphics/correlation.py",
-          "lineno": 17
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "statsmodels/graphics/correlation.py",
-          "lineno": 127
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "matplotlib",
-        "source": {
-          "path": "statsmodels/graphics/correlation.py",
-          "lineno": 127
-        }
-      }
-    },
-    {
-      "Docstring": {
-        "name": "numpy",
-        "source": {
-          "path": "statsmodels/stats/oaxaca.py",
-          "lineno": 56
-        }
-      }
-    },
-    {
-      "Conditional imports": {
-        "name": "matplotlib",
-        "source": {
-          "path": "statsmodels/graphics/tests/test_functional.py",
+          "path": "statsmodels/duration/tests/test_survfunc.py",
           "lineno": 14
         }
       }
     },
     {
-      "Docstring": {
-        "name": "scipy",
+      "Conditional imports": {
+        "name": "matplotlib",
         "source": {
-          "path": "statsmodels/distributions/discrete.py",
-          "lineno": 369
+          "path": "statsmodels/graphics/tests/test_gofplots.py",
+          "lineno": 20
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "matplotlib",
+        "source": {
+          "path": "statsmodels/graphics/tests/test_gofplots.py",
+          "lineno": 387
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "matplotlib",
+        "source": {
+          "path": "statsmodels/graphics/tests/test_gofplots.py",
+          "lineno": 467
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "matplotlib",
+        "source": {
+          "path": "statsmodels/graphics/tests/test_agreement.py",
+          "lineno": 7
         }
       }
     },

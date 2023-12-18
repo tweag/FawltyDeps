@@ -1,0 +1,680 @@
+{
+  "project_name": "plotly.py",
+  "code_dirs": {
+    "packages": {
+      "py": 12453,
+      "ipynb": 0,
+      "total": 12453
+    },
+    "doc": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "packages/python/plotly/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 2,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/python/plotly/pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "doc/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 40,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/python/plotly/test_requirements/requirements_39_core.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 3,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/python/plotly/test_requirements/requirements_36_core.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/python/plotly/test_requirements/requirements_39_optional.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 22,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/python/plotly/optional-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 23,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/python/chart-studio/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 3,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/python/plotly/test_requirements/requirements_38_optional.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 21,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/python/plotly/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "binder/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 21,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/python/plotly-geo/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/python/plotly/test_requirements/requirements_37_core.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 3,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/python/plotly/test_requirements/requirements_38_core.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 3,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/python/plotly/test_requirements/requirements_37_optional.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 22,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/python/plotly/test_requirements/requirements_39_pandas_2_optional.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 24,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/python/plotly/test_requirements/requirements_36_optional.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 21,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/python/chart-studio/test_requirements/requirements_37.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 10,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/python/plotly/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_2d_density.py",
+          "lineno": 32
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_2d_density.py",
+          "lineno": 32
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_streamline.py",
+          "lineno": 40
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_streamline.py",
+          "lineno": 40
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_gantt.py",
+          "lineno": 819
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_candlestick.py",
+          "lineno": 99
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_candlestick.py",
+          "lineno": 99
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_trisurf.py",
+          "lineno": 265
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_trisurf.py",
+          "lineno": 265
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_trisurf.py",
+          "lineno": 265
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_trisurf.py",
+          "lineno": 265
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_trisurf.py",
+          "lineno": 265
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_trisurf.py",
+          "lineno": 265
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_trisurf.py",
+          "lineno": 265
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_trisurf.py",
+          "lineno": 265
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_trisurf.py",
+          "lineno": 265
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_trisurf.py",
+          "lineno": 265
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_ohlc.py",
+          "lineno": 134
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_ternary_contour.py",
+          "lineno": 531
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_violin.py",
+          "lineno": 451
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_violin.py",
+          "lineno": 451
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_violin.py",
+          "lineno": 451
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_violin.py",
+          "lineno": 451
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_violin.py",
+          "lineno": 451
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_violin.py",
+          "lineno": 451
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_violin.py",
+          "lineno": 451
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_violin.py",
+          "lineno": 451
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_facet_grid.py",
+          "lineno": 673
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_facet_grid.py",
+          "lineno": 673
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_facet_grid.py",
+          "lineno": 673
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_distplot.py",
+          "lineno": 62
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_distplot.py",
+          "lineno": 62
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_distplot.py",
+          "lineno": 62
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_table.py",
+          "lineno": 36
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "google",
+        "source": {
+          "path": "packages/python/plotly/plotly/io/_renderers.py",
+          "lineno": 471
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_bullet.py",
+          "lineno": 197
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_dendrogram.py",
+          "lineno": 23
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_dendrogram.py",
+          "lineno": 23
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_dendrogram.py",
+          "lineno": 23
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_dendrogram.py",
+          "lineno": 23
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_quiver.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_quiver.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_quiver.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_scatterplot.py",
+          "lineno": 852
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_scatterplot.py",
+          "lineno": 852
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_scatterplot.py",
+          "lineno": 852
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_scatterplot.py",
+          "lineno": 852
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_scatterplot.py",
+          "lineno": 852
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_scatterplot.py",
+          "lineno": 852
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_scatterplot.py",
+          "lineno": 852
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_scatterplot.py",
+          "lineno": 852
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_scatterplot.py",
+          "lineno": 852
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_scatterplot.py",
+          "lineno": 852
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_scatterplot.py",
+          "lineno": 852
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "packages/python/plotly/plotly/figure_factory/_scatterplot.py",
+          "lineno": 852
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "PIL",
+        "source": {
+          "path": "packages/python/plotly/_plotly_utils/basevalidators.py",
+          "lineno": 2344
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "plotly.graph_objs",
+        "source": {
+          "path": "packages/python/plotly/_plotly_utils/basevalidators.py",
+          "lineno": 2638
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

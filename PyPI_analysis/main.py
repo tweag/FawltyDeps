@@ -3,6 +3,7 @@ import logging
 import sys
 from collections import Counter
 from functools import partial
+from io import StringIO
 from pathlib import Path
 from typing import Dict, Iterator, List, Optional, Set, TextIO, Type
 
@@ -11,11 +12,13 @@ try:  # import from Pydantic V2
 except ModuleNotFoundError:
     from pydantic.json import custom_pydantic_encoder  # type: ignore[no-redef]
 
+from fawltydeps import extract_declared_dependencies
 from fawltydeps.packages import BasePackageResolver
 from fawltydeps.settings import Action, OutputFormat, Settings
 from fawltydeps.traverse_project import find_sources
 from fawltydeps.types import (
     CodeSource,
+    DeclaredDependency,
     DepsSource,
     ParsedImport,
     PyEnvSource,
@@ -58,8 +61,10 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
         # The following members are calculated once, on-demand, by the
         # @property @calculated_once methods below:
         self._sources: Optional[Set[Source]] = None
-        self._imports: Optional[List[Dict[str, ParsedImport]]] = None
+        self._declared_deps: Optional[List[DeclaredDependency]] = None
+        self._detected_imports: Optional[List[Dict[str, ParsedImport]]] = None
         self._code_dirs: Optional[Dict[Path, int]] = None
+        self._dep_files = None
 
     def is_enabled(self, *args: Action) -> bool:
         """Return True if any of the given actions are in self.settings."""
@@ -88,7 +93,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
 
     @property
     @calculated_once
-    def imports(self) -> List[ParsedImport]:
+    def detected_imports(self) -> List[ParsedImport]:
         """The list of 3rd-party imports parsed from this project."""
         return list(
             detect_imports.parse_sources(
@@ -99,8 +104,36 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
 
     @property
     @calculated_once
-    def code_dirs(self) -> Optional[Dict[Path, int]]:
-        """The directory that contains the main code"""
+    def declared_deps(self) -> List[DeclaredDependency]:
+        """The list of declared dependencies parsed from this project."""
+        return list(
+            extract_declared_dependencies.parse_sources(
+                (src for src in self.sources if isinstance(src, DepsSource))
+            )
+        )
+
+    @property
+    @calculated_once
+    def dep_files(self) -> Dict[DepsSource, int]:
+        """The dictionary of dependency declaration files and dependency count"""
+        dep_sources = {src for src in self.sources if isinstance(src, DepsSource)}
+        declared_deps_counts = dict(
+            Counter(str(dep.source.path) for dep in self.declared_deps)
+        )
+        for dep_source in dep_sources:
+            if str(dep_source.path) not in declared_deps_counts.keys():
+                declared_deps_counts[str(dep_source.path)] = 0
+        return {
+            src: count
+            for src in dep_sources
+            for path, count in declared_deps_counts.items()
+            if str(src.path) == path
+        }
+
+    @property
+    @calculated_once
+    def code_dirs(self) -> Optional[Dict[str, Dict[str, int]]]:
+        """The directory that contains the code directory and Python files count"""
         code_paths = [
             src.path
             for src in self.sources
@@ -110,10 +143,31 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
             and "example" not in src.path.parts[0]
             and "test" not in src.path.name
         ]
-        directories = [path.parts[0] for path in code_paths]
-        directory_counts = Counter(directories)
-        if directory_counts:
-            return dict(directory_counts.most_common())
+        directories_py = [path.parts[0] for path in code_paths if path.suffix == ".py"]
+        directories_ipynb = [
+            path.parts[0] for path in code_paths if path.suffix == ".ipynb"
+        ]
+        directories_py_counts = Counter(directories_py)
+        directories_ipynb_counts = Counter(directories_ipynb)
+
+        # Create a dictionary to combine two counters
+        combined_dict = {}
+        for key, value in directories_py_counts.items():
+            combined_dict[key] = {"py": value, "ipynb": 0, "total": value}
+
+        for key, value in directories_ipynb_counts.items():
+            if key in combined_dict:
+                combined_dict[key]["ipynb"] = value
+                combined_dict[key]["total"] += value
+            else:
+                combined_dict[key] = {"py": 0, "ipynb": value, "total": value}
+
+        sorted_combined_dict = dict(
+            sorted(combined_dict.items(), key=lambda x: x[1]["total"], reverse=True)
+        )
+
+        if sorted_combined_dict:
+            return sorted_combined_dict
 
     @classmethod
     def create(
@@ -135,12 +189,13 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
         ret = cls(settings, project_name, stdin)
 
         ret.sources
-        ret.imports
+        ret.detected_imports
         ret.code_dirs
+        ret.dep_files
 
         return ret
 
-    def print_json(self, out: TextIO) -> None:
+    def print_json(self, out: TextIO, warning_entries: Set) -> None:
         """Print the JSON representation of this analysis to 'out'."""
         # The default pydantic_encoder uses list() to serialize set objects.
         # We need a stable serialization to JSON, so let's use sorted() instead.
@@ -160,13 +215,24 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
             # by settings.actions.
             "project_name": self.project_name,
             "code_dirs": self.code_dirs,
-            "deps_file": {src for src in self._sources if isinstance(src, DepsSource)},
-            "imports": self._imports,
+            "deps_file": [
+                {
+                    "source_type": dep.source_type,
+                    "path": dep.path,
+                    "parser_choice": dep.parser_choice,
+                    "deps_count": count,
+                    "warnings": str(dep.path) in warning_entries,
+                }
+                for dep, count in self.dep_files.items()
+            ],
+            "imports": self._detected_imports,
             "fawltydeps_version": self.version,
         }
         json.dump(json_dict, out, indent=2, default=encoder)
 
-    def print_human_readable(self, out: TextIO, detailed: bool = True) -> None:
+    def print_human_readable(
+        self, out: TextIO, warning_entries: Set, detailed: bool = True
+    ) -> None:
         """Print a human-readable rendering of this analysis to 'out'."""
 
         def render_code_directory() -> Iterator[str]:
@@ -174,7 +240,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
                 yield "Code directories: "
                 if self.code_dirs:
                     for code_dir, count in self.code_dirs.items():
-                        yield f"  {code_dir}: {count} Python files"
+                        yield f"  {code_dir}: {count['total']} Python file(s) ({count['py']} '.py' file(s) and {count['ipynb']} '.ipynb' file(s))"
                 else:
                     yield "  There is no main code directory found under the current directory."
             else:
@@ -187,9 +253,8 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
                 yield "\nDependency declaration files:"
                 dep_files = sorted(
                     {
-                        f"  {src.parser_choice}: {src.render(True)}"
-                        for src in self.sources
-                        if isinstance(src, DepsSource)
+                        f"  {dep.parser_choice}: {dep.render(False)} ({count} dependencies declared, with{'' if str(dep.path) in warning_entries else 'out'} warning(s))"
+                        for dep, count in self.dep_files.items()
                     }
                 )
                 if dep_files:
@@ -199,24 +264,23 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
             else:
                 yield from sorted(
                     {
-                        f"{src.parser_choice}: {src.render(False)}"
-                        for src in self.sources
-                        if isinstance(src, DepsSource)
+                        f"{dep.parser_choice}: {dep.render(False)}"
+                        for dep in self.dep_files
                     }
                 )
 
         def render_imports() -> Iterator[str]:
             if detailed:
                 yield "\n" + "Patterns of imports:"
-                if self.imports:
-                    for imp in self.imports:
+                if self.detected_imports:
+                    for imp in self.detected_imports:
                         yield f"  {list(imp.keys())[0]}: {imp[list(imp.keys())[0]].source}: {imp[list(imp.keys())[0]].name}"
                 else:
                     yield "  There is no import pattern found."
             else:
                 unique_imports = {
                     list(imp.keys())[0] + ": " + imp[list(imp.keys())[0]].name
-                    for imp in self.imports
+                    for imp in self.detected_imports
                 }
                 yield from sorted(unique_imports)
 
@@ -249,17 +313,16 @@ def assign_exit_code(analysis: Analysis) -> int:
 
 
 def print_output(
-    analysis: Analysis,
-    stdout: TextIO = sys.stdout,
+    analysis: Analysis, stdout: TextIO = sys.stdout, warning_entries: Set = {}
 ) -> None:
-    """Print the output of the given 'analysis' to 'stdout'."""
+    """Print the output of the given 'analysis' and set of files with warnings to 'stdout'."""
 
     if analysis.settings.output_format == OutputFormat.JSON:
-        analysis.print_json(stdout)
+        analysis.print_json(stdout, warning_entries)
     elif analysis.settings.output_format == OutputFormat.HUMAN_DETAILED:
-        analysis.print_human_readable(stdout, detailed=True)
+        analysis.print_human_readable(stdout, warning_entries, detailed=True)
     elif analysis.settings.output_format == OutputFormat.HUMAN_SUMMARY:
-        analysis.print_human_readable(stdout, detailed=False)
+        analysis.print_human_readable(stdout, warning_entries, detailed=False)
         print(f"\n{VERBOSE_PROMPT}", file=stdout)
     else:
         raise NotImplementedError
@@ -275,7 +338,11 @@ def main(
     args = parser.parse_args(cmdline_args)
     settings = Settings.config().create(args)
 
-    logging.basicConfig(level=logging.WARNING - 10 * settings.verbosity)
+    # Create an in-memory buffer to capture log messages
+    log_buffer = StringIO()
+    logging.basicConfig(
+        stream=log_buffer, level=logging.WARNING - 10 * settings.verbosity
+    )
 
     try:
         analysis = Analysis.create(settings, args.project_name, stdin)
@@ -292,6 +359,14 @@ def main(
         return 5
 
     exit_code = assign_exit_code(analysis=analysis)
-    print_output(analysis=analysis, stdout=stdout)
+
+    log_contents = log_buffer.getvalue()
+    warning_entries = {
+        line.split("@")[-1].split(":")[-2].strip()
+        for line in log_contents.split("\n")
+        if "WARNING:fawltydeps.limited_eval" in line
+    }
+
+    print_output(analysis=analysis, stdout=stdout, warning_entries=warning_entries)
 
     return exit_code

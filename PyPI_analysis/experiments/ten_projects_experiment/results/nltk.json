@@ -1,57 +1,59 @@
 {
   "project_name": "nltk",
   "code_dirs": {
-    "nltk": 305,
-    "tools": 2,
-    "web": 1
+    "nltk": {
+      "py": 304,
+      "ipynb": 1,
+      "total": 305
+    },
+    "tools": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    },
+    "web": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
   },
   "deps_file": [
     {
       "source_type": "DepsSource",
       "path": "requirements-ci.txt",
-      "parser_choice": "requirements.txt"
-    },
-    {
-      "source_type": "DepsSource",
-      "path": "requirements-test.txt",
-      "parser_choice": "requirements.txt"
+      "parser_choice": "requirements.txt",
+      "deps_count": 14,
+      "warnings": false
     },
     {
       "source_type": "DepsSource",
       "path": "setup.cfg",
-      "parser_choice": "setup.cfg"
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "requirements-test.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 5,
+      "warnings": false
     },
     {
       "source_type": "DepsSource",
       "path": "setup.py",
-      "parser_choice": "setup.py"
+      "parser_choice": "setup.py",
+      "deps_count": 12,
+      "warnings": true
     }
   ],
   "imports": [
     {
       "Conditional imports": {
-        "name": "pygame",
-        "source": {
-          "path": "nltk/corpus/reader/timit.py",
-          "lineno": 459
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "bllipparser",
-        "source": {
-          "path": "nltk/test/unit/test_bllip.py",
-          "lineno": 15
-        }
-      }
-    },
-    {
-      "Conditional imports": {
         "name": "numpy",
         "source": {
-          "path": "nltk/classify/tadm.py",
-          "lineno": 13
+          "path": "nltk/tag/hmm.py",
+          "lineno": 75
         }
       }
     },
@@ -59,8 +61,8 @@
       "Dynamic imports (pytest)": {
         "name": "numpy",
         "source": {
-          "path": "nltk/test/unit/test_hmm.py",
-          "lineno": 82
+          "path": "nltk/test/unit/test_tag.py",
+          "lineno": 23
         }
       }
     },
@@ -113,8 +115,62 @@
       "Conditional imports": {
         "name": "numpy",
         "source": {
-          "path": "nltk/cluster/kmeans.py",
-          "lineno": 12
+          "path": "nltk/classify/maxent.py",
+          "lineno": 54
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numpy",
+        "source": {
+          "path": "nltk/test/probability_fixt.py",
+          "lineno": 8
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "numpy",
+        "source": {
+          "path": "nltk/tag/perceptron.py",
+          "lineno": 20
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "bllipparser",
+        "source": {
+          "path": "nltk/test/unit/test_bllip.py",
+          "lineno": 15
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "numpy",
+        "source": {
+          "path": "nltk/classify/tadm.py",
+          "lineno": 13
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "matplotlib",
+        "source": {
+          "path": "nltk/test/conftest.py",
+          "lineno": 10
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numpy",
+        "source": {
+          "path": "nltk/test/classify_fixt.py",
+          "lineno": 5
         }
       }
     },
@@ -183,10 +239,19 @@
     },
     {
       "Conditional imports": {
-        "name": "pycrfsuite",
+        "name": "pygame",
         "source": {
-          "path": "nltk/tag/crf.py",
-          "lineno": 17
+          "path": "nltk/corpus/reader/timit.py",
+          "lineno": 459
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "numpy",
+        "source": {
+          "path": "nltk/cluster/em.py",
+          "lineno": 8
         }
       }
     },
@@ -196,6 +261,33 @@
         "source": {
           "path": "nltk/tokenize/texttiling.py",
           "lineno": 12
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "numpy",
+        "source": {
+          "path": "nltk/cluster/gaac.py",
+          "lineno": 8
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "numpy",
+        "source": {
+          "path": "nltk/cluster/kmeans.py",
+          "lineno": 12
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "numpy",
+        "source": {
+          "path": "nltk/metrics/segmentation.py",
+          "lineno": 43
         }
       }
     },
@@ -210,19 +302,10 @@
     },
     {
       "Conditional imports": {
-        "name": "matplotlib",
+        "name": "pycrfsuite",
         "source": {
-          "path": "nltk/test/conftest.py",
-          "lineno": 10
-        }
-      }
-    },
-    {
-      "Conditional imports": {
-        "name": "numpy",
-        "source": {
-          "path": "nltk/classify/maxent.py",
-          "lineno": 54
+          "path": "nltk/tag/crf.py",
+          "lineno": 17
         }
       }
     },
@@ -232,6 +315,15 @@
         "source": {
           "path": "nltk/test/unit/test_twitter_auth.py",
           "lineno": 9
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numpy",
+        "source": {
+          "path": "nltk/test/unit/test_hmm.py",
+          "lineno": 82
         }
       }
     },
@@ -250,78 +342,6 @@
         "source": {
           "path": "nltk/__init__.py",
           "lineno": 173
-        }
-      }
-    },
-    {
-      "Conditional imports": {
-        "name": "numpy",
-        "source": {
-          "path": "nltk/cluster/em.py",
-          "lineno": 8
-        }
-      }
-    },
-    {
-      "Conditional imports": {
-        "name": "numpy",
-        "source": {
-          "path": "nltk/tag/hmm.py",
-          "lineno": 75
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "numpy",
-        "source": {
-          "path": "nltk/test/probability_fixt.py",
-          "lineno": 8
-        }
-      }
-    },
-    {
-      "Conditional imports": {
-        "name": "numpy",
-        "source": {
-          "path": "nltk/metrics/segmentation.py",
-          "lineno": 43
-        }
-      }
-    },
-    {
-      "Conditional imports": {
-        "name": "numpy",
-        "source": {
-          "path": "nltk/tag/perceptron.py",
-          "lineno": 20
-        }
-      }
-    },
-    {
-      "Conditional imports": {
-        "name": "numpy",
-        "source": {
-          "path": "nltk/cluster/gaac.py",
-          "lineno": 8
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "numpy",
-        "source": {
-          "path": "nltk/test/unit/test_tag.py",
-          "lineno": 23
-        }
-      }
-    },
-    {
-      "Dynamic imports (pytest)": {
-        "name": "numpy",
-        "source": {
-          "path": "nltk/test/classify_fixt.py",
-          "lineno": 5
         }
       }
     }
