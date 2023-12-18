@@ -85,7 +85,9 @@ def integration_tests(session):
 @nox.session(python=python_versions)
 def self_test(session):
     # Install all optional dependency groups for a self test
-    install_groups(session, include=["nox", "test", "lint", "format", "dev"])
+    install_groups(
+        session, include=["nox", "test", "lint", "format", "dev", "pypi_analysis"]
+    )
     # For --pyenv, use Nox's virtualenv, or fall back to current virtualenv
     venv_path = getattr(session.virtualenv, "location", sys.prefix)
     session.run("fawltydeps", f"--pyenv={venv_path}")
@@ -118,7 +120,9 @@ def lint(session):
 def format(session):
     install_groups(session, include=["format"], include_self=False)
     session.run(
-        "codespell", "--enable-colors", "--skip=./PyPI_analysis/notebooks/*.ipynb"
+        "codespell",
+        "--enable-colors",
+        "--skip=./PyPI_analysis/notebooks/*.ipynb,./PyPI_analysis/experiments/biomedical_projects_experiment/repositories.json",
     )
     session.run("isort", "fawltydeps", "tests", "--check", "--diff", "--color")
     session.run("black", ".", "--check", "--diff", "--color")
@@ -128,7 +132,9 @@ def format(session):
 def reformat(session):
     install_groups(session, include=["format"], include_self=False)
     session.run(
-        "codespell", "--write-changes", "--skip=./PyPI_analysis/notebooks/*.ipynb"
+        "codespell",
+        "--write-changes",
+        "--skip=./PyPI_analysis/notebooks/*.ipynb,./PyPI_analysis/experiments/biomedical_projects_experiment/repositories.json",
     )
     session.run("isort", "fawltydeps", "tests")
     session.run("black", ".")
