@@ -1,6 +1,8 @@
 """Encapsulate the lookup of packages and their provided import names."""
 
 import logging
+import os
+import platform
 import subprocess
 import sys
 import tempfile
@@ -205,65 +207,17 @@ class UserDefinedMapping(BasePackageResolver):
         }
 
 
-class LocalPackageResolver(BasePackageResolver):
+class InstalledPackageResolver(BasePackageResolver):
     """Lookup imports exposed by packages installed in a Python environment."""
 
-    def __init__(self, srcs: AbstractSet[PyEnvSource] = frozenset()) -> None:
-        """Lookup packages installed in the given Python environments.
+    def __init__(self) -> None:
+        """Lookup packages installed in some Python environments.
 
-        Default to the current python environment (aka. sys.path) if `srcs` is
-        empty (the default).
-
-        Use importlib_metadata to look up the mapping between packages and their
-        provided import names.
+        Uses importlib_metadata to look up the mapping between packages and
+        their provided import names.
         """
-        self.package_dirs: Set[Path] = set(src.path for src in srcs)
-        # We enumerate packages for pyenv_path _once_ and cache the result here:
+        # We enumerate packages _once_ and cache the result here:
         self._packages: Optional[Dict[str, Package]] = None
-
-    @classmethod
-    def find_package_dirs(cls, path: Path) -> Iterator[Path]:
-        """Return the packages directories corresponding to the given path.
-
-        The given 'path' is a user-provided directory path meant to point to
-        a Python environment (e.g. a virtualenv, a poetry2nix environment, or
-        similar). Deduce the appropriate package directories inside this path,
-        and yield them.
-
-        Yield nothing if no package dirs was found at the given path.
-        """
-        # We define a "valid Python environment" as a directory that contains
-        # a bin/python file, and a lib/pythonX.Y/site-packages subdirectory.
-        # This matches both a system-wide installation (like what you'd find in
-        # /usr or /usr/local), as well as a virtualenv, a poetry2nix env, etc.
-        # From there, the returned directory is that site-packages subdir.
-        # Note that we must also accept lib/pythonX.Y/site-packages for python
-        # versions X.Y that are different from the current Python version.
-        found = False
-        if (path / "bin/python").is_file():
-            for site_packages in path.glob("lib/python?.*/site-packages"):
-                if site_packages.is_dir():
-                    yield site_packages
-                    found = True
-            if found:
-                return
-
-        # Workaround for projects using PEP582:
-        if path.name == "__pypackages__":
-            for site_packages in path.glob("?.*/lib"):
-                if site_packages.is_dir():
-                    yield site_packages
-                    found = True
-            if found:
-                return
-
-        # Given path is not a python environment, but it might be _inside_ one.
-        # Try again with parent directory
-        if path.parent != path:
-            for package_dir in cls.find_package_dirs(path.parent):
-                with suppress(ValueError):
-                    package_dir.relative_to(path)  # ValueError if not relative
-                    yield package_dir
 
     def _from_one_env(
         self, env_paths: List[str]
@@ -272,7 +226,7 @@ class LocalPackageResolver(BasePackageResolver):
 
         This is roughly equivalent to calling importlib_metadata's
         packages_distributions(), except that instead of implicitly querying
-        sys.path, we query env_paths instead.
+        sys.path, we query the given env_paths instead.
 
         Also, we are able to return packages that map to zero import names,
         whereas packages_distributions() cannot.
@@ -302,23 +256,10 @@ class LocalPackageResolver(BasePackageResolver):
             yield {dist.name: imports}, str(parent_dir)
 
     @property
-    @calculated_once
+    @abstractmethod
     def packages(self) -> Dict[str, Package]:
-        """Return mapping of package names to Package objects.
-
-        This enumerates the available packages in the given Python environment
-        (or the current Python environment) _once_, and caches the result for
-        the remainder of this object's life.
-        """
-
-        def _pyenvs() -> Iterator[Tuple[CustomMapping, str]]:
-            if not self.package_dirs:  # No pyenvs given, fall back to sys.path
-                yield from self._from_one_env(sys.path)
-            else:
-                for package_dir in self.package_dirs:
-                    yield from self._from_one_env([str(package_dir)])
-
-        return accumulate_mappings(self.__class__, _pyenvs())
+        """Return mapping of package names to Package objects."""
+        raise NotImplementedError
 
     def lookup_packages(self, package_names: Set[str]) -> Dict[str, Package]:
         """Convert package names to locally available Package objects.
@@ -343,6 +284,106 @@ class LocalPackageResolver(BasePackageResolver):
         }
 
 
+class SysPathPackageResolver(InstalledPackageResolver):
+    """Lookup imports exposed by packages installed in sys.path."""
+
+    @property
+    @calculated_once
+    def packages(self) -> Dict[str, Package]:
+        """Return mapping of package names to Package objects.
+
+        This enumerates the available packages in the current Python environment
+        (aka. sys.path) _once_, and caches the result for the remainder of this
+        object's life.
+        """
+        return accumulate_mappings(self.__class__, self._from_one_env(sys.path))
+
+
+class LocalPackageResolver(InstalledPackageResolver):
+    """Lookup imports packages installed in the given Python environments."""
+
+    def __init__(self, srcs: AbstractSet[PyEnvSource] = frozenset()) -> None:
+        """Lookup packages installed in the given Python environments.
+
+        Use importlib_metadata to look up the mapping between packages and their
+        provided import names.
+        """
+        super().__init__()
+        self.package_dirs: Set[Path] = set(src.path for src in srcs)
+
+    @classmethod
+    def find_package_dirs(  # pylint: disable=too-many-branches,
+        cls, path: Path
+    ) -> Iterator[Path]:  # pylint: disable=too-many-branches,
+        """Return the packages directories corresponding to the given path.
+
+        The given 'path' is a user-provided directory path meant to point to
+        a Python environment (e.g. a virtualenv, a poetry2nix environment, or
+        similar). Deduce the appropriate package directories inside this path,
+        and yield them.
+
+        Yield nothing if no package dirs was found at the given path.
+        """
+        # We define a "valid Python environment" as a directory that contains
+        # a bin/python file, and a lib/pythonX.Y/site-packages subdirectory.
+        # This matches both a system-wide installation (like what you'd find in
+        # /usr or /usr/local), as well as a virtualenv, a poetry2nix env, etc.
+        # From there, the returned directory is that site-packages subdir.
+        # Note that we must also accept lib/pythonX.Y/site-packages for python
+        # versions X.Y that are different from the current Python version.
+        found = False
+
+        if (path / "bin" / "python").is_file():
+            for site_packages in path.glob("lib/python?.*/site-packages"):
+                if site_packages.is_dir():
+                    yield site_packages
+                    found = True
+            if found:
+                return
+
+        # Workaround for projects using PEP582:
+        if path.name == "__pypackages__":
+            for site_packages in path.glob("?.*/lib"):
+                if site_packages.is_dir():
+                    yield site_packages
+                    found = True
+            if found:
+                return
+
+        # Check for packages on Windows
+        if platform.system() == "Windows":
+            for site_packages in path.glob(os.path.join("Lib", "site-packages")):
+                if site_packages.is_dir():
+                    yield site_packages
+                    found = True
+            if found:
+                return
+
+        # Given path is not a python environment, but it might be _inside_ one.
+        # Try again with parent directory
+        if path.parent != path:
+            for package_dir in cls.find_package_dirs(path.parent):
+                with suppress(ValueError):
+                    package_dir.relative_to(path)  # ValueError if not relative
+                    yield package_dir
+
+    @property
+    @calculated_once
+    def packages(self) -> Dict[str, Package]:
+        """Return mapping of package names to Package objects.
+
+        This enumerates the available packages in the given Python environment
+        (or the current Python environment) _once_, and caches the result for
+        the remainder of this object's life.
+        """
+
+        def _pyenvs() -> Iterator[Tuple[CustomMapping, str]]:
+            for package_dir in self.package_dirs:
+                yield from self._from_one_env([str(package_dir)])
+
+        return accumulate_mappings(self.__class__, _pyenvs())
+
+
 def pyenv_sources(*pyenv_paths: Path) -> Set[PyEnvSource]:
     """Helper for converting Python environment paths into PyEnvSources.
 
@@ -352,6 +393,7 @@ def pyenv_sources(*pyenv_paths: Path) -> Set[PyEnvSource]:
     ret: Set[PyEnvSource] = set()
     for path in pyenv_paths:
         package_dirs = set(LocalPackageResolver.find_package_dirs(path))
+
         if not package_dirs:
             logger.debug(f"Could not find a Python env at {path}!")
         ret.update(PyEnvSource(d) for d in package_dirs)
@@ -395,8 +437,14 @@ class TemporaryPipInstallResolver(BasePackageResolver):
             text=True,
             check=False,
         )
+        pip_path = (
+            venv_dir / "Scripts" / "pip.exe"
+            if platform.system() == "Windows"
+            else venv_dir / "bin" / "pip"
+        )
+
         argv = [
-            f"{venv_dir}/bin/pip",
+            f"{pip_path}",
             "install",
             "--no-deps",
             "--quiet",
@@ -485,9 +533,11 @@ class IdentityMapping(BasePackageResolver):
 
 
 def setup_resolvers(
+    *,
     custom_mapping_files: Optional[Set[Path]] = None,
     custom_mapping: Optional[CustomMapping] = None,
     pyenv_srcs: AbstractSet[PyEnvSource] = frozenset(),
+    use_current_env: bool = False,
     install_deps: bool = False,
 ) -> Iterator[BasePackageResolver]:
     """Configure a sequence of resolvers according to the given arguments.
@@ -500,6 +550,9 @@ def setup_resolvers(
     )
 
     yield LocalPackageResolver(pyenv_srcs)
+
+    if use_current_env:
+        yield SysPathPackageResolver()
 
     if install_deps:
         yield TemporaryPipInstallResolver()

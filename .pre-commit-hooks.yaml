@@ -1,6 +1,15 @@
--   id: check
-    name: FawltyDeps
-    description: Python dependency checker
-    entry: fawltydeps
+-   id: check-undeclared
+    name: FawltyDeps-undeclared
+    description: "FawltyDeps: Check for undeclared dependencies"
+    entry: fawltydeps --check-undeclared --detailed
     language: python
-    pass_filenames: false
+    args: [--code]
+    types_or: [python, jupyter]
+
+-   id: check-unused
+    name: FawltyDeps-unused
+    description: "FawltyDeps: Check for unused dependencies"
+    entry: fawltydeps --check-unused --detailed
+    language: python
+    args: [--deps]
+    files: "(.*requirements.*\\.(txt|in)|pyproject\\.toml|setup\\.(py|cfg))"

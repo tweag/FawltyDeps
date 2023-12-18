@@ -1,4 +1,4 @@
-[![PyPI Latest Release](https://img.shields.io/pypi/v/fawltydeps.svg)](https://pypi.org/project/fawltydeps/) [![Supported Python versions](https://img.shields.io/pypi/pyversions/fawltydeps.svg)](https://pypi.org/project/fawltydeps/) ![Build](https://img.shields.io/github/actions/workflow/status/tweag/fawltydeps/ci.yaml) [![Licence](https://img.shields.io/pypi/l/fawltydeps.svg)](https://pypi.org/project/fawltydeps/) [![Code of conduct](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](code_of_conduct.md)
+[![PyPI Latest Release](https://img.shields.io/pypi/v/fawltydeps.svg)](https://pypi.org/project/fawltydeps/) [![Supported Python versions](https://img.shields.io/pypi/pyversions/fawltydeps.svg)](https://pypi.org/project/fawltydeps/) ![Build](https://img.shields.io/github/actions/workflow/status/tweag/fawltydeps/ci.yaml) [![Licence](https://img.shields.io/pypi/l/fawltydeps.svg)](https://pypi.org/project/fawltydeps/) [![Code of conduct](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](code_of_conduct.md) [![Discord channel](https://img.shields.io/discord/1174731094726295632)](https://discord.gg/53XwX7Ft)
 
 # FawltyDeps
 
@@ -8,6 +8,8 @@ The name is inspired by the Monty Python-adjacent
 [Fawlty Towers](https://en.wikipedia.org/wiki/Fawlty_Towers) sitcom.
 
 ![FawltyDeps demo](https://github.com/tweag/FawltyDeps/raw/main/docs/fawltydeps_demo_tqdm.gif)
+
+We [invite you](https://discord.gg/53XwX7Ft) to join our [Discord channel](https://discord.com/channels/1174731094726295632/1176462512212951090)! It's a great place to ask questions, share your ideas, and collaborate with other contributors.
 
 ## Table of contents
 
@@ -161,9 +163,10 @@ customization options are summarized in the table below:
 | Priority | Mapping strategy        | Options |
 |----------|----------------------|------------|
 | 1        | User-defined mapping | Provide a custom mapping in TOML format via `--custom-mapping-file` or a `[tool.fawltydeps.custom_mapping]` section in `pyproject.toml`. <br /> Default: No custom mapping|
-| 2        | Mapping from installed packages | Point to one or more environments via `--pyenv`.<br />Default: auto-discovery of Python environments under the project’s basepath. If none are found, default to the Python environment in which FawltyDeps itself is installed.|
-| 3a       | Mapping via temporary installation of packages  | Activated with the `--install-deps` option.|
-| 3b       | Identity mapping | Active by default. Deactivated when `--install-deps` is used. |
+| 2        | Mapping from installed packages found inside project | Point to one or more environments with `--pyenv`.<br />Default: auto-discovery of Python environments under the project’s basepath.|
+| 3        | Mapping from packages installed in `sys.path` | Active by default. No CLI option. This finds packages installed in the Python environment in which FawltyDeps itself runs.|
+| 4a       | Mapping via temporary installation of packages  | Activated with the `--install-deps` option.|
+| 4b       | Identity mapping | Active by default. Deactivated when `--install-deps` is used. |
 
 
 #### Local Python environment mapping
@@ -193,18 +196,19 @@ If `--pyenv` is not used, FawltyDeps will look for _Python environments_
 (virtualenvs or similar directories like `.venv` or `__pypackages__`.) inside
 your project (i.e. under `basepath`, if given, or the current directory).
 
-If no Python environments are found within your project, FawltyDeps will fall
-back to looking at your _current Python environment_: This is the environment
-in which FawltyDeps itself is installed.
-
-This works well when you, for example, `pip install fawltydeps` into the same
-virtualenv as your project dependencies.
-
 You can use `--pyenv` multiple times to have FawltyDeps look for packages in
 multiple Python environments. In this case (or when multiple Python environments
 are found inside your project) FawltyDeps will use the union (superset) of all
 imports provided by all matching packages across those Python environments as
 valid import names for that dependency.
+
+#### Current Python environment
+
+In addition to the local Python environments found above, FawltyDeps will also
+look at your _current Python environment_, i.e. the environment in which
+FawltyDeps itself is installed. This works well when you, for example,
+`pip install fawltydeps` into the same virtualenv as your project dependencies,
+no matter where this virtualenv may be located.
 
 #### Identity mapping
 
@@ -364,8 +368,7 @@ Here is a complete list of configuration directives we support:
 - `pyenvs`: Where to look for Python environments (directories like `.venv`,
   `__pypackages__`, or similar) to be used for resolving project dependencies
   into provided import names. Defaults to looking for Python environments under
-  the current directory, i.e. like `pyenvs = ["."]`. If none are found, use the
-  Python environment where FawltyDeps is installed (aka. `sys.path`).
+  the current directory, i.e. like `pyenvs = ["."]`.
 - `ignore_undeclared`: A list of specific dependencies to ignore when reporting
   undeclared dependencies, for example: `["some_module", "some_other_module"]`.
   The default is the empty list: `ignore_undeclared = []`.
@@ -537,10 +540,10 @@ To solve this, FawltyDeps looks at the packages installed in your Python
 environment to correctly map dependencies (package names) into the imports that
 they provide. This is:
 
-- any Python environment found via the `--pyenv` option, or
-- any Python environment found within your project (`basepath` or the current
-  directory).
-- Failing that, FawltyDeps will use the _current Python environment_,
+- any Python environment found via the `--pyenv` option,
+- or if `--pyenv` is not given: any Python environment found within your
+  project (`basepath` or the current directory).
+- In addition, FawltyDeps will use the _current Python environment_,
   i.e. the one in which FawltyDeps itself is running.
 
 As a final resort, when an installed package is not found for a declared
@@ -599,9 +602,8 @@ tool, you can add something like this to your project's
 ```yaml
 repos:
   - repo: https://github.com/tweag/FawltyDeps
-    rev: v0.13.1
+    rev: v0.13.3
     hooks:
-      - id: check
-        args:
-          - --detailed
+      - id: check-undeclared
+      - id: check-unused
 ```

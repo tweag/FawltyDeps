@@ -1,5 +1,6 @@
 """Verify behavior of our basic types."""
 
+import os
 from dataclasses import FrozenInstanceError
 from pathlib import Path
 
@@ -10,19 +11,31 @@ from fawltydeps.types import DeclaredDependency, Location, ParsedImport
 testdata = {  # Test ID -> (Location args, expected string representation, sort order)
     # First arg must be a Path, or "<stdin>"
     "nothing": (("<stdin>",), "<stdin>", 111),
-    "abs_path": ((Path("/foo/bar"),), "/foo/bar", 211),
+    "abs_path": ((Path("/foo/bar"),), os.path.join(os.sep, "foo", "bar"), 211),
     "rel_path": ((Path("foo"),), "foo", 311),
     # Second arg refers to notebook cell, and is rendered in [square brackets]
     "no_path_cell": (("<stdin>", 1), "<stdin>[1]", 121),
-    "abs_path_cell": ((Path("/foo/bar"), 2), "/foo/bar[2]", 221),
+    "abs_path_cell": (
+        (Path("/foo/bar"), 2),
+        os.path.join(os.sep, "foo", "bar[2]"),
+        221,
+    ),
     "rel_path_cell": ((Path("foo"), 3), "foo[3]", 321),
     # Third arg is line number, and is prefixed by colon
     "no_path_cell_line": (("<stdin>", 1, 2), "<stdin>[1]:2", 122),
-    "abs_path_cell_line": ((Path("/foo/bar"), 2, 3), "/foo/bar[2]:3", 222),
+    "abs_path_cell_line": (
+        (Path("/foo/bar"), 2, 3),
+        os.path.join(os.sep, "foo", "bar[2]:3"),
+        222,
+    ),
     "rel_path_cell_line": ((Path("foo"), 3, 4), "foo[3]:4", 322),
     # Cell number is omitted for non-notebooks.
     "no_path_line": (("<stdin>", None, 2), "<stdin>:2", 112),
-    "abs_path_line": ((Path("/foo/bar"), None, 3), "/foo/bar:3", 212),
+    "abs_path_line": (
+        (Path("/foo/bar"), None, 3),
+        os.path.join(os.sep, "foo", "bar:3"),
+        212,
+    ),
     "rel_path_line": ((Path("foo"), None, 4), "foo:4", 312),
 }
 

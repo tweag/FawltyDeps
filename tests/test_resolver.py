@@ -10,8 +10,8 @@ from hypothesis import strategies as st
 
 from fawltydeps.packages import (
     IdentityMapping,
-    LocalPackageResolver,
     Package,
+    SysPathPackageResolver,
     TemporaryPipInstallResolver,
     UserDefinedMapping,
     resolve_dependencies,
@@ -86,7 +86,7 @@ def generate_expected_resolved_deps(
     ret = {}
     ret.update(
         {
-            dep: Package(dep, imports, LocalPackageResolver)
+            dep: Package(dep, imports, SysPathPackageResolver)
             for dep, imports in locally_installed_deps.items()
         }
     )
@@ -193,6 +193,7 @@ def test_resolve_dependencies__generates_expected_mappings(
                 if custom_mapping_file
                 else None,
                 custom_mapping=user_config_mapping,
+                use_current_env=True,
                 install_deps=install_deps,
             ),
         )

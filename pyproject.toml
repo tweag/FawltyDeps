@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fawltydeps"
-version = "0.13.1"
+version = "0.13.3"
 description = "Find undeclared and unused 3rd-party dependencies in your Python project."
 authors = [
     "Maria Knorps <maria.knorps@tweag.io>",
@@ -13,7 +13,7 @@ readme = "README.md"
 license = "MIT"
 repository = "https://github.com/tweag/FawltyDeps"
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Software Development :: Quality Assurance",
     "Intended Audience :: Developers",
@@ -23,6 +23,7 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Topic :: Utilities",
     "Typing :: Typed",
 ]

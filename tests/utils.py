@@ -4,14 +4,15 @@ import io
 import logging
 import os
 import subprocess
-import platform
+import sys
 from dataclasses import dataclass, field, replace
 from pathlib import Path
+from pprint import pformat
 from textwrap import dedent
 from typing import Any, Dict, Iterable, Iterator, List, Optional, Tuple, Union
 
 from fawltydeps.main import main
-from fawltydeps.packages import IdentityMapping, LocalPackageResolver, Package
+from fawltydeps.packages import IdentityMapping, Package, SysPathPackageResolver
 from fawltydeps.types import (
     DeclaredDependency,
     Location,
@@ -44,10 +45,12 @@ def walk_dir(path: Path) -> Iterator[Path]:
             yield Path(root, filename)
 
 
-def assert_unordered_equivalence(actual: Iterable[Any], expected: Iterable[Any]):
+def assert_unordered_equivalence(actual: Iterable[Any], expect: Iterable[Any]):
     actual_s = sorted(actual)
-    expected_s = sorted(expected)
-    assert actual_s == expected_s, f"{actual_s!r} != {expected_s!r}"
+    expect_s = sorted(expect)
+    assert (
+        actual_s == expect_s
+    ), f"--- EXPECTED ---\n{pformat(expect_s)}\n--- BUT GOT ---\n{pformat(actual_s)}"
 
 
 def collect_dep_names(deps: Iterable[DeclaredDependency]) -> Iterable[str]:
@@ -80,7 +83,7 @@ def resolved_factory(*deps: str) -> Dict[str, Package]:
     def make_package(dep: str) -> Package:
         imports = default_sys_path_env_for_tests.get(dep, None)
         if imports is not None:  # exists in local env
-            return Package(dep, imports, LocalPackageResolver)
+            return Package(dep, imports, SysPathPackageResolver)
         # fall back to identity mapping
         return Package(dep, {dep}, IdentityMapping)
 
@@ -110,13 +113,24 @@ def _config_file_name():
 
 def run_fawltydeps_subprocess(
     *args: str,
-    config_file: Path = _config_file_name(),
+    config_file: Path = Path(os.devnull),
     to_stdin: Optional[str] = None,
     cwd: Optional[Path] = None,
 ) -> Tuple[str, str, int]:
     """Run FawltyDeps as a subprocess. Designed for integration tests."""
+    # proc = subprocess.run(
+    #     ["fawltydeps", f"--config-file={config_file}"] + list(args),
+    #     input=to_stdin,
+    #     stdout=subprocess.PIPE,
+    #     stderr=subprocess.PIPE,
+    #     universal_newlines=True,
+    #     check=False,
+    #     cwd=cwd,
+    # )
+
     proc = subprocess.run(
-        ["fawltydeps", f"--config-file={config_file}"] + list(args),
+        [sys.executable, "-m", "fawltydeps", f"--config-file={config_file}"]
+        + list(args),
         input=to_stdin,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
@@ -135,7 +149,7 @@ def run_fawltydeps_subprocess(
 
 def run_fawltydeps_function(
     *args: str,
-    config_file: Path = Path("/dev/null"),
+    config_file: Path = Path(os.devnull),
     to_stdin: Optional[Union[str, bytes]] = None,
     basepath: Optional[Path] = None,
 ) -> Tuple[str, int]:
@@ -292,8 +306,8 @@ test_vectors = [
             DeclaredDependency(name="pip", source=Location(Path("requirements2.txt"))),
         ],
         expect_resolved_deps={
-            "Pip": Package("pip", {"pip"}, LocalPackageResolver),
-            "pip": Package("pip", {"pip"}, LocalPackageResolver),
+            "Pip": Package("pip", {"pip"}, SysPathPackageResolver),
+            "pip": Package("pip", {"pip"}, SysPathPackageResolver),
         },
         expect_unused_deps=[
             UnusedDependency("Pip", [Location(Path("requirements1.txt"))]),

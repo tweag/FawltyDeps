@@ -1,12 +1,14 @@
 """Test core functionality of DirectoryTraversal class."""
+import os
+import platform
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Generic, List, Optional, Set, Tuple, TypeVar
+from typing import Generic, List, Optional, Tuple, TypeVar, Union
 
 import pytest
 
-from fawltydeps.utils import DirectoryTraversal
+from fawltydeps.dir_traversal import DirectoryTraversal, TraversalStep
 
 from .utils import assert_unordered_equivalence
 
@@ -75,28 +77,36 @@ class ExpectedTraverseStep(Generic[T]):
     """Expected data for one step of DirectoryTraversal."""
 
     # All strings are relative to tmp_path
-    cur_dir: str
-    subdirs: List[str]
-    files: List[str]
-    attached: List[T]
+    dir: str
+    subdirs: List[str] = field(default_factory=list)
+    files: List[str] = field(default_factory=list)
+    attached: List[T] = field(default_factory=list)
 
-    def prepare(self, tmp_path: Path) -> Tuple[Path, Set[Path], Set[Path], List[T]]:
-        return (
-            tmp_path / self.cur_dir,
-            {tmp_path / self.cur_dir / d for d in self.subdirs},
-            {tmp_path / self.cur_dir / f for f in self.files},
+    def prepare(self, tmp_path: Path) -> TraversalStep:
+        return TraversalStep(
+            tmp_path / self.dir,
+            frozenset(tmp_path / self.dir / d for d in self.subdirs),
+            frozenset(tmp_path / self.dir / f for f in self.files),
             self.attached,
         )
 
 
-@dataclass
+@dataclass(frozen=True)
+class AddCall(Generic[T]):
+    """Arguments for a call to DirectoryTraversal.add()."""
+
+    path: Union[Path, str]
+    attach: Tuple[T, ...] = ()
+
+
+@dataclass(frozen=True)
 class DirectoryTraversalVector(Generic[T]):
     """Test vectors for DirectoryTraversal."""
 
     id: str
     given: List[BaseEntry]
-    add: List[Tuple[str, Optional[T]]] = field(default_factory=lambda: [(".", None)])
-    ignore: List[str] = field(default_factory=list)
+    add: List[AddCall] = field(default_factory=lambda: [AddCall(path=".")])
+    skip_dirs: List[str] = field(default_factory=list)
     expect: List[ExpectedTraverseStep] = field(default_factory=list)
     expect_alternatives: Optional[List[List[ExpectedTraverseStep]]] = None
 
@@ -105,113 +115,136 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
     DirectoryTraversalVector(
         "empty_dir",
         given=[],
-        expect=[ExpectedTraverseStep(".", [], [], [])],
+        expect=[ExpectedTraverseStep(".")],
     ),
     DirectoryTraversalVector(
         "one_file__attach_data",
         given=[File("foo")],
-        add=[(".", 123)],
-        expect=[ExpectedTraverseStep(".", [], ["foo"], [123])],
+        add=[AddCall(path=".", attach=(123,))],
+        expect=[ExpectedTraverseStep(".", files=["foo"], attached=[123])],
     ),
     DirectoryTraversalVector(
         "one_subdir_plus__attach_data_on_both",
         given=[Dir("sub")],
-        add=[(".", 123), ("sub", 456)],
+        add=[AddCall(path=".", attach=(123,)), AddCall(path="sub", attach=(456,))],
         expect=[
-            ExpectedTraverseStep(".", ["sub"], [], [123]),
-            ExpectedTraverseStep("sub", [], [], [123, 456]),
+            ExpectedTraverseStep(".", subdirs=["sub"], attached=[123]),
+            ExpectedTraverseStep("sub", attached=[123, 456]),
+        ],
+    ),
+    DirectoryTraversalVector(
+        "one_subdir__attach_two_data_items_on_parent_dir",
+        given=[Dir("sub")],
+        add=[AddCall(path=".", attach=(123, 456))],
+        expect=[
+            ExpectedTraverseStep(".", subdirs=["sub"], attached=[123, 456]),
+            ExpectedTraverseStep("sub", attached=[123, 456]),
         ],
     ),
     DirectoryTraversalVector(
         "one_subdir__attach_data_twice_on_parent_dir",
         given=[Dir("sub")],
-        add=[(".", 123), (".", 456)],
+        add=[AddCall(path=".", attach=(123,)), AddCall(path=".", attach=(456,))],
         expect=[
-            ExpectedTraverseStep(".", ["sub"], [], [123, 456]),
-            ExpectedTraverseStep("sub", [], [], [123, 456]),
+            ExpectedTraverseStep(".", subdirs=["sub"], attached=[123, 456]),
+            ExpectedTraverseStep("sub", attached=[123, 456]),
         ],
     ),
     DirectoryTraversalVector(
-        "add_subdir__ignore_parent_with_data__traverse_only_subdir_with_no_data",
+        "add_subdir__skip_parent_with_data__traverse_only_subdir_with_no_data",
         given=[Dir("sub")],
-        add=[(".", 123), ("sub", None)],
-        ignore=["."],
-        expect=[ExpectedTraverseStep("sub", [], [], [])],
+        add=[AddCall(path=".", attach=(123,)), AddCall(path="sub")],
+        skip_dirs=["."],
+        expect=[ExpectedTraverseStep("sub")],
     ),
     DirectoryTraversalVector(
         "nested_subdir__attach_data_on_some_parents__gets_data_from_grandparents",
         given=[Dir("a/b/c/d")],
-        add=[("a/b/c", 123), ("a", 456), (".", None)],
+        add=[
+            AddCall(path="a/b/c", attach=(123,)),
+            AddCall(path="a", attach=(456,)),
+            AddCall(path="."),
+        ],
         expect=[
-            ExpectedTraverseStep(".", ["a"], [], []),
-            ExpectedTraverseStep("a", ["b"], [], [456]),
-            ExpectedTraverseStep("a/b", ["c"], [], [456]),
-            ExpectedTraverseStep("a/b/c", ["d"], [], [456, 123]),
-            ExpectedTraverseStep("a/b/c/d", [], [], [456, 123]),
+            ExpectedTraverseStep(".", subdirs=["a"]),
+            ExpectedTraverseStep("a", subdirs=["b"], attached=[456]),
+            ExpectedTraverseStep(os.path.join("a", "b"), subdirs=["c"], attached=[456]),
+            ExpectedTraverseStep(
+                os.path.join("a", "b", "c"), subdirs=["d"], attached=[456, 123]
+            ),
+            ExpectedTraverseStep(os.path.join("a", "b", "c", "d"), attached=[456, 123]),
         ],
     ),
     DirectoryTraversalVector(
         "symlinks_to_self__are_not_traversed",
         given=[RelativeSymlink("rel_self", "."), AbsoluteSymlink("abs_self", ".")],
-        expect=[ExpectedTraverseStep(".", ["rel_self", "abs_self"], [], [])],
+        expect=[ExpectedTraverseStep(".", subdirs=["rel_self", "abs_self"])],
     ),
     DirectoryTraversalVector(
         "symlinks_to_parent__are_not_traversed",
         given=[
-            RelativeSymlink("sub/rel_parent", ".."),
-            AbsoluteSymlink("sub/abs_parent", "."),
+            RelativeSymlink(os.path.join("sub", "rel_parent"), ".."),
+            AbsoluteSymlink(os.path.join("sub", "abs_parent"), "."),
         ],
         expect=[
-            ExpectedTraverseStep(".", ["sub"], [], []),
-            ExpectedTraverseStep("sub", ["rel_parent", "abs_parent"], [], []),
+            ExpectedTraverseStep(".", subdirs=["sub"]),
+            ExpectedTraverseStep("sub", subdirs=["rel_parent", "abs_parent"]),
         ],
     ),
     DirectoryTraversalVector(
         "mutual_symlinks__are_traversed_once",
         given=[
-            RelativeSymlink("sub1/rel_link_sub2", "../sub2"),
-            AbsoluteSymlink("sub2/abs_link_sub1", "sub1"),
+            RelativeSymlink(
+                os.path.join("sub1", "rel_link_sub2"), os.path.join("..", "sub2")
+            ),
+            AbsoluteSymlink(os.path.join("sub2", "abs_link_sub1"), "sub1"),
         ],
         expect_alternatives=[
             [
-                ExpectedTraverseStep(".", ["sub1", "sub2"], [], []),
-                ExpectedTraverseStep("sub1", ["rel_link_sub2"], [], []),
-                ExpectedTraverseStep("sub2", ["abs_link_sub1"], [], []),
+                ExpectedTraverseStep(".", subdirs=["sub1", "sub2"]),
+                ExpectedTraverseStep("sub1", subdirs=["rel_link_sub2"]),
+                ExpectedTraverseStep("sub2", subdirs=["abs_link_sub1"]),
             ],
             [
-                ExpectedTraverseStep(".", ["sub1", "sub2"], [], []),
-                ExpectedTraverseStep("sub1", ["rel_link_sub2"], [], []),
-                ExpectedTraverseStep("sub1/rel_link_sub2", ["abs_link_sub1"], [], []),
+                ExpectedTraverseStep(".", subdirs=["sub1", "sub2"]),
+                ExpectedTraverseStep("sub1", subdirs=["rel_link_sub2"]),
+                ExpectedTraverseStep(
+                    os.path.join("sub1", "rel_link_sub2"), subdirs=["abs_link_sub1"]
+                ),
             ],
             [
-                ExpectedTraverseStep(".", ["sub1", "sub2"], [], []),
-                ExpectedTraverseStep("sub2", ["abs_link_sub1"], [], []),
-                ExpectedTraverseStep("sub2/abs_link_sub1", ["rel_link_sub2"], [], []),
+                ExpectedTraverseStep(".", subdirs=["sub1", "sub2"]),
+                ExpectedTraverseStep("sub2", subdirs=["abs_link_sub1"]),
+                ExpectedTraverseStep(
+                    os.path.join("sub2", "abs_link_sub1"), subdirs=["rel_link_sub2"]
+                ),
             ],
         ],
     ),
     DirectoryTraversalVector(
         "relative_symlink_to_dir_elsewhere__is_traversed",
         given=[
-            File("elsewhere/file"),
-            RelativeSymlink("here/symlink", "../elsewhere"),
+            File(os.path.join("elsewhere", "file")),
+            RelativeSymlink(
+                os.path.join("here", "symlink"), os.path.join("..", "elsewhere")
+            ),
         ],
-        add=[("here", None)],
+        add=[AddCall(path="here")],
         expect=[
-            ExpectedTraverseStep("here", ["symlink"], [], []),
-            ExpectedTraverseStep("here/symlink", [], ["file"], []),
+            ExpectedTraverseStep("here", subdirs=["symlink"]),
+            ExpectedTraverseStep(os.path.join("here", "symlink"), files=["file"]),
         ],
     ),
     DirectoryTraversalVector(
         "absolute_symlink_to_dir_elsewhere__is_traversed",
         given=[
-            File("elsewhere/file"),
-            AbsoluteSymlink("here/symlink", "elsewhere"),
+            File(os.path.join("elsewhere", "file")),
+            AbsoluteSymlink(os.path.join("here", "symlink"), "elsewhere"),
         ],
-        add=[("here", None)],
+        add=[AddCall(path="here")],
         expect=[
-            ExpectedTraverseStep("here", ["symlink"], [], []),
-            ExpectedTraverseStep("here/symlink", [], ["file"], []),
+            ExpectedTraverseStep("here", subdirs=["symlink"]),
+            ExpectedTraverseStep(os.path.join("here", "symlink"), files=["file"]),
         ],
     ),
     DirectoryTraversalVector(
@@ -223,16 +256,16 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
         ],
         expect_alternatives=[
             [
-                ExpectedTraverseStep(".", ["dir", "rel_link", "abs_link"], [], []),
-                ExpectedTraverseStep("dir", [], ["file"], []),
+                ExpectedTraverseStep(".", subdirs=["dir", "rel_link", "abs_link"]),
+                ExpectedTraverseStep("dir", files=["file"]),
             ],
             [
-                ExpectedTraverseStep(".", ["dir", "rel_link", "abs_link"], [], []),
-                ExpectedTraverseStep("rel_link", [], ["file"], []),
+                ExpectedTraverseStep(".", subdirs=["dir", "rel_link", "abs_link"]),
+                ExpectedTraverseStep("rel_link", files=["file"]),
             ],
             [
-                ExpectedTraverseStep(".", ["dir", "rel_link", "abs_link"], [], []),
-                ExpectedTraverseStep("abs_link", [], ["file"], []),
+                ExpectedTraverseStep(".", subdirs=["dir", "rel_link", "abs_link"]),
+                ExpectedTraverseStep("abs_link", files=["file"]),
             ],
         ],
     ),
@@ -240,22 +273,34 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
 
 
 @pytest.mark.parametrize(
-    "vector", [pytest.param(v, id=v.id) for v in directory_traversal_vectors]
+    "vector",
+    [
+        pytest.param(
+            v,
+            id=v.id,
+            marks=pytest.mark.skipif(
+                platform.system() == "Windows"
+                and any(
+                    isinstance(entry, (RelativeSymlink, AbsoluteSymlink))
+                    for entry in v.given
+                ),
+                reason="Symlinks on Windows may be created only by administrators",
+            ),
+        )
+        for v in directory_traversal_vectors
+    ],
 )
 def test_DirectoryTraversal(vector: DirectoryTraversalVector, tmp_path):
     for entry in vector.given:
         entry(tmp_path)
 
     traversal: DirectoryTraversal = DirectoryTraversal()
-    for path, data in vector.add:
-        traversal.add(tmp_path / path, data)
-    for path in vector.ignore:
-        traversal.ignore(tmp_path / path)
+    for call in vector.add:
+        traversal.add(tmp_path / call.path, *call.attach)
+    for path in vector.skip_dirs:
+        traversal.skip_dir(tmp_path / path)
 
-    actual = [
-        (cur_dir, set(subdirs), set(files), list(data))
-        for cur_dir, subdirs, files, data in traversal.traverse()
-    ]
+    actual = list(traversal.traverse())
     if vector.expect_alternatives is None:  # vector.expect _must_ match
         expect = [step.prepare(tmp_path) for step in vector.expect]
         assert_unordered_equivalence(actual, expect)
