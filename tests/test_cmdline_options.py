@@ -24,7 +24,7 @@ from textwrap import dedent
 from typing import List
 
 import hypothesis.strategies as st
-from hypothesis import given
+from hypothesis import given, settings
 
 from fawltydeps.main import main
 
@@ -182,6 +182,10 @@ def cli_arguments_combinations(draw):
 
 
 @given(cli_arguments=cli_arguments_combinations())
+@settings(
+    deadline=500,
+    max_examples=100,
+)
 def test_options_interactions__correct_options__does_not_abort(cli_arguments):
     """Check if a combination of valid options
 

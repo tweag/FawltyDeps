@@ -105,12 +105,6 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
     return [UnusedDependency(dep, [Location(Path("foo"))]) for dep in deps]
 
 
-def _config_file_name():
-    if platform.system() == "Windows":
-        return Path("NUL")
-    return Path("/dev/null")
-
-
 def run_fawltydeps_subprocess(
     *args: str,
     config_file: Path = Path(os.devnull),
