@@ -128,26 +128,36 @@ class CachedExperimentVenv:
     requirements: List[str]  # PEP 508 requirements, passed to 'pip install'
 
     def venv_script_lines(self, venv_path: Path) -> List[str]:
-        rm_command = "rd /s /q" if platform.system() == "Windows" else "rm -rf"
-        pip_path = (
-            venv_path / "Scripts" / "pip.exe"
-            if platform.system() == "Windows"
-            else venv_path / "bin" / "pip"
-        )
-        create_empty_file = "type nul > " if platform.system() == "Windows" else "touch"
+        if platform.system() == "Windows":
+            pip_path = venv_path / "Scripts" / "pip.exe"
+            return (
+                [
+                    f"rd /s /q {venv_path}",
+                    f"{sys.executable} -m venv {venv_path}",
+                    f"{sys.executable} -m install --upgrade pip",
+                ]
+                + [
+                    f"{pip_path} install " f"--no-deps {req}"
+                    for req in self.requirements
+                ]
+                + [
+                    f"type nul > {venv_path / '.installed'}",
+                ]
+            )
+
+        pip_path = venv_path / "bin" / "pip"
         return (
             [
-                f"{rm_command} {venv_path}",
+                f"rm -rf {venv_path}",
                 f"{sys.executable} -m venv {venv_path}",
                 f"{pip_path} install --upgrade pip",
             ]
             + [
-                f"{pip_path} install "
-                f"--no-deps {req if platform.system() == 'Windows' else shlex.quote(req)}"
+                f"{pip_path} install " f"--no-deps {shlex.quote(req)}"
                 for req in self.requirements
             ]
             + [
-                f"{create_empty_file} {venv_path / '.installed'}",
+                f"touch {venv_path / '.installed'}",
             ]
         )
 
