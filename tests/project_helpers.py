@@ -196,8 +196,6 @@ class CachedExperimentVenv:
         logger.info(f"Creating venv at {venv_dir}...")
         venv_script = self.venv_script_lines(venv_dir)
 
-        logger.warning(f"SCRIPT: {venv_script}")
-
         subprocess.run(
             " && ".join(venv_script),
             check=True,  # fail if any of the commands fail
