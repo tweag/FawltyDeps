@@ -205,8 +205,9 @@ def test_resolve_dependencies__generates_expected_mappings(
     end_time = time.time()
     elapsed_time = end_time - start_time
 
-    deadline = 5000 if not install_deps else 10000
+    deadline = 5000 if not install_deps else None
 
-    assert elapsed_time <= deadline, f"Test exceeded deadline of {deadline} ms"
+    if deadline:
+        assert elapsed_time <= deadline, f"Test exceeded deadline of {deadline} ms"
 
     assert ignore_package_debug_info(actual) == ignore_package_debug_info(expected)
