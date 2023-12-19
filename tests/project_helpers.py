@@ -130,16 +130,18 @@ class CachedExperimentVenv:
     def venv_script_lines(self, venv_path: Path) -> List[str]:
         if platform.system() == "Windows":
             pip_path = venv_path / "Scripts" / "pip.exe"
+            python_path = venv_path / "Scripts" / "python.exe"
             return (
                 [
                     f"rd /s /q {venv_path}",
                     f"{sys.executable} -m venv {venv_path}",
-                    f"{sys.executable} -m pip install --upgrade pip",
+                    f"{python_path} -m pip install --upgrade pip",
                 ]
                 + [
-                    f"{pip_path} install " f"--no-deps {req}"
+                    f"{python_path} -m pip install --no-deps {req}"
                     for req in self.requirements
                 ]
+                +[ f"echo {pip_path}"]
                 + [
                     f"type nul > {venv_path / '.installed'}",
                 ]
@@ -153,7 +155,7 @@ class CachedExperimentVenv:
                 f"{pip_path} install --upgrade pip",
             ]
             + [
-                f"{pip_path} install " f"--no-deps {shlex.quote(req)}"
+                f"{pip_path} install --no-deps {shlex.quote(req)}"
                 for req in self.requirements
             ]
             + [
@@ -193,6 +195,8 @@ class CachedExperimentVenv:
         venv_dir = Path(cache.mkdir(f"fawltydeps_venv_{self.venv_hash()}"))
         logger.info(f"Creating venv at {venv_dir}...")
         venv_script = self.venv_script_lines(venv_dir)
+
+        logger.warning(f"SCRIPT: {venv_script}")
 
         subprocess.run(
             " && ".join(venv_script),
@@ -296,6 +300,7 @@ class BaseExperiment(ABC):
 
     def get_venv_dir(self, cache: pytest.Cache) -> Path:
         """Get this venv's dir and create it if necessary."""
+        print(f"EXPERIMENT REQUIREMENTS: {self.requirements}")
         return CachedExperimentVenv(self.requirements)(cache)
 
 

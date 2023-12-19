@@ -580,7 +580,7 @@ def resolve_dependencies(
             break
         logger.debug(f"Trying to resolve {unresolved!r} with {resolver}")
         resolved = resolver.lookup_packages(unresolved)
-        logger.debug(f"  Resolved {resolved!r} with {resolver}")
+        logger.warning(f"  Resolved {resolved!r} with {resolver}\n")
         ret.update(resolved)
 
     unresolved = deps - ret.keys()

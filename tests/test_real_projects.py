@@ -103,6 +103,7 @@ class ThirdPartyProject(BaseProject):
         for path in filter(lambda p: p.suffix == ".toml", REAL_PROJECTS_DIR.iterdir()):
             toml_data = parse_toml(path)
             project_info = cls._init_args_from_toml(toml_data, Experiment)
+            print("PROJECT INFO", project_info)
             yield cls(
                 toml_path=path,
                 tarball=TarballPackage(
@@ -185,6 +186,8 @@ def test_real_project(request, project, experiment):
 
     print(f"Testing real project {project.name!r} under {project_dir}")
     print(f"Project description: {project.description}")
+    print(project)
+    print(f"Virtual environment of the project {project.name!r} under {venv_dir}")
     print()
     print(f"Running real project experiment: {experiment.name}")
     print(f"Experiment description: {experiment.description}")
