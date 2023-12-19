@@ -134,7 +134,7 @@ class CachedExperimentVenv:
                 [
                     f"rd /s /q {venv_path}",
                     f"{sys.executable} -m venv {venv_path}",
-                    f"{sys.executable} -m install --upgrade pip",
+                    f"{sys.executable} -m pip install --upgrade pip",
                 ]
                 + [
                     f"{pip_path} install " f"--no-deps {req}"
