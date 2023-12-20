@@ -24,7 +24,7 @@ class pypi_analysis:
                 analysis_data = json.loads(result.stdout)
 
                 # Specify the path to the JSON file
-                json_file_path = f"{self.repo_name}.json"
+                json_file_path = f"results/{self.repo_name}.json"
 
                 # Save the analysis data to the JSON file
                 with open(json_file_path, "w") as json_file:
