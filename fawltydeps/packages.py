@@ -1,6 +1,7 @@
 """Encapsulate the lookup of packages and their provided import names."""
 
 import logging
+import platform
 import subprocess
 import sys
 import tempfile
@@ -422,8 +423,14 @@ class TemporaryPipInstallResolver(BasePackageResolver):
             text=True,
             check=False,
         )
+        pip_path = (
+            venv_dir / "Scripts" / "pip.exe"
+            if platform.system() == "Windows"
+            else venv_dir / "bin" / "pip"
+        )
+
         argv = [
-            f"{venv_dir}/bin/pip",
+            f"{pip_path}",
             "install",
             "--no-deps",
             "--quiet",
