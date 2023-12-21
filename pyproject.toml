@@ -118,7 +118,7 @@ profile = "black"
 main.jobs = 4
 main.py-version = "3.7"
 reports.output-format = "colorized"
-"messages control".disable = "fixme,logging-fstring-interpolation,unspecified-encoding,too-few-public-methods,consider-using-in,duplicate-code"
+"messages control".disable = "fixme,logging-fstring-interpolation,unspecified-encoding,too-few-public-methods,consider-using-in,duplicate-code,too-many-locals,too-many-branches"
 
 [tool.mypy]
 files = ['*.py', 'fawltydeps/*.py', 'tests/*.py']
