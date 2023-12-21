@@ -1,5 +1,6 @@
 """Test core functionality of DirectoryTraversal class."""
 import os
+import platform
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -272,7 +273,22 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
 
 
 @pytest.mark.parametrize(
-    "vector", [pytest.param(v, id=v.id) for v in directory_traversal_vectors]
+    "vector",
+    [
+        pytest.param(
+            v,
+            id=v.id,
+            marks=pytest.mark.skipif(
+                platform.system() == "Windows"
+                and any(
+                    isinstance(entry, (RelativeSymlink, AbsoluteSymlink))
+                    for entry in v.given
+                ),
+                reason="Symlinks on Windows may be created only by administrators",
+            ),
+        )
+        for v in directory_traversal_vectors
+    ],
 )
 def test_DirectoryTraversal(vector: DirectoryTraversalVector, tmp_path):
     for entry in vector.given:
