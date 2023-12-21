@@ -192,7 +192,7 @@ def test_options_interactions__correct_options__does_not_abort(cli_arguments):
     )
     args = basepath + drawn_args
 
-    with open("/dev/null", "w") as f_out:
+    with open(os.devnull, "w") as f_out:
         exit_code = main(cmdline_args=args, stdin=io.StringIO(to_stdin), stdout=f_out)
 
     assert exit_code in {0, 3, 4}
