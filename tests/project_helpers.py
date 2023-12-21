@@ -2,6 +2,7 @@
 import hashlib
 import logging
 import os
+import platform
 import shlex
 import subprocess
 import sys
@@ -127,18 +128,37 @@ class CachedExperimentVenv:
     requirements: List[str]  # PEP 508 requirements, passed to 'pip install'
 
     def venv_script_lines(self, venv_path: Path) -> List[str]:
+        if platform.system() == "Windows":
+            pip_path = venv_path / "Scripts" / "pip.exe"
+            python_path = venv_path / "Scripts" / "python.exe"
+            return (
+                [
+                    f"rd /s /q {venv_path}",
+                    f"{sys.executable} -m venv {venv_path}",
+                    f"{python_path} -m pip install --upgrade pip",
+                ]
+                + [
+                    f'{python_path} -m pip install --no-deps "{req}"'
+                    for req in self.requirements
+                ]
+                + [
+                    f"type nul > {venv_path / '.installed'}",
+                ]
+            )
+
+        pip_path = venv_path / "bin" / "pip"
         return (
             [
                 f"rm -rf {venv_path}",
-                f"python3 -m venv {venv_path}",
-                f"{venv_path}/bin/pip install --upgrade pip",
+                f"{sys.executable} -m venv {venv_path}",
+                f"{pip_path} install --upgrade pip",
             ]
             + [
-                f"{venv_path}/bin/pip install --no-deps {shlex.quote(req)}"
+                f"{pip_path} install --no-deps {shlex.quote(req)}"
                 for req in self.requirements
             ]
             + [
-                f"touch {venv_path}/.installed",
+                f"touch {venv_path / '.installed'}",
             ]
         )
 
@@ -277,6 +297,7 @@ class BaseExperiment(ABC):
 
     def get_venv_dir(self, cache: pytest.Cache) -> Path:
         """Get this venv's dir and create it if necessary."""
+        print(f"EXPERIMENT REQUIREMENTS: {self.requirements}")
         return CachedExperimentVenv(self.requirements)(cache)
 
 
