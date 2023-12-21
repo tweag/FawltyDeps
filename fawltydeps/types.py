@@ -100,7 +100,7 @@ class CodeSource(Source):
 
     def render(self, detailed: bool) -> str:
         if detailed and self.base_dir is not None:
-            return f"{self.path} (using {self.base_dir}/ as base for 1st-party imports)"
+            return f"{self.path} (using {self.base_dir} as base for 1st-party imports)"
         return f"{self.path}"
 
 
