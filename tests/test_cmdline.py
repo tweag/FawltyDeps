@@ -552,7 +552,7 @@ def test_list_sources_detailed__from_both_python_file_and_stdin(fake_project):
             f"  {tmp_path / 'code.py'} (using {tmp_path} as base for 1st-party imports)",
         ],
     ]
-    assert output.splitlines() == expect
+    assert output.splitlines() == expect[0] or output.splitlines() == expect[1]
     assert returncode == 0
 
 
