@@ -37,6 +37,14 @@ pep582_subdirs = [
     f"__pypackages__/{major}.{minor}/lib",
 ]
 
+# When the user gives us a --pyenv arg that points to a Python virtualenv
+# on Windows, what are the the possible paths inside that Python environment
+# that they might point at (and that we should accept)?
+windows_subdirs = [
+    "",
+    "Lib",
+    os.path.join("Lib", "site-packages"),
+]
 
 @pytest.mark.parametrize(
     "subdir", [pytest.param(d, id=f"venv:{d}") for d in env_subdirs]
@@ -128,7 +136,11 @@ def test_local_env__default_venv__contains_pip(tmp_path):
     # "pip" package is installed, and that it provides a "pip" import name.
     venv.create(tmp_path, with_pip=True)
     lpl = LocalPackageResolver(pyenv_sources(tmp_path))
-    expect_location = tmp_path / f"lib/python{major}.{minor}/site-packages"
+    expect_location = (
+        tmp_path / "Lib" / "site-packages"
+        if platform.system() == "Windows"
+        else tmp_path / f"lib/python{major}.{minor}/site-packages"
+    )
     assert "pip" in lpl.packages
     pip = lpl.packages["pip"]
     assert pip.package_name == "pip"

@@ -452,7 +452,9 @@ def test_list_sources__in_varied_project__lists_all_files(fake_project):
             "pyproject.toml",
             "setup.py",
             "setup.cfg",
-            f"my_venv/lib/python{major}.{minor}/site-packages",
+            os.path.join("my_venv", "Lib", "site-packages")
+            if platform.system() == "Windows"
+            else f"my_venv/lib/python{major}.{minor}/site-packages",
         ]
     ]
     assert_unordered_equivalence(output.splitlines()[:-2], expect)
@@ -497,8 +499,19 @@ def test_list_sources_detailed__in_varied_project__lists_all_files(fake_project)
     ]
     major, minor = sys.version_info[:2]
     expect_pyenv_lines = [
-        f"  {tmp_path}/my_venv/lib/python{major}.{minor}/site-packages "
-        + "(as a source of Python packages)",
+        (
+            "  " + str(tmp_path / "my_venv" / "Lib" / "site-packages")
+            if platform.system() == "Windows"
+            else "  "
+            + str(
+                tmp_path
+                / "my_venv"
+                / "lib"
+                / f"python{major}.{minor}"
+                / "site-packages"
+            )
+        )
+        + " (as a source of Python packages)",
     ]
     expect = [
         "Sources of Python code:",
@@ -688,7 +701,11 @@ def test_check_json__simple_project__can_report_both_undeclared_and_unused(
             },
             {
                 "source_type": "PyEnvSource",
-                "path": f"{tmp_path}/my_venv/lib/python{major}.{minor}/site-packages",
+                "path": (
+                    f"{tmp_path / 'my_venv' / 'Lib' / 'site-packages'}"
+                    if platform.system() == "Windows"
+                    else f"{tmp_path}/my_venv/lib/python{major}.{minor}/site-packages"
+                ),
             },
         ],
         "imports": [

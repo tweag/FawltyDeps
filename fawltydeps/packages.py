@@ -1,6 +1,7 @@
 """Encapsulate the lookup of packages and their provided import names."""
 
 import logging
+import os
 import platform
 import subprocess
 import sys
@@ -340,6 +341,15 @@ class LocalPackageResolver(InstalledPackageResolver):
         # Workaround for projects using PEP582:
         if path.name == "__pypackages__":
             for site_packages in path.glob("?.*/lib"):
+                if site_packages.is_dir():
+                    yield site_packages
+                    found = True
+            if found:
+                return
+
+        # Check for packages on Windows
+        if platform.system() == "Windows":
+            for site_packages in path.glob(os.path.join("Lib", "site-packages")):
                 if site_packages.is_dir():
                     yield site_packages
                     found = True
