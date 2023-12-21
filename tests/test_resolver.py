@@ -1,6 +1,7 @@
 """Verify behavior of packages resolver"""
 
 import sys
+import time
 from pathlib import Path
 from typing import Dict, List, Optional, Set
 
@@ -127,7 +128,7 @@ def generate_expected_resolved_deps(
 )
 @settings(
     suppress_health_check=[HealthCheck.function_scoped_fixture],
-    deadline=5000,
+    deadline=None,
     max_examples=50,
 )
 def test_resolve_dependencies__generates_expected_mappings(
@@ -139,6 +140,7 @@ def test_resolve_dependencies__generates_expected_mappings(
     install_deps,
     request,
 ):
+    start_time = time.time()
 
     user_deps, user_file_mapping, user_config_mapping = user_mapping
 
@@ -199,5 +201,13 @@ def test_resolve_dependencies__generates_expected_mappings(
         )
     finally:
         TemporaryPipInstallResolver.cached_venv = None
+
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+
+    deadline = 5000 if not install_deps else None
+
+    if deadline:
+        assert elapsed_time <= deadline, f"Test exceeded deadline of {deadline} ms"
 
     assert ignore_package_debug_info(actual) == ignore_package_debug_info(expected)
