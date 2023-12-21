@@ -1,6 +1,7 @@
 """Common helpers shared between test_real_project and test_sample_projects."""
 import hashlib
 import logging
+import os
 import shlex
 import subprocess
 import sys
@@ -150,7 +151,7 @@ class CachedExperimentVenv:
         The Python version currently used to run the tests is used to compute
         the hash and create the venv.
         """
-        dummy_script = self.venv_script_lines(Path("/dev/null"))
+        dummy_script = self.venv_script_lines(Path(os.devnull))
         py_version = f"{sys.version_info.major},{sys.version_info.minor}"
         script_and_version_bytes = ("".join(dummy_script) + py_version).encode()
         return hashlib.sha256(script_and_version_bytes).hexdigest()

@@ -4,6 +4,7 @@ import io
 import logging
 import os
 import subprocess
+import sys
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 from pprint import pformat
@@ -106,13 +107,14 @@ def unused_factory(*deps: str) -> List[UnusedDependency]:
 
 def run_fawltydeps_subprocess(
     *args: str,
-    config_file: Path = Path("/dev/null"),
+    config_file: Path = Path(os.devnull),
     to_stdin: Optional[str] = None,
     cwd: Optional[Path] = None,
 ) -> Tuple[str, str, int]:
     """Run FawltyDeps as a subprocess. Designed for integration tests."""
     proc = subprocess.run(
-        ["fawltydeps", f"--config-file={config_file}"] + list(args),
+        [sys.executable, "-m", "fawltydeps", f"--config-file={config_file}"]
+        + list(args),
         input=to_stdin,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
@@ -131,7 +133,7 @@ def run_fawltydeps_subprocess(
 
 def run_fawltydeps_function(
     *args: str,
-    config_file: Path = Path("/dev/null"),
+    config_file: Path = Path(os.devnull),
     to_stdin: Optional[Union[str, bytes]] = None,
     basepath: Optional[Path] = None,
 ) -> Tuple[str, int]:
