@@ -101,7 +101,7 @@ class TarballPackage:
 
     @property
     def cache_key(self) -> str:
-        return f"fawltydeps/{self.tarball_name()}"
+        return os.path.join("fawltydeps", f"{self.tarball_name()}")
 
     def tarball_path(self, cache: pytest.Cache) -> Path:
         return self.cache_dir(cache) / self.tarball_name()
@@ -166,7 +166,7 @@ class CachedExperimentVenv:
         script or the requirements to create that venv change.
         """
         # We cache venv dirs using the hash from create_venv_hash
-        cached_str = cache.get(f"fawltydeps/{self.venv_hash()}", None)
+        cached_str = cache.get(os.path.join("fawltydeps", f"{self.venv_hash()}"), None)
         if cached_str is not None and Path(cached_str, ".installed").is_file():
             return Path(cached_str)  # already cached
 
@@ -174,6 +174,7 @@ class CachedExperimentVenv:
         venv_dir = Path(cache.mkdir(f"fawltydeps_venv_{self.venv_hash()}"))
         logger.info(f"Creating venv at {venv_dir}...")
         venv_script = self.venv_script_lines(venv_dir)
+
         subprocess.run(
             " && ".join(venv_script),
             check=True,  # fail if any of the commands fail
@@ -181,7 +182,7 @@ class CachedExperimentVenv:
         )
         # Make sure the venv has been installed
         assert (venv_dir / ".installed").is_file()
-        cache.set(f"fawltydeps/{self.venv_hash()}", str(venv_dir))
+        cache.set(os.path.join("fawltydeps", f"{self.venv_hash()}"), str(venv_dir))
         return venv_dir
 
 
