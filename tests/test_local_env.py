@@ -1,4 +1,6 @@
 """Verify behavior of package module looking at a given Python environment."""
+import os
+import platform
 import sys
 import venv
 from pathlib import Path
@@ -46,6 +48,23 @@ windows_subdirs = [
     os.path.join("Lib", "site-packages"),
 ]
 
+
+@pytest.mark.skipif(
+    platform.system() != "Windows", reason="Not relevant to Windows virtual environment"
+)
+@pytest.mark.parametrize(
+    "subdir", [pytest.param(d, id=f"venv:{d}") for d in windows_subdirs]
+)
+def test_find_package_dirs__various_paths_in_venv_windows(tmp_path, subdir):
+    venv.create(tmp_path, with_pip=False)
+    path = tmp_path / subdir
+    expect = {tmp_path / "Lib" / "site-packages"}
+    assert set(LocalPackageResolver.find_package_dirs(path)) == expect
+
+
+@pytest.mark.skipif(
+    platform.system() == "Windows", reason="Not relevant to Windows virtual environment"
+)
 @pytest.mark.parametrize(
     "subdir", [pytest.param(d, id=f"venv:{d}") for d in env_subdirs]
 )
@@ -56,6 +75,9 @@ def test_find_package_dirs__various_paths_in_venv(tmp_path, subdir):
     assert set(LocalPackageResolver.find_package_dirs(path)) == expect
 
 
+@pytest.mark.skipif(
+    platform.system() == "Windows", reason="Not relevant to Windows virtual environment"
+)
 @pytest.mark.parametrize(
     "subdir", [pytest.param(d, id=f"poetry2nix:{d}") for d in env_subdirs]
 )
@@ -72,6 +94,9 @@ def test_find_package_dirs__various_paths_in_poetry2nix_env(write_tmp_files, sub
     assert set(LocalPackageResolver.find_package_dirs(path)) == expect
 
 
+@pytest.mark.skipif(
+    platform.system() == "Windows", reason="Not relevant to Windows virtual environment"
+)
 @pytest.mark.parametrize(
     "subdir", [pytest.param(d, id=f"pep582:{d}") for d in pep582_subdirs]
 )
@@ -87,6 +112,9 @@ def test_find_package_dirs__various_paths_in_pypackages(write_tmp_files, subdir)
     assert set(LocalPackageResolver.find_package_dirs(path)) == expect
 
 
+@pytest.mark.skipif(
+    platform.system() == "Windows", reason="Not relevant to Windows virtual environment"
+)
 @pytest.mark.parametrize(
     "subdir",
     [pytest.param(d, id=f"pep582:{d}") for d in pep582_subdirs]
