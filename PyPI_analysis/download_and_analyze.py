@@ -30,7 +30,6 @@ class pypi_analysis:
                 with open(json_file_path, "w") as json_file:
                     json.dump(analysis_data, json_file, indent=2)
 
-                print(f"Analysis data saved to {json_file_path}")
             except json.JSONDecodeError as e:
                 print(f"Error decoding JSON: {e}")
         else:
