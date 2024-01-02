@@ -122,7 +122,7 @@ def format(session):
     session.run(
         "codespell",
         "--enable-colors",
-        "--skip=./PyPI_analysis/notebooks/*.ipynb,./PyPI_analysis/experiments/biomedical_projects_experiment/repositories.json",
+        "--skip=./PyPI_analysis/notebooks/*.ipynb,./PyPI_analysis/experiments/*.json",
     )
     session.run("isort", "fawltydeps", "tests", "--check", "--diff", "--color")
     session.run("black", ".", "--check", "--diff", "--color")
@@ -134,7 +134,7 @@ def reformat(session):
     session.run(
         "codespell",
         "--write-changes",
-        "--skip=./PyPI_analysis/notebooks/*.ipynb,./PyPI_analysis/experiments/biomedical_projects_experiment/repositories.json",
+        "--skip=./PyPI_analysis/notebooks/*.ipynb,./PyPI_analysis/experiments/*.json",
     )
     session.run("isort", "fawltydeps", "tests")
     session.run("black", ".")
