@@ -50,7 +50,8 @@ windows_subdirs = [
 
 
 @pytest.mark.skipif(
-    platform.system() != "Windows", reason="Not relevant to Windows virtual environment"
+    not sys.platform.startswith("win"),
+    reason="Only relevant to Windows virtual environment",
 )
 @pytest.mark.parametrize(
     "subdir", [pytest.param(d, id=f"venv:{d}") for d in windows_subdirs]
@@ -63,7 +64,8 @@ def test_find_package_dirs__various_paths_in_venv_windows(tmp_path, subdir):
 
 
 @pytest.mark.skipif(
-    platform.system() == "Windows", reason="Not relevant to Windows virtual environment"
+    sys.platform.startswith("win"),
+    reason="Not relevant to Windows virtual environment",
 )
 @pytest.mark.parametrize(
     "subdir", [pytest.param(d, id=f"venv:{d}") for d in env_subdirs]
@@ -76,7 +78,7 @@ def test_find_package_dirs__various_paths_in_venv(tmp_path, subdir):
 
 
 @pytest.mark.skipif(
-    platform.system() == "Windows", reason="Not relevant to Windows virtual environment"
+    sys.platform.startswith("win"), reason="Not relevant to Windows virtual environment"
 )
 @pytest.mark.parametrize(
     "subdir", [pytest.param(d, id=f"poetry2nix:{d}") for d in env_subdirs]
@@ -95,7 +97,7 @@ def test_find_package_dirs__various_paths_in_poetry2nix_env(write_tmp_files, sub
 
 
 @pytest.mark.skipif(
-    platform.system() == "Windows", reason="Not relevant to Windows virtual environment"
+    sys.platform.startswith("win"), reason="Not relevant to Windows virtual environment"
 )
 @pytest.mark.parametrize(
     "subdir", [pytest.param(d, id=f"pep582:{d}") for d in pep582_subdirs]
@@ -113,7 +115,7 @@ def test_find_package_dirs__various_paths_in_pypackages(write_tmp_files, subdir)
 
 
 @pytest.mark.skipif(
-    platform.system() == "Windows", reason="Not relevant to Windows virtual environment"
+    sys.platform.startswith("win"), reason="Not relevant to Windows virtual environment"
 )
 @pytest.mark.parametrize(
     "subdir",

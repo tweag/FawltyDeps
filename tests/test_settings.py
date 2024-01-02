@@ -477,12 +477,11 @@ def test_settings__missing_config_file__uses_defaults_and_warns(tmp_path, caplog
     settings = Settings.config(config_file=missing_file)()
     assert settings.dict() == make_settings_dict()
     assert "Failed to load configuration file:" in caplog.text
+    missing_file_str = str(missing_file)
     # On Windows path escape sequences are doubled in repr()
-    assert (
-        repr(str(missing_file))
-        if platform.system() == "Windows"
-        else str(missing_file) in caplog.text
-    )
+    if sys.platform.startswith("win"):
+        missing_file_str = repr(missing_file_str)
+    assert missing_file_str in caplog.text
 
 
 def to_path_set(ps: Iterable[str]) -> Set[Path]:
