@@ -8,6 +8,7 @@ core exhaustively (which is what the other unit tests are for.
 import json
 import logging
 import os
+from pathlib import Path
 import platform
 import sys
 from dataclasses import dataclass, field
@@ -437,8 +438,8 @@ def test_list_sources__in_varied_project__lists_all_files(fake_project):
     tmp_path = fake_project(
         files_with_imports={
             "code.py": ["foo"],
-            os.path.join("subdir", "other.py"): ["foo"],
-            os.path.join("subdir", "notebook.ipynb"): ["foo"],
+            str(Path("subdir", "other.py")): ["foo"],
+            str(Path("subdir", "notebook.ipynb")): ["foo"],
         },
         files_with_declared_deps={
             "requirements.txt": ["foo"],
@@ -590,7 +591,7 @@ project_tests_samples = [
         expect_output=[
             "These imports appear to be undeclared dependencies:",
             "- 'requests' imported at:",
-            f"    {os.path.join('{path}', 'code.py')}:1",
+            f"    {Path('{path}', 'code.py')}:1",
         ],
         expect_returncode=3,
     ),
@@ -602,7 +603,7 @@ project_tests_samples = [
         expect_output=[
             "These dependencies appear to be unused (i.e. not imported):",
             "- 'pandas' declared in:",
-            f"    {os.path.join('{path}', 'requirements.txt')}",
+            f"    {Path('{path}', 'requirements.txt')}",
         ],
         expect_returncode=4,
     ),
@@ -614,11 +615,11 @@ project_tests_samples = [
         expect_output=[
             "These imports appear to be undeclared dependencies:",
             "- 'requests' imported at:",
-            f"    {os.path.join('{path}', 'code.py')}:1",
+            f"    {Path('{path}', 'code.py')}:1",
             "",
             "These dependencies appear to be unused (i.e. not imported):",
             "- 'pandas' declared in:",
-            f"    {os.path.join('{path}', 'requirements.txt')}",
+            f"    {Path('{path}', 'requirements.txt')}",
         ],
         expect_returncode=3,  # undeclared is more important than unused
     ),
@@ -639,7 +640,7 @@ project_tests_samples = [
         expect_logs=[
             "INFO:fawltydeps.extract_imports:Finding Python files under {path}",
             "INFO:fawltydeps.extract_imports:Parsing Python file "
-            f"{os.path.join('{path}', 'code.py')}",
+            f"{Path('{path}', 'code.py')}",
             "INFO:fawltydeps.packages:'pandas' was not resolved."
             " Assuming it can be imported as 'pandas'.",
         ],
@@ -653,11 +654,11 @@ project_tests_samples = [
         expect_output=[
             "These imports appear to be undeclared dependencies:",
             "- 'requests' imported at:",
-            f"    {os.path.join('{path}', 'code.py')}:1",
+            f"    {Path('{path}', 'code.py')}:1",
             "",
             "These dependencies appear to be unused (i.e. not imported):",
             "- 'pandas' declared in:",
-            f"    {os.path.join('{path}', 'requirements.txt')}",
+            f"    {Path('{path}', 'requirements.txt')}",
         ],
         expect_returncode=3,  # undeclared is more important than unused
     ),

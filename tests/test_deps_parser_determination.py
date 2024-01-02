@@ -1,7 +1,6 @@
 """ Test the determination of strategy to parse dependency declarations. """
 
 import logging
-import os
 import shutil
 from pathlib import Path
 
@@ -30,20 +29,20 @@ from .utils import assert_unordered_equivalence, collect_dep_names
             ("setup.cfg", ParserChoice.SETUP_CFG),
             ("pyproject.toml", ParserChoice.PYPROJECT_TOML),
             ("anything_else", None),
-            (os.path.join("sub", "requirements.txt"), ParserChoice.REQUIREMENTS_TXT),
-            (os.path.join("sub", "setup.py"), ParserChoice.SETUP_PY),
-            (os.path.join("sub", "setup.cfg"), ParserChoice.SETUP_CFG),
-            (os.path.join("sub", "pyproject.toml"), ParserChoice.PYPROJECT_TOML),
-            (os.path.join("sub", "anything_else"), None),
-            (os.path.join("abs", "requirements.txt"), ParserChoice.REQUIREMENTS_TXT),
-            (os.path.join("abs", "setup.py"), ParserChoice.SETUP_PY),
-            (os.path.join("abs", "setup.cfg"), ParserChoice.SETUP_CFG),
-            (os.path.join("abs", "pyproject.toml"), ParserChoice.PYPROJECT_TOML),
-            (os.path.join("abs", "anything_else"), None),
-            (os.path.join("requirements.txt", "wat"), None),
-            (os.path.join("setup.py", "wat"), None),
-            (os.path.join("setup.cfg", "wat"), None),
-            (os.path.join("pyproject.toml", "wat"), None),
+            (str(Path("sub", "requirements.txt")), ParserChoice.REQUIREMENTS_TXT),
+            (str(Path("sub", "setup.py")), ParserChoice.SETUP_PY),
+            (str(Path("sub", "setup.cfg")), ParserChoice.SETUP_CFG),
+            (str(Path("sub", "pyproject.toml")), ParserChoice.PYPROJECT_TOML),
+            (str(Path("sub", "anything_else")), None),
+            (str(Path("abs", "requirements.txt")), ParserChoice.REQUIREMENTS_TXT),
+            (str(Path("abs", "setup.py")), ParserChoice.SETUP_PY),
+            (str(Path("abs", "setup.cfg")), ParserChoice.SETUP_CFG),
+            (str(Path("abs", "pyproject.toml")), ParserChoice.PYPROJECT_TOML),
+            (str(Path("abs", "anything_else")), None),
+            (str(Path("requirements.txt", "wat")), None),
+            (str(Path("setup.py", "wat")), None),
+            (str(Path("setup.cfg", "wat")), None),
+            (str(Path("pyproject.toml", "wat")), None),
             ("requirements-dev.txt", ParserChoice.REQUIREMENTS_TXT),
             ("test-requirements.txt", ParserChoice.REQUIREMENTS_TXT),
             ("extra-requirements-dev.txt", ParserChoice.REQUIREMENTS_TXT),
