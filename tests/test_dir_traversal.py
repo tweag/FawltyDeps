@@ -280,7 +280,7 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
             v,
             id=v.id,
             marks=pytest.mark.skipif(
-                platform.system() == "Windows"
+                sys.platform.startswith("win")
                 and any(
                     isinstance(entry, (RelativeSymlink, AbsoluteSymlink))
                     for entry in v.given

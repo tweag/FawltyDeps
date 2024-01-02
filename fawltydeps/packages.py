@@ -2,7 +2,6 @@
 
 import logging
 import os
-import platform
 import subprocess
 import sys
 import tempfile
@@ -348,7 +347,7 @@ class LocalPackageResolver(InstalledPackageResolver):
                 return
 
         # Check for packages on Windows
-        if platform.system() == "Windows":
+        if sys.platform.startswith("win"):
             for site_packages in path.glob(os.path.join("Lib", "site-packages")):
                 if site_packages.is_dir():
                     yield site_packages

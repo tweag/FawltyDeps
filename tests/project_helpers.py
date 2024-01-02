@@ -2,7 +2,6 @@
 import hashlib
 import logging
 import os
-import platform
 import shlex
 import subprocess
 import sys
@@ -128,7 +127,7 @@ class CachedExperimentVenv:
     requirements: List[str]  # PEP 508 requirements, passed to 'pip install'
 
     def venv_script_lines(self, venv_path: Path) -> List[str]:
-        if platform.system() == "Windows":
+        if sys.platform.startswith("win"):
             pip_path = venv_path / "Scripts" / "pip.exe"
             python_path = venv_path / "Scripts" / "python.exe"
             return (
