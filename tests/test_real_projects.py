@@ -189,7 +189,7 @@ def test_real_project(request, project, experiment):
 
     print(f"Testing real project {project.name!r} under {project_dir}")
     print(f"Project description: {project.description}")
-    print(f"Virtual environment of the project {project.name!r} under {venv_dir}")
+    print(f"Virtual environment under {venv_dir}")
     print()
     print(f"Running real project experiment: {experiment.name}")
     print(f"Experiment description: {experiment.description}")
