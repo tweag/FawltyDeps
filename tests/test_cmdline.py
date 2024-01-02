@@ -8,11 +8,10 @@ core exhaustively (which is what the other unit tests are for.
 import json
 import logging
 import os
-from pathlib import Path
-import platform
 import sys
 from dataclasses import dataclass, field
 from itertools import dropwhile
+from pathlib import Path
 from textwrap import dedent
 from typing import List
 
@@ -55,6 +54,15 @@ def make_json_settings_dict(**kwargs):
     assert all(k in settings for k in kwargs)
     settings.update(kwargs)
     return settings
+
+
+def site_packages(venv_dir: Path) -> Path:
+    # Windows
+    if sys.platform.startswith("win"):
+        return venv_dir / "Lib" / "site-packages"
+    # Assume POSIX
+    major, minor = sys.version_info[:2]
+    return venv_dir / f"lib/python{major}.{minor}/site-packages"
 
 
 @pytest.mark.parametrize(
@@ -450,20 +458,20 @@ def test_list_sources__in_varied_project__lists_all_files(fake_project):
         fake_venvs={"my_venv": {}},
     )
     output, returncode = run_fawltydeps_function("--list-sources", f"{tmp_path}")
-    major, minor = sys.version_info[:2]
+
+    _site_packages = site_packages(Path("my_venv"))
+
     expect = [
         str(tmp_path / filename)
         for filename in [
             "code.py",
-            os.path.join("subdir", "other.py"),
-            os.path.join("subdir", "notebook.ipynb"),
+            str(Path("subdir", "other.py")),
+            str(Path("subdir", "notebook.ipynb")),
             "requirements.txt",
             "pyproject.toml",
             "setup.py",
             "setup.cfg",
-            os.path.join("my_venv", "Lib", "site-packages")
-            if platform.system() == "Windows"
-            else f"my_venv/lib/python{major}.{minor}/site-packages",
+            str(_site_packages),
         ]
     ]
     assert_unordered_equivalence(output.splitlines()[:-2], expect)
@@ -474,8 +482,8 @@ def test_list_sources_detailed__in_varied_project__lists_all_files(fake_project)
     tmp_path = fake_project(
         files_with_imports={
             "code.py": ["foo"],
-            os.path.join("subdir", "notebook.ipynb"): ["foo"],
-            os.path.join("subdir", "other.py"): ["foo"],
+            str(Path("subdir", "notebook.ipynb")): ["foo"],
+            str(Path("subdir", "other.py")): ["foo"],
         },
         files_with_declared_deps={
             "pyproject.toml": ["foo"],
@@ -498,7 +506,7 @@ def test_list_sources_detailed__in_varied_project__lists_all_files(fake_project)
         ]
     ]
     expect_deps_lines = [
-        f"  { tmp_path / filename} (parsed as a {filename} file)"
+        f"  {tmp_path / filename} (parsed as a {filename} file)"
         for filename in [
             "pyproject.toml",
             "requirements.txt",
@@ -506,21 +514,9 @@ def test_list_sources_detailed__in_varied_project__lists_all_files(fake_project)
             "setup.py",
         ]
     ]
-    major, minor = sys.version_info[:2]
+    _site_packages = site_packages(tmp_path / "my_venv")
     expect_pyenv_lines = [
-        (
-            "  " + str(tmp_path / "my_venv" / "Lib" / "site-packages")
-            if platform.system() == "Windows"
-            else "  "
-            + str(
-                tmp_path
-                / "my_venv"
-                / "lib"
-                / f"python{major}.{minor}"
-                / "site-packages"
-            )
-        )
-        + " (as a source of Python packages)",
+        "  " + str(_site_packages) + " (as a source of Python packages)",
     ]
     expect = [
         "Sources of Python code:",
@@ -553,7 +549,7 @@ def test_list_sources_detailed__from_both_python_file_and_stdin(fake_project):
             f"  {tmp_path / 'code.py'} (using {tmp_path} as base for 1st-party imports)",
         ],
     ]
-    assert output.splitlines() == expect[0] or output.splitlines() == expect[1]
+    assert output.splitlines() in expect
     assert returncode == 0
 
 
@@ -697,7 +693,6 @@ def test_check_json__simple_project__can_report_both_undeclared_and_unused(
         fake_venvs={"my_venv": {}},
     )
 
-    major, minor = sys.version_info[:2]
     expect = {
         "settings": make_json_settings_dict(
             code=[f"{tmp_path}"],
@@ -718,11 +713,7 @@ def test_check_json__simple_project__can_report_both_undeclared_and_unused(
             },
             {
                 "source_type": "PyEnvSource",
-                "path": (
-                    f"{tmp_path / 'my_venv' / 'Lib' / 'site-packages'}"
-                    if platform.system() == "Windows"
-                    else f"{tmp_path}/my_venv/lib/python{major}.{minor}/site-packages"
-                ),
+                "path": f"{site_packages(tmp_path / 'my_venv')}",
             },
         ],
         "imports": [
