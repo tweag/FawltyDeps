@@ -12,6 +12,7 @@ import pytest
 from fawltydeps.types import TomlData
 
 from .project_helpers import TarballPackage
+from .utils import site_packages
 
 
 @pytest.fixture
@@ -53,15 +54,7 @@ def fake_venv(tmp_path):
             venv_dir.parent.mkdir(parents=True, exist_ok=True)
         venv.create(venv_dir, with_pip=False)
 
-        # Create fake packages
-        major, minor = py_version
-
-        def _env_site_packages():
-            if platform.system() == "Windows":
-                return venv_dir / "Lib" / "site-packages"
-            return venv_dir / "lib" / f"python{major}.{minor}" / "site-packages"
-
-        site_dir = _env_site_packages()
+        site_dir = site_packages(venv_dir)
         assert site_dir.is_dir()
         for package_name, import_names in fake_packages.items():
             # Create just enough files under site_dir to fool importlib_metadata

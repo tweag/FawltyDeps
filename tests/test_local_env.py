@@ -1,6 +1,4 @@
 """Verify behavior of package module looking at a given Python environment."""
-import os
-import platform
 import sys
 import venv
 from pathlib import Path
@@ -17,6 +15,8 @@ from fawltydeps.packages import (
     resolve_dependencies,
     setup_resolvers,
 )
+
+from .utils import site_packages
 
 major, minor = sys.version_info[:2]
 
@@ -45,7 +45,7 @@ pep582_subdirs = [
 windows_subdirs = [
     "",
     "Lib",
-    os.path.join("Lib", "site-packages"),
+    str(Path("Lib", "site-packages")),
 ]
 
 
@@ -166,11 +166,7 @@ def test_local_env__default_venv__contains_pip(tmp_path):
     # "pip" package is installed, and that it provides a "pip" import name.
     venv.create(tmp_path, with_pip=True)
     lpl = LocalPackageResolver(pyenv_sources(tmp_path))
-    expect_location = (
-        tmp_path / "Lib" / "site-packages"
-        if platform.system() == "Windows"
-        else tmp_path / f"lib/python{major}.{minor}/site-packages"
-    )
+    expect_location = site_packages(tmp_path)
     assert "pip" in lpl.packages
     pip = lpl.packages["pip"]
     assert pip.package_name == "pip"

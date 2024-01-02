@@ -1,9 +1,10 @@
 """Test core functionality of DirectoryTraversal class."""
 import os
-import platform
+import sys
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from pathlib import Path
+import sys
 from typing import Generic, List, Optional, Tuple, TypeVar, Union
 
 import pytest
