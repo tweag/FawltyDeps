@@ -168,11 +168,11 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
         expect=[
             ExpectedTraverseStep(".", subdirs=["a"]),
             ExpectedTraverseStep("a", subdirs=["b"], attached=[456]),
-            ExpectedTraverseStep(os.path.join("a", "b"), subdirs=["c"], attached=[456]),
+            ExpectedTraverseStep(str(Path("a", "b")), subdirs=["c"], attached=[456]),
             ExpectedTraverseStep(
-                os.path.join("a", "b", "c"), subdirs=["d"], attached=[456, 123]
+                str(Path("a", "b", "c")), subdirs=["d"], attached=[456, 123]
             ),
-            ExpectedTraverseStep(os.path.join("a", "b", "c", "d"), attached=[456, 123]),
+            ExpectedTraverseStep(str(Path("a", "b", "c", "d")), attached=[456, 123]),
         ],
     ),
     DirectoryTraversalVector(

@@ -1,7 +1,6 @@
 """Test how settings cascade/combine across command-line, config file, etc."""
 import argparse
 import logging
-import platform
 import random
 import string
 import sys

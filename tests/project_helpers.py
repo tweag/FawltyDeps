@@ -102,7 +102,7 @@ class TarballPackage:
 
     @property
     def cache_key(self) -> str:
-        return os.path.join("fawltydeps", f"{self.tarball_name()}")
+        return str(Path("fawltydeps", self.tarball_name()))
 
     def tarball_path(self, cache: pytest.Cache) -> Path:
         return self.cache_dir(cache) / self.tarball_name()
@@ -186,7 +186,7 @@ class CachedExperimentVenv:
         script or the requirements to create that venv change.
         """
         # We cache venv dirs using the hash from create_venv_hash
-        cached_str = cache.get(os.path.join("fawltydeps", f"{self.venv_hash()}"), None)
+        cached_str = cache.get(str(Path("fawltydeps", self.venv_hash())), None)
         if cached_str is not None and Path(cached_str, ".installed").is_file():
             return Path(cached_str)  # already cached
 
@@ -202,7 +202,7 @@ class CachedExperimentVenv:
         )
         # Make sure the venv has been installed
         assert (venv_dir / ".installed").is_file()
-        cache.set(os.path.join("fawltydeps", f"{self.venv_hash()}"), str(venv_dir))
+        cache.set(str(Path("fawltydeps", self.venv_hash())), str(venv_dir))
         return venv_dir
 
 

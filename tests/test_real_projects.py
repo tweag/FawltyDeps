@@ -172,6 +172,10 @@ class ThirdPartyProject(BaseProject):
         return Path(cache.mkdir(f"fawltydeps_{self.tarball.sha256}"))
 
 
+@pytest.mark.skipif(
+    sys.platform.startswith("win"),
+    reason="Real projects test are not supported on Windows due to the test environment complications.",
+)
 @pytest.mark.parametrize(
     "project, experiment",
     [
