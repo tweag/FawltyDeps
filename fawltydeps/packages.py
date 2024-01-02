@@ -433,11 +433,10 @@ class TemporaryPipInstallResolver(BasePackageResolver):
             text=True,
             check=False,
         )
-        pip_path = (
-            venv_dir / "Scripts" / "pip.exe"
-            if platform.system() == "Windows"
-            else venv_dir / "bin" / "pip"
-        )
+        if sys.platform.startswith("win"):  # Windows
+            pip_path = venv_dir / "Scripts" / "pip.exe"
+        else:  # Assume POSIX
+            pip_path = venv_dir / "bin" / "pip"
 
         argv = [
             f"{pip_path}",
