@@ -26,6 +26,15 @@ SAMPLE_PROJECTS_DIR = Path(__file__).with_name("sample_projects")
 logger = logging.getLogger(__name__)
 
 
+def site_packages(venv_dir: Path) -> Path:
+    # Windows
+    if sys.platform.startswith("win"):
+        return venv_dir / "Lib" / "site-packages"
+    # Assume POSIX
+    major, minor = sys.version_info[:2]
+    return venv_dir / f"lib/python{major}.{minor}/site-packages"
+
+
 def dedent_bytes(data: bytes) -> bytes:
     """Like textwrap.dedent(), but for bytes instead of str."""
     text = data.decode(encoding="utf-8", errors="surrogateescape")

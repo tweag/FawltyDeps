@@ -28,6 +28,7 @@ from .utils import (
     dedent_bytes,
     run_fawltydeps_function,
     run_fawltydeps_subprocess,
+    site_packages,
 )
 
 logger = logging.getLogger(__name__)
@@ -54,15 +55,6 @@ def make_json_settings_dict(**kwargs):
     assert all(k in settings for k in kwargs)
     settings.update(kwargs)
     return settings
-
-
-def site_packages(venv_dir: Path) -> Path:
-    # Windows
-    if sys.platform.startswith("win"):
-        return venv_dir / "Lib" / "site-packages"
-    # Assume POSIX
-    major, minor = sys.version_info[:2]
-    return venv_dir / f"lib/python{major}.{minor}/site-packages"
 
 
 @pytest.mark.parametrize(
