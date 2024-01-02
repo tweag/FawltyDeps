@@ -1,5 +1,4 @@
 """Fixtures for tests"""
-import platform
 import sys
 import venv
 from pathlib import Path

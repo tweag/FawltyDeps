@@ -1,7 +1,6 @@
 """Common types used across FawltyDeps."""
 
 import os
-import platform
 import sys
 from abc import ABC, abstractmethod
 from dataclasses import asdict, dataclass, field, replace
@@ -158,7 +157,7 @@ class PyEnvSource(Source):
             return  # also ok
 
         # Support Windows projects
-        if platform.system() == "Windows" and self.path.match(
+        if sys.platform.startswith("win") and self.path.match(
             os.path.join("Lib", "site-packages")
         ):
             return  # also ok

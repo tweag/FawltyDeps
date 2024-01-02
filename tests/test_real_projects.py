@@ -8,7 +8,6 @@ should find/report.
 import json
 import logging
 import os
-import platform
 import subprocess
 import sys
 import tarfile
@@ -182,7 +181,6 @@ class ThirdPartyProject(BaseProject):
         pytest.param(project, experiment, id=experiment.name)
         for project in ThirdPartyProject.collect()
         for experiment in project.experiments
-        if not platform.system() == "Windows"
     ],
 )
 def test_real_project(request, project, experiment):

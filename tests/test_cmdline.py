@@ -8,7 +8,6 @@ core exhaustively (which is what the other unit tests are for.
 import json
 import logging
 import os
-import sys
 from dataclasses import dataclass, field
 from itertools import dropwhile
 from pathlib import Path
