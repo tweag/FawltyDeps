@@ -209,14 +209,14 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
                 ExpectedTraverseStep(".", subdirs=["sub1", "sub2"]),
                 ExpectedTraverseStep("sub1", subdirs=["rel_link_sub2"]),
                 ExpectedTraverseStep(
-                    os.path.join("sub1", "rel_link_sub2"), subdirs=["abs_link_sub1"]
+                    str(Path("sub1", "rel_link_sub2")), subdirs=["abs_link_sub1"]
                 ),
             ],
             [
                 ExpectedTraverseStep(".", subdirs=["sub1", "sub2"]),
                 ExpectedTraverseStep("sub2", subdirs=["abs_link_sub1"]),
                 ExpectedTraverseStep(
-                    os.path.join("sub2", "abs_link_sub1"), subdirs=["rel_link_sub2"]
+                    str(Path("sub2", "abs_link_sub1")), subdirs=["rel_link_sub2"]
                 ),
             ],
         ],
@@ -232,7 +232,7 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
         add=[AddCall(path="here")],
         expect=[
             ExpectedTraverseStep("here", subdirs=["symlink"]),
-            ExpectedTraverseStep(os.path.join("here", "symlink"), files=["file"]),
+            ExpectedTraverseStep(str(Path("here", "symlink")), files=["file"]),
         ],
     ),
     DirectoryTraversalVector(
@@ -244,7 +244,7 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
         add=[AddCall(path="here")],
         expect=[
             ExpectedTraverseStep("here", subdirs=["symlink"]),
-            ExpectedTraverseStep(os.path.join("here", "symlink"), files=["file"]),
+            ExpectedTraverseStep(str(Path("here", "symlink")), files=["file"]),
         ],
     ),
     DirectoryTraversalVector(

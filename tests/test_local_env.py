@@ -45,7 +45,7 @@ pep582_subdirs = [
 windows_subdirs = [
     "",
     "Lib",
-    str(Path("Lib", "site-packages")),
+    str(site_packages()),
 ]
 
 
@@ -59,7 +59,7 @@ windows_subdirs = [
 def test_find_package_dirs__various_paths_in_venv_windows(tmp_path, subdir):
     venv.create(tmp_path, with_pip=False)
     path = tmp_path / subdir
-    expect = {tmp_path / "Lib" / "site-packages"}
+    expect = {site_packages(tmp_path)}
     assert set(LocalPackageResolver.find_package_dirs(path)) == expect
 
 

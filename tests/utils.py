@@ -26,7 +26,7 @@ SAMPLE_PROJECTS_DIR = Path(__file__).with_name("sample_projects")
 logger = logging.getLogger(__name__)
 
 
-def site_packages(venv_dir: Path) -> Path:
+def site_packages(venv_dir: Path = Path()) -> Path:
     # Windows
     if sys.platform.startswith("win"):
         return venv_dir / "Lib" / "site-packages"
