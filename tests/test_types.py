@@ -1,6 +1,7 @@
 """Verify behavior of our basic types."""
 
 import os
+import sys
 from dataclasses import FrozenInstanceError
 from pathlib import Path
 
