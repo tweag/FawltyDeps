@@ -492,8 +492,8 @@ def test_list_sources_detailed__in_varied_project__lists_all_files(fake_project)
         for filename in [
             "code.py",
             "setup.py",  # This is both a CodeSource and an DepsSource!
-            os.path.join("subdir", "notebook.ipynb"),
-            os.path.join("subdir", "other.py"),
+            str(Path("subdir", "notebook.ipynb")),
+            str(Path("subdir", "other.py")),
         ]
     ]
     expect_deps_lines = [
