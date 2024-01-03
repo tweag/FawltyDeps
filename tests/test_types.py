@@ -4,7 +4,6 @@ import os
 import sys
 from dataclasses import FrozenInstanceError
 from pathlib import Path
-import sys
 
 import pytest
 
