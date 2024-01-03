@@ -4,6 +4,7 @@ import os
 import sys
 from dataclasses import FrozenInstanceError
 from pathlib import Path
+import sys
 
 import pytest
 
@@ -38,11 +39,23 @@ testdata = {  # Test ID -> (Location args, expected string representation, sort 
         212,
     ),
     "rel_path_line": ((Path("foo"), None, 4), "foo:4", 312),
+    "abs_path_drive_prefix": ((Path("C:/foo/bar"),), "C:\\foo\\bar", 222),
 }
 
 
 @pytest.mark.parametrize(
-    "args,string,_", [pytest.param(*data, id=key) for key, data in testdata.items()]
+    "args,string,_",
+    [
+        pytest.param(
+            *data,
+            id=key,
+            marks=pytest.mark.skipif(
+                key == "abs_path_drive_prefix" and not sys.platform.startswith("win"),
+                reason="Drive prefix is used in Windows systems only.",
+            ),
+        )
+        for key, data in testdata.items()
+    ],
 )
 def test_location__str(args, string, _):
     assert str(Location(*args)) == string
