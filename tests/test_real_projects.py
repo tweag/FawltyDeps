@@ -173,7 +173,8 @@ class ThirdPartyProject(BaseProject):
 
 @pytest.mark.skipif(
     sys.platform.startswith("win"),
-    reason="Real projects test are not supported on Windows due to the test environment complications.",
+    reason="Real projects test are not supported on Windows"
+    " due to the test environment complications.",
 )
 @pytest.mark.parametrize(
     "project, experiment",
