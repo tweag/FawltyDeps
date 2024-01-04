@@ -465,7 +465,8 @@ def test_find_sources(vector: TraverseProjectVector):
     assert project_dir.is_dir()
     settings = Settings(
         code={
-            path if path == "<stdin>" else project_dir / path for path in vector.code
+            "<stdin>" if path == "<stdin>" else project_dir / path
+            for path in vector.code
         },
         deps={project_dir / path for path in vector.deps},
         deps_parser_choice=vector.deps_parser_choice,

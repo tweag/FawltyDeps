@@ -42,7 +42,7 @@ def hide_dataclass_fields(instance: object, *field_names: str) -> None:
         raise TypeError(f"{instance!r} is not a dataclass instance")
     remaining_fields = {
         name: value
-        for name, value in instance.__dataclass_fields__.items()  # type: ignore
+        for name, value in instance.__dataclass_fields__.items()
         if name not in field_names
     }
     object.__setattr__(instance, "__dataclass_fields__", remaining_fields)
