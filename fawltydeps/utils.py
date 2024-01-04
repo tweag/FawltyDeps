@@ -1,6 +1,7 @@
 """Common utilities"""
 
 import logging
+import sys
 from dataclasses import is_dataclass
 from functools import wraps
 from pathlib import Path
@@ -73,3 +74,14 @@ def calculated_once(method: Callable[[Instance], T]) -> Callable[[Instance], T]:
         return calculated
 
     return wrapper
+
+
+def site_packages(venv_dir: Path = Path()) -> Path:
+    """Return the site-packages directory of a virtual environment.
+    Works for both, Windows and POSIX."""
+    # Windows
+    if sys.platform.startswith("win"):
+        return venv_dir / "Lib" / "site-packages"
+    # Assume POSIX
+    major, minor = sys.version_info[:2]
+    return venv_dir / f"lib/python{major}.{minor}/site-packages"

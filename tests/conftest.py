@@ -9,9 +9,9 @@ from typing import Callable, Dict, List, Optional, Set, Tuple, Union
 import pytest
 
 from fawltydeps.types import TomlData
+from fawltydeps.utils import site_packages
 
 from .project_helpers import TarballPackage
-from .utils import site_packages
 
 
 @pytest.fixture
