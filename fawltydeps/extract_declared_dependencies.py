@@ -7,6 +7,7 @@ import re
 import sys
 import tokenize
 from dataclasses import replace
+from os import unlink
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Callable, Iterable, Iterator, NamedTuple, Optional, Tuple
@@ -149,11 +150,24 @@ def parse_setup_cfg(path: Path) -> Iterator[DeclaredDependency]:
         # TODO: try leveraging RequirementsFile.from_string once
         #       pip-requirements-parser updates.
         # See:  https://github.com/nexB/pip-requirements-parser/pull/17
-        with NamedTemporaryFile(mode="wt", delete=False) as tmp:
-            tmp.write(value)
-            tmp.flush()
-            for dep in parse_requirements_txt(Path(tmp.name)):
+
+        # https://github.com/nexB/pip-requirements-parser/pull/19#discussion_r1379279880
+        temp_file = NamedTemporaryFile( # pylint: disable=consider-using-with
+            "wt",
+            delete=False,
+            # we prefer utf8 encoded strings, but ...
+            # - must not change newlines
+            # - must not  change encoding, fallback to system encoding for compatibility
+            newline="",
+            encoding=None,
+        )
+        temp_file.write(value)
+        temp_file.close()
+        try:
+            for dep in parse_requirements_txt(Path(temp_file.name)):
                 yield replace(dep, source=source)
+        finally:
+            unlink(Path(temp_file.name))
 
     def extract_section(section: str) -> Iterator[DeclaredDependency]:
         if section in parser:
