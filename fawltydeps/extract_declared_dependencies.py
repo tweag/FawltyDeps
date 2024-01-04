@@ -152,7 +152,7 @@ def parse_setup_cfg(path: Path) -> Iterator[DeclaredDependency]:
         # See:  https://github.com/nexB/pip-requirements-parser/pull/17
 
         # https://github.com/nexB/pip-requirements-parser/pull/19#discussion_r1379279880
-        temp_file = NamedTemporaryFile( # pylint: disable=consider-using-with
+        temp_file = NamedTemporaryFile(  # pylint: disable=consider-using-with
             "wt",
             delete=False,
             # we prefer utf8 encoded strings, but ...

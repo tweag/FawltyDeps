@@ -1,7 +1,6 @@
 """Encapsulate the lookup of packages and their provided import names."""
 
 import logging
-import os
 import subprocess
 import sys
 import tempfile
@@ -42,7 +41,7 @@ from fawltydeps.types import (
     UnparseablePathException,
     UnresolvedDependenciesError,
 )
-from fawltydeps.utils import calculated_once
+from fawltydeps.utils import calculated_once, site_packages
 
 if sys.version_info >= (3, 11):
     import tomllib  # pylint: disable=no-member
@@ -329,28 +328,30 @@ class LocalPackageResolver(InstalledPackageResolver):
         # Note that we must also accept lib/pythonX.Y/site-packages for python
         # versions X.Y that are different from the current Python version.
         found = False
-        if (path / "bin/python").is_file():
-            for site_packages in path.glob("lib/python?.*/site-packages"):
-                if site_packages.is_dir():
-                    yield site_packages
+
+        if sys.platform.startswith("win"):  # Check for packages on Windows
+            if (path / "Scripts" / "python.exe").is_file():
+                _site_packages = site_packages(path)
+                if _site_packages.is_dir():
+                    yield _site_packages
                     found = True
             if found:
                 return
+
+        else:  # Assume POSIX
+            if (path / "bin/python").is_file():
+                for _site_packages in path.glob("lib/python?.*/site-packages"):
+                    if _site_packages.is_dir():
+                        yield _site_packages
+                        found = True
+                if found:
+                    return
 
         # Workaround for projects using PEP582:
         if path.name == "__pypackages__":
-            for site_packages in path.glob("?.*/lib"):
-                if site_packages.is_dir():
-                    yield site_packages
-                    found = True
-            if found:
-                return
-
-        # Check for packages on Windows
-        if sys.platform.startswith("win"):
-            for site_packages in path.glob(os.path.join("Lib", "site-packages")):
-                if site_packages.is_dir():
-                    yield site_packages
+            for _site_packages in path.glob("?.*/lib"):
+                if _site_packages.is_dir():
+                    yield _site_packages
                     found = True
             if found:
                 return

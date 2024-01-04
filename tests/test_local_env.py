@@ -15,8 +15,7 @@ from fawltydeps.packages import (
     resolve_dependencies,
     setup_resolvers,
 )
-
-from .utils import site_packages
+from fawltydeps.utils import site_packages
 
 major, minor = sys.version_info[:2]
 

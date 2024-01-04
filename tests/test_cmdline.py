@@ -7,7 +7,6 @@ core exhaustively (which is what the other unit tests are for.
 
 import json
 import logging
-import os
 from dataclasses import dataclass, field
 from itertools import dropwhile
 from pathlib import Path
@@ -20,6 +19,7 @@ from importlib_metadata import files as package_files
 from fawltydeps.main import UNUSED_DEPS_OUTPUT_PREFIX, VERBOSE_PROMPT, Analysis, version
 from fawltydeps.settings import DEFAULT_IGNORE_UNUSED
 from fawltydeps.types import Location, UnusedDependency
+from fawltydeps.utils import site_packages
 
 from .test_extract_imports_simple import generate_notebook
 from .utils import (
@@ -27,7 +27,6 @@ from .utils import (
     dedent_bytes,
     run_fawltydeps_function,
     run_fawltydeps_subprocess,
-    site_packages,
 )
 
 logger = logging.getLogger(__name__)
