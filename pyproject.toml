@@ -35,9 +35,13 @@ fawltydeps = "fawltydeps.main:main"
 # These are the main dependencies for fawltydeps at runtime.
 # Do not add anything here that is only needed by CI/tests/linters/developers
 python = ">=3.7.2"
-importlib_metadata = ">=6.6.0"
+importlib_metadata = [
+    # v6.8.0 drops support for Python v3.7:
+    {version = ">=6.6.0", python = ">=3.8"},
+    {version = ">=6.6.0,<6.8.0", python = "<3.8"},
+]
 isort = [
-    # isort 5.12.0 drops support for Python v3.7:
+    # v5.12.0 drops support for Python v3.7:
     {version = "^5.10", python = ">=3.8"},
     {version = ">=5.10,<5.12.0", python = "<3.8"},
 ]
@@ -45,7 +49,11 @@ pip-requirements-parser = ">=32.0.1"
 pydantic = ">=1.10.4,<3.0.0"
 tomli = {version = "^2.0.1", python = "<3.11"}
 typing-extensions = {version = ">=4.4.0", python = "<3.8"}
-setuptools = ">=68.0.0"
+setuptools = [
+    # v68.1.0 drops support for Python v3.7:
+    {version = ">=68.0.0", python = ">=3.8"},
+    {version = ">=68.0.0,<68.1.0", python = "<3.8"},
+]
 
 [tool.poetry.group.nox]
 optional = true
