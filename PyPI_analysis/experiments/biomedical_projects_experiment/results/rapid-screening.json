@@ -1,0 +1,13 @@
+{
+  "project_name": "rapid-screening",
+  "code_dirs": {
+    "analysis": {
+      "py": 7,
+      "ipynb": 7,
+      "total": 14
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

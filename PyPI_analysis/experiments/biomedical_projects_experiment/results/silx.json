@@ -1,0 +1,145 @@
+{
+  "project_name": "silx",
+  "code_dirs": {
+    "src": {
+      "py": 388,
+      "ipynb": 0,
+      "total": 388
+    },
+    "doc": {
+      "py": 3,
+      "ipynb": 3,
+      "total": 6
+    },
+    "qtdesigner_plugins": {
+      "py": 4,
+      "ipynb": 0,
+      "total": 4
+    },
+    "tools": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    },
+    "package": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    },
+    "ci": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 17,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "requirements-dev.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 14,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "ci/requirements-pinned.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 3,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "src/silx/gui/plot/tools/PositionInfo.py",
+          "lineno": 66
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "src/silx/math/histogram.py",
+          "lineno": 25
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "src/silx/math/histogram.py",
+          "lineno": 25
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "src/silx/gui/dialog/ColormapDialog.py",
+          "lineno": 24
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "src/silx/sx/_plot.py",
+          "lineno": 54
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "src/silx/sx/_plot.py",
+          "lineno": 219
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "src/silx/sx/_plot.py",
+          "lineno": 320
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

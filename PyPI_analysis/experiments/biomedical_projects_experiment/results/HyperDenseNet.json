@@ -1,0 +1,13 @@
+{
+  "project_name": "HyperDenseNet",
+  "code_dirs": {
+    "src": {
+      "py": 26,
+      "ipynb": 0,
+      "total": 26
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

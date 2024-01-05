@@ -1,0 +1,18 @@
+{
+  "project_name": "Gao_NC_CH",
+  "code_dirs": {
+    "notebooks": {
+      "py": 0,
+      "ipynb": 1,
+      "total": 1
+    },
+    "facets-ch": {
+      "py": 0,
+      "ipynb": 1,
+      "total": 1
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

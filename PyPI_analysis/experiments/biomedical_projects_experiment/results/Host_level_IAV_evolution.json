@@ -1,0 +1,18 @@
+{
+  "project_name": "Host_level_IAV_evolution",
+  "code_dirs": {
+    "scripts": {
+      "py": 4,
+      "ipynb": 0,
+      "total": 4
+    },
+    "results": {
+      "py": 2,
+      "ipynb": 2,
+      "total": 4
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

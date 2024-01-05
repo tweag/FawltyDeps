@@ -1,0 +1,21 @@
+{
+  "project_name": "fluxOrders",
+  "code_dirs": {
+    "Robaina_Nikoloski_2019": {
+      "py": 11,
+      "ipynb": 1,
+      "total": 12
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "Robaina_Nikoloski_2019/Code/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 12,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

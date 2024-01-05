@@ -1,0 +1,33 @@
+{
+  "project_name": "bioblend",
+  "code_dirs": {
+    "bioblend": {
+      "py": 39,
+      "ipynb": 0,
+      "total": 39
+    },
+    "docs": {
+      "py": 17,
+      "ipynb": 0,
+      "total": 17
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 6,
+      "warnings": true
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

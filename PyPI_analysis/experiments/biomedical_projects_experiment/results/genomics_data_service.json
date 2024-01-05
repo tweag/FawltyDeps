@@ -1,0 +1,28 @@
+{
+  "project_name": "genomics_data_service",
+  "code_dirs": {
+    "src": {
+      "py": 16,
+      "ipynb": 0,
+      "total": 16
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "src/gemini/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 6,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "src/prepared_dataset/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 5,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

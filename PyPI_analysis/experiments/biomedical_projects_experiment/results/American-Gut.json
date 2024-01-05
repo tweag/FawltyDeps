@@ -1,0 +1,45 @@
+{
+  "project_name": "American-Gut",
+  "code_dirs": {
+    "americangut": {
+      "py": 17,
+      "ipynb": 0,
+      "total": 17
+    },
+    "scripts": {
+      "py": 10,
+      "ipynb": 0,
+      "total": 10
+    },
+    "ipynb": {
+      "py": 0,
+      "ipynb": 9,
+      "total": 9
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "pip_requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 20,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 19,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "conda_requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 15,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

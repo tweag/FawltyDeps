@@ -1,0 +1,26 @@
+{
+  "project_name": "booleannet",
+  "code_dirs": {
+    "boolean2": {
+      "py": 19,
+      "ipynb": 0,
+      "total": 19
+    },
+    "scripts": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 2,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

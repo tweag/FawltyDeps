@@ -1,0 +1,13 @@
+{
+  "project_name": "HUTI-RNAseq",
+  "code_dirs": {
+    "analysis": {
+      "py": 7,
+      "ipynb": 6,
+      "total": 13
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,43 @@
+{
+  "project_name": "active_learning_cell_free",
+  "code_dirs": {
+    "controls_analysis_plates": {
+      "py": 0,
+      "ipynb": 23,
+      "total": 23
+    },
+    "ECHO_handling_scripts": {
+      "py": 0,
+      "ipynb": 5,
+      "total": 5
+    },
+    "active_learning_loop": {
+      "py": 0,
+      "ipynb": 3,
+      "total": 3
+    },
+    "whole_lysate_most_informative_points": {
+      "py": 0,
+      "ipynb": 3,
+      "total": 3
+    },
+    "compounds_effect_analysis": {
+      "py": 0,
+      "ipynb": 2,
+      "total": 2
+    },
+    "multiple_extracts_analysis": {
+      "py": 0,
+      "ipynb": 2,
+      "total": 2
+    },
+    "predict_for_new_lysate": {
+      "py": 0,
+      "ipynb": 1,
+      "total": 1
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,70 @@
+{
+  "project_name": "MASSpy",
+  "code_dirs": {
+    "src": {
+      "py": 41,
+      "ipynb": 0,
+      "total": 41
+    },
+    "docs": {
+      "py": 1,
+      "ipynb": 37,
+      "total": 38
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 44,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Alternative imports (primary)": {
+        "name": "simplejson",
+        "source": {
+          "path": "docs/tutorials/import_export_optimization.ipynb",
+          "cellno": 2,
+          "lineno": 1
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "simplejson",
+        "source": {
+          "path": "src/mass/io/json.py",
+          "lineno": 23
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "gurobipy",
+        "source": {
+          "path": "docs/tutorials/ensemble_modeling.ipynb",
+          "cellno": 2,
+          "lineno": 2
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,13 @@
+{
+  "project_name": "conditionally_stable_circuits",
+  "code_dirs": {
+    "BooleanDOI-master": {
+      "py": 8,
+      "ipynb": 0,
+      "total": 8
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

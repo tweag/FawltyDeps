@@ -1,0 +1,23 @@
+{
+  "project_name": "TDT-tutorial-2014",
+  "code_dirs": {
+    "evaluation": {
+      "py": 6,
+      "ipynb": 0,
+      "total": 6
+    },
+    "hit_finding": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    },
+    "final_models": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

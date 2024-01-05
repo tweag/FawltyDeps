@@ -1,0 +1,28 @@
+{
+  "project_name": "chembl_webresource_client",
+  "code_dirs": {
+    "chembl_webresource_client": {
+      "py": 20,
+      "ipynb": 0,
+      "total": 20
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

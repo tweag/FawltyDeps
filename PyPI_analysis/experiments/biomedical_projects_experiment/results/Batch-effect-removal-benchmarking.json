@@ -1,0 +1,13 @@
+{
+  "project_name": "Batch-effect-removal-benchmarking",
+  "code_dirs": {
+    "Script": {
+      "py": 2,
+      "ipynb": 46,
+      "total": 48
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,13 @@
+{
+  "project_name": "NetDI",
+  "code_dirs": {
+    "DCS": {
+      "py": 0,
+      "ipynb": 4,
+      "total": 4
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

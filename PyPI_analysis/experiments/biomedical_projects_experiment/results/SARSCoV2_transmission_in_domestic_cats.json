@@ -1,0 +1,13 @@
+{
+  "project_name": "SARSCoV2_transmission_in_domestic_cats",
+  "code_dirs": {
+    "code": {
+      "py": 0,
+      "ipynb": 6,
+      "total": 6
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

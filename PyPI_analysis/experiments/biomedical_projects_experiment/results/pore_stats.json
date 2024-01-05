@@ -1,0 +1,680 @@
+{
+  "project_name": "pore_stats",
+  "code_dirs": {
+    "qt_app": {
+      "py": 317,
+      "ipynb": 0,
+      "total": 317
+    },
+    "pore_stats": {
+      "py": 73,
+      "ipynb": 0,
+      "total": 73
+    },
+    "notebooks": {
+      "py": 0,
+      "ipynb": 5,
+      "total": 5
+    },
+    "tutorials": {
+      "py": 0,
+      "ipynb": 3,
+      "total": 3
+    },
+    "old": {
+      "py": 1,
+      "ipynb": 1,
+      "total": 2
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "qt_app/pyqtgraph-0.9.10/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 1,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "qt_app/pyqtgraph-0.9.10/examples/cx_freeze/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "pore_stats/rp/python-neo-master/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 3,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "qt_app/pyqtgraph-0.9.10/examples/py2exe/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "qt_app/pyqtgraph-0.9.10/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "pore_stats/rp/python-neo-master/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 2,
+      "warnings": true
+    }
+  ],
+  "imports": [
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/iotest/test_brainwaref32io.py",
+          "lineno": 12
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "quantities",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/core/segment.py",
+          "lineno": 21
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/iotest/test_pynnio.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "quantities",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/core/block.py",
+          "lineno": 20
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/core/block.py",
+          "lineno": 20
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/iotest/test_neomatlabio.py",
+          "lineno": 9
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "quantities",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/core/epoch.py",
+          "lineno": 23
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/core/epoch.py",
+          "lineno": 23
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/coretest/test_base.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/iotest/test_plexonio.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/iotest/test_nixio.py",
+          "lineno": 17
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "mock",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/iotest/test_nixio.py",
+          "lineno": 22
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "numpy",
+        "source": {
+          "path": "qt_app/pyqtgraph-0.9.10/pyqtgraph/numpy_fix.py",
+          "lineno": 1
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/iotest/test_spike2io.py",
+          "lineno": 9
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/iotest/test_baseio.py",
+          "lineno": 9
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "quantities",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/core/analogsignal.py",
+          "lineno": 68
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "quantities",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/core/channelindex.py",
+          "lineno": 20
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/core/channelindex.py",
+          "lineno": 20
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/core/channelindex.py",
+          "lineno": 20
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/iotest/test_brainwaredamio.py",
+          "lineno": 12
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/iotest/test_brainvisionio.py",
+          "lineno": 9
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/coretest/test_event.py",
+          "lineno": 6
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/iotest/test_igorio.py",
+          "lineno": 6
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/coretest/test_block.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/coretest/test_analogsignalarray.py",
+          "lineno": 9
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/iotest/test_tdtio.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/iotest/test_winedrio.py",
+          "lineno": 9
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/iotest/test_micromedio.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/coretest/test_generate_datasets.py",
+          "lineno": 9
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/iotest/test_kwikio.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/coretest/test_epoch.py",
+          "lineno": 6
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/iotest/test_neuroexplorerio.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/coretest/test_channelindex.py",
+          "lineno": 9
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/coretest/test_irregularysampledsignal.py",
+          "lineno": 6
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/iotest/test_klustakwikio.py",
+          "lineno": 14
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/iotest/test_axonio.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/coretest/test_segment.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/iotest/test_alphaomegaio.py",
+          "lineno": 9
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/coretest/test_unit.py",
+          "lineno": 9
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/iotest/test_asciisignalio.py",
+          "lineno": 9
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/iotest/test_brainwaresrcio.py",
+          "lineno": 13
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/iotest/test_neuroshareio.py",
+          "lineno": 16
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/iotest/test_exampleio.py",
+          "lineno": 9
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/coretest/test_analogsignal.py",
+          "lineno": 12
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/iotest/test_rawbinarysignalio.py",
+          "lineno": 9
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/iotest/test_elphyio.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/coretest/test_container.py",
+          "lineno": 6
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/io/elphyio.py",
+          "lineno": 2
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "quantities",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/io/elphyio.py",
+          "lineno": 2
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/iotest/test_stimfitio.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/iotest/test_hdf5io.py",
+          "lineno": 8
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "quantities",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/core/irregularlysampledsignal.py",
+          "lineno": 44
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "stfio",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/io/stimfitio.py",
+          "lineno": 51
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/iotest/common_io_test.py",
+          "lineno": 27
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/coretest/test_spiketrain.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/iotest/test_asciispiketrainio.py",
+          "lineno": 9
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "PySide",
+        "source": {
+          "path": "qt_app/pyqtgraph-0.9.10/pyqtgraph/Qt.py",
+          "lineno": 36
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "PyQt4",
+        "source": {
+          "path": "qt_app/pyqtgraph-0.9.10/pyqtgraph/Qt.py",
+          "lineno": 105
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "PyQt4",
+        "source": {
+          "path": "qt_app/pyqtgraph-0.9.10/pyqtgraph/Qt.py",
+          "lineno": 109
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "PyQt4",
+        "source": {
+          "path": "qt_app/pyqtgraph-0.9.10/pyqtgraph/Qt.py",
+          "lineno": 113
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "quantities",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/core/spiketrain.py",
+          "lineno": 108
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/iotest/test_winwcpio.py",
+          "lineno": 9
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/iotest/test_blackrockio.py",
+          "lineno": 14
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/iotest/test_neuroscopeio.py",
+          "lineno": 9
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "quantities",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/core/event.py",
+          "lineno": 23
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/core/event.py",
+          "lineno": 23
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "pore_stats/rp/python-neo-master/neo/test/iotest/test_elanio.py",
+          "lineno": 11
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

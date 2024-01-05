@@ -1,0 +1,18 @@
+{
+  "project_name": "DockCoV2",
+  "code_dirs": {
+    "covid19-web": {
+      "py": 50,
+      "ipynb": 0,
+      "total": 50
+    },
+    "script": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

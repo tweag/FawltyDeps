@@ -1,0 +1,13 @@
+{
+  "project_name": "reference-frames",
+  "code_dirs": {
+    "ipynb": {
+      "py": 2,
+      "ipynb": 5,
+      "total": 7
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

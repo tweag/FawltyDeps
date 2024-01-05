@@ -1,0 +1,45 @@
+{
+  "project_name": "manubot",
+  "code_dirs": {
+    "manubot": {
+      "py": 39,
+      "ipynb": 0,
+      "total": 39
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 18,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Alternative imports": {
+        "name": "tomli",
+        "source": {
+          "path": "manubot/util.py",
+          "lineno": 34
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

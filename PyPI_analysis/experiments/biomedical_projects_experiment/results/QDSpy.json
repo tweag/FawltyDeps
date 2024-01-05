@@ -1,0 +1,36 @@
+{
+  "project_name": "QDSpy",
+  "code_dirs": {
+    "Stimuli": {
+      "py": 39,
+      "ipynb": 0,
+      "total": 39
+    },
+    "Devices": {
+      "py": 20,
+      "ipynb": 0,
+      "total": 20
+    },
+    "Libraries": {
+      "py": 5,
+      "ipynb": 0,
+      "total": 5
+    },
+    "Graphics": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 7,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

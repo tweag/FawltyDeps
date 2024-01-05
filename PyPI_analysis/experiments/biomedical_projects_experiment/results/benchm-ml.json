@@ -1,0 +1,33 @@
+{
+  "project_name": "benchm-ml",
+  "code_dirs": {
+    "z-other-tools": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    },
+    "3-boosting": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "2-rf": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "1-linear": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "4-DL": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

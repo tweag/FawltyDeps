@@ -1,0 +1,21 @@
+{
+  "project_name": "hypothesis-driven-SRA-queries",
+  "code_dirs": {
+    "preprocess_metadata": {
+      "py": 7,
+      "ipynb": 0,
+      "total": 7
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

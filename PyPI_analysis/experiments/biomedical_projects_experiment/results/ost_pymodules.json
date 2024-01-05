@@ -1,0 +1,18 @@
+{
+  "project_name": "ost_pymodules",
+  "code_dirs": {
+    "code_fragments": {
+      "py": 5,
+      "ipynb": 0,
+      "total": 5
+    },
+    "doc": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

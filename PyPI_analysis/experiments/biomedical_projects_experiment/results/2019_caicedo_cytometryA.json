@@ -1,0 +1,28 @@
+{
+  "project_name": "2019_caicedo_cytometryA",
+  "code_dirs": {
+    "unet4nuclei": {
+      "py": 13,
+      "ipynb": 8,
+      "total": 21
+    },
+    "classic-ml": {
+      "py": 4,
+      "ipynb": 0,
+      "total": 4
+    },
+    "cell-cycle": {
+      "py": 0,
+      "ipynb": 2,
+      "total": 2
+    },
+    "CellProfiler": {
+      "py": 0,
+      "ipynb": 1,
+      "total": 1
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

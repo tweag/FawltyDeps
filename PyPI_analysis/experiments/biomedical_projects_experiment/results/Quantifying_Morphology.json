@@ -1,0 +1,23 @@
+{
+  "project_name": "Quantifying_Morphology",
+  "code_dirs": {
+    "python": {
+      "py": 79,
+      "ipynb": 0,
+      "total": 79
+    },
+    "neuron": {
+      "py": 8,
+      "ipynb": 0,
+      "total": 8
+    },
+    "ipython-notebooks": {
+      "py": 0,
+      "ipynb": 5,
+      "total": 5
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

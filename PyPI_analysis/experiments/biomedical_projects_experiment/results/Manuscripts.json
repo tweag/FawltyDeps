@@ -1,0 +1,18 @@
+{
+  "project_name": "Manuscripts",
+  "code_dirs": {
+    "2018_Dokubo_LancetID": {
+      "py": 1,
+      "ipynb": 1,
+      "total": 2
+    },
+    "2018_Work_ORSt": {
+      "py": 1,
+      "ipynb": 1,
+      "total": 2
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

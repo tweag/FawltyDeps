@@ -1,0 +1,218 @@
+{
+  "project_name": "FrImCla",
+  "code_dirs": {
+    "frimcla": {
+      "py": 101,
+      "ipynb": 0,
+      "total": 101
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 17,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "frimcla/sklearn_theano/externals/google/protobuf/internal/descriptor_pool_test.py",
+          "lineno": 38
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "frimcla/sklearn_theano/externals/google/protobuf/internal/_parameterized.py",
+          "lineno": 152
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "frimcla/sklearn_theano/externals/google/protobuf/internal/wire_format_test.py",
+          "lineno": 37
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "frimcla/sklearn_theano/externals/google/protobuf/internal/service_reflection_test.py",
+          "lineno": 37
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "_pickle",
+        "source": {
+          "path": "frimcla/StatisticalComparison.py",
+          "lineno": 14
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "frimcla/sklearn_theano/externals/google/protobuf/internal/descriptor_database_test.py",
+          "lineno": 37
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "frimcla/sklearn_theano/utils/ports.py",
+          "lineno": 65
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "sklearn",
+        "source": {
+          "path": "frimcla/sklearn_theano/utils/ports.py",
+          "lineno": 65
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "_pickle",
+        "source": {
+          "path": "frimcla/index_features.py",
+          "lineno": 25
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "frimcla/sklearn_theano/externals/google/protobuf/internal/text_format_test.py",
+          "lineno": 41
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "frimcla/sklearn_theano/externals/google/protobuf/internal/generator_test.py",
+          "lineno": 44
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "_pickle",
+        "source": {
+          "path": "frimcla/prediction.py",
+          "lineno": 17
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "frimcla/sklearn_theano/externals/google/protobuf/internal/proto_builder_test.py",
+          "lineno": 40
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "_pickle",
+        "source": {
+          "path": "frimcla/train.py",
+          "lineno": 9
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "frimcla/sklearn_theano/externals/google/protobuf/internal/message_factory_test.py",
+          "lineno": 37
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "frimcla/sklearn_theano/externals/google/protobuf/internal/unknown_fields_test.py",
+          "lineno": 38
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "frimcla/sklearn_theano/externals/google/protobuf/internal/reflection_test.py",
+          "lineno": 42
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "frimcla/sklearn_theano/externals/google/protobuf/internal/descriptor_test.py",
+          "lineno": 48
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "frimcla/sklearn_theano/externals/google/protobuf/internal/text_encoding_test.py",
+          "lineno": 35
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "frimcla/sklearn_theano/externals/google/protobuf/internal/symbol_database_test.py",
+          "lineno": 35
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "unittest2",
+        "source": {
+          "path": "frimcla/sklearn_theano/externals/google/protobuf/internal/message_test.py",
+          "lineno": 58
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

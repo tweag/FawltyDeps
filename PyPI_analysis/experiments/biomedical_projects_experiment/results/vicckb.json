@@ -1,0 +1,21 @@
+{
+  "project_name": "vicckb",
+  "code_dirs": {
+    "vicckb": {
+      "py": 4,
+      "ipynb": 0,
+      "total": 4
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 10,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

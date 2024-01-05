@@ -1,0 +1,18 @@
+{
+  "project_name": "single-cell-tutorial",
+  "code_dirs": {
+    "plotting_scripts": {
+      "py": 0,
+      "ipynb": 2,
+      "total": 2
+    },
+    "supplementary_scripts": {
+      "py": 0,
+      "ipynb": 1,
+      "total": 1
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,68 @@
+{
+  "project_name": "open-humans-api",
+  "code_dirs": {
+    "ohapi": {
+      "py": 7,
+      "ipynb": 0,
+      "total": 7
+    },
+    "docs": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "dev-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 10,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Conditional imports": {
+        "name": "_config_params_api",
+        "source": {
+          "path": "ohapi/tests/test_projects.py",
+          "lineno": 30
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "_config_params_api",
+        "source": {
+          "path": "ohapi/tests/test_test.py",
+          "lineno": 40
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "_config_params_api",
+        "source": {
+          "path": "ohapi/tests/test_api.py",
+          "lineno": 57
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

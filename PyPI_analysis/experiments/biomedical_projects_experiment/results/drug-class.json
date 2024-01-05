@@ -1,0 +1,53 @@
+{
+  "project_name": "drug-class",
+  "code_dirs": {
+    "MFP_RF": {
+      "py": 20,
+      "ipynb": 0,
+      "total": 20
+    },
+    "ChemicalFeatureAnalysis": {
+      "py": 5,
+      "ipynb": 1,
+      "total": 6
+    },
+    "IMG_CNN": {
+      "py": 0,
+      "ipynb": 6,
+      "total": 6
+    },
+    "multiclass_data": {
+      "py": 0,
+      "ipynb": 3,
+      "total": 3
+    },
+    "data": {
+      "py": 0,
+      "ipynb": 2,
+      "total": 2
+    },
+    "small_data_676_chems": {
+      "py": 0,
+      "ipynb": 1,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "IMG_CNN/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "MFP_RF/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 0,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,13 @@
+{
+  "project_name": "long-rna-seq-pipeline",
+  "code_dirs": {
+    "dnanexus": {
+      "py": 14,
+      "ipynb": 0,
+      "total": 14
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

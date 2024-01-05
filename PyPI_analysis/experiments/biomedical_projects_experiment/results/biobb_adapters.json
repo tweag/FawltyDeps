@@ -1,0 +1,21 @@
+{
+  "project_name": "biobb_adapters",
+  "code_dirs": {
+    "biobb_adapters": {
+      "py": 318,
+      "ipynb": 0,
+      "total": 318
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

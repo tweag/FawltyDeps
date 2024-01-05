@@ -1,0 +1,33 @@
+{
+  "project_name": "spectra-cluster-py",
+  "code_dirs": {
+    "spectra_cluster": {
+      "py": 25,
+      "ipynb": 0,
+      "total": 25
+    },
+    "docs": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 5,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 9,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,48 @@
+{
+  "project_name": "SoS",
+  "code_dirs": {
+    "src": {
+      "py": 48,
+      "ipynb": 0,
+      "total": 48
+    },
+    "development": {
+      "py": 1,
+      "ipynb": 22,
+      "total": 23
+    },
+    "misc": {
+      "py": 6,
+      "ipynb": 3,
+      "total": 9
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "requirements_dev.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 17,
+      "warnings": true
+    }
+  ],
+  "imports": [
+    {
+      "Conditional imports": {
+        "name": "IPython",
+        "source": {
+          "path": "misc/vim-ipython/vim_ipython.py",
+          "lineno": 137
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

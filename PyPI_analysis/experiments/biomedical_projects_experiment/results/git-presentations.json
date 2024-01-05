@@ -1,0 +1,23 @@
+{
+  "project_name": "git-presentations",
+  "code_dirs": {
+    "keras": {
+      "py": 2,
+      "ipynb": 47,
+      "total": 49
+    },
+    "anthill": {
+      "py": 1,
+      "ipynb": 1,
+      "total": 2
+    },
+    "shark_mito": {
+      "py": 0,
+      "ipynb": 1,
+      "total": 1
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

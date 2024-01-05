@@ -1,0 +1,51 @@
+{
+  "project_name": "lasagne4bio",
+  "code_dirs": {
+    "subcellular_localization": {
+      "py": 6,
+      "ipynb": 5,
+      "total": 11
+    },
+    "secondary_proteins_prediction": {
+      "py": 9,
+      "ipynb": 0,
+      "total": 9
+    },
+    "peptide_MHCII": {
+      "py": 8,
+      "ipynb": 0,
+      "total": 8
+    }
+  },
+  "deps_file": [],
+  "imports": [
+    {
+      "Docstring": {
+        "name": "lasagne",
+        "source": {
+          "path": "secondary_proteins_prediction/configurations/BatchNormLayer.py",
+          "lineno": 319
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "lasagne",
+        "source": {
+          "path": "secondary_proteins_prediction/configurations/BatchNormLayer.py",
+          "lineno": 319
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "lasagne",
+        "source": {
+          "path": "secondary_proteins_prediction/configurations/BatchNormLayer.py",
+          "lineno": 319
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

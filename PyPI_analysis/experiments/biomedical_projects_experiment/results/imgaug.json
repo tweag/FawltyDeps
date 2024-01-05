@@ -1,0 +1,579 @@
+{
+  "project_name": "imgaug",
+  "code_dirs": {
+    "checks": {
+      "py": 66,
+      "ipynb": 0,
+      "total": 66
+    },
+    "imgaug": {
+      "py": 44,
+      "ipynb": 0,
+      "total": 44
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "test/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 6,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 10,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 11,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Alternative imports": {
+        "name": "mock",
+        "source": {
+          "path": "test/augmentables/test_kps.py",
+          "lineno": 10
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "mock",
+        "source": {
+          "path": "test/test_dtypes.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "mock",
+        "source": {
+          "path": "test/augmenters/test_mixed_files.py",
+          "lineno": 10
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "imgaug/augmenters/color.py",
+          "lineno": 178
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "imgaug/augmenters/color.py",
+          "lineno": 303
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "imgaug/augmenters/color.py",
+          "lineno": 3404
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "imgaug/augmenters/color.py",
+          "lineno": 3884
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "imgaug/augmenters/color.py",
+          "lineno": 4073
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "mock",
+        "source": {
+          "path": "test/test_multicore.py",
+          "lineno": 15
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "mock",
+        "source": {
+          "path": "test/augmenters/test_weather.py",
+          "lineno": 10
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "mock",
+        "source": {
+          "path": "test/test_parameters.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "mock",
+        "source": {
+          "path": "test/test_data.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "mock",
+        "source": {
+          "path": "test/augmenters/test_collections.py",
+          "lineno": 10
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "mock",
+        "source": {
+          "path": "test/augmentables/test_heatmaps.py",
+          "lineno": 10
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "imgaug/augmentables/batches.py",
+          "lineno": 819
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "mock",
+        "source": {
+          "path": "test/augmenters/test_edges.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "mock",
+        "source": {
+          "path": "test/augmentables/test_segmaps.py",
+          "lineno": 12
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "imgaug/augmenters/debug.py",
+          "lineno": 385
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "mock",
+        "source": {
+          "path": "test/augmenters/test_geometric.py",
+          "lineno": 12
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "mock",
+        "source": {
+          "path": "test/augmenters/test_color.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "mock",
+        "source": {
+          "path": "test/augmenters/test_contrast.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "mock",
+        "source": {
+          "path": "test/augmenters/test_artistic.py",
+          "lineno": 10
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "mock",
+        "source": {
+          "path": "test/augmentables/test_polys.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "mock",
+        "source": {
+          "path": "test/augmenters/test_pillike.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "imgaug/augmentables/lines.py",
+          "lineno": 1666
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "mock",
+        "source": {
+          "path": "test/augmenters/test_overlay.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "mock",
+        "source": {
+          "path": "test/augmenters/test_imgcorruptlike.py",
+          "lineno": 10
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "imgaug/augmenters/flip.py",
+          "lineno": 683
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "imgaug/augmenters/flip.py",
+          "lineno": 768
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "imgaug/augmenters/meta.py",
+          "lineno": 3007
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "imgaug/augmenters/meta.py",
+          "lineno": 3007
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "imgaug/augmenters/meta.py",
+          "lineno": 778
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "imgaug/augmenters/meta.py",
+          "lineno": 1709
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "imgaug/augmenters/meta.py",
+          "lineno": 1709
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "imgaug/augmenters/meta.py",
+          "lineno": 2030
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "imgaug/augmenters/meta.py",
+          "lineno": 2030
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "mock",
+        "source": {
+          "path": "test/augmenters/test_segmentation.py",
+          "lineno": 12
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "mock",
+        "source": {
+          "path": "test/augmentables/test_lines.py",
+          "lineno": 10
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "imgaug/augmentables/polys.py",
+          "lineno": 1431
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "mock",
+        "source": {
+          "path": "test/augmenters/test_arithmetic.py",
+          "lineno": 12
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "mock",
+        "source": {
+          "path": "test/augmenters/test_flip.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "mock",
+        "source": {
+          "path": "test/augmenters/test_meta.py",
+          "lineno": 15
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "mock",
+        "source": {
+          "path": "test/augmentables/test_utils.py",
+          "lineno": 10
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "mock",
+        "source": {
+          "path": "test/augmentables/test_batches.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "mock",
+        "source": {
+          "path": "test/augmentables/test_bbs.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "mock",
+        "source": {
+          "path": "test/augmenters/test_convolutional.py",
+          "lineno": 10
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "mock",
+        "source": {
+          "path": "test/augmenters/test_debug.py",
+          "lineno": 10
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "mock",
+        "source": {
+          "path": "test/augmentables/test_normalization.py",
+          "lineno": 10
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "mock",
+        "source": {
+          "path": "test/augmenters/test_pooling.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "mock",
+        "source": {
+          "path": "test/augmenters/test_blend.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "imgaug/augmenters/imgcorruptlike.py",
+          "lineno": 1
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "imgaug/imgaug.py",
+          "lineno": 2141
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "imgaug/augmentables/kps.py",
+          "lineno": 612
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "mock",
+        "source": {
+          "path": "test/test_imgaug.py",
+          "lineno": 12
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "mock",
+        "source": {
+          "path": "test/augmenters/test_blur.py",
+          "lineno": 12
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "mock",
+        "source": {
+          "path": "imgaug/testutils.py",
+          "lineno": 21
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "imgaug/augmentables/bbs.py",
+          "lineno": 1360
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "mock",
+        "source": {
+          "path": "test/augmenters/test_size.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "mock",
+        "source": {
+          "path": "test/test_random.py",
+          "lineno": 11
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,18 @@
+{
+  "project_name": "paper-Predicted-MF-Quarantine-Length-Data-and-Code",
+  "code_dirs": {
+    "code": {
+      "py": 0,
+      "ipynb": 6,
+      "total": 6
+    },
+    "data": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

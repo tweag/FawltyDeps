@@ -1,0 +1,21 @@
+{
+  "project_name": "heat-diffusion",
+  "code_dirs": {
+    "ndex": {
+      "py": 11,
+      "ipynb": 0,
+      "total": 11
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 3,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

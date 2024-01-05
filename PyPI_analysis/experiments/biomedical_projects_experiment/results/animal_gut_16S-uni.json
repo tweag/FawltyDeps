@@ -1,0 +1,43 @@
+{
+  "project_name": "animal_gut_16S-uni",
+  "code_dirs": {
+    "4_host_specific": {
+      "py": 0,
+      "ipynb": 27,
+      "total": 27
+    },
+    "1_LLA": {
+      "py": 0,
+      "ipynb": 15,
+      "total": 15
+    },
+    "3_modulating_factors": {
+      "py": 0,
+      "ipynb": 5,
+      "total": 5
+    },
+    "5_assembly": {
+      "py": 0,
+      "ipynb": 5,
+      "total": 5
+    },
+    "7_source_classifier": {
+      "py": 0,
+      "ipynb": 2,
+      "total": 2
+    },
+    "6_db_submission": {
+      "py": 0,
+      "ipynb": 2,
+      "total": 2
+    },
+    "2_intra_host_variance": {
+      "py": 0,
+      "ipynb": 2,
+      "total": 2
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,48 @@
+{
+  "project_name": "plant-seg",
+  "code_dirs": {
+    "plantseg": {
+      "py": 68,
+      "ipynb": 0,
+      "total": 68
+    },
+    "evaluation": {
+      "py": 12,
+      "ipynb": 0,
+      "total": 12
+    },
+    "deployment": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "docs/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 2,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Dynamic imports": {
+        "name": "plantseg.pipeline.config_validation",
+        "source": {
+          "path": "plantseg/pipeline/config_validation.py",
+          "lineno": 133
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

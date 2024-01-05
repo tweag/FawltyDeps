@@ -1,0 +1,26 @@
+{
+  "project_name": "COVID-19_Multi-Omics",
+  "code_dirs": {
+    "eda": {
+      "py": 14,
+      "ipynb": 22,
+      "total": 36
+    },
+    "src": {
+      "py": 10,
+      "ipynb": 0,
+      "total": 10
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "src/dash/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 17,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

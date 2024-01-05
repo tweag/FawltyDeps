@@ -1,0 +1,43 @@
+{
+  "project_name": "scVI",
+  "code_dirs": {
+    "scvi": {
+      "py": 153,
+      "ipynb": 0,
+      "total": 153
+    },
+    "docs": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 74,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Docstring": {
+        "name": "anndata",
+        "source": {
+          "path": "scvi/autotune/_tuner.py",
+          "lineno": 8
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

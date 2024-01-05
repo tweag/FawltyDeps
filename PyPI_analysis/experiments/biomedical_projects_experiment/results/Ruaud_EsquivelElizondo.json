@@ -1,0 +1,13 @@
+{
+  "project_name": "Ruaud_EsquivelElizondo",
+  "code_dirs": {
+    "doc": {
+      "py": 0,
+      "ipynb": 6,
+      "total": 6
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,13 @@
+{
+  "project_name": "gem_methylosinus_trichosporium",
+  "code_dirs": {
+    "supplementary_scripts": {
+      "py": 0,
+      "ipynb": 8,
+      "total": 8
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,33 @@
+{
+  "project_name": "gtex-pipeline",
+  "code_dirs": {
+    "qtl": {
+      "py": 12,
+      "ipynb": 0,
+      "total": 12
+    },
+    "rnaseq": {
+      "py": 11,
+      "ipynb": 0,
+      "total": 11
+    },
+    "genotype": {
+      "py": 5,
+      "ipynb": 0,
+      "total": 5
+    },
+    "phASER": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "gene_model": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,18 @@
+{
+  "project_name": "grapevine_shoots",
+  "code_dirs": {
+    "Code": {
+      "py": 0,
+      "ipynb": 12,
+      "total": 12
+    },
+    "REVISED_Code": {
+      "py": 0,
+      "ipynb": 12,
+      "total": 12
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

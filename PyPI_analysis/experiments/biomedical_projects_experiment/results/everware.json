@@ -1,0 +1,33 @@
+{
+  "project_name": "everware",
+  "code_dirs": {
+    "everware": {
+      "py": 17,
+      "ipynb": 0,
+      "total": 17
+    },
+    "etc": {
+      "py": 9,
+      "ipynb": 0,
+      "total": 9
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 10,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

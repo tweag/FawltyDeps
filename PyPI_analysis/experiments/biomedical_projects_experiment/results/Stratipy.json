@@ -1,0 +1,48 @@
+{
+  "project_name": "Stratipy",
+  "code_dirs": {
+    "stratipy": {
+      "py": 16,
+      "ipynb": 0,
+      "total": 16
+    },
+    "simulation": {
+      "py": 5,
+      "ipynb": 6,
+      "total": 11
+    },
+    "reproducibility": {
+      "py": 3,
+      "ipynb": 1,
+      "total": 4
+    },
+    "data_formatting": {
+      "py": 0,
+      "ipynb": 2,
+      "total": 2
+    },
+    "data": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 8,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

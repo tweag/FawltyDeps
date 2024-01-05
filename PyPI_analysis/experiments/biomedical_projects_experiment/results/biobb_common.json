@@ -1,0 +1,28 @@
+{
+  "project_name": "biobb_common",
+  "code_dirs": {
+    "biobb_common": {
+      "py": 10,
+      "ipynb": 0,
+      "total": 10
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "biobb_common/docs/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 2,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

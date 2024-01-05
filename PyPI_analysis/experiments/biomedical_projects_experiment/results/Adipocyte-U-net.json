@@ -1,0 +1,31 @@
+{
+  "project_name": "Adipocyte-U-net",
+  "code_dirs": {
+    "src": {
+      "py": 11,
+      "ipynb": 0,
+      "total": 11
+    },
+    "notebooks": {
+      "py": 0,
+      "ipynb": 11,
+      "total": 11
+    },
+    "tile_classifier": {
+      "py": 1,
+      "ipynb": 1,
+      "total": 2
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 13,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

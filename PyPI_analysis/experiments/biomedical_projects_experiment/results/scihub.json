@@ -1,0 +1,18 @@
+{
+  "project_name": "scihub",
+  "code_dirs": {
+    "explore": {
+      "py": 0,
+      "ipynb": 8,
+      "total": 8
+    },
+    "download": {
+      "py": 0,
+      "ipynb": 8,
+      "total": 8
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

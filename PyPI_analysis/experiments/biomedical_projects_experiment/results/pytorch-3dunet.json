@@ -1,0 +1,76 @@
+{
+  "project_name": "pytorch-3dunet",
+  "code_dirs": {
+    "pytorch3dunet": {
+      "py": 22,
+      "ipynb": 0,
+      "total": 22
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Dynamic imports": {
+        "name": "pytorch3dunet.unet3d.utils",
+        "source": {
+          "path": "pytorch3dunet/unet3d/utils.py",
+          "lineno": 341
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "pytorch3dunet.unet3d.predictor",
+        "source": {
+          "path": "pytorch3dunet/predict.py",
+          "lineno": 41
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "torch.optim.lr_scheduler",
+        "source": {
+          "path": "pytorch3dunet/train.py",
+          "lineno": 76
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "pytorch3dunet.unet3d.model",
+        "source": {
+          "path": "pytorch3dunet/unet3d/model.py",
+          "lineno": 204
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "pytorch3dunet.unet3d.metrics",
+        "source": {
+          "path": "pytorch3dunet/unet3d/metrics.py",
+          "lineno": 540
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "pytorch3dunet.augment.transforms",
+        "source": {
+          "path": "pytorch3dunet/augment/transforms.py",
+          "lineno": 672
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

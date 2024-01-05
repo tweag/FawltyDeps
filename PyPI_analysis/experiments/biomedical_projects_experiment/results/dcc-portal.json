@@ -1,0 +1,21 @@
+{
+  "project_name": "dcc-portal",
+  "code_dirs": {
+    "dcc-portal-server": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "dcc-portal-server/src/main/python/dcc-dev/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 8,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

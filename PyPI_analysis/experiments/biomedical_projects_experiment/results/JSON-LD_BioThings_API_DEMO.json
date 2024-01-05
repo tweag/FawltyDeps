@@ -1,0 +1,21 @@
+{
+  "project_name": "JSON-LD_BioThings_API_DEMO",
+  "code_dirs": {
+    "src": {
+      "py": 7,
+      "ipynb": 6,
+      "total": 13
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 2,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

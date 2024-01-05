@@ -1,0 +1,28 @@
+{
+  "project_name": "informationtransfermapping",
+  "code_dirs": {
+    "MasterScripts": {
+      "py": 11,
+      "ipynb": 11,
+      "total": 22
+    },
+    "TheoreticalResults": {
+      "py": 2,
+      "ipynb": 2,
+      "total": 4
+    },
+    "EmpiricalResults": {
+      "py": 1,
+      "ipynb": 2,
+      "total": 3
+    },
+    "utils": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

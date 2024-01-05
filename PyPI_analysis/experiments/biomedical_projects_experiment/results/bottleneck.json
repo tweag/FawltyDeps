@@ -1,0 +1,78 @@
+{
+  "project_name": "bottleneck",
+  "code_dirs": {
+    "bottleneck": {
+      "py": 17,
+      "ipynb": 0,
+      "total": 17
+    },
+    "asv_bench": {
+      "py": 6,
+      "ipynb": 0,
+      "total": 6
+    },
+    "tools": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    },
+    "doc": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "bottleneck/slow/move.py",
+          "lineno": 177
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "la",
+        "source": {
+          "path": "bottleneck/slow/move.py",
+          "lineno": 177
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "bottleneck/slow/nonreduce_axis.py",
+          "lineno": 84
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

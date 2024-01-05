@@ -1,0 +1,33 @@
+{
+  "project_name": "mychembl",
+  "code_dirs": {
+    "ipython_notebooks": {
+      "py": 1,
+      "ipynb": 19,
+      "total": 20
+    },
+    "webservices": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    },
+    "configuration": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    },
+    "beaker": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "zeroconf": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

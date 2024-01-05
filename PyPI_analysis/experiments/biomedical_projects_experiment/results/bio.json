@@ -1,0 +1,18 @@
+{
+  "project_name": "bio",
+  "code_dirs": {
+    "supplemental": {
+      "py": 14,
+      "ipynb": 0,
+      "total": 14
+    },
+    "jupyter_notebooks": {
+      "py": 2,
+      "ipynb": 6,
+      "total": 8
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

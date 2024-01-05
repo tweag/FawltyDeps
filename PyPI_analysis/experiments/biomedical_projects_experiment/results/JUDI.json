@@ -1,0 +1,33 @@
+{
+  "project_name": "JUDI",
+  "code_dirs": {
+    "judi": {
+      "py": 6,
+      "ipynb": 0,
+      "total": 6
+    },
+    "docs": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "docs/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 2,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

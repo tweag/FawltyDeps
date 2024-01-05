@@ -1,0 +1,13 @@
+{
+  "project_name": "Rt_IFO0880",
+  "code_dirs": {
+    "Notebooks": {
+      "py": 0,
+      "ipynb": 17,
+      "total": 17
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

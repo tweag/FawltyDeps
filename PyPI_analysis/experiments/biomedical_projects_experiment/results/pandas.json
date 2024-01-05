@@ -1,0 +1,5177 @@
+{
+  "project_name": "pandas",
+  "code_dirs": {
+    "pandas": {
+      "py": 429,
+      "ipynb": 0,
+      "total": 429
+    },
+    "asv_bench": {
+      "py": 62,
+      "ipynb": 0,
+      "total": 62
+    },
+    "scripts": {
+      "py": 15,
+      "ipynb": 0,
+      "total": 15
+    },
+    "doc": {
+      "py": 5,
+      "ipynb": 1,
+      "total": 6
+    },
+    "web": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "requirements-dev.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 87,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 84,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    }
+  ],
+  "imports": [
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/frame/indexing/test_indexing.py",
+          "lineno": 1947
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/frame/indexing/test_indexing.py",
+          "lineno": 1960
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/arrays/datetimes/test_constructors.py",
+          "lineno": 206
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/arrays/datetimes/test_constructors.py",
+          "lineno": 234
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/arrays/datetimes/test_constructors.py",
+          "lineno": 250
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "jinja2",
+        "source": {
+          "path": "pandas/tests/series/test_formats.py",
+          "lineno": 230
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/indexes/multi/test_constructors.py",
+          "lineno": 651
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "dateutil",
+        "source": {
+          "path": "pandas/_testing/contexts.py",
+          "lineno": 58
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "bs4",
+        "source": {
+          "path": "pandas/tests/io/test_html.py",
+          "lineno": 74
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "html5lib",
+        "source": {
+          "path": "pandas/tests/io/test_html.py",
+          "lineno": 75
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "bs4",
+        "source": {
+          "path": "pandas/tests/io/test_html.py",
+          "lineno": 92
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml",
+        "source": {
+          "path": "pandas/tests/io/test_html.py",
+          "lineno": 93
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "html5lib",
+        "source": {
+          "path": "pandas/tests/io/test_html.py",
+          "lineno": 94
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/test_html.py",
+          "lineno": 188
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/test_clipboard.py",
+          "lineno": 356
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "tables",
+        "source": {
+          "path": "pandas/tests/io/pytables/test_append.py",
+          "lineno": 28
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib",
+        "source": {
+          "path": "pandas/tests/plotting/frame/test_frame_color.py",
+          "lineno": 17
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib.pyplot",
+        "source": {
+          "path": "pandas/tests/plotting/frame/test_frame_color.py",
+          "lineno": 18
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib.cm",
+        "source": {
+          "path": "pandas/tests/plotting/frame/test_frame_color.py",
+          "lineno": 19
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/frame/test_frame_color.py",
+          "lineno": 449
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/frame/test_frame_color.py",
+          "lineno": 458
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/frame/test_frame_color.py",
+          "lineno": 465
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/frame/test_frame_color.py",
+          "lineno": 476
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/frame/test_frame_color.py",
+          "lineno": 483
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/frame/test_frame_color.py",
+          "lineno": 492
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/frame/test_frame_color.py",
+          "lineno": 500
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/frame/test_frame_color.py",
+          "lineno": 508
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/frame/test_frame_color.py",
+          "lineno": 517
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib.pyplot",
+        "source": {
+          "path": "pandas/tests/plotting/test_converter.py",
+          "lineno": 44
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib.dates",
+        "source": {
+          "path": "pandas/tests/plotting/test_converter.py",
+          "lineno": 45
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib.pyplot",
+        "source": {
+          "path": "pandas/tests/plotting/test_converter.py",
+          "lineno": 82
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib.pyplot",
+        "source": {
+          "path": "pandas/tests/plotting/test_converter.py",
+          "lineno": 92
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib.units",
+        "source": {
+          "path": "pandas/tests/plotting/test_converter.py",
+          "lineno": 104
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib.pyplot",
+        "source": {
+          "path": "pandas/tests/plotting/test_converter.py",
+          "lineno": 116
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib.pyplot",
+        "source": {
+          "path": "pandas/tests/plotting/test_converter.py",
+          "lineno": 118
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib.units",
+        "source": {
+          "path": "pandas/tests/plotting/test_converter.py",
+          "lineno": 133
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib.dates",
+        "source": {
+          "path": "pandas/tests/plotting/test_converter.py",
+          "lineno": 134
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "IPython",
+        "source": {
+          "path": "pandas/tests/arrays/categorical/test_warnings.py",
+          "lineno": 9
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "jinja2",
+        "source": {
+          "path": "pandas/tests/io/excel/test_style.py",
+          "lineno": 18
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "openpyxl",
+        "source": {
+          "path": "pandas/tests/io/excel/test_style.py",
+          "lineno": 258
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "openpyxl",
+        "source": {
+          "path": "pandas/tests/io/excel/test_style.py",
+          "lineno": 47
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "openpyxl",
+        "source": {
+          "path": "pandas/tests/io/excel/test_style.py",
+          "lineno": 141
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "openpyxl",
+        "source": {
+          "path": "pandas/tests/io/excel/test_style.py",
+          "lineno": 180
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "openpyxl",
+        "source": {
+          "path": "pandas/tests/io/excel/test_style.py",
+          "lineno": 241
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib",
+        "source": {
+          "path": "pandas/tests/plotting/test_boxplot_method.py",
+          "lineno": 28
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib.pyplot",
+        "source": {
+          "path": "pandas/tests/plotting/test_boxplot_method.py",
+          "lineno": 29
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/core/arrays/arrow/accessors.py",
+          "lineno": 82
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/core/arrays/arrow/accessors.py",
+          "lineno": 113
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/core/arrays/arrow/accessors.py",
+          "lineno": 177
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/core/arrays/arrow/accessors.py",
+          "lineno": 234
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/core/arrays/arrow/accessors.py",
+          "lineno": 271
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/core/arrays/arrow/accessors.py",
+          "lineno": 341
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "fsspec",
+        "source": {
+          "path": "pandas/tests/io/test_fsspec.py",
+          "lineno": 28
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "fsspec",
+        "source": {
+          "path": "pandas/tests/io/test_fsspec.py",
+          "lineno": 62
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "openpyxl",
+        "source": {
+          "path": "pandas/tests/io/test_fsspec.py",
+          "lineno": 102
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "fsspec",
+        "source": {
+          "path": "pandas/tests/io/test_fsspec.py",
+          "lineno": 114
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "openpyxl",
+        "source": {
+          "path": "pandas/tests/io/test_fsspec.py",
+          "lineno": 156
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "fastparquet",
+        "source": {
+          "path": "pandas/tests/io/test_fsspec.py",
+          "lineno": 171
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/test_fsspec.py",
+          "lineno": 180
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "fastparquet",
+        "source": {
+          "path": "pandas/tests/io/test_fsspec.py",
+          "lineno": 200
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "s3fs",
+        "source": {
+          "path": "pandas/tests/io/test_fsspec.py",
+          "lineno": 220
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "s3fs",
+        "source": {
+          "path": "pandas/tests/io/test_fsspec.py",
+          "lineno": 245
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "fastparquet",
+        "source": {
+          "path": "pandas/tests/io/test_fsspec.py",
+          "lineno": 258
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "s3fs",
+        "source": {
+          "path": "pandas/tests/io/test_fsspec.py",
+          "lineno": 259
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/test_fsspec.py",
+          "lineno": 277
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "tabulate",
+        "source": {
+          "path": "pandas/tests/io/test_fsspec.py",
+          "lineno": 324
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/test_fsspec.py",
+          "lineno": 332
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/extension/test_arrow.py",
+          "lineno": 65
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/frame/methods/test_cov_corr.py",
+          "lineno": 108
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/frame/methods/test_cov_corr.py",
+          "lineno": 129
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/frame/methods/test_cov_corr.py",
+          "lineno": 162
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/frame/methods/test_cov_corr.py",
+          "lineno": 204
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/frame/methods/test_cov_corr.py",
+          "lineno": 253
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/frame/methods/test_cov_corr.py",
+          "lineno": 267
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/frame/methods/test_cov_corr.py",
+          "lineno": 436
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/frame/methods/test_cov_corr.py",
+          "lineno": 444
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/frame/methods/test_cov_corr.py",
+          "lineno": 452
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "jinja2",
+        "source": {
+          "path": "pandas/tests/io/formats/style/test_bar.py",
+          "lineno": 12
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "py",
+        "source": {
+          "path": "pandas/tests/io/test_common.py",
+          "lineno": 47
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "fsspec",
+        "source": {
+          "path": "pandas/tests/io/test_common.py",
+          "lineno": 103
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow.csv",
+        "source": {
+          "path": "pandas/tests/io/test_common.py",
+          "lineno": 156
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "tables",
+        "source": {
+          "path": "pandas/tests/io/test_common.py",
+          "lineno": 380
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "jinja2",
+        "source": {
+          "path": "pandas/tests/io/test_common.py",
+          "lineno": 352
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/tools/test_to_datetime.py",
+          "lineno": 3725
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/tools/test_to_datetime.py",
+          "lineno": 1005
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "psycopg2.tz",
+        "source": {
+          "path": "pandas/tests/tools/test_to_datetime.py",
+          "lineno": 1359
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/frame/methods/test_astype.py",
+          "lineno": 896
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "jinja2",
+        "source": {
+          "path": "pandas/tests/io/formats/test_to_latex.py",
+          "lineno": 14
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/core/arrays/base.py",
+          "lineno": 2007
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "xlsxwriter",
+        "source": {
+          "path": "pandas/tests/io/excel/test_xlsxwriter.py",
+          "lineno": 10
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "openpyxl",
+        "source": {
+          "path": "pandas/tests/io/excel/test_xlsxwriter.py",
+          "lineno": 21
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "jinja2",
+        "source": {
+          "path": "pandas/tests/series/test_api.py",
+          "lineno": 172
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "zstandard",
+        "source": {
+          "path": "pandas/tests/io/test_stata.py",
+          "lineno": 2009
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lzma",
+        "source": {
+          "path": "pandas/tests/io/test_stata.py",
+          "lineno": 2013
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib",
+        "source": {
+          "path": "pandas/tests/plotting/frame/test_hist_box_by.py",
+          "lineno": 15
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "tables",
+        "source": {
+          "path": "pandas/tests/io/pytables/common.py",
+          "lineno": 10
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "jinja2",
+        "source": {
+          "path": "pandas/tests/io/formats/style/test_highlight.py",
+          "lineno": 10
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/parser/test_read_fwf.py",
+          "lineno": 975
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/parser/test_read_fwf.py",
+          "lineno": 999
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/dtypes/test_inference.py",
+          "lineno": 1985
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.stats",
+        "source": {
+          "path": "pandas/tests/frame/methods/test_rank.py",
+          "lineno": 42
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.stats",
+        "source": {
+          "path": "pandas/tests/frame/methods/test_rank.py",
+          "lineno": 146
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.stats",
+        "source": {
+          "path": "pandas/tests/frame/methods/test_rank.py",
+          "lineno": 230
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/frame/methods/test_rank.py",
+          "lineno": 506
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "jinja2",
+        "source": {
+          "path": "pandas/tests/io/formats/style/test_style.py",
+          "lineno": 18
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.stats",
+        "source": {
+          "path": "pandas/tests/series/methods/test_rank.py",
+          "lineno": 59
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/series/methods/test_rank.py",
+          "lineno": 272
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.stats",
+        "source": {
+          "path": "pandas/tests/series/methods/test_rank.py",
+          "lineno": 321
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow.orc",
+        "source": {
+          "path": "pandas/tests/io/test_orc.py",
+          "lineno": 16
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/test_orc.py",
+          "lineno": 251
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/test_orc.py",
+          "lineno": 276
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/test_orc.py",
+          "lineno": 300
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/test_orc.py",
+          "lineno": 308
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/test_orc.py",
+          "lineno": 344
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/test_feather.py",
+          "lineno": 18
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/excel/test_readers.py",
+          "lineno": 666
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/tools/test_to_timedelta.py",
+          "lineno": 327
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/tools/test_to_timedelta.py",
+          "lineno": 337
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "dateutil",
+        "source": {
+          "path": "pandas/tseries/holiday.py",
+          "lineno": 168
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "odf",
+        "source": {
+          "path": "pandas/tests/io/excel/test_odf.py",
+          "lineno": 9
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/frame/test_subclass.py",
+          "lineno": 661
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib",
+        "source": {
+          "path": "pandas/tests/plotting/test_misc.py",
+          "lineno": 29
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib.pyplot",
+        "source": {
+          "path": "pandas/tests/plotting/test_misc.py",
+          "lineno": 30
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib.cm",
+        "source": {
+          "path": "pandas/tests/plotting/test_misc.py",
+          "lineno": 31
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/test_misc.py",
+          "lineno": 151
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/test_misc.py",
+          "lineno": 176
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.stats",
+        "source": {
+          "path": "pandas/tests/frame/test_reductions.py",
+          "lineno": 372
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/frame/test_reductions.py",
+          "lineno": 1165
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.stats",
+        "source": {
+          "path": "pandas/tests/frame/test_reductions.py",
+          "lineno": 2023
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/series/methods/test_interpolate.py",
+          "lineno": 121
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/series/methods/test_interpolate.py",
+          "lineno": 136
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/series/methods/test_interpolate.py",
+          "lineno": 148
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/series/methods/test_interpolate.py",
+          "lineno": 174
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/series/methods/test_interpolate.py",
+          "lineno": 189
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/series/methods/test_interpolate.py",
+          "lineno": 279
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/series/methods/test_interpolate.py",
+          "lineno": 286
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/series/methods/test_interpolate.py",
+          "lineno": 621
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/series/methods/test_interpolate.py",
+          "lineno": 648
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/series/methods/test_interpolate.py",
+          "lineno": 656
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/series/methods/test_interpolate.py",
+          "lineno": 702
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/series/methods/test_interpolate.py",
+          "lineno": 710
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/series/methods/test_interpolate.py",
+          "lineno": 717
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/series/methods/test_interpolate.py",
+          "lineno": 724
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/series/methods/test_interpolate.py",
+          "lineno": 735
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/series/methods/test_interpolate.py",
+          "lineno": 744
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/series/methods/test_interpolate.py",
+          "lineno": 827
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/series/methods/test_interpolate.py",
+          "lineno": 864
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/series/methods/test_interpolate.py",
+          "lineno": 804
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "botocore",
+        "source": {
+          "path": "pandas/tests/io/test_s3.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "s3fs",
+        "source": {
+          "path": "pandas/tests/io/test_s3.py",
+          "lineno": 23
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "s3fs",
+        "source": {
+          "path": "pandas/tests/io/test_s3.py",
+          "lineno": 36
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml",
+        "source": {
+          "path": "pandas/tests/io/xml/test_xml.py",
+          "lineno": 252
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml",
+        "source": {
+          "path": "pandas/tests/io/xml/test_xml.py",
+          "lineno": 292
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml.etree",
+        "source": {
+          "path": "pandas/tests/io/xml/test_xml.py",
+          "lineno": 465
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml",
+        "source": {
+          "path": "pandas/tests/io/xml/test_xml.py",
+          "lineno": 508
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml",
+        "source": {
+          "path": "pandas/tests/io/xml/test_xml.py",
+          "lineno": 590
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml.etree",
+        "source": {
+          "path": "pandas/tests/io/xml/test_xml.py",
+          "lineno": 603
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml",
+        "source": {
+          "path": "pandas/tests/io/xml/test_xml.py",
+          "lineno": 662
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml",
+        "source": {
+          "path": "pandas/tests/io/xml/test_xml.py",
+          "lineno": 681
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml.etree",
+        "source": {
+          "path": "pandas/tests/io/xml/test_xml.py",
+          "lineno": 713
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml",
+        "source": {
+          "path": "pandas/tests/io/xml/test_xml.py",
+          "lineno": 721
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml",
+        "source": {
+          "path": "pandas/tests/io/xml/test_xml.py",
+          "lineno": 834
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml",
+        "source": {
+          "path": "pandas/tests/io/xml/test_xml.py",
+          "lineno": 1064
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml",
+        "source": {
+          "path": "pandas/tests/io/xml/test_xml.py",
+          "lineno": 1087
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml",
+        "source": {
+          "path": "pandas/tests/io/xml/test_xml.py",
+          "lineno": 1134
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml",
+        "source": {
+          "path": "pandas/tests/io/xml/test_xml.py",
+          "lineno": 1161
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml",
+        "source": {
+          "path": "pandas/tests/io/xml/test_xml.py",
+          "lineno": 1176
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml",
+        "source": {
+          "path": "pandas/tests/io/xml/test_xml.py",
+          "lineno": 1196
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml",
+        "source": {
+          "path": "pandas/tests/io/xml/test_xml.py",
+          "lineno": 1211
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml.etree",
+        "source": {
+          "path": "pandas/tests/io/xml/test_xml.py",
+          "lineno": 1240
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml.etree",
+        "source": {
+          "path": "pandas/tests/io/xml/test_xml.py",
+          "lineno": 1249
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml.etree",
+        "source": {
+          "path": "pandas/tests/io/xml/test_xml.py",
+          "lineno": 1278
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml.etree",
+        "source": {
+          "path": "pandas/tests/io/xml/test_xml.py",
+          "lineno": 1305
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml.etree",
+        "source": {
+          "path": "pandas/tests/io/xml/test_xml.py",
+          "lineno": 1324
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml",
+        "source": {
+          "path": "pandas/tests/io/xml/test_xml.py",
+          "lineno": 1338
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml",
+        "source": {
+          "path": "pandas/tests/io/xml/test_xml.py",
+          "lineno": 1353
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml",
+        "source": {
+          "path": "pandas/tests/io/xml/test_xml.py",
+          "lineno": 1362
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml",
+        "source": {
+          "path": "pandas/tests/io/xml/test_xml.py",
+          "lineno": 1666
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "s3fs",
+        "source": {
+          "path": "pandas/tests/io/xml/test_xml.py",
+          "lineno": 1997
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml",
+        "source": {
+          "path": "pandas/tests/io/xml/test_xml.py",
+          "lineno": 1998
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/xml/test_xml.py",
+          "lineno": 2039
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/xml/test_xml.py",
+          "lineno": 2070
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/xml/test_xml.py",
+          "lineno": 2048
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib.pyplot",
+        "source": {
+          "path": "pandas/tests/plotting/test_common.py",
+          "lineno": 10
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "pandas.plotting._matplotlib",
+        "source": {
+          "path": "pandas/plotting/_core.py",
+          "lineno": 1872
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "IPython",
+        "source": {
+          "path": "pandas/conftest.py",
+          "lineno": 1768
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.sparse",
+        "source": {
+          "path": "pandas/conftest.py",
+          "lineno": 1785
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyreadstat",
+        "source": {
+          "path": "pandas/tests/io/test_spss.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/test_spss.py",
+          "lineno": 104
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/groupby/test_groupby.py",
+          "lineno": 2580
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow.parquet",
+        "source": {
+          "path": "pandas/tests/io/test_parquet.py",
+          "lineno": 618
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "s3fs",
+        "source": {
+          "path": "pandas/tests/io/test_parquet.py",
+          "lineno": 806
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "s3fs",
+        "source": {
+          "path": "pandas/tests/io/test_parquet.py",
+          "lineno": 840
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/test_parquet.py",
+          "lineno": 869
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/test_parquet.py",
+          "lineno": 876
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/test_parquet.py",
+          "lineno": 931
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/test_parquet.py",
+          "lineno": 946
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/test_parquet.py",
+          "lineno": 954
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/test_parquet.py",
+          "lineno": 999
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "fastparquet",
+        "source": {
+          "path": "pandas/tests/io/test_parquet.py",
+          "lineno": 1351
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/test_parquet.py",
+          "lineno": 1367
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow.fs",
+        "source": {
+          "path": "pandas/tests/io/test_parquet.py",
+          "lineno": 1383
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numexpr",
+        "source": {
+          "path": "pandas/tests/generic/test_finalize.py",
+          "lineno": 446
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/core/arrays/sparse/array.py",
+          "lineno": 512
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml",
+        "source": {
+          "path": "pandas/tests/io/xml/test_to_xml.py",
+          "lineno": 870
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml",
+        "source": {
+          "path": "pandas/tests/io/xml/test_to_xml.py",
+          "lineno": 879
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml",
+        "source": {
+          "path": "pandas/tests/io/xml/test_to_xml.py",
+          "lineno": 895
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml",
+        "source": {
+          "path": "pandas/tests/io/xml/test_to_xml.py",
+          "lineno": 1008
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml",
+        "source": {
+          "path": "pandas/tests/io/xml/test_to_xml.py",
+          "lineno": 1018
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml",
+        "source": {
+          "path": "pandas/tests/io/xml/test_to_xml.py",
+          "lineno": 1035
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml.etree",
+        "source": {
+          "path": "pandas/tests/io/xml/test_to_xml.py",
+          "lineno": 1047
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml.etree",
+        "source": {
+          "path": "pandas/tests/io/xml/test_to_xml.py",
+          "lineno": 1060
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml.etree",
+        "source": {
+          "path": "pandas/tests/io/xml/test_to_xml.py",
+          "lineno": 1076
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml.etree",
+        "source": {
+          "path": "pandas/tests/io/xml/test_to_xml.py",
+          "lineno": 1106
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml.etree",
+        "source": {
+          "path": "pandas/tests/io/xml/test_to_xml.py",
+          "lineno": 1134
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml",
+        "source": {
+          "path": "pandas/tests/io/xml/test_to_xml.py",
+          "lineno": 1172
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml",
+        "source": {
+          "path": "pandas/tests/io/xml/test_to_xml.py",
+          "lineno": 1201
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml",
+        "source": {
+          "path": "pandas/tests/io/xml/test_to_xml.py",
+          "lineno": 1235
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "s3fs",
+        "source": {
+          "path": "pandas/tests/io/xml/test_to_xml.py",
+          "lineno": 1366
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "lxml",
+        "source": {
+          "path": "pandas/tests/io/xml/test_to_xml.py",
+          "lineno": 1367
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/parser/dtypes/test_dtypes_basic.py",
+          "lineno": 463
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/parser/dtypes/test_dtypes_basic.py",
+          "lineno": 506
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/parser/dtypes/test_dtypes_basic.py",
+          "lineno": 559
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/parser/dtypes/test_dtypes_basic.py",
+          "lineno": 580
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/series/methods/test_convert_dtypes.py",
+          "lineno": 294
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/series/methods/test_convert_dtypes.py",
+          "lineno": 302
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.stats",
+        "source": {
+          "path": "pandas/tests/test_algos.py",
+          "lineno": 1792
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/frame/test_constructors.py",
+          "lineno": 2706
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/frame/test_constructors.py",
+          "lineno": 2741
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/frame/test_constructors.py",
+          "lineno": 2766
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/frame/test_constructors.py",
+          "lineno": 2837
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/apply/test_numba.py",
+          "lineno": 29
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/core/arrays/sparse/accessor.py",
+          "lineno": 70
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/core/arrays/sparse/accessor.py",
+          "lineno": 253
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/pytables/test_round_trip.py",
+          "lineno": 568
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "xlrd",
+        "source": {
+          "path": "pandas/tests/io/excel/test_xlrd.py",
+          "lineno": 12
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "fsspec",
+        "source": {
+          "path": "pandas/tests/io/test_pickle.py",
+          "lineno": 502
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "jinja2",
+        "source": {
+          "path": "pandas/tests/io/formats/style/test_to_latex.py",
+          "lineno": 13
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/extension/test_string.py",
+          "lineno": 38
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/frame/test_query_eval.py",
+          "lineno": 1387
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/frame/test_query_eval.py",
+          "lineno": 1405
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/formats/test_to_string.py",
+          "lineno": 751
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "tables",
+        "source": {
+          "path": "pandas/tests/io/pytables/test_compat.py",
+          "lineno": 6
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/indexing/test_datetime.py",
+          "lineno": 177
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/series/methods/test_reset_index.py",
+          "lineno": 173
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "xarray",
+        "source": {
+          "path": "pandas/tests/generic/test_to_xarray.py",
+          "lineno": 13
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/reshape/merge/test_merge.py",
+          "lineno": 2810
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/reshape/merge/test_merge.py",
+          "lineno": 2960
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.stats",
+        "source": {
+          "path": "pandas/tests/reductions/test_stat_reductions.py",
+          "lineno": 239
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.stats",
+        "source": {
+          "path": "pandas/tests/reductions/test_stat_reductions.py",
+          "lineno": 261
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/pytables/test_read.py",
+          "lineno": 401
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/groupby/test_reductions.py",
+          "lineno": 611
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/indexing/test_loc.py",
+          "lineno": 3075
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.sparse",
+        "source": {
+          "path": "pandas/tests/indexing/test_loc.py",
+          "lineno": 1311
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.sparse",
+        "source": {
+          "path": "pandas/tests/indexing/test_loc.py",
+          "lineno": 1340
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/frame/methods/test_convert_dtypes.py",
+          "lineno": 52
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/frame/methods/test_convert_dtypes.py",
+          "lineno": 108
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/frame/methods/test_convert_dtypes.py",
+          "lineno": 114
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/frame/methods/test_convert_dtypes.py",
+          "lineno": 138
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/frame/methods/test_convert_dtypes.py",
+          "lineno": 155
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/frame/methods/test_convert_dtypes.py",
+          "lineno": 169
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/frame/methods/test_convert_dtypes.py",
+          "lineno": 177
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib",
+        "source": {
+          "path": "pandas/tests/io/formats/style/test_matplotlib.py",
+          "lineno": 12
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "jinja2",
+        "source": {
+          "path": "pandas/tests/io/formats/style/test_matplotlib.py",
+          "lineno": 13
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib",
+        "source": {
+          "path": "pandas/tests/io/formats/style/test_matplotlib.py",
+          "lineno": 26
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib.units",
+        "source": {
+          "path": "pandas/tests/io/formats/style/test_matplotlib.py",
+          "lineno": 27
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib.pyplot",
+        "source": {
+          "path": "pandas/tests/io/formats/style/test_matplotlib.py",
+          "lineno": 28
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/parser/test_upcast.py",
+          "lineno": 90
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "pandas/plotting/_matplotlib/groupby.py",
+          "lineno": 30
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.stats",
+        "source": {
+          "path": "pandas/tests/test_nanops.py",
+          "lineno": 504
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.stats",
+        "source": {
+          "path": "pandas/tests/test_nanops.py",
+          "lineno": 563
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.stats",
+        "source": {
+          "path": "pandas/tests/test_nanops.py",
+          "lineno": 577
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.stats",
+        "source": {
+          "path": "pandas/tests/test_nanops.py",
+          "lineno": 708
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.stats",
+        "source": {
+          "path": "pandas/tests/test_nanops.py",
+          "lineno": 718
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/test_nanops.py",
+          "lineno": 728
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/series/accessors/test_struct_accessor.py",
+          "lineno": 13
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/series/methods/test_explode.py",
+          "lineno": 149
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/series/methods/test_explode.py",
+          "lineno": 170
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.stats",
+        "source": {
+          "path": "pandas/tests/series/methods/test_cov_corr.py",
+          "lineno": 61
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.stats",
+        "source": {
+          "path": "pandas/tests/series/methods/test_cov_corr.py",
+          "lineno": 96
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/parser/test_concatenate_chunks.py",
+          "lineno": 14
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/parser/test_concatenate_chunks.py",
+          "lineno": 26
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "pandas/tests/groupby/aggregate/test_numba.py",
+          "lineno": 19
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "pandas/tests/groupby/aggregate/test_numba.py",
+          "lineno": 36
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "pandas/tests/groupby/aggregate/test_numba.py",
+          "lineno": 58
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "pandas/tests/groupby/aggregate/test_numba.py",
+          "lineno": 89
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "pandas/tests/groupby/aggregate/test_numba.py",
+          "lineno": 127
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "pandas/tests/groupby/aggregate/test_numba.py",
+          "lineno": 152
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "pandas/tests/groupby/aggregate/test_numba.py",
+          "lineno": 187
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "pandas/tests/groupby/aggregate/test_numba.py",
+          "lineno": 209
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "pandas/tests/groupby/aggregate/test_numba.py",
+          "lineno": 256
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "pandas/tests/groupby/aggregate/test_numba.py",
+          "lineno": 269
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "pandas/tests/groupby/aggregate/test_numba.py",
+          "lineno": 287
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "pandas/tests/groupby/aggregate/test_numba.py",
+          "lineno": 303
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "pandas/tests/groupby/aggregate/test_numba.py",
+          "lineno": 330
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "pandas/tests/groupby/aggregate/test_numba.py",
+          "lineno": 345
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "pandas/tests/groupby/aggregate/test_numba.py",
+          "lineno": 359
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "pandas/tests/groupby/aggregate/test_numba.py",
+          "lineno": 380
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow.json",
+        "source": {
+          "path": "pandas/tests/io/json/test_readlines.py",
+          "lineno": 31
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "xlrd",
+        "source": {
+          "path": "pandas/tests/test_optional_dependency.py",
+          "lineno": 26
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "jinja2",
+        "source": {
+          "path": "pandas/tests/io/formats/style/test_tooltip.py",
+          "lineno": 6
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/frame/methods/test_interpolate.py",
+          "lineno": 216
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/frame/methods/test_interpolate.py",
+          "lineno": 255
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib",
+        "source": {
+          "path": "pandas/tests/plotting/frame/test_frame_subplots.py",
+          "lineno": 29
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib.pyplot",
+        "source": {
+          "path": "pandas/tests/plotting/frame/test_frame_subplots.py",
+          "lineno": 30
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "tables",
+        "source": {
+          "path": "pandas/tests/io/pytables/test_store.py",
+          "lineno": 36
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "s3fs",
+        "source": {
+          "path": "pandas/tests/io/conftest.py",
+          "lineno": 61
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "boto3",
+        "source": {
+          "path": "pandas/tests/io/conftest.py",
+          "lineno": 62
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "requests",
+        "source": {
+          "path": "pandas/tests/io/conftest.py",
+          "lineno": 83
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "moto",
+        "source": {
+          "path": "pandas/tests/io/conftest.py",
+          "lineno": 84
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "flask",
+        "source": {
+          "path": "pandas/tests/io/conftest.py",
+          "lineno": 85
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "sqlalchemy",
+        "source": {
+          "path": "pandas/core/generic.py",
+          "lineno": 2886
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "sqlalchemy",
+        "source": {
+          "path": "pandas/core/generic.py",
+          "lineno": 2886
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "sqlalchemy",
+        "source": {
+          "path": "pandas/core/generic.py",
+          "lineno": 2886
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "sqlalchemy",
+        "source": {
+          "path": "pandas/core/generic.py",
+          "lineno": 2886
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "sqlalchemy",
+        "source": {
+          "path": "pandas/core/generic.py",
+          "lineno": 2886
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "natsort",
+        "source": {
+          "path": "pandas/core/generic.py",
+          "lineno": 5095
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "gcsfs",
+        "source": {
+          "path": "pandas/tests/io/test_gcs.py",
+          "lineno": 30
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "fsspec",
+        "source": {
+          "path": "pandas/tests/io/test_gcs.py",
+          "lineno": 31
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "fastparquet",
+        "source": {
+          "path": "pandas/tests/io/test_gcs.py",
+          "lineno": 190
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "gcsfs",
+        "source": {
+          "path": "pandas/tests/io/test_gcs.py",
+          "lineno": 191
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/test_gcs.py",
+          "lineno": 84
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow.fs",
+        "source": {
+          "path": "pandas/tests/io/test_gcs.py",
+          "lineno": 85
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "tabulate",
+        "source": {
+          "path": "pandas/tests/io/test_gcs.py",
+          "lineno": 101
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/reductions/test_reductions.py",
+          "lineno": 1094
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib.colors",
+        "source": {
+          "path": "pandas/tests/io/formats/test_to_excel.py",
+          "lineno": 339
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/series/test_reductions.py",
+          "lineno": 56
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/series/accessors/test_list_accessor.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/interchange/test_impl.py",
+          "lineno": 67
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "11.0.0",
+        "source": {
+          "path": "pandas/tests/interchange/test_impl.py",
+          "lineno": 67
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/interchange/test_impl.py",
+          "lineno": 82
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "11.0.0",
+        "source": {
+          "path": "pandas/tests/interchange/test_impl.py",
+          "lineno": 82
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/interchange/test_impl.py",
+          "lineno": 94
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "11.0.0",
+        "source": {
+          "path": "pandas/tests/interchange/test_impl.py",
+          "lineno": 94
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/interchange/test_impl.py",
+          "lineno": 120
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "11.0.0",
+        "source": {
+          "path": "pandas/tests/interchange/test_impl.py",
+          "lineno": 120
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/interchange/test_impl.py",
+          "lineno": 284
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "11.0.0",
+        "source": {
+          "path": "pandas/tests/interchange/test_impl.py",
+          "lineno": 284
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/interchange/test_impl.py",
+          "lineno": 294
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "11.0.0",
+        "source": {
+          "path": "pandas/tests/interchange/test_impl.py",
+          "lineno": 294
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/interchange/test_impl.py",
+          "lineno": 319
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "11.0.0",
+        "source": {
+          "path": "pandas/tests/interchange/test_impl.py",
+          "lineno": 319
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "pandas/tests/apply/test_frame_apply.py",
+          "lineno": 38
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/arrays/masked/test_arrow_compat.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/frame/methods/test_join.py",
+          "lineno": 166
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "openpyxl",
+        "source": {
+          "path": "pandas/tests/io/excel/test_openpyxl.py",
+          "lineno": 18
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "odf",
+        "source": {
+          "path": "pandas/tests/io/excel/test_odswriter.py",
+          "lineno": 14
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "natsort",
+        "source": {
+          "path": "pandas/core/frame.py",
+          "lineno": 6948
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/strings/test_extract.py",
+          "lineno": 721
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/tools/test_to_numeric.py",
+          "lineno": 974
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/tools/test_to_numeric.py",
+          "lineno": 870
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/tools/test_to_numeric.py",
+          "lineno": 894
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/tools/test_to_numeric.py",
+          "lineno": 911
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/tools/test_to_numeric.py",
+          "lineno": 934
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "pandas/tests/frame/test_ufunc.py",
+          "lineno": 253
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "scripts/tests/test_validate_docstrings.py",
+          "lineno": 28
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/frame/indexing/test_setitem.py",
+          "lineno": 763
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "tabulate",
+        "source": {
+          "path": "pandas/tests/io/formats/test_to_markdown.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/json/test_pandas.py",
+          "lineno": 2142
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/json/test_pandas.py",
+          "lineno": 2036
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/json/test_pandas.py",
+          "lineno": 2098
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib",
+        "source": {
+          "path": "pandas/tests/plotting/conftest.py",
+          "lineno": 18
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib.units",
+        "source": {
+          "path": "pandas/tests/plotting/conftest.py",
+          "lineno": 19
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib.pyplot",
+        "source": {
+          "path": "pandas/tests/plotting/conftest.py",
+          "lineno": 20
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "jinja2",
+        "source": {
+          "path": "pandas/tests/io/formats/style/test_format.py",
+          "lineno": 14
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib",
+        "source": {
+          "path": "pandas/tests/plotting/test_series.py",
+          "lineno": 35
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib.pyplot",
+        "source": {
+          "path": "pandas/tests/plotting/test_series.py",
+          "lineno": 36
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/test_series.py",
+          "lineno": 572
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/test_series.py",
+          "lineno": 576
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/test_series.py",
+          "lineno": 581
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/test_series.py",
+          "lineno": 589
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/test_series.py",
+          "lineno": 612
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/test_series.py",
+          "lineno": 623
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/test_series.py",
+          "lineno": 639
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/test_series.py",
+          "lineno": 753
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/arrays/period/test_arrow_compat.py",
+          "lineno": 19
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "sqlalchemy",
+        "source": {
+          "path": "pandas/io/sql.py",
+          "lineno": 437
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "adbc_driver_postgresql",
+        "source": {
+          "path": "pandas/io/sql.py",
+          "lineno": 574
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "jinja2",
+        "source": {
+          "path": "pandas/tests/io/formats/style/test_exceptions.py",
+          "lineno": 3
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib",
+        "source": {
+          "path": "pandas/tests/plotting/test_style.py",
+          "lineno": 5
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "tables",
+        "source": {
+          "path": "pandas/tests/io/pytables/test_subclass.py",
+          "lineno": 15
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib",
+        "source": {
+          "path": "pandas/tests/plotting/frame/test_frame.py",
+          "lineno": 50
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib.pyplot",
+        "source": {
+          "path": "pandas/tests/plotting/frame/test_frame.py",
+          "lineno": 51
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/frame/test_frame.py",
+          "lineno": 1121
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/frame/test_frame.py",
+          "lineno": 1129
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/frame/test_frame.py",
+          "lineno": 1135
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/frame/test_frame.py",
+          "lineno": 1146
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/frame/test_frame.py",
+          "lineno": 1152
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/frame/test_frame.py",
+          "lineno": 1449
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/frame/test_frame.py",
+          "lineno": 1456
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/frame/test_frame.py",
+          "lineno": 2102
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/frame/test_frame.py",
+          "lineno": 2429
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "jinja2",
+        "source": {
+          "path": "pandas/tests/io/formats/style/test_non_unique.py",
+          "lineno": 10
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "IPython",
+        "source": {
+          "path": "pandas/tests/frame/test_api.py",
+          "lineno": 291
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "jinja2",
+        "source": {
+          "path": "pandas/tests/frame/test_api.py",
+          "lineno": 386
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/window/test_win_type.py",
+          "lineno": 38
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/window/test_win_type.py",
+          "lineno": 50
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/window/test_win_type.py",
+          "lineno": 60
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/window/test_win_type.py",
+          "lineno": 68
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/window/test_win_type.py",
+          "lineno": 75
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/window/test_win_type.py",
+          "lineno": 92
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/window/test_win_type.py",
+          "lineno": 100
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/window/test_win_type.py",
+          "lineno": 111
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/window/test_win_type.py",
+          "lineno": 133
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/window/test_win_type.py",
+          "lineno": 143
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/window/test_win_type.py",
+          "lineno": 156
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/window/test_win_type.py",
+          "lineno": 170
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/window/test_win_type.py",
+          "lineno": 191
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/window/test_win_type.py",
+          "lineno": 213
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/window/test_win_type.py",
+          "lineno": 297
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/window/test_win_type.py",
+          "lineno": 324
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/window/test_win_type.py",
+          "lineno": 338
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/window/test_win_type.py",
+          "lineno": 446
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/window/test_win_type.py",
+          "lineno": 459
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/window/test_win_type.py",
+          "lineno": 569
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/window/test_win_type.py",
+          "lineno": 641
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/window/test_win_type.py",
+          "lineno": 666
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/window/test_win_type.py",
+          "lineno": 675
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.sparse",
+        "source": {
+          "path": "pandas/tests/dtypes/test_common.py",
+          "lineno": 217
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/interchange/test_utils.py",
+          "lineno": 81
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "jinja2",
+        "source": {
+          "path": "pandas/tests/io/formats/style/test_to_string.py",
+          "lineno": 10
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/groupby/test_counting.py",
+          "lineno": 388
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/core/dtypes/base.py",
+          "lineno": 44
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/indexes/base_class/test_constructors.py",
+          "lineno": 49
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "PyQt4",
+        "source": {
+          "path": "pandas/io/clipboard/__init__.py",
+          "lineno": 588
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/parser/conftest.py",
+          "lineno": 138
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "botocore",
+        "source": {
+          "path": "pandas/io/common.py",
+          "lineno": 414
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.stats",
+        "source": {
+          "path": "pandas/tests/window/test_rolling_skew_kurt.py",
+          "lineno": 20
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.stats",
+        "source": {
+          "path": "pandas/tests/window/test_rolling_skew_kurt.py",
+          "lineno": 30
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.stats",
+        "source": {
+          "path": "pandas/tests/window/test_rolling_skew_kurt.py",
+          "lineno": 44
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.stats",
+        "source": {
+          "path": "pandas/tests/window/test_rolling_skew_kurt.py",
+          "lineno": 59
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.stats",
+        "source": {
+          "path": "pandas/tests/window/test_rolling_skew_kurt.py",
+          "lineno": 78
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/indexes/base_class/test_reshape.py",
+          "lineno": 61
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "pandas/plotting/_misc.py",
+          "lineno": 30
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/series/test_constructors.py",
+          "lineno": 2078
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/series/test_constructors.py",
+          "lineno": 2093
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/series/test_constructors.py",
+          "lineno": 2102
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/series/test_constructors.py",
+          "lineno": 2110
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/series/test_constructors.py",
+          "lineno": 2118
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/series/test_constructors.py",
+          "lineno": 2134
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.sparse",
+        "source": {
+          "path": "pandas/tests/arrays/sparse/test_constructors.py",
+          "lineno": 191
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.sparse",
+        "source": {
+          "path": "pandas/tests/arrays/sparse/test_constructors.py",
+          "lineno": 202
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.sparse",
+        "source": {
+          "path": "pandas/tests/arrays/sparse/test_constructors.py",
+          "lineno": 213
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "sqlalchemy",
+        "source": {
+          "path": "pandas/tests/io/test_sql.py",
+          "lineno": 604
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pymysql",
+        "source": {
+          "path": "pandas/tests/io/test_sql.py",
+          "lineno": 605
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "sqlalchemy",
+        "source": {
+          "path": "pandas/tests/io/test_sql.py",
+          "lineno": 652
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "psycopg2",
+        "source": {
+          "path": "pandas/tests/io/test_sql.py",
+          "lineno": 653
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "adbc_driver_postgresql",
+        "source": {
+          "path": "pandas/tests/io/test_sql.py",
+          "lineno": 687
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "sqlalchemy",
+        "source": {
+          "path": "pandas/tests/io/test_sql.py",
+          "lineno": 750
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "sqlalchemy",
+        "source": {
+          "path": "pandas/tests/io/test_sql.py",
+          "lineno": 757
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "sqlalchemy",
+        "source": {
+          "path": "pandas/tests/io/test_sql.py",
+          "lineno": 775
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "sqlalchemy",
+        "source": {
+          "path": "pandas/tests/io/test_sql.py",
+          "lineno": 798
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "adbc_driver_sqlite",
+        "source": {
+          "path": "pandas/tests/io/test_sql.py",
+          "lineno": 819
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/test_sql.py",
+          "lineno": 1004
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/test_sql.py",
+          "lineno": 1038
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "sqlalchemy",
+        "source": {
+          "path": "pandas/tests/io/test_sql.py",
+          "lineno": 2485
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "sqlalchemy",
+        "source": {
+          "path": "pandas/tests/io/test_sql.py",
+          "lineno": 2507
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "sqlalchemy",
+        "source": {
+          "path": "pandas/tests/io/test_sql.py",
+          "lineno": 3499
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/test_sql.py",
+          "lineno": 3813
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pymysql",
+        "source": {
+          "path": "pandas/tests/io/test_sql.py",
+          "lineno": 3384
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/test_sql.py",
+          "lineno": 3651
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/test_sql.py",
+          "lineno": 3668
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "pandas/tests/window/test_online.py",
+          "lineno": 12
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/copy_view/test_astype.py",
+          "lineno": 201
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/copy_view/test_astype.py",
+          "lineno": 48
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/copy_view/test_astype.py",
+          "lineno": 73
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "jinja2",
+        "source": {
+          "path": "pandas/tests/io/formats/style/test_html.py",
+          "lineno": 15
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "jinja2",
+        "source": {
+          "path": "pandas/tests/io/formats/test_format.py",
+          "lineno": 2271
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "jinja2",
+        "source": {
+          "path": "pandas/tests/io/formats/test_format.py",
+          "lineno": 2290
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib",
+        "source": {
+          "path": "pandas/tests/plotting/frame/test_frame_legend.py",
+          "lineno": 17
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/frame/test_frame_legend.py",
+          "lineno": 64
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/frame/test_frame_legend.py",
+          "lineno": 90
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/frame/test_frame_legend.py",
+          "lineno": 108
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/frame/test_frame_legend.py",
+          "lineno": 134
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/frame/test_frame_legend.py",
+          "lineno": 160
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numexpr",
+        "source": {
+          "path": "pandas/tests/computation/test_compat.py",
+          "lineno": 16
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numexpr",
+        "source": {
+          "path": "pandas/tests/computation/test_compat.py",
+          "lineno": 29
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib",
+        "source": {
+          "path": "pandas/tests/plotting/test_groupby.py",
+          "lineno": 17
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/arrays/string_/test_string.py",
+          "lineno": 489
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/arrays/string_/test_string.py",
+          "lineno": 503
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/arrays/string_/test_string.py",
+          "lineno": 530
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib",
+        "source": {
+          "path": "pandas/tests/plotting/test_datetimelike.py",
+          "lineno": 44
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/test_datetimelike.py",
+          "lineno": 740
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib",
+        "source": {
+          "path": "pandas/tests/plotting/frame/test_frame_groupby.py",
+          "lineno": 8
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "pandas/tests/frame/methods/test_info.py",
+          "lineno": 530
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/arrays/interval/test_interval_pyarrow.py",
+          "lineno": 10
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/arrays/interval/test_interval_pyarrow.py",
+          "lineno": 26
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/arrays/interval/test_interval_pyarrow.py",
+          "lineno": 55
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/arrays/interval/test_interval_pyarrow.py",
+          "lineno": 92
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/arrays/interval/test_interval_pyarrow.py",
+          "lineno": 128
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/arrays/interval/test_interval_pyarrow.py",
+          "lineno": 148
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "dask.dataframe",
+        "source": {
+          "path": "pandas/tests/test_downstream.py",
+          "lineno": 71
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "xarray",
+        "source": {
+          "path": "pandas/tests/test_downstream.py",
+          "lineno": 95
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "cftime",
+        "source": {
+          "path": "pandas/tests/test_downstream.py",
+          "lineno": 102
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "xarray",
+        "source": {
+          "path": "pandas/tests/test_downstream.py",
+          "lineno": 103
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "statsmodels.formula.api",
+        "source": {
+          "path": "pandas/tests/test_downstream.py",
+          "lineno": 135
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "sklearn",
+        "source": {
+          "path": "pandas/tests/test_downstream.py",
+          "lineno": 144
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "seaborn",
+        "source": {
+          "path": "pandas/tests/test_downstream.py",
+          "lineno": 157
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pandas_datareader",
+        "source": {
+          "path": "pandas/tests/test_downstream.py",
+          "lineno": 165
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/test_downstream.py",
+          "lineno": 170
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "yaml",
+        "source": {
+          "path": "pandas/tests/test_downstream.py",
+          "lineno": 178
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "dataframe_api_compat",
+        "source": {
+          "path": "pandas/tests/test_downstream.py",
+          "lineno": 333
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "xarray",
+        "source": {
+          "path": "pandas/tests/test_downstream.py",
+          "lineno": 347
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "toolz",
+        "source": {
+          "path": "pandas/tests/test_downstream.py",
+          "lineno": 39
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "dask.dataframe",
+        "source": {
+          "path": "pandas/tests/test_downstream.py",
+          "lineno": 40
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "dask.array",
+        "source": {
+          "path": "pandas/tests/test_downstream.py",
+          "lineno": 55
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "dask.dataframe",
+        "source": {
+          "path": "pandas/tests/test_downstream.py",
+          "lineno": 56
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "dask.array",
+        "source": {
+          "path": "pandas/tests/test_downstream.py",
+          "lineno": 234
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/core/dtypes/dtypes.py",
+          "lineno": 2048
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/series/methods/test_drop_duplicates.py",
+          "lineno": 255
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/series/methods/test_drop_duplicates.py",
+          "lineno": 263
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "jinja2",
+        "source": {
+          "path": "pandas/tests/frame/test_repr.py",
+          "lineno": 290
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/frame/test_repr.py",
+          "lineno": 478
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/indexes/numeric/test_indexing.py",
+          "lineno": 396
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/indexes/numeric/test_indexing.py",
+          "lineno": 388
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "pandas/tests/groupby/test_numba.py",
+          "lineno": 12
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib",
+        "source": {
+          "path": "pandas/tests/plotting/test_hist_method.py",
+          "lineno": 28
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/test_hist_method.py",
+          "lineno": 209
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/test_hist_method.py",
+          "lineno": 220
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/test_hist_method.py",
+          "lineno": 224
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/test_hist_method.py",
+          "lineno": 229
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/test_hist_method.py",
+          "lineno": 239
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/plotting/test_hist_method.py",
+          "lineno": 247
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib.patches",
+        "source": {
+          "path": "pandas/tests/plotting/test_hist_method.py",
+          "lineno": 634
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/frame/methods/test_dot.py",
+          "lineno": 147
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "pandas",
+        "source": {
+          "path": "doc/make.py",
+          "lineno": 373
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "s3fs",
+        "source": {
+          "path": "pandas/tests/io/parser/test_network.py",
+          "lineno": 83
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "s3fs",
+        "source": {
+          "path": "pandas/tests/io/parser/test_network.py",
+          "lineno": 96
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/parser/test_network.py",
+          "lineno": 261
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/io/parser/test_network.py",
+          "lineno": 321
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.interpolate",
+        "source": {
+          "path": "pandas/tests/resample/test_datetime_index.py",
+          "lineno": 1113
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "pandas/tests/groupby/transform/test_numba.py",
+          "lineno": 17
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "pandas/tests/groupby/transform/test_numba.py",
+          "lineno": 34
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "pandas/tests/groupby/transform/test_numba.py",
+          "lineno": 56
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "pandas/tests/groupby/transform/test_numba.py",
+          "lineno": 87
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "pandas/tests/groupby/transform/test_numba.py",
+          "lineno": 124
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "pandas/tests/groupby/transform/test_numba.py",
+          "lineno": 144
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "pandas/tests/groupby/transform/test_numba.py",
+          "lineno": 162
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "pandas/tests/groupby/transform/test_numba.py",
+          "lineno": 180
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "pandas/tests/groupby/transform/test_numba.py",
+          "lineno": 194
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "pandas/tests/groupby/transform/test_numba.py",
+          "lineno": 221
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "pandas/tests/groupby/transform/test_numba.py",
+          "lineno": 236
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "pandas/tests/groupby/transform/test_numba.py",
+          "lineno": 250
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "pandas/tests/groupby/transform/test_numba.py",
+          "lineno": 267
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/arrays/string_/test_string_arrow.py",
+          "lineno": 22
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/arrays/string_/test_string_arrow.py",
+          "lineno": 51
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/arrays/string_/test_string_arrow.py",
+          "lineno": 72
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/arrays/string_/test_string_arrow.py",
+          "lineno": 87
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/arrays/string_/test_string_arrow.py",
+          "lineno": 99
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/arrays/string_/test_string_arrow.py",
+          "lineno": 106
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/arrays/string_/test_string_arrow.py",
+          "lineno": 199
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/arrays/string_/test_string_arrow.py",
+          "lineno": 216
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/arrays/string_/test_string_arrow.py",
+          "lineno": 242
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/arrays/string_/test_string_arrow.py",
+          "lineno": 259
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "pandas/tests/groupby/test_timegrouper.py",
+          "lineno": 947
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "IPython",
+        "source": {
+          "path": "pandas/tests/indexes/test_base.py",
+          "lineno": 1284
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/core/dtypes/common.py",
+          "lineno": 169
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/core/dtypes/common.py",
+          "lineno": 223
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.sparse",
+        "source": {
+          "path": "pandas/tests/arrays/sparse/test_accessor.py",
+          "lineno": 29
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.sparse",
+        "source": {
+          "path": "pandas/tests/arrays/sparse/test_accessor.py",
+          "lineno": 67
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.sparse",
+        "source": {
+          "path": "pandas/tests/arrays/sparse/test_accessor.py",
+          "lineno": 110
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.sparse",
+        "source": {
+          "path": "pandas/tests/arrays/sparse/test_accessor.py",
+          "lineno": 123
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.sparse",
+        "source": {
+          "path": "pandas/tests/arrays/sparse/test_accessor.py",
+          "lineno": 137
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.sparse",
+        "source": {
+          "path": "pandas/tests/arrays/sparse/test_accessor.py",
+          "lineno": 150
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "pandas/tests/arrays/sparse/test_accessor.py",
+          "lineno": 161
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.sparse",
+        "source": {
+          "path": "pandas/tests/arrays/sparse/test_accessor.py",
+          "lineno": 177
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.sparse",
+        "source": {
+          "path": "pandas/tests/arrays/sparse/test_accessor.py",
+          "lineno": 222
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.sparse",
+        "source": {
+          "path": "pandas/tests/arrays/sparse/test_accessor.py",
+          "lineno": 242
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pyarrow",
+        "source": {
+          "path": "pandas/tests/frame/methods/test_describe.py",
+          "lineno": 401
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

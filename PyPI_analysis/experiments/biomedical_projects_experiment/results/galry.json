@@ -1,0 +1,48 @@
+{
+  "project_name": "galry",
+  "code_dirs": {
+    "galry": {
+      "py": 42,
+      "ipynb": 0,
+      "total": 42
+    },
+    "experimental": {
+      "py": 18,
+      "ipynb": 1,
+      "total": 19
+    },
+    "tutorials": {
+      "py": 11,
+      "ipynb": 0,
+      "total": 11
+    },
+    "dev": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    },
+    "benchmarks": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,33 @@
+{
+  "project_name": "MASSef",
+  "code_dirs": {
+    "python_code": {
+      "py": 19,
+      "ipynb": 0,
+      "total": 19
+    },
+    "doc": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 3,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "doc/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 3,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

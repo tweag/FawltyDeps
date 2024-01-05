@@ -1,0 +1,28 @@
+{
+  "project_name": "robotreviewer3",
+  "code_dirs": {
+    "robotreviewer": {
+      "py": 26,
+      "ipynb": 0,
+      "total": 26
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 12,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "apt-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 14,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

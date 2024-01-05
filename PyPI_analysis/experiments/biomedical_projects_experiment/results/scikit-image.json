@@ -1,0 +1,827 @@
+{
+  "project_name": "scikit-image",
+  "code_dirs": {
+    "skimage": {
+      "py": 208,
+      "ipynb": 0,
+      "total": 208
+    },
+    "doc": {
+      "py": 147,
+      "ipynb": 0,
+      "total": 147
+    },
+    "benchmarks": {
+      "py": 18,
+      "ipynb": 0,
+      "total": 18
+    },
+    "tools": {
+      "py": 7,
+      "ipynb": 0,
+      "total": 7
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 59,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Docstring": {
+        "name": "imageio",
+        "source": {
+          "path": "skimage/io/collection.py",
+          "lineno": 102
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "SimpleITK",
+        "source": {
+          "path": "skimage/io/tests/test_simpleitk.py",
+          "lineno": 8
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib",
+        "source": {
+          "path": "skimage/_shared/tests/test_geometry.py",
+          "lineno": 7
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "dask.array",
+        "source": {
+          "path": "skimage/util/tests/test_apply_parallel.py",
+          "lineno": 10
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "skimage/restoration/deconvolution.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "skimage/restoration/deconvolution.py",
+          "lineno": 148
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "skimage/restoration/deconvolution.py",
+          "lineno": 365
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/util/shape.py",
+          "lineno": 9
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/util/shape.py",
+          "lineno": 97
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/util/_montage.py",
+          "lineno": 19
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "skimage/graph/_rag.py",
+          "lineno": 471
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib.pyplot",
+        "source": {
+          "path": "skimage/io/tests/test_mpl_imshow.py",
+          "lineno": 7
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/_shared/_tempfile.py",
+          "lineno": 8
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/restoration/_rolling_ball.py",
+          "lineno": 8
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/restoration/_rolling_ball.py",
+          "lineno": 8
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "sphinx",
+        "source": {
+          "path": "doc/tools/apigen.py",
+          "lineno": 80
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "docutils",
+        "source": {
+          "path": "doc/tools/apigen.py",
+          "lineno": 80
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "sphinx",
+        "source": {
+          "path": "doc/tools/apigen.py",
+          "lineno": 126
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/morphology/grayreconstruct.py",
+          "lineno": 9
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "skimage/measure/_regionprops.py",
+          "lineno": 790
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "skimage/measure/_regionprops.py",
+          "lineno": 932
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/measure/_regionprops.py",
+          "lineno": 932
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "skimage/measure/_regionprops.py",
+          "lineno": 932
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/measure/_regionprops.py",
+          "lineno": 1106
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "dask",
+        "source": {
+          "path": "skimage/exposure/tests/test_exposure.py",
+          "lineno": 1370
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "dask",
+        "source": {
+          "path": "skimage/exposure/tests/test_exposure.py",
+          "lineno": 1383
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/filters/rank/bilateral.py",
+          "lineno": 57
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/filters/rank/bilateral.py",
+          "lineno": 125
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/filters/rank/bilateral.py",
+          "lineno": 191
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/morphology/extrema.py",
+          "lineno": 49
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/morphology/extrema.py",
+          "lineno": 178
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "skimage/transform/_warps.py",
+          "lineno": 628
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/measure/_regionprops_utils.py",
+          "lineno": 286
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "numpydoc",
+        "source": {
+          "path": "skimage/_shared/tests/test_utils.py",
+          "lineno": 25
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/transform/_geometric.py",
+          "lineno": 228
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/transform/_geometric.py",
+          "lineno": 471
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/transform/_geometric.py",
+          "lineno": 880
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/transform/_geometric.py",
+          "lineno": 1719
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/feature/haar.py",
+          "lineno": 35
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/feature/haar.py",
+          "lineno": 90
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/feature/haar.py",
+          "lineno": 252
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/util/_label.py",
+          "lineno": 7
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/util/_map_array.py",
+          "lineno": 5
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "skimage/filters/_gabor.py",
+          "lineno": 27
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "skimage/filters/_gabor.py",
+          "lineno": 128
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/_shared/_warnings.py",
+          "lineno": 18
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/_shared/_warnings.py",
+          "lineno": 76
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pytest",
+        "source": {
+          "path": "skimage/feature/_fisher_vector.py",
+          "lineno": 38
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pytest",
+        "source": {
+          "path": "skimage/feature/_fisher_vector.py",
+          "lineno": 154
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/filters/rank/generic.py",
+          "lineno": 390
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/filters/rank/generic.py",
+          "lineno": 457
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/filters/rank/generic.py",
+          "lineno": 521
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/filters/rank/generic.py",
+          "lineno": 585
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/filters/rank/generic.py",
+          "lineno": 658
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/filters/rank/generic.py",
+          "lineno": 722
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/filters/rank/generic.py",
+          "lineno": 791
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/filters/rank/generic.py",
+          "lineno": 869
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/filters/rank/generic.py",
+          "lineno": 941
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/filters/rank/generic.py",
+          "lineno": 1014
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/filters/rank/generic.py",
+          "lineno": 1080
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/filters/rank/generic.py",
+          "lineno": 1361
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/filters/rank/generic.py",
+          "lineno": 1450
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/filters/rank/generic.py",
+          "lineno": 1524
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/filters/rank/generic.py",
+          "lineno": 1594
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/filters/rank/generic.py",
+          "lineno": 1663
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/draw/draw.py",
+          "lineno": 152
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/draw/draw.py",
+          "lineno": 717
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/draw/draw.py",
+          "lineno": 774
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/draw/draw.py",
+          "lineno": 774
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/draw/draw.py",
+          "lineno": 870
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/graph/mcp.py",
+          "lineno": 5
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/feature/brief.py",
+          "lineno": 16
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/conftest.py",
+          "lineno": 21
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/measure/_label.py",
+          "lineno": 34
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "sklearn",
+        "source": {
+          "path": "skimage/feature/tests/test_fisher_vector.py",
+          "lineno": 5
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/segmentation/_clear_border.py",
+          "lineno": 7
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "dask",
+        "source": {
+          "path": "skimage/filters/tests/test_thresholding.py",
+          "lineno": 807
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "skimage/segmentation/_watershed.py",
+          "lineno": 95
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pytest",
+        "source": {
+          "path": "skimage/restoration/_denoise.py",
+          "lineno": 860
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pytest",
+        "source": {
+          "path": "skimage/restoration/_denoise.py",
+          "lineno": 1047
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/restoration/j_invariant.py",
+          "lineno": 209
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/morphology/gray.py",
+          "lineno": 138
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/morphology/gray.py",
+          "lineno": 255
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/morphology/gray.py",
+          "lineno": 367
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/morphology/gray.py",
+          "lineno": 444
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/morphology/gray.py",
+          "lineno": 521
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skimage/morphology/gray.py",
+          "lineno": 614
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

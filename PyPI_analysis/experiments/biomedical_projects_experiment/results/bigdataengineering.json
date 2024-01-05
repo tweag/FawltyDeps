@@ -1,0 +1,36 @@
+{
+  "project_name": "bigdataengineering",
+  "code_dirs": {
+    "django_imdb": {
+      "py": 20,
+      "ipynb": 1,
+      "total": 21
+    },
+    "ra": {
+      "py": 9,
+      "ipynb": 0,
+      "total": 9
+    },
+    "tm": {
+      "py": 7,
+      "ipynb": 0,
+      "total": 7
+    },
+    "vis": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 32,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

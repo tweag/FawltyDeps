@@ -1,0 +1,95 @@
+{
+  "project_name": "gsa-backend",
+  "code_dirs": {
+    "reactome_analysis_api": {
+      "py": 40,
+      "ipynb": 0,
+      "total": 40
+    },
+    "reactome_analysis_worker": {
+      "py": 20,
+      "ipynb": 0,
+      "total": 20
+    },
+    "reactome_analysis_datasets": {
+      "py": 11,
+      "ipynb": 0,
+      "total": 11
+    },
+    "reactome_analysis_utils": {
+      "py": 11,
+      "ipynb": 0,
+      "total": 11
+    },
+    "reactome_analysis_report": {
+      "py": 6,
+      "ipynb": 0,
+      "total": 6
+    },
+    "kubernetes": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "reactome_analysis_datasets/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 2,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "reactome_analysis_utils/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 2,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "reactome_analysis_worker/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "reactome_analysis_api/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 8,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "reactome_analysis_report/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "reactome_analysis_utils/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "reactome_analysis_worker/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 5,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "reactome_analysis_report/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 2,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

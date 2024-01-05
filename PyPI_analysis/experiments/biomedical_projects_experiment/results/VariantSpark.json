@@ -1,0 +1,78 @@
+{
+  "project_name": "VariantSpark",
+  "code_dirs": {
+    "python": {
+      "py": 24,
+      "ipynb": 0,
+      "total": 24
+    },
+    "cloud": {
+      "py": 3,
+      "ipynb": 3,
+      "total": 6
+    },
+    "src": {
+      "py": 4,
+      "ipynb": 0,
+      "total": 4
+    },
+    "contributions": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "dev/dev-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 16,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "dev/rtd-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "python/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 5,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "cloud/aws-emr/python/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "cloud/aws-emr/python/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 5,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "python/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 10,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "python/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

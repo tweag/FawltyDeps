@@ -1,0 +1,26 @@
+{
+  "project_name": "pdfminer",
+  "code_dirs": {
+    "pdfminer": {
+      "py": 25,
+      "ipynb": 0,
+      "total": 25
+    },
+    "tools": {
+      "py": 8,
+      "ipynb": 0,
+      "total": 8
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 1,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

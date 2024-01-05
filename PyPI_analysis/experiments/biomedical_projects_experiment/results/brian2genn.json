@@ -1,0 +1,31 @@
+{
+  "project_name": "brian2genn",
+  "code_dirs": {
+    "brian2genn": {
+      "py": 12,
+      "ipynb": 0,
+      "total": 12
+    },
+    "scripts": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    },
+    "docs_sphinx": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 6,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

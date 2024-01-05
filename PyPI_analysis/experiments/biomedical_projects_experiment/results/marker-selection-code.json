@@ -1,0 +1,63 @@
+{
+  "project_name": "marker-selection-code",
+  "code_dirs": {
+    "paul": {
+      "py": 7,
+      "ipynb": 0,
+      "total": 7
+    },
+    "zeisel": {
+      "py": 6,
+      "ipynb": 0,
+      "total": 6
+    },
+    "10xmouse": {
+      "py": 1,
+      "ipynb": 4,
+      "total": 5
+    },
+    "zheng17": {
+      "py": 2,
+      "ipynb": 2,
+      "total": 4
+    },
+    "zhengSim": {
+      "py": 0,
+      "ipynb": 4,
+      "total": 4
+    },
+    "picturedRocks": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    },
+    "scanpy": {
+      "py": 2,
+      "ipynb": 1,
+      "total": 3
+    },
+    "classification": {
+      "py": 1,
+      "ipynb": 2,
+      "total": 3
+    },
+    "clustering": {
+      "py": 0,
+      "ipynb": 2,
+      "total": 2
+    },
+    "enets": {
+      "py": 0,
+      "ipynb": 2,
+      "total": 2
+    },
+    "scvi": {
+      "py": 0,
+      "ipynb": 2,
+      "total": 2
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

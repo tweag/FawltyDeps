@@ -1,0 +1,13 @@
+{
+  "project_name": "taxo_scorer",
+  "code_dirs": {
+    "manuscript_results": {
+      "py": 1,
+      "ipynb": 2,
+      "total": 3
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

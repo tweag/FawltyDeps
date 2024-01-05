@@ -1,0 +1,26 @@
+{
+  "project_name": "tre",
+  "code_dirs": {
+    "Tools": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    },
+    "python": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "python/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

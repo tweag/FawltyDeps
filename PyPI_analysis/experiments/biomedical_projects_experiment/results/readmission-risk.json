@@ -1,0 +1,23 @@
+{
+  "project_name": "readmission-risk",
+  "code_dirs": {
+    "features": {
+      "py": 41,
+      "ipynb": 1,
+      "total": 42
+    }
+  },
+  "deps_file": [],
+  "imports": [
+    {
+      "Alternative imports (primary)": {
+        "name": "ujson",
+        "source": {
+          "path": "features/extraction/lib/config.py",
+          "lineno": 5
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

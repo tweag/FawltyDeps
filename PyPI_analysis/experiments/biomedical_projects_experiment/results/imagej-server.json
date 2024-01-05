@@ -1,0 +1,21 @@
+{
+  "project_name": "imagej-server",
+  "code_dirs": {
+    "clients": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "clients/python/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 2,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

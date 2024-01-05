@@ -1,0 +1,13 @@
+{
+  "project_name": "raiders_data",
+  "code_dirs": {
+    "stimulus": {
+      "py": 1,
+      "ipynb": 1,
+      "total": 2
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

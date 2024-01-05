@@ -1,0 +1,404 @@
+{
+  "project_name": "hail",
+  "code_dirs": {
+    "hail": {
+      "py": 328,
+      "ipynb": 8,
+      "total": 336
+    },
+    "batch": {
+      "py": 114,
+      "ipynb": 0,
+      "total": 114
+    },
+    "datasets": {
+      "py": 63,
+      "ipynb": 8,
+      "total": 71
+    },
+    "ci": {
+      "py": 21,
+      "ipynb": 0,
+      "total": 21
+    },
+    "benchmark": {
+      "py": 20,
+      "ipynb": 0,
+      "total": 20
+    },
+    "gear": {
+      "py": 14,
+      "ipynb": 0,
+      "total": 14
+    },
+    "auth": {
+      "py": 8,
+      "ipynb": 0,
+      "total": 8
+    },
+    "monitoring": {
+      "py": 5,
+      "ipynb": 0,
+      "total": 5
+    },
+    "website": {
+      "py": 4,
+      "ipynb": 0,
+      "total": 4
+    },
+    "devbin": {
+      "py": 4,
+      "ipynb": 0,
+      "total": 4
+    },
+    "web_common": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    },
+    "docker": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "tls": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "query": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "hail/python/dev/pinned-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 173,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "website/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "ci/pinned-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 15,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "ci/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "auth/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "gear/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "hail/python/pinned-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 84,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "ci/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 2,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "hail/python/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "gear/pinned-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 38,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "monitoring/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "hail/python/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 12,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "batch/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 6,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "batch/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "hail/python/hailtop/pinned-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 61,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "batch/pinned-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 21,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "hail/python/dev/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 34,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "web_common/pinned-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 12,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "hail/python/hailtop/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 24,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "web_common/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "benchmark/python/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "web_common/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 3,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "benchmark/python/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "ci/ci-utils-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "benchmark/python/pinned-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 13,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "gear/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 9,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "hail/python/hail/matrixtable.py",
+          "lineno": 3186
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "hail/python/hail/linalg/blockmatrix.py",
+          "lineno": 252
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "hail/python/hail/linalg/blockmatrix.py",
+          "lineno": 311
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "hail/python/hail/linalg/blockmatrix.py",
+          "lineno": 912
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "hail/python/hail/linalg/blockmatrix.py",
+          "lineno": 988
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "hail/python/hail/linalg/blockmatrix.py",
+          "lineno": 1066
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "hail/python/hail/linalg/blockmatrix.py",
+          "lineno": 1157
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "hail/python/hail/linalg/blockmatrix.py",
+          "lineno": 1645
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "hail/python/hail/linalg/blockmatrix.py",
+          "lineno": 1690
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "hail/python/hail/linalg/blockmatrix.py",
+          "lineno": 1737
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "hail/python/hail/linalg/blockmatrix.py",
+          "lineno": 1833
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "hail/python/hail/linalg/blockmatrix.py",
+          "lineno": 1987
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "hail/python/hail/linalg/blockmatrix.py",
+          "lineno": 2059
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "hail/python/hail/linalg/blockmatrix.py",
+          "lineno": 2163
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "hail/python/hail/linalg/blockmatrix.py",
+          "lineno": 2251
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

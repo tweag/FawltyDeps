@@ -1,0 +1,18 @@
+{
+  "project_name": "CoVMME",
+  "code_dirs": {
+    "repo_management": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    },
+    "schema": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

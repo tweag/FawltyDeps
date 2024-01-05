@@ -1,0 +1,13 @@
+{
+  "project_name": "enaBrowserTools",
+  "code_dirs": {
+    "python3": {
+      "py": 6,
+      "ipynb": 0,
+      "total": 6
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,26 @@
+{
+  "project_name": "senti-py",
+  "code_dirs": {
+    "crawlers": {
+      "py": 13,
+      "ipynb": 0,
+      "total": 13
+    },
+    "classifier": {
+      "py": 8,
+      "ipynb": 0,
+      "total": 8
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 10,
+      "warnings": true
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

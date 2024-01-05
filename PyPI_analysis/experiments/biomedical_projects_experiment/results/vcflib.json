@@ -1,0 +1,18 @@
+{
+  "project_name": "vcflib",
+  "code_dirs": {
+    "scripts": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    },
+    "1KG_Index": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

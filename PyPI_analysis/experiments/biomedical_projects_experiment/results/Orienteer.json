@@ -1,0 +1,21 @@
+{
+  "project_name": "Orienteer",
+  "code_dirs": {
+    "core": {
+      "py": 18,
+      "ipynb": 0,
+      "total": 18
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "core/pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 18,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

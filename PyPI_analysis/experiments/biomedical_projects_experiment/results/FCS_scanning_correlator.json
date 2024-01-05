@@ -1,0 +1,50 @@
+{
+  "project_name": "FCS_scanning_correlator",
+  "code_dirs": {
+    "focusscan": {
+      "py": 5,
+      "ipynb": 0,
+      "total": 5
+    }
+  },
+  "deps_file": [],
+  "imports": [
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "focusscan/scorrelation_methods.py",
+          "lineno": 42
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "multipletau",
+        "source": {
+          "path": "focusscan/scorrelation_methods.py",
+          "lineno": 42
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "focusscan/scorrelation_methods.py",
+          "lineno": 244
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "multipletau",
+        "source": {
+          "path": "focusscan/scorrelation_methods.py",
+          "lineno": 244
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

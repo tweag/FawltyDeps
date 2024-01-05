@@ -1,0 +1,23 @@
+{
+  "project_name": "MASSpy-publication",
+  "code_dirs": {
+    "case-study": {
+      "py": 3,
+      "ipynb": 12,
+      "total": 15
+    },
+    "validation": {
+      "py": 1,
+      "ipynb": 8,
+      "total": 9
+    },
+    "ensemble-modeling": {
+      "py": 1,
+      "ipynb": 2,
+      "total": 3
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

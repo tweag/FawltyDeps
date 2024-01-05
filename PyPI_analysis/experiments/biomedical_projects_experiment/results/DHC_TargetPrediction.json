@@ -1,0 +1,18 @@
+{
+  "project_name": "DHC_TargetPrediction",
+  "code_dirs": {
+    "bioactivity mining": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "TarPredCrawler": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

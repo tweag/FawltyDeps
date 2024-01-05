@@ -1,0 +1,26 @@
+{
+  "project_name": "site",
+  "code_dirs": {
+    "bin": {
+      "py": 23,
+      "ipynb": 0,
+      "total": 23
+    },
+    "blog": {
+      "py": 1,
+      "ipynb": 3,
+      "total": 4
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 3,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

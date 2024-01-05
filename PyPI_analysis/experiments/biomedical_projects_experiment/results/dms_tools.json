@@ -1,0 +1,26 @@
+{
+  "project_name": "dms_tools",
+  "code_dirs": {
+    "src": {
+      "py": 9,
+      "ipynb": 0,
+      "total": 9
+    },
+    "docs": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 9,
+      "warnings": true
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

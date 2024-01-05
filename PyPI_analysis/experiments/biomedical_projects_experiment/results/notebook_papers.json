@@ -1,0 +1,23 @@
+{
+  "project_name": "notebook_papers",
+  "code_dirs": {
+    "modeling_mesoscopic_dynamics": {
+      "py": 32,
+      "ipynb": 0,
+      "total": 32
+    },
+    "heterogeneous_firing_responses": {
+      "py": 11,
+      "ipynb": 0,
+      "total": 11
+    },
+    "sparse_vs_balanced": {
+      "py": 10,
+      "ipynb": 0,
+      "total": 10
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,18 @@
+{
+  "project_name": "neuPrint",
+  "code_dirs": {
+    "dvid_to_neuprint": {
+      "py": 25,
+      "ipynb": 0,
+      "total": 25
+    },
+    "update_scripts": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

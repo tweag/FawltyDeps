@@ -1,0 +1,21 @@
+{
+  "project_name": "bioshadock_client",
+  "code_dirs": {
+    "registry": {
+      "py": 7,
+      "ipynb": 0,
+      "total": 7
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "registry/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 2,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

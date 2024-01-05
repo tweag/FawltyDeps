@@ -1,0 +1,45 @@
+{
+  "project_name": "GPyOpt",
+  "code_dirs": {
+    "GPyOpt": {
+      "py": 67,
+      "ipynb": 0,
+      "total": 67
+    },
+    "manual": {
+      "py": 2,
+      "ipynb": 18,
+      "total": 20
+    },
+    "docs": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 11,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 15,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

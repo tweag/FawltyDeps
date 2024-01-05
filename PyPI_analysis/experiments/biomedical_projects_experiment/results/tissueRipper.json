@@ -1,0 +1,26 @@
+{
+  "project_name": "tissueRipper",
+  "code_dirs": {
+    "src": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "nbs": {
+      "py": 0,
+      "ipynb": 1,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 2,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

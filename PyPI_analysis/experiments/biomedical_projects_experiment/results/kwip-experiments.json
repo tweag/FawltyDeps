@@ -1,0 +1,43 @@
+{
+  "project_name": "kwip-experiments",
+  "code_dirs": {
+    "writeups": {
+      "py": 4,
+      "ipynb": 38,
+      "total": 42
+    },
+    "coalescent": {
+      "py": 8,
+      "ipynb": 0,
+      "total": 8
+    },
+    "bifurcating": {
+      "py": 2,
+      "ipynb": 3,
+      "total": 5
+    },
+    "abcd-tree-sim": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    },
+    "analysis_helpers": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "real_data": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "chlamy-subset": {
+      "py": 0,
+      "ipynb": 1,
+      "total": 1
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

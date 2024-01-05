@@ -1,0 +1,23 @@
+{
+  "project_name": "RTP-pipeline",
+  "code_dirs": {
+    "local": {
+      "py": 14,
+      "ipynb": 0,
+      "total": 14
+    },
+    "afq": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "dtiinit": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,23 @@
+{
+  "project_name": "adage",
+  "code_dirs": {
+    "Data_collection_processing": {
+      "py": 6,
+      "ipynb": 0,
+      "total": 6
+    },
+    "Genome_organization": {
+      "py": 4,
+      "ipynb": 0,
+      "total": 4
+    },
+    "Node_interpretation": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

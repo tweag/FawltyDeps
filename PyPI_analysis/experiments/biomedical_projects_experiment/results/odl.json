@@ -1,0 +1,176 @@
+{
+  "project_name": "odl",
+  "code_dirs": {
+    "odl": {
+      "py": 170,
+      "ipynb": 0,
+      "total": 170
+    },
+    "doc": {
+      "py": 5,
+      "ipynb": 0,
+      "total": 5
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 21,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "doc/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Conditional imports": {
+        "name": "matplotlib",
+        "source": {
+          "path": "odl/test/test_examples.py",
+          "lineno": 31
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "matplotlib",
+        "source": {
+          "path": "odl/test/test_examples.py",
+          "lineno": 31
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "spyder",
+        "source": {
+          "path": "odl/util/testutils.py",
+          "lineno": 695
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "matplotlib",
+        "source": {
+          "path": "odl/test/test_doc.py",
+          "lineno": 30
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "matplotlib",
+        "source": {
+          "path": "odl/test/test_doc.py",
+          "lineno": 30
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "astra",
+        "source": {
+          "path": "odl/test/tomo/backends/astra_setup_test.py",
+          "lineno": 22
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pywt",
+        "source": {
+          "path": "odl/trafos/backends/pywt_bindings.py",
+          "lineno": 87
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "astra",
+        "source": {
+          "path": "odl/tomo/backends/astra_cpu.py",
+          "lineno": 26
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "odl/contrib/solvers/spdhg/misc.py",
+          "lineno": 211
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "odl/contrib/solvers/spdhg/misc.py",
+          "lineno": 243
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "odl/contrib/solvers/spdhg/misc.py",
+          "lineno": 243
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "pywt",
+        "source": {
+          "path": "odl/test/trafos/backends/pywt_bindings_test.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "odl/operator/oputils.py",
+          "lineno": 267
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "odl/operator/oputils.py",
+          "lineno": 326
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "odl/operator/oputils.py",
+          "lineno": 326
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

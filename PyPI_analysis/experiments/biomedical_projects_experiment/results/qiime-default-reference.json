@@ -1,0 +1,31 @@
+{
+  "project_name": "qiime-default-reference",
+  "code_dirs": {
+    "qiime_default_reference": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 2,
+      "warnings": true
+    }
+  ],
+  "imports": [
+    {
+      "Docstring": {
+        "name": "six",
+        "source": {
+          "path": "qiime_default_reference/__init__.py",
+          "lineno": 68
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

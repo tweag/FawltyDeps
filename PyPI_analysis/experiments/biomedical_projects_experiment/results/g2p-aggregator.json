@@ -1,0 +1,72 @@
+{
+  "project_name": "g2p-aggregator",
+  "code_dirs": {
+    "harvester": {
+      "py": 58,
+      "ipynb": 0,
+      "total": 58
+    },
+    "figures": {
+      "py": 9,
+      "ipynb": 0,
+      "total": 9
+    },
+    "notebooks": {
+      "py": 2,
+      "ipynb": 6,
+      "total": 8
+    },
+    "services": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    },
+    "util": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    },
+    "beacon": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    },
+    "cloud-setup": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "beacon/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 10,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "notebooks/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "services/api/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 10,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "harvester/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 94,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

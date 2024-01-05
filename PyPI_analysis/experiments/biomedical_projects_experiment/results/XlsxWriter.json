@@ -1,0 +1,40 @@
+{
+  "project_name": "XlsxWriter",
+  "code_dirs": {
+    "xlsxwriter": {
+      "py": 54,
+      "ipynb": 0,
+      "total": 54
+    },
+    "dev": {
+      "py": 6,
+      "ipynb": 0,
+      "total": 6
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "dev/docs/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 2,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

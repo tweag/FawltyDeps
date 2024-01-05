@@ -1,0 +1,59 @@
+{
+  "project_name": "augur",
+  "code_dirs": {
+    "augur": {
+      "py": 68,
+      "ipynb": 0,
+      "total": 68
+    },
+    "scripts": {
+      "py": 13,
+      "ipynb": 0,
+      "total": 13
+    },
+    "docs": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    }
+  ],
+  "imports": [
+    {
+      "Docstring": {
+        "name": "isodate",
+        "source": {
+          "path": "augur/dates/__init__.py",
+          "lineno": 20
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "treetime",
+        "source": {
+          "path": "augur/dates/__init__.py",
+          "lineno": 20
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "Bio",
+        "source": {
+          "path": "augur/index.py",
+          "lineno": 61
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,782 @@
+{
+  "project_name": "galaxy",
+  "code_dirs": {
+    "lib": {
+      "py": 1190,
+      "ipynb": 2,
+      "total": 1192
+    },
+    "packages": {
+      "py": 101,
+      "ipynb": 0,
+      "total": 101
+    },
+    "scripts": {
+      "py": 93,
+      "ipynb": 0,
+      "total": 93
+    },
+    "cron": {
+      "py": 5,
+      "ipynb": 0,
+      "total": 5
+    },
+    "doc": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    },
+    "config": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    },
+    "contrib": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "client": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "packages/tours/pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/web_stack/pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 141,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/schema/pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/tool_shed/pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/job_execution/dev-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/data/dev-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/data/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 28,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/test_selenium/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 11,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/config/dev-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/test_api/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 6,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/auth/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 2,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/job_execution/test-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/files/pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/app/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 43,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/schema/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 2,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/web_framework/pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/files/test-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 3,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/test_api/dev-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/web_stack/dev-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "lib/galaxy/dependencies/pinned-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 217,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "lib/galaxy/dependencies/conditional-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 36,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/navigation/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 2,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/meta/pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/web_apps/test-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 3,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/auth/dev-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "lib/galaxy/dependencies/pinned-lint-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 7,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/web_apps/pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/tool_shed/test-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/selenium/test-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/selenium/pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/schema/test-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/tool_shed/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 2,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/tool_shed/dev-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/objectstore/pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/navigation/test-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/navigation/pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/job_metrics/dev-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/job_metrics/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/test_base/pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/files/dev-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/schema/dev-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/web_apps/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 37,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/web_apps/dev-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/util/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 14,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/job_metrics/test-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/config/pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 217,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/selenium/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 6,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/test_base/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 8,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/selenium/dev-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/tool_util/test-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 3,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/tool_util/pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/files/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 3,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "lib/galaxy/job_execution/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/test_selenium/test-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/util/test-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 3,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/util/pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/test_driver/test-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/web_framework/test-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/auth/pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/test_base/test-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/test_api/pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/test_selenium/pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/meta/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/meta/dev-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/objectstore/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 3,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "lib/galaxy/dependencies/dev-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 171,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/data/test-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/web_framework/dev-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/app/pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/test_driver/pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/meta/test-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/objectstore/test-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/tool_util/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 14,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/job_execution/pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "lib/galaxy/dependencies/pinned-typecheck-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 21,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/navigation/dev-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/tours/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 3,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/app/dev-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "lib/galaxy/dependencies/lint-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 3,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/test_driver/dev-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/data/pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/util/dev-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/tool_util/dev-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/config/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 5,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/auth/test-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/test_api/test-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/package-dev-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/tours/test-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/tours/dev-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/web_stack/test-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 2,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/app/test-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 5,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/test_selenium/dev-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/test_driver/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 10,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/web_framework/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 10,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/job_metrics/pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/test_base/dev-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/config/test-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 2,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/job_execution/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 7,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/objectstore/dev-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "packages/web_stack/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 3,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Dynamic imports (pytest)": {
+        "name": "s3fs",
+        "source": {
+          "path": "packages/files/tests/files/test_s3.py",
+          "lineno": 12
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "astropy",
+        "source": {
+          "path": "lib/galaxy/datatypes/binary.py",
+          "lineno": 99
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

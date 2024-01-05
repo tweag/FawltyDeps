@@ -1,0 +1,121 @@
+{
+  "project_name": "Keras-GAN",
+  "code_dirs": {
+    "pixelda": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    },
+    "pix2pix": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    },
+    "cyclegan": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    },
+    "srgan": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    },
+    "discogan": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    },
+    "infogan": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "dualgan": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "lsgan": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "bgan": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "gan": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "dcgan": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "context_encoder": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "wgan_gp": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "cgan": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "sgan": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "wgan": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "aae": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "ccgan": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "bigan": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "cogan": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "acgan": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 6,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

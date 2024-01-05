@@ -1,0 +1,23 @@
+{
+  "project_name": "docker-galaxy-stable",
+  "code_dirs": {
+    "compose": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    },
+    "galaxy": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "docs": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

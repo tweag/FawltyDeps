@@ -1,0 +1,18 @@
+{
+  "project_name": "metaBEAT",
+  "code_dirs": {
+    "scripts": {
+      "py": 6,
+      "ipynb": 0,
+      "total": 6
+    },
+    "Docker": {
+      "py": 4,
+      "ipynb": 0,
+      "total": 4
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

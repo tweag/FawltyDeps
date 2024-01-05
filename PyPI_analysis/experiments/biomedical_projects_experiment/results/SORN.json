@@ -1,0 +1,96 @@
+{
+  "project_name": "SORN",
+  "code_dirs": {
+    "chartmann": {
+      "py": 20,
+      "ipynb": 1,
+      "total": 21
+    },
+    "utils": {
+      "py": 10,
+      "ipynb": 0,
+      "total": 10
+    },
+    "common": {
+      "py": 8,
+      "ipynb": 0,
+      "total": 8
+    }
+  },
+  "deps_file": [],
+  "imports": [
+    {
+      "Conditional imports": {
+        "name": "mpi4py",
+        "source": {
+          "path": "utils/params.py",
+          "lineno": 10
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "yaml",
+        "source": {
+          "path": "utils/bunch/__init__.py",
+          "lineno": 304
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "yaml",
+        "source": {
+          "path": "utils/bunch/__init__.py",
+          "lineno": 304
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "simplejson",
+        "source": {
+          "path": "utils/bunch/__init__.py",
+          "lineno": 280
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "yaml",
+        "source": {
+          "path": "utils/bunch/__init__.py",
+          "lineno": 310
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "yaml",
+        "source": {
+          "path": "utils/bunch/__init__.py",
+          "lineno": 334
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "yaml",
+        "source": {
+          "path": "utils/bunch/__init__.py",
+          "lineno": 345
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "yaml",
+        "source": {
+          "path": "utils/bunch/__init__.py",
+          "lineno": 367
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

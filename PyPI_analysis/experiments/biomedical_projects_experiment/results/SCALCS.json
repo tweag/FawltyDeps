@@ -1,0 +1,43 @@
+{
+  "project_name": "SCALCS",
+  "code_dirs": {
+    "scalcs": {
+      "py": 22,
+      "ipynb": 0,
+      "total": 22
+    },
+    "doc": {
+      "py": 14,
+      "ipynb": 0,
+      "total": 14
+    },
+    "notebooks": {
+      "py": 0,
+      "ipynb": 6,
+      "total": 6
+    },
+    "old": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "doc/sphinxext/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

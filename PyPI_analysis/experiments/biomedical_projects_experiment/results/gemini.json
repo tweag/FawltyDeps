@@ -1,0 +1,411 @@
+{
+  "project_name": "gemini",
+  "code_dirs": {
+    "gemini": {
+      "py": 62,
+      "ipynb": 0,
+      "total": 62
+    },
+    "docs": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.15.0/requirements_conda.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.13.0/requirements_conda.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.16.0/requirements_pip.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 20,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.19.1/requirements_conda.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 8,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.16.3/requirements_conda.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.12.2/requirements_pip.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 17,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.15.0/requirements_pip.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 20,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.9.1/requirements_conda.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.16.2/requirements_conda.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.17.0/requirements_conda.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.10.1/requirements_pip.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 17,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.14.0/requirements_pip.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 17,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.17.2/requirements_pip.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 21,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.13.1/requirements_pip.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 17,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.18.1/requirements_pip.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 24,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.13.1/requirements_conda.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.15.1/requirements_pip.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 20,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.10.0/requirements_conda.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.17.1/requirements_pip.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 21,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.18.2/requirements_pip.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 24,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.19.0/requirements_pip.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 23,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.18.2/requirements_conda.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 8,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.13.0/requirements_pip.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 17,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.11.0/requirements_pip.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 17,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.18.3/requirements_conda.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 8,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.16.0/requirements_conda.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.9.1/requirements_pip.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 17,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "docs/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.16.2/requirements_pip.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 20,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.16.3/requirements_pip.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 20,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.18.0/requirements_pip.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 24,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.18.1/requirements_conda.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 8,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.19.0/requirements_conda.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 8,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.10.0/requirements_pip.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 17,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.12.2/requirements_conda.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.18.0/requirements_conda.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 8,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 23,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.16.1/requirements_pip.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 20,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.17.2/requirements_conda.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.18.3/requirements_pip.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 24,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/unstable/requirements_conda.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.14.0/requirements_conda.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.12.1/requirements_conda.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.16.1/requirements_conda.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.17.1/requirements_conda.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.10.1/requirements_conda.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.11.0/requirements_conda.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.19.1/requirements_pip.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 23,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.12.1/requirements_pip.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 17,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.15.1/requirements_conda.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "versioning/0.17.0/requirements_pip.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 20,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Conditional imports": {
+        "name": "_abcoll",
+        "source": {
+          "path": "gemini/gemini_utils.py",
+          "lineno": 123
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "pylab",
+        "source": {
+          "path": "gemini/mendelianerror.py",
+          "lineno": 211
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "snappy",
+        "source": {
+          "path": "gemini/compression.py",
+          "lineno": 70
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

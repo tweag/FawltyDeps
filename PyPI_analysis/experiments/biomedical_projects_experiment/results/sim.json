@@ -1,0 +1,38 @@
+{
+  "project_name": "sim",
+  "code_dirs": {
+    "sim": {
+      "py": 6,
+      "ipynb": 0,
+      "total": 6
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 4,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Dynamic imports (pytest)": {
+        "name": "hdfs",
+        "source": {
+          "path": "sim/tests/test_all.py",
+          "lineno": 60
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,247 @@
+{
+  "project_name": "pywt",
+  "code_dirs": {
+    "demo": {
+      "py": 21,
+      "ipynb": 0,
+      "total": 21
+    },
+    "pywt": {
+      "py": 19,
+      "ipynb": 0,
+      "total": 19
+    },
+    "doc": {
+      "py": 7,
+      "ipynb": 0,
+      "total": 7
+    },
+    "benchmarks": {
+      "py": 4,
+      "ipynb": 0,
+      "total": 4
+    },
+    "util": {
+      "py": 4,
+      "ipynb": 0,
+      "total": 4
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "util/readthedocs/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 7,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 1,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "pywt/_multidim.py",
+          "lineno": 25
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "pywt/_multidim.py",
+          "lineno": 78
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pymatbridge.Matlab",
+        "source": {
+          "path": "pywt/tests/test_matlab_compatibility.py",
+          "lineno": 47
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "pywt/_thresholding.py",
+          "lineno": 83
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pymatbridge.Matlab",
+        "source": {
+          "path": "pywt/tests/test_matlab_compatibility_cwt.py",
+          "lineno": 43
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "util/refguide_check.py",
+          "lineno": 635
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "pywt/_multilevel.py",
+          "lineno": 180
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "pywt/_multilevel.py",
+          "lineno": 257
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "pywt/_multilevel.py",
+          "lineno": 361
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "pywt/_multilevel.py",
+          "lineno": 462
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "pywt/_multilevel.py",
+          "lineno": 802
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "pywt/_multilevel.py",
+          "lineno": 949
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "pywt/_multilevel.py",
+          "lineno": 1120
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "pywt/data/_readers.py",
+          "lineno": 7
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "pywt/data/_readers.py",
+          "lineno": 45
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "pywt/data/_readers.py",
+          "lineno": 80
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "pywt/data/_readers.py",
+          "lineno": 126
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "pywt/data/_readers.py",
+          "lineno": 156
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "pywt/_cwt.py",
+          "lineno": 38
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "pywt/_cwt.py",
+          "lineno": 38
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "pywt/_cwt.py",
+          "lineno": 38
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "pywt/_cwt.py",
+          "lineno": 38
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

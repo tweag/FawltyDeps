@@ -1,0 +1,82 @@
+{
+  "project_name": "cookiecutter",
+  "code_dirs": {
+    "cookiecutter": {
+      "py": 18,
+      "ipynb": 0,
+      "total": 18
+    },
+    "docs": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "test_requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 7,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "tests/test-templates/extends/{{cookiecutter.project_slug}}/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 8,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "tests/test-templates/super/{{cookiecutter.project_slug}}/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "tests/test-templates/no-templates/{{cookiecutter.project_slug}}/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "tests/test-templates/include/{{cookiecutter.project_slug}}/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "docs/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 7,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

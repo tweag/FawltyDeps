@@ -1,0 +1,75 @@
+{
+  "project_name": "myvariant.info",
+  "code_dirs": {
+    "src": {
+      "py": 101,
+      "ipynb": 0,
+      "total": 101
+    },
+    "docs": {
+      "py": 1,
+      "ipynb": 6,
+      "total": 7
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "src/dataload/sources/clinvar/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 2,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "src/dataload/sources/cadd/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "requirements_web.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 7,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "src/dataload/sources/geno2mp/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "src/dataload/sources/dbsnp/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 2,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "src/dataload/sources/exac/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "requirements_hub.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 8,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "src/dataload/sources/dbnsfp/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

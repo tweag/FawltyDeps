@@ -1,0 +1,33 @@
+{
+  "project_name": "multi-omics-state-of-the-field",
+  "code_dirs": {
+    "notebooks": {
+      "py": 1,
+      "ipynb": 11,
+      "total": 12
+    },
+    "helpers": {
+      "py": 10,
+      "ipynb": 0,
+      "total": 10
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 7,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup/requirements-dev.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 6,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

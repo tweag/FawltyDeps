@@ -1,0 +1,13 @@
+{
+  "project_name": "chip-seq-pipeline",
+  "code_dirs": {
+    "dnanexus": {
+      "py": 61,
+      "ipynb": 0,
+      "total": 61
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

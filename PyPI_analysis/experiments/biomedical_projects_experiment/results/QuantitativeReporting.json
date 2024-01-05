@@ -1,0 +1,23 @@
+{
+  "project_name": "QuantitativeReporting",
+  "code_dirs": {
+    "QuantitativeReporting": {
+      "py": 7,
+      "ipynb": 0,
+      "total": 7
+    },
+    "DICOMPlugins": {
+      "py": 6,
+      "ipynb": 0,
+      "total": 6
+    },
+    "Testing": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

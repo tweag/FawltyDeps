@@ -1,0 +1,13 @@
+{
+  "project_name": "minc-toolkit-v2",
+  "code_dirs": {
+    "analysis": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

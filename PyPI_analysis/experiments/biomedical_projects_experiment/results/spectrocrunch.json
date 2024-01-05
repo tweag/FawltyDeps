@@ -1,0 +1,62 @@
+{
+  "project_name": "spectrocrunch",
+  "code_dirs": {
+    "spectrocrunch": {
+      "py": 216,
+      "ipynb": 0,
+      "total": 216
+    },
+    "scraps": {
+      "py": 34,
+      "ipynb": 0,
+      "total": 34
+    },
+    "doc": {
+      "py": 1,
+      "ipynb": 10,
+      "total": 11
+    },
+    "theory": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    },
+    "ci": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 28,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 28,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "requirements-dev.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

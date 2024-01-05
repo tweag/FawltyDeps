@@ -1,0 +1,40 @@
+{
+  "project_name": "omicexperiment",
+  "code_dirs": {
+    "omicexperiment": {
+      "py": 32,
+      "ipynb": 5,
+      "total": 37
+    },
+    "doc": {
+      "py": 0,
+      "ipynb": 4,
+      "total": 4
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 9,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 7,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

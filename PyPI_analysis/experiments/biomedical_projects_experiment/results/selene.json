@@ -1,0 +1,53 @@
+{
+  "project_name": "selene",
+  "code_dirs": {
+    "selene_sdk": {
+      "py": 48,
+      "ipynb": 0,
+      "total": 48
+    },
+    "manuscript": {
+      "py": 13,
+      "ipynb": 1,
+      "total": 14
+    },
+    "tutorials": {
+      "py": 4,
+      "ipynb": 5,
+      "total": 9
+    },
+    "models": {
+      "py": 4,
+      "ipynb": 0,
+      "total": 4
+    },
+    "scripts": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    },
+    "docs": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 15,
+      "warnings": true
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,18 @@
+{
+  "project_name": "Source_of_Fecal_and_Oral_Bacteria_on_Hands",
+  "code_dirs": {
+    "scripts": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    },
+    "spikein_analysis": {
+      "py": 0,
+      "ipynb": 2,
+      "total": 2
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

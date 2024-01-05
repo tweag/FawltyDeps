@@ -1,0 +1,13 @@
+{
+  "project_name": "DSOL_rv0.2",
+  "code_dirs": {
+    "scripts": {
+      "py": 12,
+      "ipynb": 0,
+      "total": 12
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,78 @@
+{
+  "project_name": "curveball",
+  "code_dirs": {
+    "curveball": {
+      "py": 11,
+      "ipynb": 0,
+      "total": 11
+    },
+    "docs": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "data": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "plate_templates": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 19,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 24,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "curveball/models.py",
+          "lineno": 1103
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "curveball/models.py",
+          "lineno": 1103
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "curveball/competitions.py",
+          "lineno": 227
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,243 @@
+{
+  "project_name": "rdkit",
+  "code_dirs": {
+    "rdkit": {
+      "py": 403,
+      "ipynb": 3,
+      "total": 406
+    },
+    "Contrib": {
+      "py": 35,
+      "ipynb": 1,
+      "total": 36
+    },
+    "Code": {
+      "py": 23,
+      "ipynb": 3,
+      "total": 26
+    },
+    "Docs": {
+      "py": 3,
+      "ipynb": 10,
+      "total": 13
+    },
+    "Scripts": {
+      "py": 8,
+      "ipynb": 0,
+      "total": 8
+    },
+    "Regress": {
+      "py": 4,
+      "ipynb": 0,
+      "total": 4
+    },
+    "Data": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    },
+    "Projects": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    },
+    "External": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    },
+    "Web": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    },
+    "build_support": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "Code/Demos/boost/cross_module/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "Code/Demos/boost/numpy/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "Code/Demos/boost/python_objs/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "Contrib/FreeWilson/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 2,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "Code/Demos/boost/smartPtrsAndIters/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "Code/Demos/boost/cross_mod_err/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "Code/Demos/boost/overloads/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "Contrib/FreeWilson/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 2,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "Code/Demos/boost/EBV_err/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    }
+  ],
+  "imports": [
+    {
+      "Dynamic imports": {
+        "name": "pybind11_stubgen",
+        "source": {
+          "path": "Scripts/gen_rdkit_stubs/__main__.py",
+          "lineno": 61
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "cairocffi",
+        "source": {
+          "path": "rdkit/Chem/Draw/cairoCanvas.py",
+          "lineno": 22
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "cairo",
+        "source": {
+          "path": "rdkit/Chem/Draw/cairoCanvas.py",
+          "lineno": 22
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "sip",
+        "source": {
+          "path": "rdkit/Chem/Draw/__init__.py",
+          "lineno": 178
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "pysqlite2",
+        "source": {
+          "path": "rdkit/RDConfig.py",
+          "lineno": 68
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "clang.cindex",
+        "source": {
+          "path": "Scripts/patch_rdkit_docstrings/__init__.py",
+          "lineno": 65
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "pandas",
+        "source": {
+          "path": "rdkit/Chem/PandasTools.py",
+          "lineno": 230
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "rdkit/Chem/PandasTools.py",
+          "lineno": 31
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "rdkit/Chem/PandasTools.py",
+          "lineno": 288
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "patch_rdkit_docstrings",
+        "source": {
+          "path": "Scripts/patch_rdkit_docstrings/clang_worker.py",
+          "lineno": 14
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "matplotlib",
+        "source": {
+          "path": "rdkit/Chem/Draw/UnitTestSimilarityMaps.py",
+          "lineno": 183
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "gen_rdkit_stubs",
+        "source": {
+          "path": "Scripts/gen_rdkit_stubs/worker.py",
+          "lineno": 40
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,50 @@
+{
+  "project_name": "fungrim",
+  "code_dirs": {
+    "pygrim": {
+      "py": 70,
+      "ipynb": 0,
+      "total": 70
+    },
+    "doc": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    },
+    "source_scripts": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Conditional imports": {
+        "name": "flint",
+        "source": {
+          "path": "pygrim/__init__.py",
+          "lineno": 8
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "flint",
+        "source": {
+          "path": "pygrim/expr.py",
+          "lineno": 109
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,18 @@
+{
+  "project_name": "DBN",
+  "code_dirs": {
+    "old": {
+      "py": 0,
+      "ipynb": 10,
+      "total": 10
+    },
+    "innlib": {
+      "py": 7,
+      "ipynb": 0,
+      "total": 7
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

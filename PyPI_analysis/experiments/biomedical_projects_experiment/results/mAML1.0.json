@@ -1,0 +1,26 @@
+{
+  "project_name": "mAML1.0",
+  "code_dirs": {
+    "code": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    },
+    "datasets": {
+      "py": 0,
+      "ipynb": 2,
+      "total": 2
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 11,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

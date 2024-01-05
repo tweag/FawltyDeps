@@ -1,0 +1,26 @@
+{
+  "project_name": "analysis",
+  "code_dirs": {
+    "two_population_analysis": {
+      "py": 7,
+      "ipynb": 0,
+      "total": 7
+    },
+    "n_t": {
+      "py": 5,
+      "ipynb": 0,
+      "total": 5
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 14,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

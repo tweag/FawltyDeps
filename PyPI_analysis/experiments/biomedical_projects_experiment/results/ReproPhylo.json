@@ -1,0 +1,28 @@
+{
+  "project_name": "ReproPhylo",
+  "code_dirs": {
+    "Tutorial_files": {
+      "py": 0,
+      "ipynb": 15,
+      "total": 15
+    },
+    "Galaxy_tools": {
+      "py": 2,
+      "ipynb": 3,
+      "total": 5
+    },
+    "Dependencies": {
+      "py": 4,
+      "ipynb": 0,
+      "total": 4
+    },
+    "MAIN": {
+      "py": 3,
+      "ipynb": 1,
+      "total": 4
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

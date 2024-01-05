@@ -1,0 +1,33 @@
+{
+  "project_name": "PHANOTATE",
+  "code_dirs": {
+    "phanotate_modules": {
+      "py": 11,
+      "ipynb": 0,
+      "total": 11
+    },
+    "Validation": {
+      "py": 0,
+      "ipynb": 2,
+      "total": 2
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 2,
+      "warnings": true
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

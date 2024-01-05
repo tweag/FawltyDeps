@@ -1,0 +1,13 @@
+{
+  "project_name": "embeddings",
+  "code_dirs": {
+    "eval": {
+      "py": 6,
+      "ipynb": 1,
+      "total": 7
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

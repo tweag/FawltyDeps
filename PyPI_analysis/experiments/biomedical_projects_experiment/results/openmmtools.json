@@ -1,0 +1,556 @@
+{
+  "project_name": "openmmtools",
+  "code_dirs": {
+    "openmmtools": {
+      "py": 35,
+      "ipynb": 0,
+      "total": 35
+    },
+    "docs": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/multistate/paralleltempering.py",
+          "lineno": 45
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/testsystems.py",
+          "lineno": 682
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/cache.py",
+          "lineno": 215
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/cache.py",
+          "lineno": 704
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/cache.py",
+          "lineno": 704
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "__builtin__",
+        "source": {
+          "path": "openmmtools/storage/iodrivers.py",
+          "lineno": 929
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "builtins",
+        "source": {
+          "path": "openmmtools/storage/iodrivers.py",
+          "lineno": 931
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/scripts/test_openmm_platforms.py",
+          "lineno": 141
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/scripts/test_openmm_platforms.py",
+          "lineno": 141
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "simtk",
+        "source": {
+          "path": "openmmtools/scripts/test_openmm_platforms.py",
+          "lineno": 141
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "simtk",
+        "source": {
+          "path": "openmmtools/scripts/test_openmm_platforms.py",
+          "lineno": 141
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/alchemy/alchemy.py",
+          "lineno": 91
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/alchemy/alchemy.py",
+          "lineno": 91
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/alchemy/alchemy.py",
+          "lineno": 497
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/alchemy/alchemy.py",
+          "lineno": 497
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/constants.py",
+          "lineno": 2
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "simtk",
+        "source": {
+          "path": "openmmtools/constants.py",
+          "lineno": 2
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/multistate/sams.py",
+          "lineno": 44
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/multistate/multistatesampler.py",
+          "lineno": 64
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "openmmtools/storage/storageinterface.py",
+          "lineno": 78
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/states.py",
+          "lineno": 41
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/states.py",
+          "lineno": 2696
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/states.py",
+          "lineno": 2696
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/states.py",
+          "lineno": 3102
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/states.py",
+          "lineno": 3102
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/states.py",
+          "lineno": 995
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/states.py",
+          "lineno": 1095
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/states.py",
+          "lineno": 1095
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/states.py",
+          "lineno": 1184
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/states.py",
+          "lineno": 1184
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/integrators.py",
+          "lineno": 40
+        }
+      }
+    },
+    {
+      "Alternative imports (primary)": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/integrators.py",
+          "lineno": 40
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "simtk",
+        "source": {
+          "path": "openmmtools/integrators.py",
+          "lineno": 40
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "simtk",
+        "source": {
+          "path": "openmmtools/integrators.py",
+          "lineno": 40
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/integrators.py",
+          "lineno": 127
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/integrators.py",
+          "lineno": 127
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/integrators.py",
+          "lineno": 1656
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/integrators.py",
+          "lineno": 1656
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/integrators.py",
+          "lineno": 1916
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/integrators.py",
+          "lineno": 1916
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/integrators.py",
+          "lineno": 2060
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/integrators.py",
+          "lineno": 2060
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/integrators.py",
+          "lineno": 2292
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "openmmtools/mcmc.py",
+          "lineno": 217
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/mcmc.py",
+          "lineno": 217
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "openmmtools/mcmc.py",
+          "lineno": 351
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/mcmc.py",
+          "lineno": 351
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "openmmtools/mcmc.py",
+          "lineno": 440
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/mcmc.py",
+          "lineno": 440
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/mcmc.py",
+          "lineno": 604
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/mcmc.py",
+          "lineno": 811
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/mcmc.py",
+          "lineno": 1024
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/mcmc.py",
+          "lineno": 1176
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/mcmc.py",
+          "lineno": 1324
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/mcmc.py",
+          "lineno": 1494
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/mcmc.py",
+          "lineno": 1598
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmtools/multistate/replicaexchange.py",
+          "lineno": 53
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "openmmtools/utils/utils.py",
+          "lineno": 479
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

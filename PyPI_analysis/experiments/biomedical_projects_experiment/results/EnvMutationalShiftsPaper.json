@@ -1,0 +1,18 @@
+{
+  "project_name": "EnvMutationalShiftsPaper",
+  "code_dirs": {
+    "paper": {
+      "py": 10,
+      "ipynb": 0,
+      "total": 10
+    },
+    "analysis_code": {
+      "py": 0,
+      "ipynb": 1,
+      "total": 1
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

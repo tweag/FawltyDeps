@@ -1,0 +1,61 @@
+{
+  "project_name": "bbknn",
+  "code_dirs": {
+    "bbknn": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    },
+    "docs": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 8,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "docs/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Conditional imports": {
+        "name": "scanpy",
+        "source": {
+          "path": "bbknn/matrix.py",
+          "lineno": 14
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "faiss",
+        "source": {
+          "path": "bbknn/matrix.py",
+          "lineno": 18
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "scanpy",
+        "source": {
+          "path": "bbknn/__init__.py",
+          "lineno": 9
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

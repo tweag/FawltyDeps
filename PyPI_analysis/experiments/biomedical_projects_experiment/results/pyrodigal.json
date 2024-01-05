@@ -1,0 +1,69 @@
+{
+  "project_name": "pyrodigal",
+  "code_dirs": {
+    "pyrodigal": {
+      "py": 7,
+      "ipynb": 0,
+      "total": 7
+    },
+    "benches": {
+      "py": 5,
+      "ipynb": 0,
+      "total": 5
+    },
+    "docs": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "pyrodigal/tests/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 2,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 5,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "docs/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 9,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "benches/connection_scoring/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 5,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Alternative imports (primary)": {
+        "name": "isal",
+        "source": {
+          "path": "pyrodigal/tests/fasta.py",
+          "lineno": 28
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

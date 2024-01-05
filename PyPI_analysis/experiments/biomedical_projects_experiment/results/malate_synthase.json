@@ -1,0 +1,13 @@
+{
+  "project_name": "malate_synthase",
+  "code_dirs": {
+    "pipeline": {
+      "py": 0,
+      "ipynb": 2,
+      "total": 2
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

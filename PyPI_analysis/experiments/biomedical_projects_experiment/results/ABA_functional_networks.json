@@ -1,0 +1,13 @@
+{
+  "project_name": "ABA_functional_networks",
+  "code_dirs": {
+    "spatial_autocorrelations": {
+      "py": 0,
+      "ipynb": 3,
+      "total": 3
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

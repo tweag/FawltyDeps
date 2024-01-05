@@ -1,0 +1,13 @@
+{
+  "project_name": "Thornburg_FrontMolBiosci_2019",
+  "code_dirs": {
+    "models": {
+      "py": 0,
+      "ipynb": 2,
+      "total": 2
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

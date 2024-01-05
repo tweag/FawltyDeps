@@ -1,0 +1,31 @@
+{
+  "project_name": "charcoal",
+  "code_dirs": {
+    "charcoal": {
+      "py": 15,
+      "ipynb": 5,
+      "total": 20
+    },
+    "eval": {
+      "py": 0,
+      "ipynb": 2,
+      "total": 2
+    },
+    "stats": {
+      "py": 0,
+      "ipynb": 1,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 2,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,43 @@
+{
+  "project_name": "ehr-rwe",
+  "code_dirs": {
+    "rwe": {
+      "py": 29,
+      "ipynb": 0,
+      "total": 29
+    },
+    "preprocessing": {
+      "py": 6,
+      "ipynb": 0,
+      "total": 6
+    },
+    "legacy": {
+      "py": 1,
+      "ipynb": 1,
+      "total": 2
+    },
+    "tutorials": {
+      "py": 0,
+      "ipynb": 2,
+      "total": 2
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "rwe/visualization/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 21,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,59 @@
+{
+  "project_name": "AMPL",
+  "code_dirs": {
+    "atomsci": {
+      "py": 51,
+      "ipynb": 21,
+      "total": 72
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "pip/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 84,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "pip/clients_requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "pip/docker_requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 77,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "pip/readthedocs_requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 16,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Alternative imports": {
+        "name": "importlib_metadata",
+        "source": {
+          "path": "atomsci/ddm/utils/model_version_utils.py",
+          "lineno": 36
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

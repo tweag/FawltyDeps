@@ -1,0 +1,26 @@
+{
+  "project_name": "visJS2jupyter",
+  "code_dirs": {
+    "notebooks": {
+      "py": 0,
+      "ipynb": 7,
+      "total": 7
+    },
+    "visJS2jupyter": {
+      "py": 4,
+      "ipynb": 0,
+      "total": 4
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 5,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,21 @@
+{
+  "project_name": "cimcb",
+  "code_dirs": {
+    "cimcb": {
+      "py": 84,
+      "ipynb": 0,
+      "total": 84
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 11,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

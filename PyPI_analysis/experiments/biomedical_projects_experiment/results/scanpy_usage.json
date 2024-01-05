@@ -1,0 +1,68 @@
+{
+  "project_name": "scanpy_usage",
+  "code_dirs": {
+    "191113_rapids_gpu": {
+      "py": 5,
+      "ipynb": 0,
+      "total": 5
+    },
+    "191113_umap_parallel": {
+      "py": 4,
+      "ipynb": 0,
+      "total": 4
+    },
+    "170522_visualizing_one_million_cells": {
+      "py": 2,
+      "ipynb": 2,
+      "total": 4
+    },
+    "170503_zheng17": {
+      "py": 1,
+      "ipynb": 2,
+      "total": 3
+    },
+    "180318_generic_benchmarks": {
+      "py": 2,
+      "ipynb": 1,
+      "total": 3
+    },
+    "170430_krumsiek11": {
+      "py": 0,
+      "ipynb": 2,
+      "total": 2
+    },
+    "170505_seurat": {
+      "py": 0,
+      "ipynb": 2,
+      "total": 2
+    },
+    "171111_SPRING_export": {
+      "py": 0,
+      "ipynb": 2,
+      "total": 2
+    },
+    "170502_paul15": {
+      "py": 0,
+      "ipynb": 1,
+      "total": 1
+    },
+    "180209_cell_cycle": {
+      "py": 0,
+      "ipynb": 1,
+      "total": 1
+    },
+    "170501_moignard15": {
+      "py": 0,
+      "ipynb": 1,
+      "total": 1
+    },
+    "170529_images": {
+      "py": 0,
+      "ipynb": 1,
+      "total": 1
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

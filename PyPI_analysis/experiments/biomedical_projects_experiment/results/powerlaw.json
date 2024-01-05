@@ -1,0 +1,26 @@
+{
+  "project_name": "powerlaw",
+  "code_dirs": {
+    "manuscript": {
+      "py": 1,
+      "ipynb": 1,
+      "total": 2
+    },
+    "docs": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 4,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

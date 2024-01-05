@@ -1,0 +1,31 @@
+{
+  "project_name": "seqc",
+  "code_dirs": {
+    "src": {
+      "py": 59,
+      "ipynb": 0,
+      "total": 59
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 31,
+      "warnings": true
+    }
+  ],
+  "imports": [
+    {
+      "Docstring": {
+        "name": "sklearn",
+        "source": {
+          "path": "src/seqc/distance.py",
+          "lineno": 5
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

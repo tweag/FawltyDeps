@@ -1,0 +1,63 @@
+{
+  "project_name": "biospytial",
+  "code_dirs": {
+    "biospytial": {
+      "py": 13,
+      "ipynb": 0,
+      "total": 13
+    },
+    "raster_api": {
+      "py": 11,
+      "ipynb": 1,
+      "total": 12
+    },
+    "gbif": {
+      "py": 12,
+      "ipynb": 0,
+      "total": 12
+    },
+    "mesh": {
+      "py": 11,
+      "ipynb": 0,
+      "total": 11
+    },
+    "drivers": {
+      "py": 11,
+      "ipynb": 0,
+      "total": 11
+    },
+    "ecoregions": {
+      "py": 8,
+      "ipynb": 0,
+      "total": 8
+    },
+    "traversals": {
+      "py": 7,
+      "ipynb": 0,
+      "total": 7
+    },
+    "utilities": {
+      "py": 7,
+      "ipynb": 0,
+      "total": 7
+    },
+    "datapipelines": {
+      "py": 7,
+      "ipynb": 0,
+      "total": 7
+    },
+    "sketches": {
+      "py": 6,
+      "ipynb": 0,
+      "total": 6
+    },
+    "docs": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

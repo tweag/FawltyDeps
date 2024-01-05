@@ -1,0 +1,13 @@
+{
+  "project_name": "Gibthon",
+  "code_dirs": {
+    "gibthon": {
+      "py": 79,
+      "ipynb": 0,
+      "total": 79
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

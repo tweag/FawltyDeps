@@ -1,0 +1,150 @@
+{
+  "project_name": "BIRL",
+  "code_dirs": {
+    "bm_experiments": {
+      "py": 11,
+      "ipynb": 0,
+      "total": 11
+    },
+    "birl": {
+      "py": 10,
+      "ipynb": 0,
+      "total": 10
+    },
+    "bm_dataset": {
+      "py": 8,
+      "ipynb": 0,
+      "total": 8
+    },
+    "bm_ANHIR": {
+      "py": 6,
+      "ipynb": 0,
+      "total": 6
+    },
+    "notebooks": {
+      "py": 0,
+      "ipynb": 4,
+      "total": 4
+    },
+    "scripts": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    },
+    "docs": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "tests/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 10,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "notebooks/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "docs/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 9,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 15,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "birl/utilities/drawing.py",
+          "lineno": 278
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "birl/utilities/drawing.py",
+          "lineno": 475
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "birl/utilities/drawing.py",
+          "lineno": 525
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "birl/utilities/evaluate.py",
+          "lineno": 39
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "birl/utilities/evaluate.py",
+          "lineno": 124
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "birl/utilities/evaluate.py",
+          "lineno": 168
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "birl/utilities/registration.py",
+          "lineno": 72
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

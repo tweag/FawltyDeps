@@ -1,0 +1,31 @@
+{
+  "project_name": "riemann",
+  "code_dirs": {
+    "riemann": {
+      "py": 48,
+      "ipynb": 0,
+      "total": 48
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "riemann/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    }
+  ],
+  "imports": [
+    {
+      "Docstring": {
+        "name": "clawpack",
+        "source": {
+          "path": "riemann/riemann_tools.py",
+          "lineno": 15
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

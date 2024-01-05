@@ -1,0 +1,31 @@
+{
+  "project_name": "treetime",
+  "code_dirs": {
+    "treetime": {
+      "py": 25,
+      "ipynb": 0,
+      "total": 25
+    },
+    "benchmarking": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    },
+    "docs": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 5,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

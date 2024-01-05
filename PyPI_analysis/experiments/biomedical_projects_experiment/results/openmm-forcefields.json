@@ -1,0 +1,206 @@
+{
+  "project_name": "openmm-forcefields",
+  "code_dirs": {
+    "openmmforcefields": {
+      "py": 7,
+      "ipynb": 1,
+      "total": 8
+    },
+    "amber": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    },
+    "charmm": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    },
+    "docs": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Docstring": {
+        "name": "openff",
+        "source": {
+          "path": "openmmforcefields/generators/template_generators.py",
+          "lineno": 356
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmforcefields/generators/template_generators.py",
+          "lineno": 356
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openff",
+        "source": {
+          "path": "openmmforcefields/generators/template_generators.py",
+          "lineno": 1159
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmforcefields/generators/template_generators.py",
+          "lineno": 1159
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openff",
+        "source": {
+          "path": "openmmforcefields/generators/template_generators.py",
+          "lineno": 1455
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmforcefields/generators/template_generators.py",
+          "lineno": 1455
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openff",
+        "source": {
+          "path": "openmmforcefields/generators/template_generators.py",
+          "lineno": 91
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openff",
+        "source": {
+          "path": "openmmforcefields/generators/template_generators.py",
+          "lineno": 405
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmforcefields/generators/template_generators.py",
+          "lineno": 405
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openff",
+        "source": {
+          "path": "openmmforcefields/generators/template_generators.py",
+          "lineno": 1209
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmforcefields/generators/template_generators.py",
+          "lineno": 1209
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openff",
+        "source": {
+          "path": "openmmforcefields/generators/template_generators.py",
+          "lineno": 1511
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmforcefields/generators/template_generators.py",
+          "lineno": 1511
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmforcefields/generators/system_generators.py",
+          "lineno": 69
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmforcefields/generators/system_generators.py",
+          "lineno": 69
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmforcefields/generators/system_generators.py",
+          "lineno": 69
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openmm",
+        "source": {
+          "path": "openmmforcefields/generators/system_generators.py",
+          "lineno": 69
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "openff",
+        "source": {
+          "path": "openmmforcefields/generators/system_generators.py",
+          "lineno": 69
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

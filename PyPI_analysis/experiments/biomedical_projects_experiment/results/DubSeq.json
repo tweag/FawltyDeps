@@ -1,0 +1,26 @@
+{
+  "project_name": "DubSeq",
+  "code_dirs": {
+    "dubseq": {
+      "py": 16,
+      "ipynb": 0,
+      "total": 16
+    },
+    "docs": {
+      "py": 0,
+      "ipynb": 3,
+      "total": 3
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

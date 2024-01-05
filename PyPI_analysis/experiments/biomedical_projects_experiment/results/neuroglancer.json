@@ -1,0 +1,84 @@
+{
+  "project_name": "neuroglancer",
+  "code_dirs": {
+    "python": {
+      "py": 74,
+      "ipynb": 1,
+      "total": 75
+    },
+    "src": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "python/requirements-mypy.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 11,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "python/requirements-lint.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Dynamic imports (pytest)": {
+        "name": "tensorstore",
+        "source": {
+          "path": "python/tests/fill_value_test.py",
+          "lineno": 21
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "tensorstore",
+        "source": {
+          "path": "python/tests/local_volume_test.py",
+          "lineno": 21
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "tensorstore",
+        "source": {
+          "path": "python/tests/local_volume_test.py",
+          "lineno": 49
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "tensorstore",
+        "source": {
+          "path": "python/neuroglancer/viewer_base.py",
+          "lineno": 37
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

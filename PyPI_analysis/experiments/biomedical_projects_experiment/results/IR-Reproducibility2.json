@@ -1,0 +1,13 @@
+{
+  "project_name": "IR-Reproducibility2",
+  "code_dirs": {
+    "systems": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

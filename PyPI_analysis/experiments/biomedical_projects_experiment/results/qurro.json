@@ -1,0 +1,31 @@
+{
+  "project_name": "qurro",
+  "code_dirs": {
+    "qurro": {
+      "py": 18,
+      "ipynb": 0,
+      "total": 18
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 11,
+      "warnings": true
+    }
+  ],
+  "imports": [
+    {
+      "Dynamic imports": {
+        "name": "qurro.q2._transformer",
+        "source": {
+          "path": "qurro/q2/plugin_setup.py",
+          "lineno": 156
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

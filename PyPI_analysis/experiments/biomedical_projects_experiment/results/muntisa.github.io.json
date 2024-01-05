@@ -1,0 +1,18 @@
+{
+  "project_name": "muntisa.github.io",
+  "code_dirs": {
+    "COAD-DRD": {
+      "py": 0,
+      "ipynb": 6,
+      "total": 6
+    },
+    "Docking-SARS-CoV-2": {
+      "py": 0,
+      "ipynb": 2,
+      "total": 2
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

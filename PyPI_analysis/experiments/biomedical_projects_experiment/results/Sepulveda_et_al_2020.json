@@ -1,0 +1,13 @@
+{
+  "project_name": "Sepulveda_et_al_2020",
+  "code_dirs": {
+    "code": {
+      "py": 11,
+      "ipynb": 25,
+      "total": 36
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

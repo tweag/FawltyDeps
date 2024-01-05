@@ -1,0 +1,31 @@
+{
+  "project_name": "MRtrix3",
+  "code_dirs": {
+    "lib": {
+      "py": 29,
+      "ipynb": 0,
+      "total": 29
+    },
+    "docs": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "bin": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "docs/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 2,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,26 @@
+{
+  "project_name": "snell_tool",
+  "code_dirs": {
+    "figures": {
+      "py": 1,
+      "ipynb": 3,
+      "total": 4
+    },
+    "snell": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 7,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

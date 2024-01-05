@@ -1,0 +1,114 @@
+{
+  "project_name": "AMICI",
+  "code_dirs": {
+    "python": {
+      "py": 38,
+      "ipynb": 8,
+      "total": 46
+    },
+    "documentation": {
+      "py": 2,
+      "ipynb": 10,
+      "total": 12
+    },
+    "binder": {
+      "py": 0,
+      "ipynb": 1,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "python/sdist/pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "python/sdist/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 23,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "python/sdist/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "documentation/rtd_requirements2.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "documentation/rtd_requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 20,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Dynamic imports (pytest)": {
+        "name": "petab",
+        "source": {
+          "path": "python/tests/test_petab_import.py",
+          "lineno": 8
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "amici.petab_import",
+        "source": {
+          "path": "python/tests/test_petab_import.py",
+          "lineno": 9
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pysb",
+        "source": {
+          "path": "python/tests/conftest.py",
+          "lineno": 52
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "createModelPresimulation",
+        "source": {
+          "path": "python/tests/conftest.py",
+          "lineno": 69
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pysb",
+        "source": {
+          "path": "python/tests/test_bngl.py",
+          "lineno": 7
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pysb",
+        "source": {
+          "path": "python/tests/test_pysb.py",
+          "lineno": 9
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

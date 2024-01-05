@@ -1,0 +1,13 @@
+{
+  "project_name": "rnaseq_analysis",
+  "code_dirs": {
+    "modules": {
+      "py": 7,
+      "ipynb": 0,
+      "total": 7
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

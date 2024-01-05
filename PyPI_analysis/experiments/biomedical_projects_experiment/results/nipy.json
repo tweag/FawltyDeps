@@ -1,0 +1,245 @@
+{
+  "project_name": "nipy",
+  "code_dirs": {
+    "nipy": {
+      "py": 217,
+      "ipynb": 0,
+      "total": 217
+    },
+    "doc": {
+      "py": 21,
+      "ipynb": 0,
+      "total": 21
+    },
+    "tools": {
+      "py": 7,
+      "ipynb": 0,
+      "total": 7
+    },
+    "lib": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 17,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "dev-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 8,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "doc-requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 5,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 5,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Conditional imports": {
+        "name": "matplotlib",
+        "source": {
+          "path": "nipy/conftest.py",
+          "lineno": 20
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "sphinx",
+        "source": {
+          "path": "tools/apigen.py",
+          "lineno": 83
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "docutils",
+        "source": {
+          "path": "tools/apigen.py",
+          "lineno": 83
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "sphinx",
+        "source": {
+          "path": "tools/apigen.py",
+          "lineno": 119
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "nibabel",
+        "source": {
+          "path": "nipy/core/image/image_spaces.py",
+          "lineno": 1
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "nibabel",
+        "source": {
+          "path": "nipy/core/image/image_spaces.py",
+          "lineno": 85
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "nibabel",
+        "source": {
+          "path": "nipy/core/image/image_spaces.py",
+          "lineno": 145
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "nipy/io/files.py",
+          "lineno": 62
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "nipy/modalities/fmri/spm/trace.py",
+          "lineno": 29
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "nipy/modalities/fmri/spm/trace.py",
+          "lineno": 29
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "nifti",
+        "source": {
+          "path": "nipy/labs/datasets/tests/test_converters.py",
+          "lineno": 39
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "nipy/algorithms/statistics/rft.py",
+          "lineno": 105
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "nipy/algorithms/statistics/rft.py",
+          "lineno": 147
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "nipy/algorithms/statistics/rft.py",
+          "lineno": 162
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "nipy/algorithms/statistics/rft.py",
+          "lineno": 205
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "nipy/algorithms/statistics/rft.py",
+          "lineno": 278
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "nipy/algorithms/statistics/models/model.py",
+          "lineno": 322
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "nipy/modalities/fmri/glm.py",
+          "lineno": 3
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "sympy",
+        "source": {
+          "path": "nipy/modalities/fmri/utils.py",
+          "lineno": 314
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "nipy/algorithms/slicetiming/timefuncs.py",
+          "lineno": 1
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

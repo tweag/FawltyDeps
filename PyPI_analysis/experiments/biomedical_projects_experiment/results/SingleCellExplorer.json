@@ -1,0 +1,13 @@
+{
+  "project_name": "SingleCellExplorer",
+  "code_dirs": {
+    "singleCellApp_for_release_backup": {
+      "py": 12,
+      "ipynb": 0,
+      "total": 12
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

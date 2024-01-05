@@ -1,0 +1,26 @@
+{
+  "project_name": "pyomadb",
+  "code_dirs": {
+    "omadb": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    },
+    "docs": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 11,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

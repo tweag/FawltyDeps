@@ -1,0 +1,18 @@
+{
+  "project_name": "pythontex",
+  "code_dirs": {
+    "pythontex": {
+      "py": 11,
+      "ipynb": 0,
+      "total": 11
+    },
+    "pythontex_gallery": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

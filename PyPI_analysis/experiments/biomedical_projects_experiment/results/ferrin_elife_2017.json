@@ -1,0 +1,21 @@
+{
+  "project_name": "ferrin_elife_2017",
+  "code_dirs": {
+    "scripts": {
+      "py": 2,
+      "ipynb": 9,
+      "total": 11
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "python_requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 31,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

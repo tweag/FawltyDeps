@@ -1,0 +1,13 @@
+{
+  "project_name": "meta-review",
+  "code_dirs": {
+    "analyses": {
+      "py": 0,
+      "ipynb": 3,
+      "total": 3
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

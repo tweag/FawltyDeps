@@ -1,0 +1,13 @@
+{
+  "project_name": "CytoMod",
+  "code_dirs": {
+    "cytomod": {
+      "py": 16,
+      "ipynb": 0,
+      "total": 16
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

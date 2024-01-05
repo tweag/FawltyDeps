@@ -1,0 +1,23 @@
+{
+  "project_name": "SymPortal_framework",
+  "code_dirs": {
+    "lib": {
+      "py": 19,
+      "ipynb": 0,
+      "total": 19
+    },
+    "dbApp": {
+      "py": 4,
+      "ipynb": 0,
+      "total": 4
+    },
+    "cron_jobs": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

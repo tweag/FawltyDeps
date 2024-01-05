@@ -1,0 +1,28 @@
+{
+  "project_name": "Paper-Ruiz-2017",
+  "code_dirs": {
+    "PulsePAT": {
+      "py": 0,
+      "ipynb": 1,
+      "total": 1
+    },
+    "IgA-Seq": {
+      "py": 0,
+      "ipynb": 1,
+      "total": 1
+    },
+    "TransPAT": {
+      "py": 0,
+      "ipynb": 1,
+      "total": 1
+    },
+    "GF-PAT": {
+      "py": 0,
+      "ipynb": 1,
+      "total": 1
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

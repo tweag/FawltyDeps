@@ -1,0 +1,219 @@
+{
+  "project_name": "factor_analyzer",
+  "code_dirs": {
+    "factor_analyzer": {
+      "py": 5,
+      "ipynb": 0,
+      "total": 5
+    },
+    "doc": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 1,
+      "warnings": true
+    }
+  ],
+  "imports": [
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "factor_analyzer/factor_analyzer.py",
+          "lineno": 116
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "factor_analyzer/factor_analyzer.py",
+          "lineno": 585
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "factor_analyzer/factor_analyzer.py",
+          "lineno": 718
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "factor_analyzer/factor_analyzer.py",
+          "lineno": 799
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "factor_analyzer/factor_analyzer.py",
+          "lineno": 841
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "factor_analyzer/factor_analyzer.py",
+          "lineno": 870
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "factor_analyzer/factor_analyzer.py",
+          "lineno": 936
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "factor_analyzer/factor_analyzer.py",
+          "lineno": 975
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "factor_analyzer/rotator.py",
+          "lineno": 22
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "factor_analyzer/rotator.py",
+          "lineno": 602
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "factor_analyzer/rotator.py",
+          "lineno": 629
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "factor_analyzer/confirmatory_factor_analyzer.py",
+          "lineno": 314
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "factor_analyzer/confirmatory_factor_analyzer.py",
+          "lineno": 181
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "factor_analyzer/confirmatory_factor_analyzer.py",
+          "lineno": 254
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "factor_analyzer/confirmatory_factor_analyzer.py",
+          "lineno": 254
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "factor_analyzer/confirmatory_factor_analyzer.py",
+          "lineno": 627
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "factor_analyzer/confirmatory_factor_analyzer.py",
+          "lineno": 783
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "factor_analyzer/confirmatory_factor_analyzer.py",
+          "lineno": 867
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "factor_analyzer/confirmatory_factor_analyzer.py",
+          "lineno": 1032
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

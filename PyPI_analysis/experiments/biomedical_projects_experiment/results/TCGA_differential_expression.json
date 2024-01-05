@@ -1,0 +1,13 @@
+{
+  "project_name": "TCGA_differential_expression",
+  "code_dirs": {
+    "Notebooks": {
+      "py": 1,
+      "ipynb": 72,
+      "total": 73
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

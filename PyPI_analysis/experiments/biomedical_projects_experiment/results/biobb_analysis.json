@@ -1,0 +1,28 @@
+{
+  "project_name": "biobb_analysis",
+  "code_dirs": {
+    "biobb_analysis": {
+      "py": 28,
+      "ipynb": 1,
+      "total": 29
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "biobb_analysis/docs/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 2,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

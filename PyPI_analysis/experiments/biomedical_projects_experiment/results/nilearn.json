@@ -1,0 +1,100 @@
+{
+  "project_name": "nilearn",
+  "code_dirs": {
+    "nilearn": {
+      "py": 174,
+      "ipynb": 0,
+      "total": 174
+    },
+    "maint_tools": {
+      "py": 4,
+      "ipynb": 0,
+      "total": 4
+    },
+    "doc": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "doc/binder/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 43,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "maint_tools/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 2,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "nilearn/_utils/numpy_conversions.py",
+          "lineno": 40
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "nilearn/mass_univariate/_utils.py",
+          "lineno": 292
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "nilearn/mass_univariate/_utils.py",
+          "lineno": 338
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib",
+        "source": {
+          "path": "nilearn/reporting/tests/test_html_report.py",
+          "lineno": 446
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "requests",
+        "source": {
+          "path": "nilearn/datasets/tests/test_mocking_autoused.py",
+          "lineno": 63
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "nilearn/glm/model.py",
+          "lineno": 301
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

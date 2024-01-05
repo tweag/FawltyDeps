@@ -1,0 +1,112 @@
+{
+  "project_name": "veles",
+  "code_dirs": {
+    "veles": {
+      "py": 172,
+      "ipynb": 1,
+      "total": 173
+    },
+    "docs": {
+      "py": 7,
+      "ipynb": 0,
+      "total": 7
+    },
+    "libVeles": {
+      "py": 2,
+      "ipynb": 1,
+      "total": 3
+    },
+    "gource": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 40,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "requirements-dev.3.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 5,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "requirements-dev.2.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 3,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    }
+  ],
+  "imports": [
+    {
+      "Conditional imports": {
+        "name": "cv2",
+        "source": {
+          "path": "veles/loader/image.py",
+          "lineno": 41
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "numba",
+        "source": {
+          "path": "veles/__main__.py",
+          "lineno": 62
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "win32api",
+        "source": {
+          "path": "veles/external/pydot.py",
+          "lineno": 427
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "win32con",
+        "source": {
+          "path": "veles/external/pydot.py",
+          "lineno": 427
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "veles.dummy",
+        "source": {
+          "path": "veles/backends.py",
+          "lineno": 680
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "veles.accelerated_units",
+        "source": {
+          "path": "veles/backends.py",
+          "lineno": 681
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

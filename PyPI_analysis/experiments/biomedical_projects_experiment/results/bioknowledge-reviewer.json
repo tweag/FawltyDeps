@@ -1,0 +1,28 @@
+{
+  "project_name": "bioknowledge-reviewer",
+  "code_dirs": {
+    "bioknowledge_reviewer": {
+      "py": 11,
+      "ipynb": 1,
+      "total": 12
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 187,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

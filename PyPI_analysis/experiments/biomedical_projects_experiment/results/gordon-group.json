@@ -1,0 +1,28 @@
+{
+  "project_name": "gordon-group",
+  "code_dirs": {
+    "mirnaseq": {
+      "py": 0,
+      "ipynb": 4,
+      "total": 4
+    },
+    "mycoplasma_bovis": {
+      "py": 0,
+      "ipynb": 2,
+      "total": 2
+    },
+    "mbovis_annotation": {
+      "py": 0,
+      "ipynb": 2,
+      "total": 2
+    },
+    "antigen-mining": {
+      "py": 0,
+      "ipynb": 2,
+      "total": 2
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,26 @@
+{
+  "project_name": "DL-Biobank",
+  "code_dirs": {
+    "GA": {
+      "py": 18,
+      "ipynb": 0,
+      "total": 18
+    },
+    "Apps": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 45,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

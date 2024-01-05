@@ -1,0 +1,45 @@
+{
+  "project_name": "means",
+  "code_dirs": {
+    "src": {
+      "py": 51,
+      "ipynb": 0,
+      "total": 51
+    },
+    "tutorial": {
+      "py": 0,
+      "ipynb": 5,
+      "total": 5
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "src/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 6,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "src/means/simulation/simulate.py",
+          "lineno": 1
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "src/means/simulation/ssa.py",
+          "lineno": 21
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

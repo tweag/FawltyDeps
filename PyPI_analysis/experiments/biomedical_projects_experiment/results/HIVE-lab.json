@@ -1,0 +1,18 @@
+{
+  "project_name": "HIVE-lab",
+  "code_dirs": {
+    "Filtered_nt": {
+      "py": 10,
+      "ipynb": 0,
+      "total": 10
+    },
+    "HTS-CSRS": {
+      "py": 6,
+      "ipynb": 0,
+      "total": 6
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

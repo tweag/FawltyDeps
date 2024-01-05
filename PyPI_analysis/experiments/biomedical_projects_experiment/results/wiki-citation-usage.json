@@ -1,0 +1,13 @@
+{
+  "project_name": "wiki-citation-usage",
+  "code_dirs": {
+    "notebooks": {
+      "py": 1,
+      "ipynb": 22,
+      "total": 23
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

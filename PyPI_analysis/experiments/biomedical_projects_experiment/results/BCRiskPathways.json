@@ -1,0 +1,13 @@
+{
+  "project_name": "BCRiskPathways",
+  "code_dirs": {
+    "code": {
+      "py": 68,
+      "ipynb": 0,
+      "total": 68
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

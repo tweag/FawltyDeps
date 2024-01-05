@@ -1,0 +1,21 @@
+{
+  "project_name": "reciprocal_BLAST",
+  "code_dirs": {
+    "notebooks": {
+      "py": 0,
+      "ipynb": 5,
+      "total": 5
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "notebooks/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 7,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

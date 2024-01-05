@@ -1,0 +1,18 @@
+{
+  "project_name": "BUS_notebooks_python",
+  "code_dirs": {
+    "dataset-notebooks": {
+      "py": 1,
+      "ipynb": 12,
+      "total": 13
+    },
+    "utils": {
+      "py": 1,
+      "ipynb": 1,
+      "total": 2
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

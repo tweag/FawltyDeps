@@ -1,0 +1,18 @@
+{
+  "project_name": "carboxecoli",
+  "code_dirs": {
+    "notebooks": {
+      "py": 3,
+      "ipynb": 15,
+      "total": 18
+    },
+    "optslope_rubisco": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,51 @@
+{
+  "project_name": "quac",
+  "code_dirs": {
+    "lib": {
+      "py": 39,
+      "ipynb": 0,
+      "total": 39
+    },
+    "experiments": {
+      "py": 23,
+      "ipynb": 3,
+      "total": 26
+    },
+    "misc": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "doc-src": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "bin": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 33,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Docstring": {
+        "name": "pytz",
+        "source": {
+          "path": "lib/timeseries.py",
+          "lineno": 3
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

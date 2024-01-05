@@ -1,0 +1,21 @@
+{
+  "project_name": "kits19",
+  "code_dirs": {
+    "starter_code": {
+      "py": 6,
+      "ipynb": 0,
+      "total": 6
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 5,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

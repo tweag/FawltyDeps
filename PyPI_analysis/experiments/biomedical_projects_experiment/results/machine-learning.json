@@ -1,0 +1,49 @@
+{
+  "project_name": "machine-learning",
+  "code_dirs": {
+    "Education": {
+      "py": 1,
+      "ipynb": 10,
+      "total": 11
+    },
+    "SiiM2019": {
+      "py": 0,
+      "ipynb": 5,
+      "total": 5
+    },
+    "docker-keras-tensorflow-python3-jupyter": {
+      "py": 1,
+      "ipynb": 1,
+      "total": 2
+    },
+    "SiiM19_EDA": {
+      "py": 0,
+      "ipynb": 1,
+      "total": 1
+    }
+  },
+  "deps_file": [],
+  "imports": [
+    {
+      "Alternative imports (primary)": {
+        "name": "timm",
+        "source": {
+          "path": "Education/ViT/ViT_Educational_Notebook_SIIM_V2.ipynb",
+          "cellno": 34,
+          "lineno": 1
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "timm",
+        "source": {
+          "path": "Education/ViT/ViT_Educational_Notebook_SIIM_V2.ipynb",
+          "cellno": 34,
+          "lineno": 1
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

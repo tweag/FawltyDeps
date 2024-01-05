@@ -1,0 +1,33 @@
+{
+  "project_name": "img_pipe",
+  "code_dirs": {
+    "img_pipe": {
+      "py": 15,
+      "ipynb": 2,
+      "total": 17
+    },
+    "tutorials": {
+      "py": 0,
+      "ipynb": 4,
+      "total": 4
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 9,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 11,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,13 @@
+{
+  "project_name": "LiviaNET",
+  "code_dirs": {
+    "src": {
+      "py": 25,
+      "ipynb": 0,
+      "total": 25
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

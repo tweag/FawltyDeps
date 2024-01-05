@@ -1,0 +1,13 @@
+{
+  "project_name": "scijava-jupyter-kernel",
+  "code_dirs": {
+    "notebooks": {
+      "py": 0,
+      "ipynb": 7,
+      "total": 7
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

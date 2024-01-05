@@ -1,0 +1,23 @@
+{
+  "project_name": "SSUsearch",
+  "code_dirs": {
+    "scripts": {
+      "py": 29,
+      "ipynb": 0,
+      "total": 29
+    },
+    "notebooks-pc-linux": {
+      "py": 0,
+      "ipynb": 12,
+      "total": 12
+    },
+    "notebooks": {
+      "py": 0,
+      "ipynb": 12,
+      "total": 12
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,21 @@
+{
+  "project_name": "CLiNC",
+  "code_dirs": {
+    "clinc_python": {
+      "py": 5,
+      "ipynb": 1,
+      "total": 6
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "clinc_python/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,26 @@
+{
+  "project_name": "aws-batch-helpers",
+  "code_dirs": {
+    "batch_helpers": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    },
+    "batch_project": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 3,
+      "warnings": true
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,47 @@
+{
+  "project_name": "ssbio",
+  "code_dirs": {
+    "ssbio": {
+      "py": 89,
+      "ipynb": 0,
+      "total": 89
+    },
+    "docs": {
+      "py": 1,
+      "ipynb": 14,
+      "total": 15
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "docs/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "binder/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 6,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 28,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

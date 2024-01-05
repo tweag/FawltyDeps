@@ -1,0 +1,342 @@
+{
+  "project_name": "models",
+  "code_dirs": {
+    "official": {
+      "py": 1154,
+      "ipynb": 26,
+      "total": 1180
+    },
+    "research": {
+      "py": 650,
+      "ipynb": 16,
+      "total": 666
+    },
+    "orbit": {
+      "py": 20,
+      "ipynb": 0,
+      "total": 20
+    },
+    "docs": {
+      "py": 0,
+      "ipynb": 10,
+      "total": 10
+    },
+    "tensorflow_models": {
+      "py": 3,
+      "ipynb": 1,
+      "total": 4
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "research/object_detection/packages/tf2/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 18,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "official/recommendation/ranking/preprocessing/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "official/projects/movinet/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "research/slim/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 2,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "research/seq_flow_lite/demo/colab/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "research/object_detection/packages/tf1/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 11,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "official/projects/unified_detector/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 8,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "research/delf/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 8,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "official/nightly_requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 26,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "research/deep_speech/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "official/pip_package/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "official/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 25,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "research/audioset/vggish/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 6,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Conditional imports": {
+        "name": "tensorflow",
+        "source": {
+          "path": "research/object_detection/model_hparams.py",
+          "lineno": 25
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "tf_slim",
+        "source": {
+          "path": "research/object_detection/meta_architectures/ssd_meta_arch_test_lib.py",
+          "lineno": 38
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "apache_beam",
+        "source": {
+          "path": "research/object_detection/dataset_tools/context_rcnn/generate_detection_data.py",
+          "lineno": 53
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "tensorflow",
+        "source": {
+          "path": "research/object_detection/utils/autoaugment_utils.py",
+          "lineno": 28
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "tensorflow",
+        "source": {
+          "path": "research/object_detection/utils/autoaugment_utils.py",
+          "lineno": 28
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "apache_beam",
+        "source": {
+          "path": "research/object_detection/dataset_tools/context_rcnn/generate_embedding_data.py",
+          "lineno": 60
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "tensorflow",
+        "source": {
+          "path": "research/object_detection/data_decoders/tf_example_decoder.py",
+          "lineno": 37
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "apache_beam",
+        "source": {
+          "path": "research/object_detection/dataset_tools/context_rcnn/add_context_to_examples_tf2_test.py",
+          "lineno": 35
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "tensorflow",
+        "source": {
+          "path": "research/object_detection/utils/config_util_test.py",
+          "lineno": 38
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "apache_beam",
+        "source": {
+          "path": "research/object_detection/dataset_tools/context_rcnn/generate_embedding_data_tf2_test.py",
+          "lineno": 41
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "tf_slim",
+        "source": {
+          "path": "research/object_detection/meta_architectures/ssd_meta_arch_test.py",
+          "lineno": 35
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "tensorflow",
+        "source": {
+          "path": "research/object_detection/exporter.py",
+          "lineno": 31
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "tensorflow",
+        "source": {
+          "path": "research/object_detection/exporter.py",
+          "lineno": 31
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "tensorflow",
+        "source": {
+          "path": "research/object_detection/model_lib.py",
+          "lineno": 45
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "tf_slim",
+        "source": {
+          "path": "research/object_detection/meta_architectures/ssd_meta_arch.py",
+          "lineno": 37
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "tensorflow",
+        "source": {
+          "path": "research/object_detection/data_decoders/tf_sequence_example_decoder.py",
+          "lineno": 30
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "tf_slim",
+        "source": {
+          "path": "research/object_detection/meta_architectures/faster_rcnn_meta_arch_test_lib.py",
+          "lineno": 44
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "apache_beam",
+        "source": {
+          "path": "research/object_detection/dataset_tools/context_rcnn/create_cococameratraps_tfexample_main.py",
+          "lineno": 46
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "apache_beam",
+        "source": {
+          "path": "research/object_detection/dataset_tools/context_rcnn/add_context_to_examples.py",
+          "lineno": 58
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "tf_slim",
+        "source": {
+          "path": "research/object_detection/exporter_tf1_test.py",
+          "lineno": 45
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "apache_beam",
+        "source": {
+          "path": "research/object_detection/dataset_tools/context_rcnn/create_cococameratraps_tfexample_tf2_test.py",
+          "lineno": 34
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "tensorflow",
+        "source": {
+          "path": "research/object_detection/builders/graph_rewriter_builder.py",
+          "lineno": 20
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "apache_beam",
+        "source": {
+          "path": "research/object_detection/dataset_tools/context_rcnn/generate_detection_data_tf2_test.py",
+          "lineno": 43
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "tensorflow",
+        "source": {
+          "path": "research/object_detection/builders/dataset_builder_test.py",
+          "lineno": 36
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

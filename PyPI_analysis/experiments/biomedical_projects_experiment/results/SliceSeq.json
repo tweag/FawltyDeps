@@ -1,0 +1,13 @@
+{
+  "project_name": "SliceSeq",
+  "code_dirs": {
+    "IPythonNotebooks": {
+      "py": 0,
+      "ipynb": 5,
+      "total": 5
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

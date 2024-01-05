@@ -1,0 +1,21 @@
+{
+  "project_name": "metatryp",
+  "code_dirs": {
+    "lib": {
+      "py": 23,
+      "ipynb": 0,
+      "total": 23
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "pip_requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

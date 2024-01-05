@@ -1,0 +1,26 @@
+{
+  "project_name": "VAMPIRE_open",
+  "code_dirs": {
+    "Source Code": {
+      "py": 12,
+      "ipynb": 0,
+      "total": 12
+    },
+    "Source Code Contour": {
+      "py": 6,
+      "ipynb": 2,
+      "total": 8
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 9,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

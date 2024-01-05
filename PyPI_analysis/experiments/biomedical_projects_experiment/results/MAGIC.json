@@ -1,0 +1,68 @@
+{
+  "project_name": "MAGIC",
+  "code_dirs": {
+    "python": {
+      "py": 7,
+      "ipynb": 2,
+      "total": 9
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "python/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 15,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "Rmagic/.pre-commit.r_requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 6,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "python/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 9,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "python/doc/source/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 10,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "python/magic/magic.py",
+          "lineno": 29
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "python/magic/magic.py",
+          "lineno": 29
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,21 @@
+{
+  "project_name": "NEAT",
+  "code_dirs": {
+    "neat": {
+      "py": 21,
+      "ipynb": 0,
+      "total": 21
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 6,
+      "warnings": true
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,93 @@
+{
+  "project_name": "PyRhO",
+  "code_dirs": {
+    "pyrho": {
+      "py": 14,
+      "ipynb": 0,
+      "total": 14
+    },
+    "docs": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "notebooks": {
+      "py": 0,
+      "ipynb": 1,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 18,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 12,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Conditional imports": {
+        "name": "neuron",
+        "source": {
+          "path": "pyrho/__init__.py",
+          "lineno": 167
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "brian2",
+        "source": {
+          "path": "pyrho/__init__.py",
+          "lineno": 173
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "neuron",
+        "source": {
+          "path": "pyrho/__init__.py",
+          "lineno": 199
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "brian2",
+        "source": {
+          "path": "pyrho/__init__.py",
+          "lineno": 204
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "IPython",
+        "source": {
+          "path": "pyrho/__init__.py",
+          "lineno": 145
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "IPython",
+        "source": {
+          "path": "pyrho/__init__.py",
+          "lineno": 187
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

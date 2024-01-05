@@ -1,0 +1,13 @@
+{
+  "project_name": "ObesityPY",
+  "code_dirs": {
+    "src": {
+      "py": 17,
+      "ipynb": 8,
+      "total": 25
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

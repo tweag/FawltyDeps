@@ -1,0 +1,518 @@
+{
+  "project_name": "iminuit",
+  "code_dirs": {
+    "doc": {
+      "py": 9,
+      "ipynb": 24,
+      "total": 33
+    },
+    "src": {
+      "py": 14,
+      "ipynb": 0,
+      "total": 14
+    },
+    "bench": {
+      "py": 0,
+      "ipynb": 1,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 29,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "tests/test_util.py",
+          "lineno": 415
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "tests/test_util.py",
+          "lineno": 441
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "ipykernel.iostream",
+        "source": {
+          "path": "tests/test_util.py",
+          "lineno": 646
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "IPython.display",
+        "source": {
+          "path": "tests/test_util.py",
+          "lineno": 647
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib",
+        "source": {
+          "path": "tests/test_draw.py",
+          "lineno": 8
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib.pyplot",
+        "source": {
+          "path": "tests/test_draw.py",
+          "lineno": 9
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "ipywidgets",
+        "source": {
+          "path": "tests/test_draw.py",
+          "lineno": 140
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "ipywidgets",
+        "source": {
+          "path": "tests/test_draw.py",
+          "lineno": 226
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "ipywidgets",
+        "source": {
+          "path": "tests/test_draw.py",
+          "lineno": 242
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "unicodeitplus",
+        "source": {
+          "path": "tests/test_repr.py",
+          "lineno": 347
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "tests/test_without_numba.py",
+          "lineno": 6
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "ROOT",
+        "source": {
+          "path": "bench/test_cost.py",
+          "lineno": 216
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.interpolate",
+        "source": {
+          "path": "tests/test_minuit.py",
+          "lineno": 169
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.optimize",
+        "source": {
+          "path": "tests/test_minuit.py",
+          "lineno": 457
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.stats",
+        "source": {
+          "path": "tests/test_minuit.py",
+          "lineno": 458
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.stats",
+        "source": {
+          "path": "tests/test_minuit.py",
+          "lineno": 622
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.optimize",
+        "source": {
+          "path": "tests/test_minuit.py",
+          "lineno": 651
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.stats",
+        "source": {
+          "path": "tests/test_minuit.py",
+          "lineno": 695
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "tests/test_minuit.py",
+          "lineno": 1490
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.stats",
+        "source": {
+          "path": "tests/test_minuit.py",
+          "lineno": 1510
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib.path",
+        "source": {
+          "path": "tests/test_minuit.py",
+          "lineno": 1511
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "ipywidgets",
+        "source": {
+          "path": "tests/test_without_ipywidgets.py",
+          "lineno": 5
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.stats",
+        "source": {
+          "path": "tests/test_issue.py",
+          "lineno": 129
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib",
+        "source": {
+          "path": "tests/test_issue.py",
+          "lineno": 171
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.optimize",
+        "source": {
+          "path": "tests/test_scipy.py",
+          "lineno": 7
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.optimize",
+        "source": {
+          "path": "tests/test_minimize.py",
+          "lineno": 6
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "numba",
+        "source": {
+          "path": "src/iminuit/cost.py",
+          "lineno": 443
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "numba",
+        "source": {
+          "path": "src/iminuit/cost.py",
+          "lineno": 443
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "tabulate",
+        "source": {
+          "path": "src/iminuit/util.py",
+          "lineno": 328
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "tabulate",
+        "source": {
+          "path": "src/iminuit/util.py",
+          "lineno": 756
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "pydantic.types",
+        "source": {
+          "path": "tests/test_describe.py",
+          "lineno": 229
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "annotated_types",
+        "source": {
+          "path": "tests/test_describe.py",
+          "lineno": 253
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "tabulate",
+        "source": {
+          "path": "tests/test_tabulate.py",
+          "lineno": 4
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "numba",
+        "source": {
+          "path": "tests/test_core.py",
+          "lineno": 124
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib.pyplot",
+        "source": {
+          "path": "tests/test_without_matplotlib.py",
+          "lineno": 5
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.stats",
+        "source": {
+          "path": "tests/test_cost.py",
+          "lineno": 43
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib",
+        "source": {
+          "path": "tests/test_cost.py",
+          "lineno": 308
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib",
+        "source": {
+          "path": "tests/test_cost.py",
+          "lineno": 330
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib",
+        "source": {
+          "path": "tests/test_cost.py",
+          "lineno": 479
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib",
+        "source": {
+          "path": "tests/test_cost.py",
+          "lineno": 497
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib",
+        "source": {
+          "path": "tests/test_cost.py",
+          "lineno": 722
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib",
+        "source": {
+          "path": "tests/test_cost.py",
+          "lineno": 733
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib",
+        "source": {
+          "path": "tests/test_cost.py",
+          "lineno": 932
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib",
+        "source": {
+          "path": "tests/test_cost.py",
+          "lineno": 942
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib",
+        "source": {
+          "path": "tests/test_cost.py",
+          "lineno": 1137
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib",
+        "source": {
+          "path": "tests/test_cost.py",
+          "lineno": 1153
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.special",
+        "source": {
+          "path": "tests/test_cost.py",
+          "lineno": 1329
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib",
+        "source": {
+          "path": "tests/test_cost.py",
+          "lineno": 1347
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib",
+        "source": {
+          "path": "tests/test_cost.py",
+          "lineno": 1496
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.stats",
+        "source": {
+          "path": "tests/test_cost.py",
+          "lineno": 1674
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib",
+        "source": {
+          "path": "tests/test_cost.py",
+          "lineno": 1743
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "matplotlib",
+        "source": {
+          "path": "tests/test_cost.py",
+          "lineno": 1758
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy.special",
+        "source": {
+          "path": "tests/test_cost.py",
+          "lineno": 1627
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "tomli",
+        "source": {
+          "path": "version.py",
+          "lineno": 5
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

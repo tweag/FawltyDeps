@@ -1,0 +1,715 @@
+{
+  "project_name": "scikit-bio",
+  "code_dirs": {
+    "skbio": {
+      "py": 113,
+      "ipynb": 0,
+      "total": 113
+    },
+    "doc": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 8,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "ci/requirements.test.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "ci/aarch64.requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "ci/aarch64.conda_requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 7,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "ci/requirements.lint.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "ci/conda_requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 8,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "ci/requirements.doc.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 2,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "skbio/io/format/blast6.py",
+          "lineno": 1
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "skbio/io/format/blast6.py",
+          "lineno": 1
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skbio/stats/ordination/__init__.py",
+          "lineno": 1
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "skbio/stats/ordination/__init__.py",
+          "lineno": 1
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skbio/stats/distance/_permdisp.py",
+          "lineno": 28
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "skbio/stats/distance/_permdisp.py",
+          "lineno": 28
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "skbio/diversity/__init__.py",
+          "lineno": 1
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "skbio/diversity/__init__.py",
+          "lineno": 1
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "skbio/diversity/__init__.py",
+          "lineno": 1
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skbio/stats/composition.py",
+          "lineno": 1
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skbio/stats/composition.py",
+          "lineno": 116
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skbio/stats/composition.py",
+          "lineno": 164
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skbio/stats/composition.py",
+          "lineno": 234
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skbio/stats/composition.py",
+          "lineno": 283
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skbio/stats/composition.py",
+          "lineno": 332
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skbio/stats/composition.py",
+          "lineno": 378
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skbio/stats/composition.py",
+          "lineno": 420
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skbio/stats/composition.py",
+          "lineno": 468
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skbio/stats/composition.py",
+          "lineno": 512
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skbio/stats/composition.py",
+          "lineno": 578
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skbio/stats/composition.py",
+          "lineno": 648
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skbio/stats/composition.py",
+          "lineno": 709
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skbio/stats/composition.py",
+          "lineno": 777
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skbio/stats/composition.py",
+          "lineno": 889
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "skbio/stats/composition.py",
+          "lineno": 1191
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skbio/stats/composition.py",
+          "lineno": 1626
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "skbio/stats/ordination/_ordination_results.py",
+          "lineno": 119
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skbio/stats/distance/_anosim.py",
+          "lineno": 20
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "skbio/stats/distance/_anosim.py",
+          "lineno": 20
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skbio/stats/power.py",
+          "lineno": 1
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "skbio/stats/power.py",
+          "lineno": 1
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skbio/stats/power.py",
+          "lineno": 156
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "skbio/stats/power.py",
+          "lineno": 156
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "skbio/stats/power.py",
+          "lineno": 156
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skbio/stats/power.py",
+          "lineno": 385
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "skbio/stats/power.py",
+          "lineno": 385
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "scipy",
+        "source": {
+          "path": "skbio/stats/power.py",
+          "lineno": 385
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "skbio/stats/power.py",
+          "lineno": 618
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skbio/stats/power.py",
+          "lineno": 618
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skbio/stats/_subsample.py",
+          "lineno": 22
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skbio/stats/_subsample.py",
+          "lineno": 152
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "skbio/metadata/_mixin.py",
+          "lineno": 388
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "skbio/io/format/taxdump.py",
+          "lineno": 1
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skbio/stats/distance/__init__.py",
+          "lineno": 1
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "skbio/tree/_tree.py",
+          "lineno": 3281
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "skbio/sequence/tests/test_sequence.py",
+          "lineno": 2473
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "skbio/io/format/blast7.py",
+          "lineno": 1
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "skbio/io/format/blast7.py",
+          "lineno": 1
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skbio/stats/gradient.py",
+          "lineno": 1
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "skbio/stats/gradient.py",
+          "lineno": 1
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "matplotlib",
+        "source": {
+          "path": "skbio/util/_plotting.py",
+          "lineno": 30
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "matplotlib.pyplot",
+        "source": {
+          "path": "skbio/util/_plotting.py",
+          "lineno": 35
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "skbio/sequence/_sequence.py",
+          "lineno": 386
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "skbio/stats/distance/_bioenv.py",
+          "lineno": 22
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "skbio.io.format.blast6",
+        "source": {
+          "path": "skbio/io/__init__.py",
+          "lineno": 242
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "skbio.io.format.blast7",
+        "source": {
+          "path": "skbio/io/__init__.py",
+          "lineno": 243
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "skbio.io.format.clustal",
+        "source": {
+          "path": "skbio/io/__init__.py",
+          "lineno": 244
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "skbio.io.format.embl",
+        "source": {
+          "path": "skbio/io/__init__.py",
+          "lineno": 245
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "skbio.io.format.fasta",
+        "source": {
+          "path": "skbio/io/__init__.py",
+          "lineno": 246
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "skbio.io.format.fastq",
+        "source": {
+          "path": "skbio/io/__init__.py",
+          "lineno": 247
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "skbio.io.format.lsmat",
+        "source": {
+          "path": "skbio/io/__init__.py",
+          "lineno": 248
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "skbio.io.format.newick",
+        "source": {
+          "path": "skbio/io/__init__.py",
+          "lineno": 249
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "skbio.io.format.ordination",
+        "source": {
+          "path": "skbio/io/__init__.py",
+          "lineno": 250
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "skbio.io.format.phylip",
+        "source": {
+          "path": "skbio/io/__init__.py",
+          "lineno": 251
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "skbio.io.format.qseq",
+        "source": {
+          "path": "skbio/io/__init__.py",
+          "lineno": 252
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "skbio.io.format.genbank",
+        "source": {
+          "path": "skbio/io/__init__.py",
+          "lineno": 253
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "skbio.io.format.gff3",
+        "source": {
+          "path": "skbio/io/__init__.py",
+          "lineno": 254
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "skbio.io.format.stockholm",
+        "source": {
+          "path": "skbio/io/__init__.py",
+          "lineno": 255
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "skbio.io.format.binary_dm",
+        "source": {
+          "path": "skbio/io/__init__.py",
+          "lineno": 256
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "skbio.io.format.taxdump",
+        "source": {
+          "path": "skbio/io/__init__.py",
+          "lineno": 257
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "skbio.io.format.emptyfile",
+        "source": {
+          "path": "skbio/io/__init__.py",
+          "lineno": 261
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

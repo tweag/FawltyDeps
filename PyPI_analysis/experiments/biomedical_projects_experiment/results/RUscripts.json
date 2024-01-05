@@ -1,0 +1,13 @@
+{
+  "project_name": "RUscripts",
+  "code_dirs": {
+    "ReadUntil": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

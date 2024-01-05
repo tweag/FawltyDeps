@@ -1,0 +1,18 @@
+{
+  "project_name": "Diplotaxodon_twilight_RAD",
+  "code_dirs": {
+    "ANALYSES": {
+      "py": 1,
+      "ipynb": 20,
+      "total": 21
+    },
+    "SCRIPTS": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

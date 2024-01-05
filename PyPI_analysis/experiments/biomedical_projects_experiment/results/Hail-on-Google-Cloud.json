@@ -1,0 +1,18 @@
+{
+  "project_name": "Hail-on-Google-Cloud",
+  "code_dirs": {
+    "Analysis": {
+      "py": 2,
+      "ipynb": 2,
+      "total": 4
+    },
+    "Tutorial": {
+      "py": 0,
+      "ipynb": 1,
+      "total": 1
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

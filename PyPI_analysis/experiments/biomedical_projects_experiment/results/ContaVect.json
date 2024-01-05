@@ -1,0 +1,18 @@
+{
+  "project_name": "ContaVect",
+  "code_dirs": {
+    "ContaVect_src": {
+      "py": 4,
+      "ipynb": 0,
+      "total": 4
+    },
+    "doc": {
+      "py": 0,
+      "ipynb": 1,
+      "total": 1
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

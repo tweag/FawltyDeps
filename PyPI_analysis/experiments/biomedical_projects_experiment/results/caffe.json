@@ -1,0 +1,62 @@
+{
+  "project_name": "caffe",
+  "code_dirs": {
+    "python": {
+      "py": 12,
+      "ipynb": 0,
+      "total": 12
+    },
+    "tools": {
+      "py": 4,
+      "ipynb": 0,
+      "total": 4
+    },
+    "scripts": {
+      "py": 4,
+      "ipynb": 0,
+      "total": 4
+    },
+    "src": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "examples/web_demo/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 7,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "python/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 17,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Alternative imports (primary)": {
+        "name": "pydotplus",
+        "source": {
+          "path": "python/caffe/draw.py",
+          "lineno": 18
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "pydot",
+        "source": {
+          "path": "python/caffe/draw.py",
+          "lineno": 18
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

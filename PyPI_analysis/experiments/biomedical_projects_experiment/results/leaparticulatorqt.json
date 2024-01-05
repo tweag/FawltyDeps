@@ -1,0 +1,43 @@
+{
+  "project_name": "leaparticulatorqt",
+  "code_dirs": {
+    "leaparticulator": {
+      "py": 56,
+      "ipynb": 24,
+      "total": 80
+    },
+    "qt_generated": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    },
+    "res": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "new_notebooks": {
+      "py": 0,
+      "ipynb": 1,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 6,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

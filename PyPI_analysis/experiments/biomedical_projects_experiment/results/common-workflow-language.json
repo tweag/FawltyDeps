@@ -1,0 +1,31 @@
+{
+  "project_name": "common-workflow-language",
+  "code_dirs": {
+    "draft-3": {
+      "py": 14,
+      "ipynb": 0,
+      "total": 14
+    },
+    "v1.0": {
+      "py": 5,
+      "ipynb": 0,
+      "total": 5
+    },
+    "draft-2": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "draft-3/salad/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 6,
+      "warnings": true
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

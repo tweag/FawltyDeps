@@ -1,0 +1,26 @@
+{
+  "project_name": "pyLabFEA",
+  "code_dirs": {
+    "notebooks": {
+      "py": 0,
+      "ipynb": 8,
+      "total": 8
+    },
+    "src": {
+      "py": 6,
+      "ipynb": 0,
+      "total": 6
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 7,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

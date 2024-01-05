@@ -1,0 +1,33 @@
+{
+  "project_name": "scScope",
+  "code_dirs": {
+    "scscope_cpu": {
+      "py": 4,
+      "ipynb": 0,
+      "total": 4
+    },
+    "scscope": {
+      "py": 4,
+      "ipynb": 0,
+      "total": 4
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "scscope/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 6,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "scscope_cpu/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 6,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

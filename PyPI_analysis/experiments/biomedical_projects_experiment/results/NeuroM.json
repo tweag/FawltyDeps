@@ -1,0 +1,48 @@
+{
+  "project_name": "NeuroM",
+  "code_dirs": {
+    "neurom": {
+      "py": 40,
+      "ipynb": 0,
+      "total": 40
+    },
+    "tutorial": {
+      "py": 0,
+      "ipynb": 2,
+      "total": 2
+    },
+    "doc": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 12,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "neurom/__init__.py",
+          "lineno": 29
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

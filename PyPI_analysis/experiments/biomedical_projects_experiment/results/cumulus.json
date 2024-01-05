@@ -1,0 +1,26 @@
+{
+  "project_name": "cumulus",
+  "code_dirs": {
+    "docker": {
+      "py": 12,
+      "ipynb": 0,
+      "total": 12
+    },
+    "docs": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "docs/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 3,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

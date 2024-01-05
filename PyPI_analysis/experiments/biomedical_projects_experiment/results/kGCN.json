@@ -1,0 +1,148 @@
+{
+  "project_name": "kGCN",
+  "code_dirs": {
+    "kgcn": {
+      "py": 22,
+      "ipynb": 0,
+      "total": 22
+    },
+    "graph_kernel": {
+      "py": 14,
+      "ipynb": 0,
+      "total": 14
+    },
+    "KNIME": {
+      "py": 13,
+      "ipynb": 0,
+      "total": 13
+    },
+    "sample_chem": {
+      "py": 12,
+      "ipynb": 0,
+      "total": 12
+    },
+    "sample_kg": {
+      "py": 9,
+      "ipynb": 0,
+      "total": 9
+    },
+    "sample_protein": {
+      "py": 5,
+      "ipynb": 0,
+      "total": 5
+    },
+    "script": {
+      "py": 4,
+      "ipynb": 0,
+      "total": 4
+    },
+    "gcnvisualizer": {
+      "py": 4,
+      "ipynb": 0,
+      "total": 4
+    },
+    "active_learning": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    },
+    "data_generator": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    },
+    "sample_nx": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    },
+    "Notebook": {
+      "py": 0,
+      "ipynb": 2,
+      "total": 2
+    },
+    "kgcn_torch": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "script_cv": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "kgcn_tf2": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "neural_architecture_search": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "neural_architecture_search/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 2,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "active_learning/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "gcnvisualizer/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "gcnvisualizer/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 2,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "gcnvisualizer/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "active_learning/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 3,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Docstring": {
+        "name": "tensorflow",
+        "source": {
+          "path": "kgcn/data_util.py",
+          "lineno": 701
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,73 @@
+{
+  "project_name": "aizynthfinder",
+  "code_dirs": {
+    "aizynthfinder": {
+      "py": 62,
+      "ipynb": 0,
+      "total": 62
+    },
+    "docs": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "plugins": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "contrib": {
+      "py": 0,
+      "ipynb": 1,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 30,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Conditional imports": {
+        "name": "sklearn",
+        "source": {
+          "path": "aizynthfinder/utils/logging.py",
+          "lineno": 10
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "route_distances",
+        "source": {
+          "path": "aizynthfinder/analysis/routes.py",
+          "lineno": 9
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "route_distances",
+        "source": {
+          "path": "aizynthfinder/analysis/routes.py",
+          "lineno": 9
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "custom_stock",
+        "source": {
+          "path": "aizynthfinder/interfaces/aizynthcli.py",
+          "lineno": 143
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

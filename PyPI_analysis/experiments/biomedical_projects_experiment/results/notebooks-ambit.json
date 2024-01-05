@@ -1,0 +1,61 @@
+{
+  "project_name": "notebooks-ambit",
+  "code_dirs": {
+    "enanomapper": {
+      "py": 17,
+      "ipynb": 10,
+      "total": 27
+    },
+    "excapedb": {
+      "py": 2,
+      "ipynb": 2,
+      "total": 4
+    },
+    "cdk": {
+      "py": 0,
+      "ipynb": 1,
+      "total": 1
+    },
+    "structure_standardization": {
+      "py": 0,
+      "ipynb": 1,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "enanomapper/pipelines/curation/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 6,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 8,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "enanomapper/pipelines/curation/requirements.dev.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 3,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Conditional imports": {
+        "name": "google",
+        "source": {
+          "path": "enanomapper/tutorial.ipynb",
+          "cellno": 6,
+          "lineno": 3
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

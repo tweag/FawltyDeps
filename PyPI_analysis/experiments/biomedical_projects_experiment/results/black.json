@@ -1,0 +1,178 @@
+{
+  "project_name": "black",
+  "code_dirs": {
+    "src": {
+      "py": 38,
+      "ipynb": 0,
+      "total": 38
+    },
+    "scripts": {
+      "py": 8,
+      "ipynb": 0,
+      "total": 8
+    },
+    "profiling": {
+      "py": 7,
+      "ipynb": 0,
+      "total": 7
+    },
+    "docs": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "action": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "gallery": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 13,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "tests/data/invalid_nested_gitignore_tests/pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "test_requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 6,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "docs/compatible_configs/isort/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "docs/compatible_configs/pylint/pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "tests/data/invalid_gitignore_tests/pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "docs/compatible_configs/isort/pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "tests/data/nested_gitignore_tests/pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "docs/compatible_configs/flake8/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "docs/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 6,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "tests/data/include_exclude_tests/pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "docs/compatible_configs/pylint/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Alternative imports (primary)": {
+        "name": "fast",
+        "source": {
+          "path": "tests/data/cases/comments.py",
+          "lineno": 18
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "slow",
+        "source": {
+          "path": "tests/data/cases/comments.py",
+          "lineno": 18
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "atheris",
+        "source": {
+          "path": "scripts/fuzz.py",
+          "lineno": 80
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "uvloop",
+        "source": {
+          "path": "src/black/concurrency.py",
+          "lineno": 33
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "IPython",
+        "source": {
+          "path": "tests/test_ipynb.py",
+          "lineno": 26
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "tokenize_rt",
+        "source": {
+          "path": "tests/test_ipynb.py",
+          "lineno": 27
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,40 @@
+{
+  "project_name": "tools-galaxyp",
+  "code_dirs": {
+    "tools": {
+      "py": 58,
+      "ipynb": 0,
+      "total": 58
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Conditional imports": {
+        "name": "scipy",
+        "source": {
+          "path": "tools/appendfdr/append_fdr.py",
+          "lineno": 5
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "numpy",
+        "source": {
+          "path": "tools/appendfdr/append_fdr.py",
+          "lineno": 5
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

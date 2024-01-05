@@ -1,0 +1,26 @@
+{
+  "project_name": "Cadena2019PlosCB",
+  "code_dirs": {
+    "cnn_sys_ident": {
+      "py": 7,
+      "ipynb": 0,
+      "total": 7
+    },
+    "notebooks": {
+      "py": 0,
+      "ipynb": 4,
+      "total": 4
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 6,
+      "warnings": true
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

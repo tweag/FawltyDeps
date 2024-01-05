@@ -1,0 +1,45 @@
+{
+  "project_name": "PyRates",
+  "code_dirs": {
+    "pyrates": {
+      "py": 44,
+      "ipynb": 0,
+      "total": 44
+    },
+    "documentation": {
+      "py": 24,
+      "ipynb": 3,
+      "total": 27
+    },
+    "model_templates": {
+      "py": 4,
+      "ipynb": 0,
+      "total": 4
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "documentation/doc/source/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 16,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 10,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 10,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

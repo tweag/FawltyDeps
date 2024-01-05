@@ -1,0 +1,80 @@
+{
+  "project_name": "cellxgene",
+  "code_dirs": {
+    "server": {
+      "py": 57,
+      "ipynb": 0,
+      "total": 57
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "server/requirements-dev.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 8,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "server/requirements-prepare.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "server/requirements-annotate.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 2,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "server/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 22,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    }
+  ],
+  "imports": [
+    {
+      "Docstring": {
+        "name": "anndata",
+        "source": {
+          "path": "server/cli/prepare.py",
+          "lineno": 236
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

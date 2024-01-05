@@ -1,0 +1,106 @@
+{
+  "project_name": "chainer-chemistry",
+  "code_dirs": {
+    "chainer_chemistry": {
+      "py": 179,
+      "ipynb": 0,
+      "total": 179
+    },
+    "docs": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "docs/source/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 5,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 7,
+      "warnings": true
+    }
+  ],
+  "imports": [
+    {
+      "Docstring": {
+        "name": "IPython",
+        "source": {
+          "path": "chainer_chemistry/saliency/visualizer/mol_visualizer.py",
+          "lineno": 51
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "cairosvg",
+        "source": {
+          "path": "chainer_chemistry/saliency/visualizer/mol_visualizer.py",
+          "lineno": 51
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "chainer_chemistry/link_hooks/variable_monitor_link_hook.py",
+          "lineno": 33
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "chainer",
+        "source": {
+          "path": "chainer_chemistry/link_hooks/variable_monitor_link_hook.py",
+          "lineno": 33
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "chainer_chemistry/dataset/converters/concat_mols.py",
+          "lineno": 6
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "chainer_chemistry/datasets/numpy_tuple_dataset.py",
+          "lineno": 58
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "chainer",
+        "source": {
+          "path": "chainer_chemistry/models/prediction/classifier.py",
+          "lineno": 21
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "chainer",
+        "source": {
+          "path": "chainer_chemistry/models/prediction/classifier.py",
+          "lineno": 21
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

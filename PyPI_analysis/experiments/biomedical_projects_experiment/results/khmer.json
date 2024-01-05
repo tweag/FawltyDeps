@@ -1,0 +1,83 @@
+{
+  "project_name": "khmer",
+  "code_dirs": {
+    "sandbox": {
+      "py": 51,
+      "ipynb": 0,
+      "total": 51
+    },
+    "scripts": {
+      "py": 25,
+      "ipynb": 0,
+      "total": 25
+    },
+    "khmer": {
+      "py": 9,
+      "ipynb": 0,
+      "total": 9
+    },
+    "oxli": {
+      "py": 4,
+      "ipynb": 0,
+      "total": 4
+    },
+    "doc": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "doc/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 3,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Conditional imports": {
+        "name": "matplotlib",
+        "source": {
+          "path": "sandbox/stoptag-abundance-hist.py",
+          "lineno": 39
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "pylab",
+        "source": {
+          "path": "sandbox/stoptag-abundance-hist.py",
+          "lineno": 39
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "graph_tool",
+        "source": {
+          "path": "sandbox/build-sparse-graph.py",
+          "lineno": 40
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

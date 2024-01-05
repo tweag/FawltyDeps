@@ -1,0 +1,21 @@
+{
+  "project_name": "semalytics-demo",
+  "code_dirs": {
+    "notebook": {
+      "py": 1,
+      "ipynb": 1,
+      "total": 2
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "notebook/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 63,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

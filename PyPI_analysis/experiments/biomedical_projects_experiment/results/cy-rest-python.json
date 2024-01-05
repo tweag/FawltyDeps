@@ -1,0 +1,23 @@
+{
+  "project_name": "cy-rest-python",
+  "code_dirs": {
+    "basic": {
+      "py": 2,
+      "ipynb": 7,
+      "total": 9
+    },
+    "advanced": {
+      "py": 0,
+      "ipynb": 6,
+      "total": 6
+    },
+    "cytoscape-js": {
+      "py": 0,
+      "ipynb": 2,
+      "total": 2
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

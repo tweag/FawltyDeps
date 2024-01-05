@@ -1,0 +1,13 @@
+{
+  "project_name": "mutational_antigenic_profiling",
+  "code_dirs": {
+    "differential_selections": {
+      "py": 4,
+      "ipynb": 0,
+      "total": 4
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

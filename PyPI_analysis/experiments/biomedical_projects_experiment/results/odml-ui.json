@@ -1,0 +1,49 @@
+{
+  "project_name": "odml-ui",
+  "code_dirs": {
+    "odmlui": {
+      "py": 39,
+      "ipynb": 0,
+      "total": 39
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 1,
+      "warnings": true
+    }
+  ],
+  "imports": [
+    {
+      "Docstring": {
+        "name": "odml",
+        "source": {
+          "path": "odmlui/treemodel/mixin.py",
+          "lineno": 1
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "odml",
+        "source": {
+          "path": "odmlui/treemodel/mixin.py",
+          "lineno": 1
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "odml",
+        "source": {
+          "path": "odmlui/treemodel/mixin.py",
+          "lineno": 1
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

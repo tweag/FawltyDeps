@@ -1,0 +1,33 @@
+{
+  "project_name": "ProbPolymorphism",
+  "code_dirs": {
+    "context": {
+      "py": 9,
+      "ipynb": 0,
+      "total": 9
+    },
+    "recombination": {
+      "py": 5,
+      "ipynb": 3,
+      "total": 8
+    },
+    "shared": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    },
+    "tables_and_figures": {
+      "py": 0,
+      "ipynb": 3,
+      "total": 3
+    },
+    "total_variance": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

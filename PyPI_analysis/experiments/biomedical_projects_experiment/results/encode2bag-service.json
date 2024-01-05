@@ -1,0 +1,13 @@
+{
+  "project_name": "encode2bag-service",
+  "code_dirs": {
+    "bag_server": {
+      "py": 6,
+      "ipynb": 0,
+      "total": 6
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

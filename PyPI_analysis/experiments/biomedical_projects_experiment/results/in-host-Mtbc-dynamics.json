@@ -1,0 +1,28 @@
+{
+  "project_name": "in-host-Mtbc-dynamics",
+  "code_dirs": {
+    "Longitudinal Isolates": {
+      "py": 0,
+      "ipynb": 16,
+      "total": 16
+    },
+    "SNPs from Public Samples & tSNE Homoplasy Visualization": {
+      "py": 0,
+      "ipynb": 6,
+      "total": 6
+    },
+    "Short Read Simulations": {
+      "py": 0,
+      "ipynb": 4,
+      "total": 4
+    },
+    "Replicate Isolates": {
+      "py": 0,
+      "ipynb": 3,
+      "total": 3
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

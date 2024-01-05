@@ -1,0 +1,35 @@
+{
+  "project_name": "widget-cookiecutter",
+  "code_dirs": {
+    "{{cookiecutter.github_project_name}}": {
+      "py": 4,
+      "ipynb": 0,
+      "total": 4
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "{{cookiecutter.github_project_name}}/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 1,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "{{cookiecutter.github_project_name}}/pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "{{cookiecutter.github_project_name}}/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

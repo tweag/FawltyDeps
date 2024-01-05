@@ -1,0 +1,18 @@
+{
+  "project_name": "2018_ecoli_pathogenicity",
+  "code_dirs": {
+    "src": {
+      "py": 12,
+      "ipynb": 0,
+      "total": 12
+    },
+    "templates": {
+      "py": 0,
+      "ipynb": 9,
+      "total": 9
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

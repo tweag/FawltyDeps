@@ -1,0 +1,23 @@
+{
+  "project_name": "seminator",
+  "code_dirs": {
+    "notebooks": {
+      "py": 0,
+      "ipynb": 5,
+      "total": 5
+    }
+  },
+  "deps_file": [],
+  "imports": [
+    {
+      "Conditional imports": {
+        "name": "Image",
+        "source": {
+          "path": "tests/ipnbdoctest.py",
+          "lineno": 59
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

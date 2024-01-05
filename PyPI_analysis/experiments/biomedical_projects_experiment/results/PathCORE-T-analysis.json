@@ -1,0 +1,38 @@
+{
+  "project_name": "PathCORE-T-analysis",
+  "code_dirs": {
+    "jupyter-notebooks": {
+      "py": 0,
+      "ipynb": 5,
+      "total": 5
+    },
+    "data": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    },
+    "constants": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "jupyter-notebooks/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 8,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

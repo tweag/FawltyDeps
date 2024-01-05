@@ -1,0 +1,228 @@
+{
+  "project_name": "BacPipe",
+  "code_dirs": {
+    "SPAdes-3.13.0-Linux": {
+      "py": 86,
+      "ipynb": 0,
+      "total": 86
+    },
+    "yaml": {
+      "py": 73,
+      "ipynb": 0,
+      "total": 73
+    },
+    "cutadapt-1.12": {
+      "py": 28,
+      "ipynb": 0,
+      "total": 28
+    },
+    "appJar": {
+      "py": 8,
+      "ipynb": 0,
+      "total": 8
+    },
+    "svglib-master": {
+      "py": 5,
+      "ipynb": 0,
+      "total": 5
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "yaml/PyYAML-3.12/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "cutadapt-1.12/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 1,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "svglib-master/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "svglib-master/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "cutadapt-1.12/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "svglib-master/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 2,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "yaml/PyYAML-3.12/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    }
+  ],
+  "imports": [
+    {
+      "Conditional imports": {
+        "name": "Cython",
+        "source": {
+          "path": "yaml/PyYAML-3.12/setup.py",
+          "lineno": 75
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "Cython",
+        "source": {
+          "path": "yaml/PyYAML-3.12/setup.py",
+          "lineno": 75
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "SPAdes-3.13.0-Linux/share/spades/joblib2/__init__.py",
+          "lineno": 1
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "joblib",
+        "source": {
+          "path": "SPAdes-3.13.0-Linux/share/spades/joblib2/__init__.py",
+          "lineno": 1
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "SPAdes-3.13.0-Linux/share/spades/joblib2/__init__.py",
+          "lineno": 1
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "joblib",
+        "source": {
+          "path": "SPAdes-3.13.0-Linux/share/spades/joblib2/__init__.py",
+          "lineno": 1
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "joblib",
+        "source": {
+          "path": "SPAdes-3.13.0-Linux/share/spades/joblib3/parallel.py",
+          "lineno": 232
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "joblib",
+        "source": {
+          "path": "SPAdes-3.13.0-Linux/share/spades/joblib3/parallel.py",
+          "lineno": 232
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "joblib",
+        "source": {
+          "path": "SPAdes-3.13.0-Linux/share/spades/joblib3/parallel.py",
+          "lineno": 232
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "joblib",
+        "source": {
+          "path": "SPAdes-3.13.0-Linux/share/spades/joblib3/parallel.py",
+          "lineno": 232
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "joblib",
+        "source": {
+          "path": "SPAdes-3.13.0-Linux/share/spades/joblib3/parallel.py",
+          "lineno": 232
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "joblib",
+        "source": {
+          "path": "SPAdes-3.13.0-Linux/share/spades/joblib3/__init__.py",
+          "lineno": 1
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "SPAdes-3.13.0-Linux/share/spades/joblib3/__init__.py",
+          "lineno": 1
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "joblib",
+        "source": {
+          "path": "SPAdes-3.13.0-Linux/share/spades/joblib3/__init__.py",
+          "lineno": 1
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "cpngfilters",
+        "source": {
+          "path": "appJar/lib/png.py",
+          "lineno": 163
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "better",
+        "source": {
+          "path": "cutadapt-1.12/doc/conf.py",
+          "lineno": 113
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

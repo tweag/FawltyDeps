@@ -1,0 +1,13 @@
+{
+  "project_name": "wolfpackRevisited",
+  "code_dirs": {
+    "code": {
+      "py": 8,
+      "ipynb": 9,
+      "total": 17
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

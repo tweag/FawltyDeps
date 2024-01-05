@@ -1,0 +1,23 @@
+{
+  "project_name": "gutenberg-analysis",
+  "code_dirs": {
+    "notebooks_manuscript": {
+      "py": 0,
+      "ipynb": 23,
+      "total": 23
+    },
+    "src": {
+      "py": 5,
+      "ipynb": 0,
+      "total": 5
+    },
+    "notebooks_tutorial": {
+      "py": 0,
+      "ipynb": 1,
+      "total": 1
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

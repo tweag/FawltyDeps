@@ -1,0 +1,18 @@
+{
+  "project_name": "dib-covid-dataset",
+  "code_dirs": {
+    "notebooks": {
+      "py": 0,
+      "ipynb": 13,
+      "total": 13
+    },
+    "scripts": {
+      "py": 7,
+      "ipynb": 0,
+      "total": 7
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

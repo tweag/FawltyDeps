@@ -1,0 +1,81 @@
+{
+  "project_name": "pastas",
+  "code_dirs": {
+    "doc": {
+      "py": 13,
+      "ipynb": 35,
+      "total": 48
+    },
+    "pastas": {
+      "py": 36,
+      "ipynb": 0,
+      "total": 36
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 35,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "pastas/stressmodels.py",
+          "lineno": 258
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "scipy.stats",
+        "source": {
+          "path": "pastas/solver.py",
+          "lineno": 1011
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "pastas/utils.py",
+          "lineno": 77
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "numba_scipy",
+        "source": {
+          "path": "pastas/version.py",
+          "lineno": 12
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "lmfit",
+        "source": {
+          "path": "pastas/version.py",
+          "lineno": 54
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "latexify",
+        "source": {
+          "path": "pastas/version.py",
+          "lineno": 62
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

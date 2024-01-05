@@ -1,0 +1,23 @@
+{
+  "project_name": "AutoRELACS",
+  "code_dirs": {
+    "figure_2": {
+      "py": 0,
+      "ipynb": 6,
+      "total": 6
+    },
+    "figure_3": {
+      "py": 0,
+      "ipynb": 2,
+      "total": 2
+    },
+    "figure_1": {
+      "py": 0,
+      "ipynb": 1,
+      "total": 1
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

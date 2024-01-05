@@ -1,0 +1,13 @@
+{
+  "project_name": "Methanomassilii",
+  "code_dirs": {
+    "notebooks": {
+      "py": 0,
+      "ipynb": 15,
+      "total": 15
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

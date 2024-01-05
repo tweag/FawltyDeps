@@ -1,0 +1,38 @@
+{
+  "project_name": "lime",
+  "code_dirs": {
+    "lime": {
+      "py": 14,
+      "ipynb": 0,
+      "total": 14
+    },
+    "doc": {
+      "py": 1,
+      "ipynb": 13,
+      "total": 14
+    },
+    "benchmark": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 9,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

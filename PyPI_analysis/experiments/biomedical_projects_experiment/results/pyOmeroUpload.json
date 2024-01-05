@@ -1,0 +1,54 @@
+{
+  "project_name": "pyOmeroUpload",
+  "code_dirs": {
+    "src": {
+      "py": 20,
+      "ipynb": 0,
+      "total": 20
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 13,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 11,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Alternative imports (primary)": {
+        "name": "PIL",
+        "source": {
+          "path": "src/omero_data_transfer/Export_to_other_omero.py",
+          "lineno": 29
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "Image",
+        "source": {
+          "path": "src/omero_data_transfer/Export_to_other_omero.py",
+          "lineno": 29
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

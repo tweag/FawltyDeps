@@ -1,0 +1,180 @@
+{
+  "project_name": "scanpy",
+  "code_dirs": {
+    "scanpy": {
+      "py": 112,
+      "ipynb": 0,
+      "total": 112
+    },
+    "docs": {
+      "py": 7,
+      "ipynb": 0,
+      "total": 7
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 70,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Docstring": {
+        "name": "anndata",
+        "source": {
+          "path": "scanpy/external/tl/_phenograph.py",
+          "lineno": 70
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "scanpy/external/tl/_phenograph.py",
+          "lineno": 70
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "scanpy/external/tl/_phenograph.py",
+          "lineno": 70
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pynndescent",
+        "source": {
+          "path": "scanpy/external/pp/_bbknn.py",
+          "lineno": 35
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "sklearn",
+        "source": {
+          "path": "scanpy/external/pp/_bbknn.py",
+          "lineno": 35
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "anndata",
+        "source": {
+          "path": "scanpy/external/tl/_phate.py",
+          "lineno": 54
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "phate",
+        "source": {
+          "path": "scanpy/external/tl/_phate.py",
+          "lineno": 54
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "anndata",
+        "source": {
+          "path": "scanpy/external/pp/_hashsolo.py",
+          "lineno": 280
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "matplotlib",
+        "source": {
+          "path": "scanpy/plotting/_baseplot_class.py",
+          "lineno": 629
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "anndata",
+        "source": {
+          "path": "scanpy/preprocessing/_normalization.py",
+          "lineno": 66
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "sklearn",
+        "source": {
+          "path": "scanpy/neighbors/__init__.py",
+          "lineno": 71
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "anndata",
+        "source": {
+          "path": "scanpy/external/pl.py",
+          "lineno": 47
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "phate",
+        "source": {
+          "path": "scanpy/external/pl.py",
+          "lineno": 47
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pypairs",
+        "source": {
+          "path": "scanpy/external/tl/_pypairs.py",
+          "lineno": 30
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "scanpy/external/tl/_harmony_timeseries.py",
+          "lineno": 31
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "anndata",
+        "source": {
+          "path": "scanpy/external/tl/_harmony_timeseries.py",
+          "lineno": 31
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "samalg",
+        "source": {
+          "path": "scanpy/external/tl/_sam.py",
+          "lineno": 48
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

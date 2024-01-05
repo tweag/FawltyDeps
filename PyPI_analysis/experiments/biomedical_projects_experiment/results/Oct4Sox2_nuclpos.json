@@ -1,0 +1,18 @@
+{
+  "project_name": "Oct4Sox2_nuclpos",
+  "code_dirs": {
+    "ipynb": {
+      "py": 0,
+      "ipynb": 7,
+      "total": 7
+    },
+    "scripts": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

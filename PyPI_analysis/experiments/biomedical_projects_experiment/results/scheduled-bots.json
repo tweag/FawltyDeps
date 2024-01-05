@@ -1,0 +1,35 @@
+{
+  "project_name": "scheduled-bots",
+  "code_dirs": {
+    "scheduled_bots": {
+      "py": 144,
+      "ipynb": 20,
+      "total": 164
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "scheduled_bots/wikipathways/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 4,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 46,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

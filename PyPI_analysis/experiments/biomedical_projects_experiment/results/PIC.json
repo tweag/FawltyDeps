@@ -1,0 +1,18 @@
+{
+  "project_name": "PIC",
+  "code_dirs": {
+    "demo": {
+      "py": 0,
+      "ipynb": 2,
+      "total": 2
+    },
+    "statistics": {
+      "py": 0,
+      "ipynb": 1,
+      "total": 1
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

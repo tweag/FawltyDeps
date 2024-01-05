@@ -1,0 +1,13 @@
+{
+  "project_name": "momix-notebook",
+  "code_dirs": {
+    "scripts": {
+      "py": 1,
+      "ipynb": 3,
+      "total": 4
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

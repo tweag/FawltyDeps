@@ -1,0 +1,40 @@
+{
+  "project_name": "reachy",
+  "code_dirs": {
+    "software": {
+      "py": 30,
+      "ipynb": 7,
+      "total": 37
+    },
+    "luos-modules": {
+      "py": 0,
+      "ipynb": 1,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "software/setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "software/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 14,
+      "warnings": true
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "software/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 15,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

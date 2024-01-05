@@ -1,0 +1,43 @@
+{
+  "project_name": "ShinyLearner",
+  "code_dirs": {
+    "scripts": {
+      "py": 29,
+      "ipynb": 0,
+      "total": 29
+    },
+    "AlgorithmScripts": {
+      "py": 18,
+      "ipynb": 0,
+      "total": 18
+    },
+    "Archive": {
+      "py": 13,
+      "ipynb": 2,
+      "total": 15
+    },
+    "BuildTests": {
+      "py": 7,
+      "ipynb": 0,
+      "total": 7
+    },
+    "Validation": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    },
+    "Analysis": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    },
+    "Demo": {
+      "py": 0,
+      "ipynb": 1,
+      "total": 1
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,13 @@
+{
+  "project_name": "longitudinal-ibd",
+  "code_dirs": {
+    "notebooks": {
+      "py": 4,
+      "ipynb": 7,
+      "total": 11
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

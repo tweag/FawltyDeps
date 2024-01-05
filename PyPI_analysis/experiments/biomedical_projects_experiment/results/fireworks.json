@@ -1,0 +1,96 @@
+{
+  "project_name": "fireworks",
+  "code_dirs": {
+    "fireworks": {
+      "py": 71,
+      "ipynb": 0,
+      "total": 71
+    },
+    "fw_tutorials": {
+      "py": 9,
+      "ipynb": 0,
+      "total": 9
+    },
+    "docs_rst": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 10,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 18,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "requirements-ci.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 5,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Conditional imports": {
+        "name": "argcomplete",
+        "source": {
+          "path": "fireworks/scripts/lpad_run.py",
+          "lineno": 1524
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "argcomplete",
+        "source": {
+          "path": "fireworks/scripts/qlaunch_run.py",
+          "lineno": 187
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "argcomplete",
+        "source": {
+          "path": "fireworks/scripts/mlaunch_run.py",
+          "lineno": 65
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "argcomplete",
+        "source": {
+          "path": "fireworks/scripts/rlaunch_run.py",
+          "lineno": 114
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

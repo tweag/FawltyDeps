@@ -1,0 +1,31 @@
+{
+  "project_name": "trvaep",
+  "code_dirs": {
+    "trvaep": {
+      "py": 10,
+      "ipynb": 0,
+      "total": 10
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Docstring": {
+        "name": "scanpy",
+        "source": {
+          "path": "trvaep/utils.py",
+          "lineno": 64
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

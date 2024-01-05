@@ -1,0 +1,59 @@
+{
+  "project_name": "datalab",
+  "code_dirs": {
+    "code": {
+      "py": 5,
+      "ipynb": 8,
+      "total": 13
+    }
+  },
+  "deps_file": [],
+  "imports": [
+    {
+      "Conditional imports": {
+        "name": "pyvcloud",
+        "source": {
+          "path": "code/provision/playbooks/library/vdrive.py",
+          "lineno": 69
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "pyvcloud",
+        "source": {
+          "path": "code/provision/playbooks/library/vapp.py",
+          "lineno": 239
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "pyvcloud",
+        "source": {
+          "path": "code/provision/playbooks/library/vfw.py",
+          "lineno": 133
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "pyvcloud",
+        "source": {
+          "path": "code/provision/playbooks/library/vfw.py",
+          "lineno": 133
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "pyvcloud",
+        "source": {
+          "path": "code/provision/playbooks/library/vnat.py",
+          "lineno": 145
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

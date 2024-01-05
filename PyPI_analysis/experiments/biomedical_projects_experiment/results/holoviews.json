@@ -1,0 +1,149 @@
+{
+  "project_name": "holoviews",
+  "code_dirs": {
+    "holoviews": {
+      "py": 150,
+      "ipynb": 0,
+      "total": 150
+    },
+    "doc": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "pyproject.toml",
+      "parser_choice": "pyproject.toml",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": true
+    }
+  ],
+  "imports": [
+    {
+      "Alternative imports": {
+        "name": "dash_core_components",
+        "source": {
+          "path": "holoviews/plotting/plotly/dash.py",
+          "lineno": 31
+        }
+      }
+    },
+    {
+      "Alternative imports": {
+        "name": "dash_html_components",
+        "source": {
+          "path": "holoviews/plotting/plotly/dash.py",
+          "lineno": 31
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "xyzservices",
+        "source": {
+          "path": "holoviews/tests/plotting/plotly/test_tiles.py",
+          "lineno": 109
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "xyzservices",
+        "source": {
+          "path": "holoviews/tests/plotting/bokeh/test_tiles.py",
+          "lineno": 11
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "matplotlib",
+        "source": {
+          "path": "holoviews/tests/__init__.py",
+          "lineno": 1
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "scipy",
+        "source": {
+          "path": "holoviews/tests/element/test_statselements.py",
+          "lineno": 118
+        }
+      }
+    },
+    {
+      "Dynamic imports (pytest)": {
+        "name": "xarray",
+        "source": {
+          "path": "holoviews/tests/plotting/bokeh/test_rasterplot.py",
+          "lineno": 137
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "nbformat",
+        "source": {
+          "path": "holoviews/ipython/__init__.py",
+          "lineno": 125
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "pandas",
+        "source": {
+          "path": "holoviews/__init__.py",
+          "lineno": 1
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "matplotlib",
+        "source": {
+          "path": "holoviews/plotting/util.py",
+          "lineno": 712
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "matplotlib",
+        "source": {
+          "path": "holoviews/plotting/util.py",
+          "lineno": 712
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "colorcet",
+        "source": {
+          "path": "holoviews/plotting/util.py",
+          "lineno": 738
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

@@ -1,0 +1,23 @@
+{
+  "project_name": "jaer",
+  "code_dirs": {
+    "src": {
+      "py": 0,
+      "ipynb": 2,
+      "total": 2
+    },
+    "server": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    },
+    "filterSettings": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

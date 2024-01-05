@@ -1,0 +1,18 @@
+{
+  "project_name": "CBM_C3_C4_Metabolism",
+  "code_dirs": {
+    "notebooks": {
+      "py": 10,
+      "ipynb": 10,
+      "total": 20
+    },
+    "src": {
+      "py": 6,
+      "ipynb": 0,
+      "total": 6
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

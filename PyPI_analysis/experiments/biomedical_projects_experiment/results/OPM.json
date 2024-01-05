@@ -1,0 +1,28 @@
+{
+  "project_name": "OPM",
+  "code_dirs": {
+    "napari-control": {
+      "py": 21,
+      "ipynb": 0,
+      "total": 21
+    },
+    "reconstruction": {
+      "py": 9,
+      "ipynb": 0,
+      "total": 9
+    },
+    "pycromanager-control": {
+      "py": 3,
+      "ipynb": 0,
+      "total": 3
+    },
+    "control": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

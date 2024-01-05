@@ -1,0 +1,26 @@
+{
+  "project_name": "characteristicTimesNetwork",
+  "code_dirs": {
+    "NetworkComponents": {
+      "py": 4,
+      "ipynb": 0,
+      "total": 4
+    },
+    "LinearChain": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 11,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

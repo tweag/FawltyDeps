@@ -1,0 +1,67 @@
+{
+  "project_name": "cloudbiolinux",
+  "code_dirs": {
+    "cloudbio": {
+      "py": 61,
+      "ipynb": 0,
+      "total": 61
+    },
+    "utils": {
+      "py": 17,
+      "ipynb": 0,
+      "total": 17
+    },
+    "contrib": {
+      "py": 15,
+      "ipynb": 0,
+      "total": 15
+    },
+    "installed_files": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    },
+    "doc": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "deploy/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 6,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 2,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Conditional imports": {
+        "name": "fabric",
+        "source": {
+          "path": "cloudbio/custom/shared.py",
+          "lineno": 19
+        }
+      }
+    },
+    {
+      "Conditional imports": {
+        "name": "fabric",
+        "source": {
+          "path": "cloudbio/custom/shared.py",
+          "lineno": 19
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

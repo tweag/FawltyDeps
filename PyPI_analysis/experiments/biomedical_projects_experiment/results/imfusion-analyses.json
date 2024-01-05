@@ -1,0 +1,28 @@
+{
+  "project_name": "imfusion-analyses",
+  "code_dirs": {
+    "notebooks": {
+      "py": 0,
+      "ipynb": 10,
+      "total": 10
+    },
+    "src": {
+      "py": 7,
+      "ipynb": 0,
+      "total": 7
+    },
+    "docs": {
+      "py": 4,
+      "ipynb": 0,
+      "total": 4
+    },
+    "scripts": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

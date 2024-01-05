@@ -1,0 +1,26 @@
+{
+  "project_name": "bioalerts",
+  "code_dirs": {
+    "bioalerts": {
+      "py": 9,
+      "ipynb": 0,
+      "total": 9
+    },
+    "tutorial": {
+      "py": 0,
+      "ipynb": 2,
+      "total": 2
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "bioalerts/setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 4,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

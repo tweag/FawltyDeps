@@ -1,0 +1,329 @@
+{
+  "project_name": "spikefinder_analysis",
+  "code_dirs": {
+    "algorithms": {
+      "py": 38,
+      "ipynb": 8,
+      "total": 46
+    }
+  },
+  "deps_file": [],
+  "imports": [
+    {
+      "Docstring": {
+        "name": "lasagne",
+        "source": {
+          "path": "algorithms/team 3/engine/layers/recurrent.py",
+          "lineno": 2
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "lasagne",
+        "source": {
+          "path": "algorithms/team 3/engine/layers/recurrent.py",
+          "lineno": 583
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "lasagne",
+        "source": {
+          "path": "algorithms/team 3/engine/layers/recurrent.py",
+          "lineno": 1030
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "lasagne",
+        "source": {
+          "path": "algorithms/team 3/engine/layers/conv.py",
+          "lineno": 745
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "lasagne",
+        "source": {
+          "path": "algorithms/team 3/engine/layers/normalization.py",
+          "lineno": 324
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "lasagne",
+        "source": {
+          "path": "algorithms/team 3/engine/layers/normalization.py",
+          "lineno": 324
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "lasagne",
+        "source": {
+          "path": "algorithms/team 3/engine/layers/normalization.py",
+          "lineno": 324
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "lasagne",
+        "source": {
+          "path": "algorithms/team 3/engine/layers/helper.py",
+          "lineno": 24
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "lasagne",
+        "source": {
+          "path": "algorithms/team 3/engine/layers/helper.py",
+          "lineno": 333
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "lasagne",
+        "source": {
+          "path": "algorithms/team 3/engine/layers/helper.py",
+          "lineno": 333
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "lasagne",
+        "source": {
+          "path": "algorithms/team 3/engine/layers/helper.py",
+          "lineno": 417
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "lasagne",
+        "source": {
+          "path": "algorithms/team 3/engine/layers/helper.py",
+          "lineno": 463
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "lasagne",
+        "source": {
+          "path": "algorithms/team 3/engine/layers/helper.py",
+          "lineno": 504
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "lasagne",
+        "source": {
+          "path": "algorithms/team 3/engine/layers/shape.py",
+          "lineno": 63
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "lasagne",
+        "source": {
+          "path": "algorithms/team 3/engine/layers/shape.py",
+          "lineno": 194
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "lasagne",
+        "source": {
+          "path": "algorithms/team 3/engine/layers/shape.py",
+          "lineno": 347
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "lasagne",
+        "source": {
+          "path": "algorithms/team 3/engine/layers/special.py",
+          "lineno": 185
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "algorithms/team 3/engine/layers/special.py",
+          "lineno": 185
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "lasagne",
+        "source": {
+          "path": "algorithms/team 3/engine/layers/special.py",
+          "lineno": 241
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "lasagne",
+        "source": {
+          "path": "algorithms/team 3/engine/layers/special.py",
+          "lineno": 306
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "lasagne",
+        "source": {
+          "path": "algorithms/team 3/engine/layers/special.py",
+          "lineno": 306
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "lasagne",
+        "source": {
+          "path": "algorithms/team 3/engine/layers/special.py",
+          "lineno": 306
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "algorithms/team 3/engine/layers/special.py",
+          "lineno": 355
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "lasagne",
+        "source": {
+          "path": "algorithms/team 3/engine/layers/special.py",
+          "lineno": 355
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "algorithms/team 3/engine/layers/special.py",
+          "lineno": 552
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "lasagne",
+        "source": {
+          "path": "algorithms/team 3/engine/layers/special.py",
+          "lineno": 552
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "lasagne",
+        "source": {
+          "path": "algorithms/team 3/engine/layers/special.py",
+          "lineno": 1003
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "lasagne",
+        "source": {
+          "path": "algorithms/team 3/engine/layers/special.py",
+          "lineno": 1126
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "lasagne",
+        "source": {
+          "path": "algorithms/team 3/engine/layers/dense.py",
+          "lineno": 17
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "lasagne",
+        "source": {
+          "path": "algorithms/team 3/engine/layers/dense.py",
+          "lineno": 128
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "lasagne",
+        "source": {
+          "path": "algorithms/team 3/engine/layers/input.py",
+          "lineno": 17
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "lasagne",
+        "source": {
+          "path": "algorithms/team 3/engine/layers/embedding.py",
+          "lineno": 14
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "theano",
+        "source": {
+          "path": "algorithms/team 3/engine/layers/embedding.py",
+          "lineno": 14
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "numpy",
+        "source": {
+          "path": "algorithms/team 3/engine/layers/merge.py",
+          "lineno": 17
+        }
+      }
+    },
+    {
+      "Docstring": {
+        "name": "theano",
+        "source": {
+          "path": "algorithms/team 3/engine/layers/merge.py",
+          "lineno": 17
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}

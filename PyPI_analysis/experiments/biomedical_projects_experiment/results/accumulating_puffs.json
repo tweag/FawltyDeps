@@ -1,0 +1,33 @@
+{
+  "project_name": "accumulating_puffs",
+  "code_dirs": {
+    "hardware": {
+      "py": 14,
+      "ipynb": 0,
+      "total": 14
+    },
+    "util": {
+      "py": 9,
+      "ipynb": 0,
+      "total": 9
+    },
+    "settings": {
+      "py": 9,
+      "ipynb": 0,
+      "total": 9
+    },
+    "expts": {
+      "py": 7,
+      "ipynb": 0,
+      "total": 7
+    },
+    "subjects": {
+      "py": 2,
+      "ipynb": 0,
+      "total": 2
+    }
+  },
+  "deps_file": [],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

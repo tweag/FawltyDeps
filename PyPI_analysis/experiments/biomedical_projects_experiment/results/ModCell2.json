@@ -1,0 +1,38 @@
+{
+  "project_name": "ModCell2",
+  "code_dirs": {
+    "src": {
+      "py": 10,
+      "ipynb": 0,
+      "total": 10
+    },
+    "problems": {
+      "py": 4,
+      "ipynb": 5,
+      "total": 9
+    },
+    "docs": {
+      "py": 1,
+      "ipynb": 0,
+      "total": 1
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "docs/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 3,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "src/support/cobra_modeling/optknock/requirements.txt",
+      "parser_choice": "requirements.txt",
+      "deps_count": 1,
+      "warnings": false
+    }
+  ],
+  "imports": [],
+  "fawltydeps_version": "0.13.1"
+}

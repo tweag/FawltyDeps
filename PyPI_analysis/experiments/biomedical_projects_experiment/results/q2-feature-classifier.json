@@ -1,0 +1,101 @@
+{
+  "project_name": "q2-feature-classifier",
+  "code_dirs": {
+    "q2_feature_classifier": {
+      "py": 15,
+      "ipynb": 0,
+      "total": 15
+    }
+  },
+  "deps_file": [
+    {
+      "source_type": "DepsSource",
+      "path": "setup.cfg",
+      "parser_choice": "setup.cfg",
+      "deps_count": 0,
+      "warnings": false
+    },
+    {
+      "source_type": "DepsSource",
+      "path": "setup.py",
+      "parser_choice": "setup.py",
+      "deps_count": 0,
+      "warnings": false
+    }
+  ],
+  "imports": [
+    {
+      "Dynamic imports": {
+        "name": ".custom",
+        "source": {
+          "path": "q2_feature_classifier/classifier.py",
+          "lineno": 39
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "q2_feature_classifier",
+        "source": {
+          "path": "q2_feature_classifier/classifier.py",
+          "lineno": 39
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "sklearn",
+        "source": {
+          "path": "q2_feature_classifier/classifier.py",
+          "lineno": 41
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "q2_feature_classifier.types",
+        "source": {
+          "path": "q2_feature_classifier/__init__.py",
+          "lineno": 15
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "q2_feature_classifier.classifier",
+        "source": {
+          "path": "q2_feature_classifier/__init__.py",
+          "lineno": 16
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "q2_feature_classifier._cutter",
+        "source": {
+          "path": "q2_feature_classifier/__init__.py",
+          "lineno": 17
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "q2_feature_classifier._blast",
+        "source": {
+          "path": "q2_feature_classifier/__init__.py",
+          "lineno": 18
+        }
+      }
+    },
+    {
+      "Dynamic imports": {
+        "name": "q2_feature_classifier._vsearch",
+        "source": {
+          "path": "q2_feature_classifier/__init__.py",
+          "lineno": 19
+        }
+      }
+    }
+  ],
+  "fawltydeps_version": "0.13.1"
+}
