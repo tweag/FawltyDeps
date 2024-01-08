@@ -296,7 +296,6 @@ class BaseExperiment(ABC):
 
     def get_venv_dir(self, cache: pytest.Cache) -> Path:
         """Get this venv's dir and create it if necessary."""
-        print(f"EXPERIMENT REQUIREMENTS: {self.requirements}")
         return CachedExperimentVenv(self.requirements)(cache)
 
 

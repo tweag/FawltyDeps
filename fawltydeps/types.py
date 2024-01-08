@@ -1,6 +1,5 @@
 """Common types used across FawltyDeps."""
 
-import os
 import sys
 from abc import ABC, abstractmethod
 from dataclasses import asdict, dataclass, field, replace
