@@ -5,7 +5,7 @@ from typing import List, NamedTuple, Union
 
 import pytest
 
-from fawltydeps.gitignore_parser import parse_gitignore_lines
+from fawltydeps.gitignore_parser import match_rules, parse_gitignore_lines
 
 PathOrStr = Union[str, Path]
 
@@ -220,13 +220,19 @@ test_vectors = [
 @pytest.mark.parametrize("vector", [pytest.param(v, id=v.id) for v in test_vectors])
 def test_gitignore_parser(vector: GitignoreParserTestVector):
     base_dir = Path(vector.base_dir)
-    matches = parse_gitignore_lines(vector.patterns, base_dir, base_dir / ".gitignore")
+    rules = list(
+        parse_gitignore_lines(vector.patterns, base_dir, base_dir / ".gitignore")
+    )
     # Use a trailing '/' in the test vectors to signal is_dir=True.
     # This trailing slash is stripped by Path() in any case.
     for path in vector.does_match:
-        assert matches(Path(path), isinstance(path, str) and path.endswith("/"))
+        assert match_rules(
+            rules, Path(path), isinstance(path, str) and path.endswith("/")
+        )
     for path in vector.doesnt_match:
-        assert not matches(Path(path), isinstance(path, str) and path.endswith("/"))
+        assert not match_rules(
+            rules, Path(path), isinstance(path, str) and path.endswith("/")
+        )
 
 
 def test_symlink_to_another_directory(tmp_path):
@@ -237,7 +243,9 @@ def test_symlink_to_another_directory(tmp_path):
     project_dir.mkdir(parents=True, exist_ok=True)
     link.symlink_to(target)
 
-    matches = parse_gitignore_lines(["link"], project_dir, project_dir / ".gitignore")
+    rules = list(
+        parse_gitignore_lines(["link"], project_dir, project_dir / ".gitignore")
+    )
     # Verify behavior according to https://git-scm.com/docs/gitignore#_notes:
     # Symlinks are not followed and are matched as if they were regular files.
-    assert matches(link, False)
+    assert match_rules(rules, link, False)
