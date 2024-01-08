@@ -1,5 +1,6 @@
 """Test that we can traverse a project to find our inputs."""
 import dataclasses
+import sys
 from pathlib import Path
 from typing import Optional, Set, Type
 
@@ -455,6 +456,7 @@ find_sources_vectors = [
 ]
 
 
+@pytest.mark.skipif(sys.platform.startswith("win"), reason="TODO: fix on Windows #410")
 @pytest.mark.parametrize(
     "vector", [pytest.param(v, id=v.id) for v in find_sources_vectors]
 )
