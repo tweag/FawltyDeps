@@ -84,11 +84,16 @@ def setup_env(monkeypatch):
     return _inner
 
 
+def paths_sets_equal(a: Set[str], b: Set[str]) -> bool:
+    """Compare two sets of strings as if they were sets of paths."""
+    return {Path(element) for element in a} == {Path(element) for element in b}
+
+
 safe_string = strategies.text(alphabet=string.ascii_letters + string.digits, min_size=1)
 nonempty_string_set = strategies.sets(safe_string, min_size=1)
 four_different_string_groups = strategies.tuples(
     *([nonempty_string_set] * 4),
-).filter(lambda ss: all(a != b for a, b in combinations(ss, 2)))
+).filter(lambda ss: all(not paths_sets_equal(a, b) for a, b in combinations(ss, 2)))
 
 
 @given(code_deps_pyenvs_base=four_different_string_groups)
