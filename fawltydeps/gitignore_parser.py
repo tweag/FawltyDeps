@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import functools
 import logging
 import os
 import re
@@ -13,6 +12,7 @@ from typing import (
     Callable,
     Dict,
     Iterable,
+    Iterator,
     List,
     NamedTuple,
     Optional,
@@ -47,10 +47,8 @@ class RuleMissing(RuleError):
     """A blank line or comment passed to DirectoryTraversal.ignore()."""
 
 
-def parse_gitignore(
-    full_path: Path, base_dir: Optional[Path] = None
-) -> Callable[[Path, bool], bool]:
-    """Parse the given .gitignore file and return the resulting rules checker.
+def parse_gitignore(full_path: Path, base_dir: Optional[Path] = None) -> Iterator[Rule]:
+    """Parse the given .gitignore file and yield Rule objects.
 
     The 'base_dir', if given, specifies the directory relative to which the
     parsed ignore rules will be interpreted. If not given, the parent directory
@@ -61,34 +59,31 @@ def parse_gitignore(
     if base_dir is None:
         base_dir = full_path.parent
     with open(full_path) as ignore_file:
-        return parse_gitignore_lines(ignore_file, base_dir, full_path)
+        yield from parse_gitignore_lines(ignore_file, base_dir, full_path)
 
 
 def parse_gitignore_lines(
     lines: Iterable[str],
     base_dir: Optional[Path] = None,
     file_hint: Optional[Path] = None,
-) -> Callable[[Path, bool], bool]:
-    """Parse gitignore lines and return the resulting rules checker.
+) -> Iterator[Rule]:
+    """Parse gitignore lines and yield corresponding Rule objects.
 
-    The return value is a predicate for paths to ignore, i.e. a callable that
-    returns True/False based on whether a given path should be ignored or not.
+    A list of the returned Rule objects can be passed to match_rules() to check
+    if a given path should be ignored or not.
 
     The 'base_dir', if given, specifies the directory relative to which the
     parsed ignore rules will be interpreted. If not given, the given rules
     cannot be anchored.
     """
-    rules = []
     for lineno, line in enumerate(lines, start=1):
         source = None if file_hint is None else Location(file_hint, lineno=lineno)
         line = line.rstrip("\n")
         try:
-            rules.append(Rule.from_pattern(line, base_dir, source))
+            yield Rule.from_pattern(line, base_dir, source)
         except RuleMissing as exc:
             # Blank lines and comments are ok when parsing multiple lines
             logger.debug(str(exc))
-
-    return functools.partial(match_rules, rules)
 
 
 def match_rules(rules: List[Rule], path: Path, is_dir: bool) -> bool:
