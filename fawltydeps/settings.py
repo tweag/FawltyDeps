@@ -165,6 +165,7 @@ class Settings(BaseSettings):
     deps_parser_choice: Optional[ParserChoice] = None
     install_deps: bool = False
     exclude: Set[str] = {".*"}
+    exclude_from: Set[Path] = set()
     verbosity: int = 0
     custom_mapping_file: Set[Path] = set()
 
