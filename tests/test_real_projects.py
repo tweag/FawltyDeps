@@ -5,6 +5,8 @@ We download/extract pinned releases several 3rd-party Python projects, and run
 FawltyDeps on them, with hardcoded expectations per project on what FawltyDeps
 should find/report.
 """
+from __future__ import annotations
+
 import json
 import logging
 import subprocess
@@ -77,7 +79,7 @@ class Experiment(BaseExperiment):
     args: List[str]
 
     @classmethod
-    def from_toml(cls, name: str, data: TomlData) -> "Experiment":
+    def from_toml(cls, name: str, data: TomlData) -> Experiment:
         return cls(args=data["args"], **cls._init_args_from_toml(name, data))
 
 
@@ -98,7 +100,7 @@ class ThirdPartyProject(BaseProject):
     tarball: TarballPackage
 
     @classmethod
-    def collect(cls) -> Iterator["ThirdPartyProject"]:
+    def collect(cls) -> Iterator[ThirdPartyProject]:
         for path in filter(lambda p: p.suffix == ".toml", REAL_PROJECTS_DIR.iterdir()):
             toml_data = parse_toml(path)
             project_info = cls._init_args_from_toml(toml_data, Experiment)

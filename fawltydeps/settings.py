@@ -1,4 +1,6 @@
 """FawltyDeps configuration and command-line options."""
+from __future__ import annotations
+
 import argparse
 import json
 import logging
@@ -61,7 +63,7 @@ class OrderedEnum(Enum):
     def __lt__(self, other: object) -> bool:
         if not isinstance(other, OrderedEnum):
             return NotImplemented
-        values: List["OrderedEnum"] = list(self.__class__)
+        values: List[OrderedEnum] = list(self.__class__)
         return values.index(self) < values.index(other)
 
 
@@ -205,7 +207,7 @@ class Settings(BaseSettings):
             )
 
     @classmethod
-    def config(cls, **kwargs: Union[None, Path, str]) -> Type["Settings"]:
+    def config(cls, **kwargs: Union[None, Path, str]) -> Type[Settings]:
         """Configure the class variables in this Settings class.
 
         This must be done _before_ instantiating Settings objects, as the
@@ -218,7 +220,7 @@ class Settings(BaseSettings):
         return cls
 
     @classmethod
-    def create(cls, cmdline_args: argparse.Namespace) -> "Settings":
+    def create(cls, cmdline_args: argparse.Namespace) -> Settings:
         """Convert the parsed command-line args into a Settings object.
 
         Extract the relevant parts of the given argparse.Namespace object into
