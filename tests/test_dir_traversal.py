@@ -108,6 +108,12 @@ class DirectoryTraversalVector(Generic[T]):
     skip_dirs: List[str] = field(default_factory=list)
     expect: List[ExpectedTraverseStep] = field(default_factory=list)
     expect_alternatives: Optional[List[List[ExpectedTraverseStep]]] = None
+    skip_me: Optional[str] = None
+
+
+def on_windows(msg: str) -> Optional[str]:
+    """Helper used by .skip_me to skip certain tests on Windows."""
+    return msg if sys.platform.startswith("win") else None
 
 
 directory_traversal_vectors: List[DirectoryTraversalVector] = [
@@ -178,6 +184,7 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
         "symlinks_to_self__are_not_traversed",
         given=[RelativeSymlink("rel_self", "."), AbsoluteSymlink("abs_self", ".")],
         expect=[ExpectedTraverseStep(".", subdirs=["rel_self", "abs_self"])],
+        skip_me=on_windows("Symlinks on Windows may be created only by administrators"),
     ),
     DirectoryTraversalVector(
         "symlinks_to_parent__are_not_traversed",
@@ -189,6 +196,7 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
             ExpectedTraverseStep(".", subdirs=["sub"]),
             ExpectedTraverseStep("sub", subdirs=["rel_parent", "abs_parent"]),
         ],
+        skip_me=on_windows("Symlinks on Windows may be created only by administrators"),
     ),
     DirectoryTraversalVector(
         "mutual_symlinks__are_traversed_once",
@@ -219,6 +227,7 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
                 ),
             ],
         ],
+        skip_me=on_windows("Symlinks on Windows may be created only by administrators"),
     ),
     DirectoryTraversalVector(
         "relative_symlink_to_dir_elsewhere__is_traversed",
@@ -231,6 +240,7 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
             ExpectedTraverseStep("here", subdirs=["symlink"]),
             ExpectedTraverseStep(str(Path("here", "symlink")), files=["file"]),
         ],
+        skip_me=on_windows("Symlinks on Windows may be created only by administrators"),
     ),
     DirectoryTraversalVector(
         "absolute_symlink_to_dir_elsewhere__is_traversed",
@@ -243,6 +253,7 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
             ExpectedTraverseStep("here", subdirs=["symlink"]),
             ExpectedTraverseStep(str(Path("here", "symlink")), files=["file"]),
         ],
+        skip_me=on_windows("Symlinks on Windows may be created only by administrators"),
     ),
     DirectoryTraversalVector(
         "dir_and_symlinks_to_dir__is_traversed_only_once",
@@ -265,29 +276,18 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
                 ExpectedTraverseStep("abs_link", files=["file"]),
             ],
         ],
+        skip_me=on_windows("Symlinks on Windows may be created only by administrators"),
     ),
 ]
 
 
 @pytest.mark.parametrize(
-    "vector",
-    [
-        pytest.param(
-            v,
-            id=v.id,
-            marks=pytest.mark.skipif(
-                sys.platform.startswith("win")
-                and any(
-                    isinstance(entry, (RelativeSymlink, AbsoluteSymlink))
-                    for entry in v.given
-                ),
-                reason="Symlinks on Windows may be created only by administrators",
-            ),
-        )
-        for v in directory_traversal_vectors
-    ],
+    "vector", [pytest.param(v, id=v.id) for v in directory_traversal_vectors]
 )
 def test_DirectoryTraversal(vector: DirectoryTraversalVector, tmp_path):
+    if vector.skip_me is not None:
+        pytest.skip(vector.skip_me)
+
     for entry in vector.given:
         entry(tmp_path)
 
