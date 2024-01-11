@@ -1,5 +1,6 @@
 """Verify behavior of gitignore_parser."""
 
+import sys
 from pathlib import Path
 from typing import List, NamedTuple, Union
 
@@ -219,7 +220,13 @@ test_vectors = [
 
 @pytest.mark.parametrize("vector", [pytest.param(v, id=v.id) for v in test_vectors])
 def test_gitignore_parser(vector: GitignoreParserTestVector):
-    base_dir = Path(vector.base_dir)
+    def absolutify(path: PathOrStr) -> Path:
+        """Make Unix-style absolute paths also absolute on Windows."""
+        if sys.platform.startswith("win") and str(path).startswith(("/", "\\")):
+            return Path("C:" + str(path))
+        return Path(path)
+
+    base_dir = absolutify(vector.base_dir)
     rules = list(
         parse_gitignore_lines(vector.patterns, base_dir, base_dir / ".gitignore")
     )
@@ -227,11 +234,11 @@ def test_gitignore_parser(vector: GitignoreParserTestVector):
     # This trailing slash is stripped by Path() in any case.
     for path in vector.does_match:
         assert match_rules(
-            rules, Path(path), isinstance(path, str) and path.endswith("/")
+            rules, absolutify(path), isinstance(path, str) and path.endswith("/")
         )
     for path in vector.doesnt_match:
         assert not match_rules(
-            rules, Path(path), isinstance(path, str) and path.endswith("/")
+            rules, absolutify(path), isinstance(path, str) and path.endswith("/")
         )
 
 
