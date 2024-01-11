@@ -1,5 +1,7 @@
 """Encapsulate the lookup of packages and their provided import names."""
 
+from __future__ import annotations
+
 import logging
 import shutil
 import subprocess
@@ -65,7 +67,7 @@ class Package:
 
     package_name: str  # auto-normalized in .__post_init__()
     import_names: Set[str]
-    resolved_with: Type["BasePackageResolver"]
+    resolved_with: Type[BasePackageResolver]
     debug_info: PackageDebugInfo = None
 
     @staticmethod
