@@ -434,6 +434,9 @@ Here is a complete list of configuration directives we support:
 - `exclude`: File/directory patterns to exclude/ignore when looking for code
   (imports), dependency declarations and/or Python environments. Defaults to
   `exclude = [".*"]`, meaning that hidden/dot paths are excluded from traversal.
+- `exclude_from`: Files (following the .gitignore format) containing exclude
+  patterns to use when looking for code (imports), dependency declarations
+  and/or Python environments. Defaults to an empty list: `exclude_from = []`.
 - `verbosity`: An integer controlling the default log level of FawltyDeps:
   - `-2`: Only `CRITICAL`-level log messages are shown.
   - `-1`: `ERROR`-level log messages and above are shown.

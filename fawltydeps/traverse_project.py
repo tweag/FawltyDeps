@@ -59,10 +59,11 @@ def find_sources(  # pylint: disable=too-many-branches,too-many-statements
     """
 
     logger.debug("find_sources() Looking for sources under:")
-    logger.debug(f"    code:   {settings.code}")
-    logger.debug(f"    deps:   {settings.deps}")
-    logger.debug(f"    pyenvs: {settings.pyenvs}")
-    logger.debug(f"    exclude: {settings.exclude}")
+    logger.debug(f"    code:         {settings.code}")
+    logger.debug(f"    deps:         {settings.deps}")
+    logger.debug(f"    pyenvs:       {settings.pyenvs}")
+    logger.debug(f"    exclude:      {settings.exclude}")
+    logger.debug(f"    exclude_from: {settings.exclude_from}")
 
     requested_paths = {
         path
@@ -78,6 +79,12 @@ def find_sources(  # pylint: disable=too-many-branches,too-many-statements
             for path in requested_paths:
                 if path.is_dir():
                     traversal.exclude(pattern, base_dir=path)
+
+    for file_with_exclude_patterns in settings.exclude_from:
+        if file_with_exclude_patterns.is_file():
+            traversal.exclude_from(file_with_exclude_patterns)
+        else:
+            logger.warning(f"Cannot find {file_with_exclude_patterns}, skipping")
 
     defaults = Settings.config(config_file=None)()
     default_paths = defaults.code | defaults.code | defaults.pyenvs
