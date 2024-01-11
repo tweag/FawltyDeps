@@ -192,7 +192,7 @@ class Rule(NamedTuple):
         """Return True iff the given 'abs_path' should be ignored."""
         if self.base_dir:
             try:
-                rel_path = str(abs_path.relative_to(self.base_dir))
+                rel_path = abs_path.relative_to(self.base_dir).as_posix()
             except ValueError:  # abs_path not relative to self.base_dir
                 return False
         else:
