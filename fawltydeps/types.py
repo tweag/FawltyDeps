@@ -1,5 +1,7 @@
 """Common types used across FawltyDeps."""
 
+from __future__ import annotations
+
 import sys
 from abc import ABC, abstractmethod
 from dataclasses import asdict, dataclass, field, replace
@@ -54,7 +56,7 @@ class Source(ABC):
     This exists to inject the class name of the subclass into our JSON output.
     """
 
-    source_type: Type["Source"] = field(init=False)
+    source_type: Type[Source] = field(init=False)
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "source_type", self.__class__)
@@ -248,7 +250,7 @@ class Location:
             ret += f":{self.lineno}"
         return ret
 
-    def supply(self, **changes: int) -> "Location":
+    def supply(self, **changes: int) -> Location:
         """Create a new Location that contains additional information."""
         return replace(self, **changes)
 

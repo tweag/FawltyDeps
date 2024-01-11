@@ -19,6 +19,8 @@ tests/sample_projects
     ├── expected.toml (mandatory)
     └── ... (regular Python project)
 """
+from __future__ import annotations
+
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -62,7 +64,7 @@ class Experiment(BaseExperiment):
     exclude: List[str]
 
     @classmethod
-    def from_toml(cls, name: str, data: TomlData) -> "Experiment":
+    def from_toml(cls, name: str, data: TomlData) -> Experiment:
         return cls(
             code=data.get("code", [""]),
             deps=data.get("deps", [""]),
@@ -103,7 +105,7 @@ class SampleProject(BaseProject):
     path: Path  # Directory containing expected.toml, and rest of sample project
 
     @classmethod
-    def collect(cls) -> Iterator["SampleProject"]:
+    def collect(cls) -> Iterator[SampleProject]:
         for subdir in SAMPLE_PROJECTS_DIR.iterdir():
             toml_path = subdir / "expected.toml"
             if not toml_path.is_file():

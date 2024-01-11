@@ -10,6 +10,8 @@ minimal computation involved in setting the install_requires and extras_require
 arguments.
 """
 
+from __future__ import annotations
+
 import json
 import logging
 import sys
@@ -168,7 +170,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
         )
 
     @classmethod
-    def create(cls, settings: Settings, stdin: Optional[BinaryIO] = None) -> "Analysis":
+    def create(cls, settings: Settings, stdin: Optional[BinaryIO] = None) -> Analysis:
         """Exercise FawltyDeps' core logic according to the given settings.
 
         Perform the actions specified in 'settings.actions' and apply the other

@@ -1,4 +1,6 @@
 """Common helpers shared between test_real_project and test_sample_projects."""
+from __future__ import annotations
+
 import hashlib
 import logging
 import os
@@ -48,7 +50,7 @@ class TarballPackage:
     filename_must_include: Optional[str] = None
 
     @classmethod
-    def collect_from_toml(cls, path: Path) -> Iterator["TarballPackage"]:
+    def collect_from_toml(cls, path: Path) -> Iterator[TarballPackage]:
         """Parse information on all available tarball packages in a toml file."""
         tarballs = parse_toml(path)
         for info in tarballs.values():
@@ -226,7 +228,7 @@ class AnalysisExpectations:
     unused_deps: Optional[Set[str]] = None
 
     @classmethod
-    def from_toml(cls, data: TomlData) -> "AnalysisExpectations":
+    def from_toml(cls, data: TomlData) -> AnalysisExpectations:
         """Read expectations from the given TOML table."""
 
         def set_or_none(data: Optional[Iterable[str]]) -> Optional[Set[str]]:
@@ -292,7 +294,7 @@ class BaseExperiment(ABC):
 
     @classmethod
     @abstractmethod
-    def from_toml(cls, name: str, data: TomlData) -> "BaseExperiment":
+    def from_toml(cls, name: str, data: TomlData) -> BaseExperiment:
         """Create an instance from TOML data."""
         raise NotImplementedError
 
@@ -336,7 +338,7 @@ class BaseProject(ABC):
 
     @classmethod
     @abstractmethod
-    def collect(cls) -> Iterator["BaseProject"]:
+    def collect(cls) -> Iterator[BaseProject]:
         """Find and generate all projects in this test suite."""
         raise NotImplementedError
 
