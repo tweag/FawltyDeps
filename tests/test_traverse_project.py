@@ -3,7 +3,7 @@ import dataclasses
 import logging
 import sys
 from pathlib import Path
-from typing import List, Optional, Set, Type
+from typing import Callable, List, Optional, Set, Type
 
 import pytest
 
@@ -41,6 +41,17 @@ class TraverseProjectVector:
     # These are the exceptions we expect to be raised, or warnings to be logged
     expect_raised: Optional[Type[Exception]] = None
     expect_warnings: List[str] = dataclasses.field(default_factory=list)
+    skip_me: Callable[[], Optional[str]] = lambda: None
+
+
+def on_windows(msg: str) -> Callable[[], Optional[str]]:
+    """Helper used by .skip_me to skip certain tests on Windows."""
+    return lambda: msg if sys.platform.startswith("win") else None
+
+
+def not_on_windows(msg: str) -> Callable[[], Optional[str]]:
+    """Helper used by .skip_me to skip certain tests on non-Windows."""
+    return lambda: msg if not sys.platform.startswith("win") else None
 
 
 find_sources_vectors = [
@@ -399,6 +410,16 @@ find_sources_vectors = [
         deps=set(),
         pyenvs={".venv"},
         expect_pyenv_src={".venv/lib/python3.10/site-packages"},
+        skip_me=on_windows("POSIX-style venvs skipped on Windows"),
+    ),
+    TraverseProjectVector(
+        "Windows:given_pyenv_as_venv_dir__yields_package_dir_within",
+        "no_issues_win",
+        code=set(),
+        deps=set(),
+        pyenvs={".venv"},
+        expect_pyenv_src={".venv/Lib/site-packages"},
+        skip_me=not_on_windows("Windows-style venvs skipped on POSIX"),
     ),
     TraverseProjectVector(
         "given_pyenv_as_venv_dir__yields_multiple_package_dirs_within",
@@ -410,6 +431,16 @@ find_sources_vectors = [
             "another-venv/lib/python3.8/site-packages",
             "another-venv/lib/python3.11/site-packages",
         },
+        skip_me=on_windows("POSIX-style venvs skipped on Windows"),
+    ),
+    TraverseProjectVector(
+        "Windows:given_pyenv_as_venv_dir__can_only_contain_one_package_dir_within",
+        "pyenv_galore_win",
+        code=set(),
+        deps=set(),
+        pyenvs={"another-venv"},
+        expect_pyenv_src={"another-venv/Lib/site-packages"},
+        skip_me=not_on_windows("Windows-style venvs skipped on POSIX"),
     ),
     TraverseProjectVector(
         "given_pyenv_as_package_dir__yields_only_one_package_dir_within",
@@ -418,6 +449,16 @@ find_sources_vectors = [
         deps=set(),
         pyenvs={"another-venv/lib/python3.8"},
         expect_pyenv_src={"another-venv/lib/python3.8/site-packages"},
+        skip_me=on_windows("POSIX-style venvs skipped on Windows"),
+    ),
+    TraverseProjectVector(
+        "Windows:given_pyenv_as_package_dir__yields_only_one_package_dir_within",
+        "pyenv_galore_win",
+        code=set(),
+        deps=set(),
+        pyenvs={"another-venv/Lib"},
+        expect_pyenv_src={"another-venv/Lib/site-packages"},
+        skip_me=not_on_windows("Windows-style venvs skipped on POSIX"),
     ),
     TraverseProjectVector(
         "given_two_pyenvs__yields_all_package_dirs_within_both",
@@ -430,6 +471,20 @@ find_sources_vectors = [
             "__pypackages__/3.7/lib",
             "__pypackages__/3.10/lib",
         },
+        skip_me=on_windows("POSIX-style venvs skipped on Windows"),
+    ),
+    TraverseProjectVector(
+        "Windows:given_two_pyenvs__yields_all_package_dirs_within_both",
+        "pyenv_galore_win",
+        code=set(),
+        deps=set(),
+        pyenvs={".venv", "__pypackages__"},
+        expect_pyenv_src={
+            ".venv/Lib/site-packages",
+            "__pypackages__/3.7/Lib",
+            "__pypackages__/3.10/Lib",
+        },
+        skip_me=not_on_windows("Windows-style venvs skipped on POSIX"),
     ),
     TraverseProjectVector(
         "given_parent_dir__yields_all_package_dirs_within_all_pyenvs",
@@ -444,6 +499,20 @@ find_sources_vectors = [
             "another-venv/lib/python3.11/site-packages",
             "poetry2nix_result/lib/python3.9/site-packages",
         },
+        skip_me=on_windows("POSIX-style venvs skipped on Windows"),
+    ),
+    TraverseProjectVector(
+        "Windows:given_parent_dir__yields_all_package_dirs_within_all_pyenvs",
+        "pyenv_galore_win",
+        code=set(),
+        deps=set(),
+        expect_pyenv_src={
+            ".venv/Lib/site-packages",
+            "__pypackages__/3.7/Lib",
+            "__pypackages__/3.10/Lib",
+            "another-venv/Lib/site-packages",
+        },
+        skip_me=not_on_windows("Windows-style venvs skipped on POSIX"),
     ),
     TraverseProjectVector(
         "given_parent_dir__does_not_find_pyenvs_inside_dot_dir",
@@ -451,6 +520,15 @@ find_sources_vectors = [
         code=set(),
         deps=set(),
         expect_pyenv_src=set(),
+        skip_me=on_windows("POSIX-style venvs skipped on Windows"),
+    ),
+    TraverseProjectVector(
+        "Windows:given_parent_dir__does_not_find_pyenvs_inside_dot_dir",
+        "hidden_files_win",
+        code=set(),
+        deps=set(),
+        expect_pyenv_src=set(),
+        skip_me=not_on_windows("Windows-style venvs skipped on POSIX"),
     ),
     TraverseProjectVector(
         "given_dot_dir__finds_pyenvs_inside_dot_dir",
@@ -463,6 +541,19 @@ find_sources_vectors = [
             ".venvs/another-venv/lib/python3.8/site-packages",
             ".venvs/another-venv/lib/python3.11/site-packages",
         },
+        skip_me=on_windows("POSIX-style venvs skipped on Windows"),
+    ),
+    TraverseProjectVector(
+        "Windows:given_dot_dir__finds_pyenvs_inside_dot_dir",
+        "hidden_files_win",
+        code=set(),
+        deps=set(),
+        pyenvs={".venvs"},
+        expect_pyenv_src={
+            ".venvs/.venv/Lib/site-packages",
+            ".venvs/another-venv/Lib/site-packages",
+        },
+        skip_me=not_on_windows("Windows-style venvs skipped on POSIX"),
     ),
     #
     # Test interaction of 'pyenvs' with 'code' and 'deps':
@@ -478,6 +569,18 @@ find_sources_vectors = [
             "another-venv/lib/python3.11/site-packages",
             "poetry2nix_result/lib/python3.9/site-packages",
         },
+        skip_me=on_windows("POSIX-style venvs skipped on Windows"),
+    ),
+    TraverseProjectVector(
+        "Windows:given_parent_dir__code_and_deps_are_never_found_within_pyenvs",
+        "pyenv_galore_win",
+        expect_pyenv_src={
+            ".venv/Lib/site-packages",
+            "__pypackages__/3.7/Lib",
+            "__pypackages__/3.10/Lib",
+            "another-venv/Lib/site-packages",
+        },
+        skip_me=not_on_windows("Windows-style venvs skipped on POSIX"),
     ),
     TraverseProjectVector(
         "given_one_pyenv__code_and_deps_may_be_found_in_other_pyenvs",
@@ -496,6 +599,25 @@ find_sources_vectors = [
             "__pypackages__/3.7/lib",
             "__pypackages__/3.10/lib",
         },
+        skip_me=on_windows("POSIX-style venvs skipped on Windows"),
+    ),
+    TraverseProjectVector(
+        "Windows:given_one_pyenv__code_and_deps_may_be_found_in_other_pyenvs",
+        "pyenv_galore_win",
+        pyenvs={"__pypackages__"},
+        expect_imports_src={
+            "another-venv/Lib/site-packages/another_package/__init__.py",
+            "another-venv/Lib/site-packages/another_module.py",
+            "another-venv/Lib/site-packages/setup.py",
+        },
+        expect_deps_src={
+            "another-venv/Lib/site-packages/setup.py",
+        },
+        expect_pyenv_src={
+            "__pypackages__/3.7/Lib",
+            "__pypackages__/3.10/Lib",
+        },
+        skip_me=not_on_windows("Windows-style venvs skipped on POSIX"),
     ),
     TraverseProjectVector(
         "given_multiple_dot_dirs__finds_all_except_code_within_pyenvs",
@@ -516,6 +638,27 @@ find_sources_vectors = [
             ".venvs/another-venv/lib/python3.8/site-packages",
             ".venvs/another-venv/lib/python3.11/site-packages",
         },
+        skip_me=on_windows("POSIX-style venvs skipped on Windows"),
+    ),
+    TraverseProjectVector(
+        "Windows:given_multiple_dot_dirs__finds_all_except_code_within_pyenvs",
+        "hidden_files_win",
+        code={".", ".hidden_dir", ".venvs", ".hidden.code.py"},
+        deps={".", ".hidden_dir", ".venvs", ".hidden.requirements.txt"},
+        pyenvs={".", ".hidden_dir", ".venvs"},
+        expect_imports_src={
+            ".hidden.code.py",
+            ".hidden_dir/code.py",
+        },
+        expect_deps_src={
+            ".hidden.requirements.txt",
+            ".hidden_dir/requirements.txt",
+        },
+        expect_pyenv_src={
+            ".venvs/.venv/Lib/site-packages",
+            ".venvs/another-venv/Lib/site-packages",
+        },
+        skip_me=not_on_windows("Windows-style venvs skipped on POSIX"),
     ),
     #
     # Test invalid 'exclude':
@@ -549,6 +692,25 @@ find_sources_vectors = [
             ".venvs/another-venv/lib/python3.8/site-packages",
             ".venvs/another-venv/lib/python3.11/site-packages",
         },
+        skip_me=on_windows("POSIX-style venvs skipped on Windows"),
+    ),
+    TraverseProjectVector(
+        "Windows:disabling_default_excludes__causes_hidden_files_to_be_found",
+        "hidden_files_win",
+        exclude=set(),
+        expect_imports_src={
+            ".hidden.code.py",
+            ".hidden_dir/code.py",
+        },
+        expect_deps_src={
+            ".hidden.requirements.txt",
+            ".hidden_dir/requirements.txt",
+        },
+        expect_pyenv_src={
+            ".venvs/.venv/Lib/site-packages",
+            ".venvs/another-venv/Lib/site-packages",
+        },
+        skip_me=not_on_windows("Windows-style venvs skipped on POSIX"),
     ),
     TraverseProjectVector(
         "replacing_default_exclude__causes_some_hidden_files_to_be_found",
@@ -561,6 +723,19 @@ find_sources_vectors = [
             ".venvs/another-venv/lib/python3.8/site-packages",
             ".venvs/another-venv/lib/python3.11/site-packages",
         },
+        skip_me=on_windows("POSIX-style venvs skipped on Windows"),
+    ),
+    TraverseProjectVector(
+        "Windows:replacing_default_excludes__causes_some_hidden_files_to_be_found",
+        "hidden_files_win",
+        exclude={".hidden_dir/"},
+        expect_imports_src={".hidden.code.py"},
+        expect_deps_src={".hidden.requirements.txt"},
+        expect_pyenv_src={
+            ".venvs/.venv/Lib/site-packages",
+            ".venvs/another-venv/Lib/site-packages",
+        },
+        skip_me=not_on_windows("Windows-style venvs skipped on POSIX"),
     ),
     #
     # Test overlap/conflict between given --code/--deps/--pyenv and --exclude
@@ -598,6 +773,21 @@ find_sources_vectors = [
             ".venvs/another-venv/lib/python3.11/site-packages",
         },
         expect_warnings=[".venvs is both requested and excluded. Will include."],
+        skip_me=on_windows("POSIX-style venvs skipped on Windows"),
+    ),
+    TraverseProjectVector(
+        "Windows:customized_excludes_overlaps_with_pyenv_path__warns_about_overlap",
+        "hidden_files_win",
+        code=set(),
+        deps=set(),
+        pyenvs={".venvs"},
+        exclude={".*envs/"},
+        expect_pyenv_src={
+            ".venvs/.venv/Lib/site-packages",
+            ".venvs/another-venv/Lib/site-packages",
+        },
+        expect_warnings=[".venvs is both requested and excluded. Will include."],
+        skip_me=not_on_windows("Windows-style venvs skipped on POSIX"),
     ),
     TraverseProjectVector(
         "customized_excludes_overlaps_with_several_paths__warns_once_per_path",
@@ -617,15 +807,38 @@ find_sources_vectors = [
             ".hidden_dir is both requested and excluded. Will include.",
             ".venvs is both requested and excluded. Will include.",
         ],
+        skip_me=on_windows("POSIX-style venvs skipped on Windows"),
+    ),
+    TraverseProjectVector(
+        "Windows:customized_excludes_overlaps_with_several_paths__warns_once_per_path",
+        "hidden_files_win",
+        code={".hidden_dir"},
+        deps={".hidden_dir"},
+        pyenvs={".venvs"},
+        exclude={".hidden*", ".venvs"},
+        expect_imports_src={".hidden_dir/code.py"},
+        expect_deps_src={".hidden_dir/requirements.txt"},
+        expect_pyenv_src={
+            ".venvs/.venv/Lib/site-packages",
+            ".venvs/another-venv/Lib/site-packages",
+        },
+        expect_warnings=[
+            ".hidden_dir is both requested and excluded. Will include.",
+            ".venvs is both requested and excluded. Will include.",
+        ],
+        skip_me=not_on_windows("Windows-style venvs skipped on POSIX"),
     ),
 ]
 
 
-@pytest.mark.skipif(sys.platform.startswith("win"), reason="TODO: fix on Windows #410")
 @pytest.mark.parametrize(
     "vector", [pytest.param(v, id=v.id) for v in find_sources_vectors]
 )
 def test_find_sources_with_absolute_paths(vector: TraverseProjectVector, caplog):
+    skip_me = vector.skip_me()  # skip this test vector?
+    if skip_me is not None:
+        pytest.skip(skip_me)
+
     project_dir = SAMPLE_PROJECTS_DIR / vector.project
     assert project_dir.is_dir()
     settings = Settings(
@@ -677,13 +890,16 @@ def test_find_sources_with_absolute_paths(vector: TraverseProjectVector, caplog)
     assert_unordered_equivalence(actual_warnings, vector.expect_warnings)
 
 
-@pytest.mark.skipif(sys.platform.startswith("win"), reason="TODO: fix on Windows #410")
 @pytest.mark.parametrize(
     "vector", [pytest.param(v, id=v.id) for v in find_sources_vectors]
 )
 def test_find_sources_with_relative_paths(
     vector: TraverseProjectVector, monkeypatch, caplog
 ):
+    skip_me = vector.skip_me()  # skip this test vector?
+    if skip_me is not None:
+        pytest.skip(skip_me)
+
     project_dir = SAMPLE_PROJECTS_DIR / vector.project
     assert project_dir.is_dir()
     monkeypatch.chdir(project_dir)
