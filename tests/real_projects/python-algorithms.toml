@@ -3,9 +3,9 @@
 # and where to find the relevant tarball, along with its expected checksum.
 name = "The Algorithms - Python"
 description = """
-  All algorithms implemented in Python - for education. 
-  One of the most popular (stars count) Python packages on GitHub.
-  """
+    All algorithms implemented in Python - for education. 
+    One of the most popular (stars count) Python packages on GitHub.
+"""
 url = "https://github.com/TheAlgorithms/Python/archive/77b4fa8b3f2070ff708405cca1381b7860e316ab.tar.gz"
 sha256 = "f46e3afeef27bb09d66fda69f50f562289fcfb5993c2e799e5765862b9f6c9f2"
 # The SHA256 checksum above can be found by running `sha256sum` on the
@@ -23,87 +23,99 @@ sha256 = "f46e3afeef27bb09d66fda69f50f562289fcfb5993c2e799e5765862b9f6c9f2"
 # missing fields.
 
 [experiments.all]
-description = "Running FD on the entire The Algorithms - Python project"
+description = """
+    Running FD on the entire TheAlgorithms/Python project, but w/o installing
+    any of its requirements. This relies heavily on IdentityMapping, and
+    exposes its weaknesses.
+"""
 args = []
 # When we run FawltyDeps with the above arguments, we expect these results:
 imports= [
-  "PIL",
-  "bs4",
-  "cv2",
-  "django",
-  "fake_useragent",
-  "lxml",
-  "matplotlib",
-  "mpmath",
-  "numpy",
-  "pandas",
-  "pytest",
-  "qiskit",
-  "requests",
-  "rich",
-  "scipy",
-  "seaborn",
-  "skfuzzy",
-  "sklearn",
-  "statsmodels",
-  "sympy",
-  "tensorflow",
-  "tweepy",
-  "xgboost"
+    "PIL",
+    "bs4",
+    "cv2",
+    "django",
+    "fake_useragent",
+    "lxml",
+    "matplotlib",
+    "mpmath",
+    "numpy",
+    "pandas",
+    "pytest",
+    "qiskit",
+    "requests",
+    "rich",
+    "scipy",
+    "seaborn",
+    "skfuzzy",
+    "sklearn",
+    "statsmodels",
+    "sympy",
+    "tensorflow",
+    "tweepy",
+    "xgboost",
 ]
 
 declared_deps = [
-  "beautifulsoup4",
-  "fake_useragent",
-  "keras",
-  "lxml",
-  "matplotlib",
-  "numpy",
-  "opencv-python",
-  "pandas",
-  "pillow",
-  "projectq",
-  "qiskit",
-  "requests",
-  "rich",
-  "scikit-fuzzy",
-  "scikit-learn",
-  "statsmodels",
-  "sympy",
-  "tensorflow",
-  "texttable",
-  "tweepy",
-  "xgboost",
-  "yulewalker",
+    "beautifulsoup4",
+    "fake_useragent",
+    "keras",
+    "lxml",
+    "matplotlib",
+    "numpy",
+    "opencv-python",
+    "pandas",
+    "pillow",
+    "projectq",
+    "qiskit",
+    "requests",
+    "rich",
+    "scikit-fuzzy",
+    "scikit-learn",
+    "statsmodels",
+    "sympy",
+    "tensorflow",
+    "texttable",
+    "tweepy",
+    "xgboost",
+    "yulewalker",
 ]
 
 undeclared_deps = [
-  "PIL",
-  "bs4",
-  "cv2",
-  "django",
-  "mpmath",
-  "pytest",
-  "scipy",
-  "seaborn",
-  "skfuzzy",
-  "sklearn"
+    "PIL",
+    "bs4",
+    "cv2",
+    "django",
+    "mpmath",
+    "pytest",
+    "scipy",
+    "seaborn",
+    "skfuzzy",
+    "sklearn",
 ]
 
 unused_deps = [
-  "beautifulsoup4",
-  "keras",
-  "opencv-python",
-  "pillow",
-  "projectq",
-  "scikit-fuzzy",
-  "scikit-learn",
-  "texttable",
-  "yulewalker"
+    "beautifulsoup4",
+    "keras",
+    "opencv-python",
+    "pillow",
+    "projectq",
+    "scikit-fuzzy",
+    "scikit-learn",
+    "texttable",
+    "yulewalker",
 ]
 
 [experiments.all_reqs_installed]
-description = "Running FD on the entire The Algorithms - Python project"
+description = """
+    Running FD on the TheAlgorithms/Python project, with all requirements
+    installed. This improves the situation somewhat, compared to the above, but
+    there are still several problems: qiskit and tensorflow (on Windows only)
+    are "placeholder packages" that rely on transitive dependencies to provide
+    their expected import names. Additionally, there appears to be several true
+    undeclared unused deps.
+"""
+posix_only = true
 args = []
 requirements = [
     "beautifulsoup4",
@@ -127,7 +139,7 @@ requirements = [
     "texttable",
     "tweepy",
     "xgboost",
-    "yulewalker"
+    "yulewalker",
 ]
 # When we run FawltyDeps with the above arguments, we expect these results:
 undeclared_deps = [
@@ -136,7 +148,7 @@ undeclared_deps = [
     "pytest",
     "qiskit",
     "scipy",
-    "seaborn"
+    "seaborn",
 ]
 
 unused_deps = [
@@ -144,6 +156,72 @@ unused_deps = [
     "projectq",
     "qiskit",
     "texttable",
-    "yulewalker"
+    "yulewalker",
 ]
 
+[experiments.some_reqs_customized]
+description = """
+    Running FD on the TheAlgorithms/Python project, with some requirements
+    resolved via custom_mapping, and all other requirements installed.
+    This solved the "placeholder package" problem for qiskit and tensorflow
+    by side-stepping it with a custom_mapping.
+"""
+# TheAlgorithms/Python depends on a couple of "placeholder" packages:
+# - The qiskit package does not provide the "qiskit" import name, but depends
+#   on other packages to populate the "qiskit" namespace.
+# - The same is true for tensorflow on Windows: The package itself is only 1.9kB
+#   and does not provide any import names at all, rather it depends on another
+#   package, tensorflow-intel, which contains the actual meat (266MB).
+#
+# Since we `pip install` with `--no-deps`, the dependencies of these packages
+# are not automatically present in our Python environment. But even if they
+# were, FawltyDeps would still not be able to recognize the connection between
+# the placeholder package and its transitive dependencies, and would therefore
+# still report the placeholder as _both_ an undeclared and unused dependency!
+#
+# The best way to work around this is to provide a custom mapping to resolve
+# these placeholders as they are intended to be used. We configure the custom
+# mapping by pointing to THIS file as a config file for FawltyDeps, which will
+# then parse the [tool.fawltydeps.custom_mapping] section below.
+args = ["--config-file", "$REAL_PROJECTS_DIR/python-algorithms.toml"]
+requirements = [
+    "beautifulsoup4",
+    "fake_useragent",
+    "keras",
+    "lxml",
+    "matplotlib",
+    "numpy",
+    "opencv-python",
+    "pandas",
+    "pillow",
+    "projectq",
+    "requests",
+    "rich",
+    "scikit-fuzzy",
+    "scikit-learn",
+    "statsmodels",
+    "sympy",
+    "texttable",
+    "tweepy",
+    "xgboost",
+    "yulewalker",
+]
+# When we run FawltyDeps with the above arguments, we expect these results:
+undeclared_deps = [
+    "django",
+    "mpmath",
+    "pytest",
+    "scipy",
+    "seaborn",
+]
+
+unused_deps = [
+    "keras",
+    "projectq",
+    "texttable",
+    "yulewalker",
+]
+
+[tool.fawltydeps.custom_mapping]
+qiskit = ["qiskit"]
+tensorflow = ["tensorflow"]

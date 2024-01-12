@@ -57,12 +57,8 @@ def run_fawltydeps_json(
     argv = [sys.executable, "-I", "-m", "fawltydeps", "--json"]
     if venv_dir is not None:
         argv += [f"--pyenv={venv_dir}", "--pyenv=."]
-    proc = subprocess.run(
-        argv + list(args),
-        stdout=subprocess.PIPE,
-        check=False,
-        cwd=cwd,
-    )
+    argv += [arg.replace("$REAL_PROJECTS_DIR", str(REAL_PROJECTS_DIR)) for arg in args]
+    proc = subprocess.run(argv, stdout=subprocess.PIPE, check=False, cwd=cwd)
     # Check if return code does not indicate error (see main.main for the full list)
     assert proc.returncode in {0, 3, 4}
     return json.loads(proc.stdout)  # type: ignore
@@ -172,11 +168,6 @@ class ThirdPartyProject(BaseProject):
         return Path(cache.mkdir(f"fawltydeps_{self.tarball.sha256}"))
 
 
-@pytest.mark.skipif(
-    sys.platform.startswith("win"),
-    reason="Real projects test are not supported on Windows"
-    " due to the test environment complications.",
-)
 @pytest.mark.parametrize(
     "project, experiment",
     [
