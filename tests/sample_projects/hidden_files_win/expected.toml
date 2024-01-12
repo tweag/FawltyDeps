@@ -1,12 +1,12 @@
 [project]
 # General information about a simplified project: Its name, why we test it,
 # its relation to real world projects
-name = "hidden_files"
+name = "hidden_files_win"
 description = """
     A project with code/deps in hidden files and inside hidden dirs, as well as
     pyenvs that are inside hidden dirs (one of them being a hidden dir itself)
 """
-posix_only = true
+windows_only = true
 
 [experiments.default]
 description = "Default run where everything is hidden."

@@ -1,0 +1,2 @@
+pandas
+tensorflow>=2

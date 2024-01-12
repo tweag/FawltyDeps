@@ -1,7 +1,7 @@
 [project]
 # General information about a simplified project: Its name, why we test it,
 # its relation to real world projects
-name = "no_issues"
+name = "no_issues_win"
 description = """
     A project where listed dependencies match imported ones.
     Dependencies are listed in main requirement.txt file and
@@ -10,7 +10,7 @@ description = """
     This example was build to test command-line options in a happy case.
     Tests are implemented in 'test_cmdline_options.py'
 """
-posix_only = true
+windows_only = true
 
 [experiments.default]
 description = "Default run"

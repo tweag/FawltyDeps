@@ -1,14 +1,14 @@
 [project]
 # General information about a simplified project: Its name, why we test it,
 # its relation to real world projects
-name = "pyenv_galore"
+name = "pyenv_galore_win"
 description = """
     An empty project with a variety of Python environments.
     When FawltyDeps is run here, the Python environments should be auto-detected
     and any code or dependency files within should NOT be picked up by .code or
     .deps.
 """
-posix_only = true
+windows_only = true
 
 [experiments.default]
 description = "Run fawltydeps in an empty project with Python envs present."
