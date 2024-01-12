@@ -21,7 +21,6 @@ tests/sample_projects
 """
 from __future__ import annotations
 
-import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterator, List, Optional
@@ -114,7 +113,6 @@ class SampleProject(BaseProject):
             yield cls(path=subdir, **cls._init_args_from_toml(toml_data, Experiment))
 
 
-@pytest.mark.skipif(sys.platform.startswith("win"), reason="TODO: fix on Windows #410")
 @pytest.mark.parametrize(
     "project, experiment",
     [
