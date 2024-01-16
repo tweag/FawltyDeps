@@ -192,6 +192,25 @@ def test_gitignore_parser_w_abs_paths(vector: GitignoreParserTestVector):
         )
 
 
+@pytest.mark.parametrize("vector", [pytest.param(v, id=v.id) for v in test_vectors])
+def test_gitignore_parser_w_rel_paths(vector: GitignoreParserTestVector):
+    rules = list(
+        parse_gitignore_lines(
+            vector.patterns, Path(vector.base_dir), Path(vector.base_dir, ".gitignore")
+        )
+    )
+    # Use a trailing '/' in the test vectors to signal is_dir=True.
+    # This trailing slash is stripped by Path() in any case.
+    for path in vector.does_match:
+        assert match_rules(
+            rules, Path(path), isinstance(path, str) and path.endswith("/")
+        )
+    for path in vector.doesnt_match:
+        assert not match_rules(
+            rules, Path(path), isinstance(path, str) and path.endswith("/")
+        )
+
+
 def test_symlink_to_another_directory(tmp_path):
     project_dir = tmp_path / "project_dir"
     link = project_dir / "link"
