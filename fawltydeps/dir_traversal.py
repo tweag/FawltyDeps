@@ -1,5 +1,7 @@
 """Utilities for traversing directory structures."""
 
+from __future__ import annotations
+
 import logging
 import os
 from dataclasses import dataclass, field
@@ -38,11 +40,21 @@ class DirId(NamedTuple):
     ino: int
 
     @classmethod
-    @lru_cache()  # Cache stat() calls
-    def from_path(cls, path: Path) -> "DirId":
-        """Construct DirId from given directory path."""
-        dir_stat = path.stat()
+    @lru_cache()  # Cache stat() calls, but only with absolute paths
+    def from_abs_path(cls, abs_path: Path) -> DirId:
+        """Construct DirId from given absolute directory path."""
+        assert abs_path.is_absolute()  # sanity check
+        dir_stat = abs_path.stat()  # <- expensive
         return cls(dir_stat.st_dev, dir_stat.st_ino)
+
+    @classmethod
+    def from_path(cls, path: Path) -> DirId:
+        """Construct DirId from given directory path."""
+        # Cannot cache calls with relative paths, as caching the result of
+        # DirId.from_path(".") is wrong as soon as CWD is changed.
+        if not path.is_absolute():
+            path = Path.cwd() / path
+        return cls.from_abs_path(path)
 
 
 @dataclass(frozen=True, order=True)
@@ -203,7 +215,7 @@ class DirectoryTraversal(Generic[T]):
                     subdirs[:] = []  # don't recurse into subdirs
                     continue  # skip to next
 
-                logger.debug(f"  Traversing {cur_dir}")
+                logger.debug(f"  Traversing {cur_dir}: {cur_id}")
                 self.skip_dirs.add(cur_id)  # don't traverse this dir again
 
                 subdir_paths = {cur_dir / subdir for subdir in subdirs}
