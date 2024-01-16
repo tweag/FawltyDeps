@@ -15,6 +15,18 @@ from .project_helpers import TarballPackage
 
 
 @pytest.fixture
+def inside_tmp_path(monkeypatch, tmp_path):
+    """Convenience fixture to run a test with CWD set to tmp_path.
+
+    This allows a test to run as if FalwtyDeps was invoked inside the temporary
+    scratch directory. Allows testing of relative paths (inside tmp_path) that
+    are closer to how most users run FawltyDeps inside their own projects.
+    """
+    monkeypatch.chdir(tmp_path)
+    return tmp_path
+
+
+@pytest.fixture
 def local_pypi(request, monkeypatch):
     cache_dir = TarballPackage.cache_dir(request.config.cache)
     TarballPackage.get_tarballs(request.config.cache)

@@ -66,10 +66,9 @@ class AbsoluteSymlink(BaseEntry):
     target: str
 
     def __call__(self, tmp_path: Path):
-        assert tmp_path.is_absolute()
         path = tmp_path / self.path
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.symlink_to(tmp_path / self.target)
+        path.symlink_to(tmp_path.resolve() / self.target)
 
 
 @dataclass
@@ -896,6 +895,16 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
 def test_DirectoryTraversal_w_abs_paths(vector: DirectoryTraversalVector, tmp_path):
     traversal = vector.setup(tmp_path)  # Traverse tmp_path with absolute paths
     vector.verify_traversal(traversal, tmp_path)
+
+
+@pytest.mark.parametrize(
+    "vector", [pytest.param(v, id=v.id) for v in directory_traversal_vectors]
+)
+def test_DirectoryTraversal_w_rel_paths(
+    vector: DirectoryTraversalVector, inside_tmp_path
+):
+    traversal = vector.setup(Path("."))  # Traverse relatively from inside tmp_path
+    vector.verify_traversal(traversal, Path("."))
 
 
 def test_DirectoryTraversal__raises_error__when_adding_missing_dir(tmp_path):
