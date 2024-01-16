@@ -128,12 +128,18 @@ class Rule(NamedTuple):
         will raise RuleMissing, and other errors while parsing will raise
         RuleError.
 
-        Because git allows for nested .gitignore files, a base_dir value is
-        required for correct behavior. The base path should be absolute.
-        """
-        if base_dir is not None and not base_dir.is_absolute():
-            raise RuleError("base_dir must be absolute", str(base_dir), source)
+        The base_dir argument is needed for two things:
+         1. To provide the "anchor" for "anchored" rules, i.e. when a rule like
+            "/foo.py" or "foo/bar" is given, the rule is interpreted relative to
+            base_dir. Using anchored rules without a base_dir is not supported
+            and will raise a RuleError.
+         2. To support nested .gitignore files, base_dir should be set to the
+            parent directory of the .gitignore file. This allows e.g. rules from
+            foo/.gitignore to only apply to paths under foo/.
 
+        For unanchored pattterns that do not originate from a .gitignore file,
+        the default base_dir = None is appropriate.
+        """
         # Store the exact pattern for our repr and string functions
         orig_pattern = pattern
 
@@ -188,15 +194,15 @@ class Rule(NamedTuple):
             source=source,
         )
 
-    def match(self, abs_path: Path, is_dir: bool) -> bool:
-        """Return True iff the given 'abs_path' should be ignored."""
+    def match(self, path: Path, is_dir: bool) -> bool:
+        """Return True iff the given path should be ignored."""
         if self.base_dir:
             try:
-                rel_path = abs_path.relative_to(self.base_dir).as_posix()
-            except ValueError:  # abs_path not relative to self.base_dir
+                rel_path = path.relative_to(self.base_dir).as_posix()
+            except ValueError:  # path not relative to self.base_dir
                 return False
         else:
-            rel_path = str(abs_path)
+            rel_path = str(path)
         # Path() strips the trailing slash, so we need to preserve it
         # in case of directory-only negation
         if self.negated and is_dir:
