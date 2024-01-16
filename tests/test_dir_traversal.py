@@ -523,6 +523,41 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
         ],
     ),
     DirectoryTraversalVector(
+        "exclude_pattern_without_slash_at_end__matches_dir_and_file",
+        given=[
+            File("dir1/some_path"),  # some_path is not a dir
+            File("dir2/some_path/a_file"),  # some_path is a dir
+        ],
+        exclude_patterns=[ExcludePattern("some_path")],  # matches both
+        expect=[
+            ExpectedTraverseStep(".", subdirs=["dir1", "dir2"]),
+            ExpectedTraverseStep("dir1", excluded_files=["some_path"]),
+            ExpectedTraverseStep("dir2", excluded_subdirs=["some_path"]),
+        ],
+    ),
+    DirectoryTraversalVector(
+        "exclude_pattern_with_slash_at_end__overridden_by_specified_path",
+        given=[File("dir/some_path/a_file")],
+        exclude_patterns=[ExcludePattern("some_path/")],
+        add=[AddCall(path="."), AddCall(path="dir/some_path")],
+        expect=[
+            ExpectedTraverseStep(".", subdirs=["dir"]),
+            ExpectedTraverseStep("dir", subdirs=["some_path"]),
+            ExpectedTraverseStep("dir/some_path", files=["a_file"]),
+        ],
+    ),
+    DirectoryTraversalVector(
+        "exclude_pattern_without_slash_at_end__overridden_by_specified_path",
+        given=[File("dir/some_path/a_file")],
+        exclude_patterns=[ExcludePattern("some_path")],
+        add=[AddCall(path="."), AddCall(path="dir/some_path")],
+        expect=[
+            ExpectedTraverseStep(".", subdirs=["dir"]),
+            ExpectedTraverseStep("dir", subdirs=["some_path"]),
+            ExpectedTraverseStep("dir/some_path", files=["a_file"]),
+        ],
+    ),
+    DirectoryTraversalVector(
         "exclude_pattern_with_combined_slashes_and_base_dir",
         given=[
             Dir("b"),
