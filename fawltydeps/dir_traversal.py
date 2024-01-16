@@ -163,7 +163,7 @@ class DirectoryTraversal(Generic[T]):
 
     def _do_exclude(self, path: Path, is_dir: bool) -> bool:
         """Check if given path is excluded by any of our exclude rules."""
-        return match_rules(self.exclude_rules, path.resolve(), is_dir)
+        return match_rules(self.exclude_rules, path, is_dir)
 
     def traverse(self) -> Iterator[TraversalStep[T]]:
         """Perform the traversal of the added directories.
