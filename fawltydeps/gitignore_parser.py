@@ -186,7 +186,7 @@ class Rule(NamedTuple):
 
         return cls(
             pattern=orig_pattern,
-            regex=fnmatch_pathname_to_regex(pattern, dir_only, negated, anchored),
+            regex=fnmatch_pathname_to_regex(pattern, anchored),
             negated=negated,
             dir_only=dir_only,
             anchored=anchored,
@@ -225,9 +225,7 @@ NONSEP = rf"[^{'|'.join(SEPS)}]"
 
 # Frustratingly, python's fnmatch doesn't provide the FNM_PATHNAME option that
 # .gitignore's behavior depends on, so convert the pattern to a regex instead.
-def fnmatch_pathname_to_regex(
-    pattern: str, dir_only: bool, negated: bool, anchored: bool = False
-) -> CompiledRegex:  # pylint: disable=unsubscriptable-object
+def fnmatch_pathname_to_regex(pattern: str, anchored: bool = False) -> CompiledRegex:
     """Convert the given fnmatch-style pattern to the equivalent regex.
 
     Implements fnmatch style-behavior, as though with FNM_PATHNAME flagged;
@@ -273,11 +271,6 @@ def fnmatch_pathname_to_regex(
         result.insert(0, "^")
     else:
         result.insert(0, f"(^|{SEPS_GROUP})")
-    if not dir_only:
-        result.append("$")
-    elif dir_only and negated:
-        result.append("/$")
-    else:
-        result.append("($|\\/)")
+    result.append("$")
 
     return re.compile("".join(result))

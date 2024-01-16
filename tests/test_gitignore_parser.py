@@ -84,12 +84,32 @@ test_vectors = [
         [".venv/"],
         does_match=[
             ".venv/",  # a dir
-            ".venv/folder/",
-            ".venv/file.txt",
+            "subdir/.venv/",
         ],
         doesnt_match=[
             ".venv",  # not a dir
             ".venv_other_folder",
+            ".venv_no_folder.py",
+            # The following two has been moved from does_match to doesnt_match,
+            # and reflect that gitignore_parser no longer evaluates patterns in
+            # complete isolation. Instead, it expects parent dirs to be tested/
+            # matched _before_ their children. If a parent matches (i.e. should
+            # be ignored) then we don't expect the child to be tested at all
+            # (i.e. the parent dir is never traversed). Thus, the child is NOT
+            # responsible for matching its parent dir against the pattern.
+            ".venv/folder/",  # folder/ does not match .venv/
+            ".venv/file.txt",  # file.txt does not match .venv/
+        ],
+    ),
+    GitignoreParserTestVector(
+        "ignore_directory_also_without_trailing_slash",
+        [".venv"],
+        does_match=[
+            ".venv/",  # a dir
+            ".venv",  # not a dir
+        ],
+        doesnt_match=[
+            ".venv_other_folder/",
             ".venv_no_folder.py",
         ],
     ),
