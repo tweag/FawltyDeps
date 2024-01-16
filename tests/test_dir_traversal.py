@@ -117,7 +117,7 @@ class ExcludePattern:
 
 
 @dataclass(frozen=True)
-class DirectoryTraversalVector(Generic[T]):
+class DirectoryTraversalVector:
     """Test vectors for DirectoryTraversal."""
 
     id: str
@@ -129,6 +129,60 @@ class DirectoryTraversalVector(Generic[T]):
     expect: List[ExpectedTraverseStep] = field(default_factory=list)
     expect_alternatives: Optional[List[List[ExpectedTraverseStep]]] = None
     skip_me: Optional[str] = None
+
+    def setup(self, setup_dir: Path) -> DirectoryTraversal:
+        """Perform the setup of a DirectoryTraversal object.
+
+        Set up the file structure in self.given under the given 'setup_dir', and
+        prepare a new DirectoryTraversal object by calling .add(), .skip_dir(),
+        and .exclude() as indicated by the corresponding members of self.
+        Also verify any exceptions raised by .exclude() against
+        self.exclude_exceptions.
+
+        Return the DirectoryTraversal object without calling .traverse() on it.
+        """
+        if self.skip_me is not None:
+            pytest.skip(self.skip_me)
+
+        for entry in self.given:
+            entry(setup_dir)
+
+        traversal: DirectoryTraversal = DirectoryTraversal()
+        for call in self.add:
+            traversal.add(setup_dir / call.path, *call.attach)
+        for path in self.skip_dirs:
+            traversal.skip_dir(setup_dir / path)
+        exceptions_from_exclude = []
+        for ipat in self.exclude_patterns:
+            base_dir = None if ipat.base_dir is None else setup_dir / ipat.base_dir
+            try:
+                traversal.exclude(ipat.pattern, base_dir=base_dir)
+            except Exception as e:
+                exceptions_from_exclude.append(e)
+        if not self.exclude_exceptions:  # no exceptions are expected
+            for exc in exceptions_from_exclude:
+                raise exc  # raise the exception itself here
+        assert self.exclude_exceptions == [type(e) for e in exceptions_from_exclude]
+
+        return traversal
+
+    def verify_traversal(self, traversal: DirectoryTraversal, setup_dir: Path) -> None:
+        """Perform the traversal and verify that expectations hold."""
+        actual = list(traversal.traverse())
+        if self.expect_alternatives is None:  # self.expect _must_ match
+            expect = [step.prepare(setup_dir) for step in self.expect]
+            assert_unordered_equivalence(actual, expect)
+        else:  # one of the alternatives must match
+            for alternative in self.expect_alternatives:
+                expect = [step.prepare(setup_dir) for step in alternative]
+                try:
+                    assert_unordered_equivalence(actual, expect)
+                except AssertionError:  # this alternative failed
+                    continue  # skip to next alternative
+                else:  # this alternative passed
+                    break  # abort loop and skip below else clause
+            else:  # we exhausted all alternatives
+                assert False, f"None of the alternatives matched {actual}"
 
 
 def on_windows(msg: str) -> Optional[str]:
@@ -839,42 +893,9 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
 @pytest.mark.parametrize(
     "vector", [pytest.param(v, id=v.id) for v in directory_traversal_vectors]
 )
-def test_DirectoryTraversal(vector: DirectoryTraversalVector, tmp_path):
-    if vector.skip_me is not None:
-        pytest.skip(vector.skip_me)
-
-    for entry in vector.given:
-        entry(tmp_path)
-
-    traversal: DirectoryTraversal = DirectoryTraversal()
-    for call in vector.add:
-        traversal.add(tmp_path / call.path, *call.attach)
-    for path in vector.skip_dirs:
-        traversal.skip_dir(tmp_path / path)
-    exclude_exceptions = []
-    for ipat in vector.exclude_patterns:
-        base_dir = None if ipat.base_dir is None else tmp_path / ipat.base_dir
-        try:
-            traversal.exclude(ipat.pattern, base_dir=base_dir)
-        except Exception as e:
-            exclude_exceptions.append(type(e))
-    assert vector.exclude_exceptions == exclude_exceptions
-
-    actual = list(traversal.traverse())
-    if vector.expect_alternatives is None:  # vector.expect _must_ match
-        expect = [step.prepare(tmp_path) for step in vector.expect]
-        assert_unordered_equivalence(actual, expect)
-    else:  # one of the alternatives must match
-        for alternative in vector.expect_alternatives:
-            expect = [step.prepare(tmp_path) for step in alternative]
-            try:
-                assert_unordered_equivalence(actual, expect)
-            except AssertionError:  # this alternative failed
-                continue  # skip to next alternative
-            else:  # this alternative passed
-                break  # abort loop and skip below else clause
-        else:  # we exhausted all alternatives
-            assert False, f"None of the alternatives matched {actual}"
+def test_DirectoryTraversal_w_abs_paths(vector: DirectoryTraversalVector, tmp_path):
+    traversal = vector.setup(tmp_path)  # Traverse tmp_path with absolute paths
+    vector.verify_traversal(traversal, tmp_path)
 
 
 def test_DirectoryTraversal__raises_error__when_adding_missing_dir(tmp_path):
