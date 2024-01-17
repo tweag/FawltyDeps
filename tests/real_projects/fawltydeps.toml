@@ -1,0 +1,147 @@
+[project]
+# General information about the 3rd-party project: Its name, why we test it,
+# and where to find the relevant tarball, along with its expected checksum.
+name = "fawltydeps"
+description = "Eating our own dog food..."
+url = "https://github.com/tweag/fawltydeps/archive/refs/tags/v0.13.3.tar.gz"
+sha256 = "d4036fd3a3bd9b08526a12ae1eb0e91557c353128c60cb47184fe613c52bcbdd"
+# The SHA256 checksum above can be found by running `sha256sum` on the
+# downloaded tarball. It is used to ensure that we run tests against the
+# expected revision of the 3rd-party project.
+
+# Below are our experiments which run FawltyDeps with various options on the
+# above (unpacked) tarball. Each table represents an experiment with the
+# command-line arguments we pass to FawltyDeps (in `args`, --json is implicitly
+# added by test_real_projects), as well as our expectations for what FawltyDeps
+# should return in that scenario. These expectations are encoded as lists of
+# import/dependency names which we expect to be present in the corresponding
+# parts of the JSON: imports, declared_deps, undeclared_deps, and unused_deps.
+# All these fields are optional, and the verification will be skipped for
+# missing fields.
+
+[experiments.default]
+description = "Run FD with no options, picking up config from pyproject.toml"
+requirements = [  # Direct deps with pinned versions resolved by Poetry
+    "importlib-metadata==6.7.0 ; python_version < '3.8'",
+    "importlib-metadata==7.0.1 ; python_version >= '3.8'",
+    "isort==5.11.5 ; python_version < '3.8'",
+    "isort==5.13.2 ; python_version >= '3.8'",
+    "pip-requirements-parser==32.0.1",
+    "pydantic==2.5.3",
+    "setuptools==68.0.0 ; python_version < '3.8'",
+    "setuptools==69.0.3 ; python_version >= '3.8'",
+    "tomli==2.0.1 ; python_version < '3.11'",
+    "types-setuptools==65.7.0.4",
+    "typing-extensions==4.7.1",
+]
+args = []
+# When we run FawltyDeps with the above arguments, we expect these results:
+undeclared_deps = []
+unused_deps =  []
+
+[experiments.exclude_overlap]
+description = """
+    Try to exclude "fawltydeps", but ineffective since code=fawltydeps from
+    pyproject.toml overrides this --exclude.
+    """
+requirements = [  # Direct deps with pinned versions resolved by Poetry
+    "importlib-metadata==6.7.0 ; python_version < '3.8'",
+    "importlib-metadata==7.0.1 ; python_version >= '3.8'",
+    "isort==5.11.5 ; python_version < '3.8'",
+    "isort==5.13.2 ; python_version >= '3.8'",
+    "pip-requirements-parser==32.0.1",
+    "pydantic==2.5.3",
+    "setuptools==68.0.0 ; python_version < '3.8'",
+    "setuptools==69.0.3 ; python_version >= '3.8'",
+    "tomli==2.0.1 ; python_version < '3.11'",
+    "types-setuptools==65.7.0.4",
+    "typing-extensions==4.7.1",
+]
+args = ["--exclude=fawltydeps"]
+# When we run FawltyDeps with the above arguments, we expect these results:
+undeclared_deps = []
+unused_deps =  []
+
+[experiments.exclude_dir_overlap]
+description = """
+    Try to exclude "fawltydeps/", but ineffective since code=fawltydeps from
+    pyproject.toml still overrides this --exclude.
+    """
+requirements = [  # Direct deps with pinned versions resolved by Poetry
+    "importlib-metadata==6.7.0 ; python_version < '3.8'",
+    "importlib-metadata==7.0.1 ; python_version >= '3.8'",
+    "isort==5.11.5 ; python_version < '3.8'",
+    "isort==5.13.2 ; python_version >= '3.8'",
+    "pip-requirements-parser==32.0.1",
+    "pydantic==2.5.3",
+    "setuptools==68.0.0 ; python_version < '3.8'",
+    "setuptools==69.0.3 ; python_version >= '3.8'",
+    "tomli==2.0.1 ; python_version < '3.11'",
+    "types-setuptools==65.7.0.4",
+    "typing-extensions==4.7.1",
+]
+args = ["--exclude=fawltydeps/"]
+# When we run FawltyDeps with the above arguments, we expect these results:
+undeclared_deps = []
+unused_deps =  []
+
+[experiments.exclude_no_overlap]
+description = """
+    Exclude "fawltydeps/*" successfully, since it does not directly overlap
+    with code=fawltydeps in pyproject.toml
+    """
+requirements = [  # Direct deps with pinned versions resolved by Poetry
+    "importlib-metadata==6.7.0 ; python_version < '3.8'",
+    "importlib-metadata==7.0.1 ; python_version >= '3.8'",
+    "isort==5.11.5 ; python_version < '3.8'",
+    "isort==5.13.2 ; python_version >= '3.8'",
+    "pip-requirements-parser==32.0.1",
+    "pydantic==2.5.3",
+    "setuptools==68.0.0 ; python_version < '3.8'",
+    "setuptools==69.0.3 ; python_version >= '3.8'",
+    "tomli==2.0.1 ; python_version < '3.11'",
+    "types-setuptools==65.7.0.4",
+    "typing-extensions==4.7.1",
+]
+args = ["--exclude=fawltydeps/*"]
+# When we run FawltyDeps with the above arguments, we expect these results:
+undeclared_deps = []
+unused_deps =  [
+    "importlib_metadata",
+    "isort",
+    "pip-requirements-parser",
+    "pydantic",
+    "setuptools",
+    "tomli",
+    "types-setuptools",
+    "typing-extensions",
+]
+
+[experiments.exclude_anchored]
+description = """
+    Exclude "fawltydeps/extract_*" successfully, since it does not directly
+    overlap with code=fawltydeps in pyproject.toml. This verifies that anchored
+    patterns can be passed on the command-line.
+    """
+requirements = [  # Direct deps with pinned versions resolved by Poetry
+    "importlib-metadata==6.7.0 ; python_version < '3.8'",
+    "importlib-metadata==7.0.1 ; python_version >= '3.8'",
+    "isort==5.11.5 ; python_version < '3.8'",
+    "isort==5.13.2 ; python_version >= '3.8'",
+    "pip-requirements-parser==32.0.1",
+    "pydantic==2.5.3",
+    "setuptools==68.0.0 ; python_version < '3.8'",
+    "setuptools==69.0.3 ; python_version >= '3.8'",
+    "tomli==2.0.1 ; python_version < '3.11'",
+    "types-setuptools==65.7.0.4",
+    "typing-extensions==4.7.1",
+]
+args = ["--exclude=fawltydeps/extract_*"]
+# When we run FawltyDeps with the above arguments, we expect these results:
+undeclared_deps = []
+unused_deps =  [
+    "isort",
+    "pip-requirements-parser",
+    "setuptools",
+    "types-setuptools",
+]

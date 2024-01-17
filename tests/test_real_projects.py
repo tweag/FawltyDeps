@@ -7,7 +7,6 @@ should find/report.
 """
 import json
 import logging
-import os
 import subprocess
 import sys
 import tarfile
@@ -53,9 +52,9 @@ def verify_requirements(venv_path: Path, requirements: List[str]) -> None:
 def run_fawltydeps_json(
     *args: str, venv_dir: Optional[Path], cwd: Optional[Path] = None
 ) -> JsonData:
-    argv = [sys.executable, "-m", "fawltydeps", f"--config-file={os.devnull}", "--json"]
+    argv = [sys.executable, "-I", "-m", "fawltydeps", "--json"]
     if venv_dir is not None:
-        argv += [f"--pyenv={venv_dir}"]
+        argv += [f"--pyenv={venv_dir}", "--pyenv=."]
     proc = subprocess.run(
         argv + list(args),
         stdout=subprocess.PIPE,
