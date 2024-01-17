@@ -580,7 +580,7 @@ find_sources_vectors = [
 @pytest.mark.parametrize(
     "vector", [pytest.param(v, id=v.id) for v in find_sources_vectors]
 )
-def test_find_sources(vector: TraverseProjectVector):
+def test_find_sources_with_absolute_paths(vector: TraverseProjectVector):
     project_dir = SAMPLE_PROJECTS_DIR / vector.project
     assert project_dir.is_dir()
     settings = Settings(
@@ -594,11 +594,57 @@ def test_find_sources(vector: TraverseProjectVector):
         exclude=vector.exclude,
     )
     expect_imports_src = {
-        path if path == "<stdin>" else project_dir / path
+        "<stdin>" if path == "<stdin>" else project_dir / path
         for path in vector.expect_imports_src
     }
     expect_deps_src = {project_dir / path for path in vector.expect_deps_src}
     expect_pyenv_src = {project_dir / path for path in vector.expect_pyenv_src}
+
+    actual_imports_src: Set[PathOrSpecial] = set()
+    actual_deps_src: Set[Path] = set()
+    actual_pyenv_src: Set[Path] = set()
+
+    if vector.expect_raised is not None:
+        with pytest.raises(vector.expect_raised):
+            list(find_sources(settings))
+        return
+
+    for src in find_sources(settings):
+        if isinstance(src, CodeSource):
+            actual_imports_src.add(src.path)
+        elif isinstance(src, DepsSource):
+            actual_deps_src.add(src.path)
+        elif isinstance(src, PyEnvSource):
+            actual_pyenv_src.add(src.path)
+        else:
+            raise TypeError(src)
+
+    assert actual_imports_src == expect_imports_src
+    assert actual_deps_src == expect_deps_src
+    assert actual_pyenv_src == expect_pyenv_src
+
+
+@pytest.mark.skipif(sys.platform.startswith("win"), reason="TODO: fix on Windows #410")
+@pytest.mark.parametrize(
+    "vector", [pytest.param(v, id=v.id) for v in find_sources_vectors]
+)
+def test_find_sources_with_relative_paths(vector: TraverseProjectVector, monkeypatch):
+    project_dir = SAMPLE_PROJECTS_DIR / vector.project
+    assert project_dir.is_dir()
+    monkeypatch.chdir(project_dir)
+    settings = Settings(
+        code={"<stdin>" if path == "<stdin>" else Path(path) for path in vector.code},
+        deps={Path(path) for path in vector.deps},
+        deps_parser_choice=vector.deps_parser_choice,
+        pyenvs={Path(path) for path in vector.pyenvs},
+        exclude=vector.exclude,
+    )
+    expect_imports_src = {
+        "<stdin>" if path == "<stdin>" else Path(path)
+        for path in vector.expect_imports_src
+    }
+    expect_deps_src = {Path(path) for path in vector.expect_deps_src}
+    expect_pyenv_src = {Path(path) for path in vector.expect_pyenv_src}
 
     actual_imports_src: Set[PathOrSpecial] = set()
     actual_deps_src: Set[Path] = set()
