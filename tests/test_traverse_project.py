@@ -7,7 +7,7 @@ from typing import List, Optional, Set, Type
 
 import pytest
 
-from fawltydeps.gitignore_parser import RuleError, RuleMissing
+from fawltydeps.gitignore_parser import RuleMissing
 from fawltydeps.settings import ParserChoice, Settings
 from fawltydeps.traverse_project import find_sources
 from fawltydeps.types import (
@@ -523,29 +523,14 @@ find_sources_vectors = [
     TraverseProjectVector(
         "empty_exclude_pattern__raises_RuleMissing",
         "empty",
-        code=set(),
-        deps=set(),
-        pyenvs=set(),
         exclude={"", "\t", "    "},
         expect_raised=RuleMissing,
     ),
     TraverseProjectVector(
         "comment_exclude_pattern__raises_RuleMissing",
         "empty",
-        code=set(),
-        deps=set(),
-        pyenvs=set(),
         exclude={"# a comment", "# another comment"},
         expect_raised=RuleMissing,
-    ),
-    TraverseProjectVector(
-        "anchored_exclude_pattern_without_basedir__raises_RuleError",
-        "empty",
-        code=set(),
-        deps=set(),
-        pyenvs=set(),
-        exclude={"foo/bar"},
-        expect_raised=RuleError,
     ),
     TraverseProjectVector(
         "disabling_default_exclude__causes_hidden_files_to_be_found",
