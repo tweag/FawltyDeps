@@ -6,6 +6,7 @@ from typing import AbstractSet, Iterator, Optional, Set, Tuple, Type, Union
 from fawltydeps.dir_traversal import DirectoryTraversal
 from fawltydeps.extract_declared_dependencies import validate_deps_source
 from fawltydeps.extract_imports import validate_code_source
+from fawltydeps.gitignore_parser import RuleError as ExcludeRuleError
 from fawltydeps.packages import validate_pyenv_source
 from fawltydeps.settings import Settings
 from fawltydeps.types import (
@@ -61,16 +62,23 @@ def find_sources(  # pylint: disable=too-many-branches,too-many-statements
     logger.debug(f"    code:   {settings.code}")
     logger.debug(f"    deps:   {settings.deps}")
     logger.debug(f"    pyenvs: {settings.pyenvs}")
-
-    traversal: DirectoryTraversal[AttachedData] = DirectoryTraversal()
-    for pattern in settings.exclude:
-        traversal.exclude(pattern)
+    logger.debug(f"    exclude: {settings.exclude}")
 
     requested_paths = {
         path
         for path in settings.code | settings.deps | settings.pyenvs
         if isinstance(path, Path)
     }
+
+    traversal: DirectoryTraversal[AttachedData] = DirectoryTraversal()
+    for pattern in settings.exclude:
+        try:
+            traversal.exclude(pattern)
+        except ExcludeRuleError:  # Anchored pattern needs a base_dir
+            for path in requested_paths:
+                if path.is_dir():
+                    traversal.exclude(pattern, base_dir=path)
+
     defaults = Settings.config(config_file=None)()
     default_paths = defaults.code | defaults.code | defaults.pyenvs
     if settings.exclude != defaults.exclude:  # non-default exclude

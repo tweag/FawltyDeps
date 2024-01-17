@@ -286,17 +286,6 @@ def test_list_imports__comment_in_exclude_pattern__fails_with_exit_code_2(tmp_pa
     assert returncode == 2
 
 
-def test_list_imports__error_in_exclude_pattern__fails_with_exit_code_2(tmp_path):
-    _output, errors, returncode = run_fawltydeps_subprocess(
-        "--list-imports", "--exclude=foo/bar"
-    )
-    assert (
-        "Error while parsing exclude pattern: Anchored pattern without base_dir: 'foo/bar'"
-        in errors
-    )
-    assert returncode == 2
-
-
 def test_list_imports__from_empty_dir__logs_but_extracts_nothing(tmp_path):
     # Enable log level INFO with --verbose
     expect_logs = [
