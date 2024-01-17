@@ -1,8 +1,9 @@
 """Test that we can traverse a project to find our inputs."""
 import dataclasses
+import logging
 import sys
 from pathlib import Path
-from typing import Optional, Set, Type
+from typing import List, Optional, Set, Type
 
 import pytest
 
@@ -18,6 +19,7 @@ from fawltydeps.types import (
 )
 
 from .test_sample_projects import SAMPLE_PROJECTS_DIR
+from .utils import assert_unordered_equivalence
 
 
 @dataclasses.dataclass
@@ -36,7 +38,9 @@ class TraverseProjectVector:
     expect_imports_src: Set[str] = dataclasses.field(default_factory=set)
     expect_deps_src: Set[str] = dataclasses.field(default_factory=set)
     expect_pyenv_src: Set[str] = dataclasses.field(default_factory=set)
+    # These are the exceptions we expect to be raised, or warnings to be logged
     expect_raised: Optional[Type[Exception]] = None
+    expect_warnings: List[str] = dataclasses.field(default_factory=list)
 
 
 find_sources_vectors = [
@@ -573,6 +577,62 @@ find_sources_vectors = [
             ".venvs/another-venv/lib/python3.11/site-packages",
         },
     ),
+    #
+    # Test overlap/conflict between given --code/--deps/--pyenv and --exclude
+    #
+    TraverseProjectVector(
+        "customized_excludes_overlaps_with_code_path__warns_about_overlap",
+        "hidden_files",
+        code={".hidden_dir"},
+        deps=set(),
+        pyenvs=set(),
+        exclude={".hidden_dir/"},
+        expect_imports_src={".hidden_dir/code.py"},
+        expect_warnings=[".hidden_dir is both requested and excluded. Will include."],
+    ),
+    TraverseProjectVector(
+        "customized_excludes_overlaps_with_deps_path__warns_about_overlap",
+        "hidden_files",
+        code=set(),
+        deps={".hidden_dir", "."},
+        pyenvs=set(),
+        exclude={".hidden_dir", ".*"},
+        expect_deps_src={".hidden_dir/requirements.txt"},
+        expect_warnings=[".hidden_dir is both requested and excluded. Will include."],
+    ),
+    TraverseProjectVector(
+        "customized_excludes_overlaps_with_pyenv_path__warns_about_overlap",
+        "hidden_files",
+        code=set(),
+        deps=set(),
+        pyenvs={".venvs"},
+        exclude={".*envs/"},
+        expect_pyenv_src={
+            ".venvs/.venv/lib/python3.10/site-packages",
+            ".venvs/another-venv/lib/python3.8/site-packages",
+            ".venvs/another-venv/lib/python3.11/site-packages",
+        },
+        expect_warnings=[".venvs is both requested and excluded. Will include."],
+    ),
+    TraverseProjectVector(
+        "customized_excludes_overlaps_with_several_paths__warns_once_per_path",
+        "hidden_files",
+        code={".hidden_dir"},
+        deps={".hidden_dir"},
+        pyenvs={".venvs"},
+        exclude={".hidden*", ".venvs"},
+        expect_imports_src={".hidden_dir/code.py"},
+        expect_deps_src={".hidden_dir/requirements.txt"},
+        expect_pyenv_src={
+            ".venvs/.venv/lib/python3.10/site-packages",
+            ".venvs/another-venv/lib/python3.8/site-packages",
+            ".venvs/another-venv/lib/python3.11/site-packages",
+        },
+        expect_warnings=[
+            ".hidden_dir is both requested and excluded. Will include.",
+            ".venvs is both requested and excluded. Will include.",
+        ],
+    ),
 ]
 
 
@@ -580,7 +640,7 @@ find_sources_vectors = [
 @pytest.mark.parametrize(
     "vector", [pytest.param(v, id=v.id) for v in find_sources_vectors]
 )
-def test_find_sources_with_absolute_paths(vector: TraverseProjectVector):
+def test_find_sources_with_absolute_paths(vector: TraverseProjectVector, caplog):
     project_dir = SAMPLE_PROJECTS_DIR / vector.project
     assert project_dir.is_dir()
     settings = Settings(
@@ -609,6 +669,7 @@ def test_find_sources_with_absolute_paths(vector: TraverseProjectVector):
             list(find_sources(settings))
         return
 
+    caplog.set_level(logging.WARNING)
     for src in find_sources(settings):
         if isinstance(src, CodeSource):
             actual_imports_src.add(src.path)
@@ -623,12 +684,21 @@ def test_find_sources_with_absolute_paths(vector: TraverseProjectVector):
     assert actual_deps_src == expect_deps_src
     assert actual_pyenv_src == expect_pyenv_src
 
+    actual_warnings = [
+        record.message.replace(f"{project_dir}/", "")
+        for record in caplog.records
+        if record.levelno == logging.WARNING
+    ]
+    assert_unordered_equivalence(actual_warnings, vector.expect_warnings)
+
 
 @pytest.mark.skipif(sys.platform.startswith("win"), reason="TODO: fix on Windows #410")
 @pytest.mark.parametrize(
     "vector", [pytest.param(v, id=v.id) for v in find_sources_vectors]
 )
-def test_find_sources_with_relative_paths(vector: TraverseProjectVector, monkeypatch):
+def test_find_sources_with_relative_paths(
+    vector: TraverseProjectVector, monkeypatch, caplog
+):
     project_dir = SAMPLE_PROJECTS_DIR / vector.project
     assert project_dir.is_dir()
     monkeypatch.chdir(project_dir)
@@ -655,6 +725,7 @@ def test_find_sources_with_relative_paths(vector: TraverseProjectVector, monkeyp
             list(find_sources(settings))
         return
 
+    caplog.set_level(logging.WARNING)
     for src in find_sources(settings):
         if isinstance(src, CodeSource):
             actual_imports_src.add(src.path)
@@ -668,3 +739,8 @@ def test_find_sources_with_relative_paths(vector: TraverseProjectVector, monkeyp
     assert actual_imports_src == expect_imports_src
     assert actual_deps_src == expect_deps_src
     assert actual_pyenv_src == expect_pyenv_src
+
+    actual_warnings = [
+        record.message for record in caplog.records if record.levelno == logging.WARNING
+    ]
+    assert_unordered_equivalence(actual_warnings, vector.expect_warnings)
