@@ -66,6 +66,25 @@ def find_sources(  # pylint: disable=too-many-branches,too-many-statements
     for pattern in settings.exclude:
         traversal.exclude(pattern)
 
+    requested_paths = {
+        path
+        for path in settings.code | settings.deps | settings.pyenvs
+        if isinstance(path, Path)
+    }
+    defaults = Settings.config(config_file=None)()
+    default_paths = defaults.code | defaults.code | defaults.pyenvs
+    if settings.exclude != defaults.exclude:  # non-default exclude
+        for path in requested_paths:
+            if path in default_paths:
+                continue  # skip checking for conflicts against default paths
+            if traversal.is_excluded(path, is_dir=path.is_dir()):
+                # This path will actually _not_ be excluded in practice
+                # (for files we will handle them directly below, for dirs, they
+                # will be .add()ed to the DirectoryTraversal, which will
+                # override the exclusion. However, the user might not be aware
+                # of this overlap, so log a warning:
+                logger.warning(f"{path} is both requested and excluded. Will include.")
+
     for path_or_special in settings.code if CodeSource in source_types else []:
         # exceptions raised by validate_code_source() are propagated here
         validated: Optional[Source] = validate_code_source(path_or_special)
