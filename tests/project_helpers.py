@@ -9,6 +9,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from dataclasses import fields as dataclass_fields
 from pathlib import Path
+from textwrap import dedent
 from typing import Any, Callable, Dict, Iterable, Iterator, List, Optional, Set, Type
 from urllib.parse import urlparse
 from urllib.request import urlretrieve
@@ -281,9 +282,10 @@ class BaseExperiment(ABC):
     @staticmethod
     def _init_args_from_toml(name: str, data: TomlData) -> Dict[str, Any]:
         """Extract members from TOML into kwargs for a subclass constructor."""
+        description = data.get("description")
         return dict(
             name=name,
-            description=data.get("description"),
+            description=None if description is None else dedent(description),
             requirements=data.get("requirements", []),
             expectations=AnalysisExpectations.from_toml(data),
         )
@@ -325,7 +327,7 @@ class BaseProject(ABC):
         project_name = toml_data["project"]["name"]
         return dict(
             name=project_name,
-            description=toml_data["project"].get("description"),
+            description=dedent(toml_data["project"].get("description")),
             experiments=[
                 ExperimentClass.from_toml(f"{project_name}:{name}", data)
                 for name, data in toml_data["experiments"].items()
