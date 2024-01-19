@@ -186,6 +186,7 @@ class ThirdPartyProject(BaseProject):
     ],
 )
 def test_real_project(request, project, experiment):
+    experiment.maybe_skip(project)
     project_dir = project.get_project_dir(request.config.cache)
     venv_dir = experiment.get_venv_dir(request.config.cache)
 

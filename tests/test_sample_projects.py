@@ -124,6 +124,7 @@ class SampleProject(BaseProject):
     ],
 )
 def test_sample_projects(request, project, experiment):
+    experiment.maybe_skip(project)
     print(f"Testing sample project: {project.name} under {project.path}")
     print(f"Project description: {project.description}")
     print()

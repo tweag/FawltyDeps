@@ -269,6 +269,9 @@ class BaseExperiment(ABC):
 
     An experiment is part of a bigger project (see BaseProject below) and has:
     - A name and description, for documentation purposes.
+    - Optional posix_only or windows_only flags to control where this experiment
+      can be run. If one of these flags is given, and does not match the current
+      platform, the experiment will be skipped.
     - A list of requirements, to be installed into a virtualenv and made
       available to FawltyDeps when this experiment is run
       (see CachedExperimentVenv for details).
@@ -278,6 +281,8 @@ class BaseExperiment(ABC):
 
     name: str
     description: Optional[str]
+    posix_only: bool
+    windows_only: bool
     requirements: List[str]
     expectations: AnalysisExpectations
 
@@ -289,6 +294,8 @@ class BaseExperiment(ABC):
             name=name,
             description=None if description is None else dedent(description),
             requirements=data.get("requirements", []),
+            posix_only=data.get("posix_only", False),
+            windows_only=data.get("windows_only", False),
             expectations=AnalysisExpectations.from_toml(data),
         )
 
@@ -297,6 +304,15 @@ class BaseExperiment(ABC):
     def from_toml(cls, name: str, data: TomlData) -> BaseExperiment:
         """Create an instance from TOML data."""
         raise NotImplementedError
+
+    def maybe_skip(self, project: BaseProject):
+        posix_only = self.posix_only or project.posix_only
+        windows_only = self.windows_only or project.windows_only
+        assert not (posix_only and windows_only)  # cannot have both!
+        if posix_only and sys.platform.startswith("win"):
+            pytest.skip("POSIX-only experiment, but we're on Windows")
+        elif windows_only and not sys.platform.startswith("win"):
+            pytest.skip("Windows-only experiment, but we're on POSIX")
 
     def get_venv_dir(self, cache: pytest.Cache) -> Path:
         """Get this venv's dir and create it if necessary."""
@@ -310,6 +326,9 @@ class BaseProject(ABC):
     This represents a project on which we want to run FawltyDeps in one or more
     experiments. It has at least:
     - A name and optional description, for documentation purposes.
+    - Optional posix_only or windows_only flags to signal where this project
+      can be run. If one of these flags is given, and does not match the current
+      platform, all experiments in this project will be skipped.
     - A list of experiments (see BaseExperiment above), describing one or more
       scenarios for running FawltyDeps on this project, and what results to
       expect in those scenarios.
@@ -317,6 +336,8 @@ class BaseProject(ABC):
 
     name: str
     description: Optional[str]
+    posix_only: bool
+    windows_only: bool
     experiments: List[BaseExperiment]
 
     @staticmethod
@@ -330,6 +351,8 @@ class BaseProject(ABC):
         return dict(
             name=project_name,
             description=dedent(toml_data["project"].get("description")),
+            posix_only=toml_data["project"].get("posix_only", False),
+            windows_only=toml_data["project"].get("windows_only", False),
             experiments=[
                 ExperimentClass.from_toml(f"{project_name}:{name}", data)
                 for name, data in toml_data["experiments"].items()
