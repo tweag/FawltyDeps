@@ -216,7 +216,10 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
             # Using properties with an underscore do not trigger computations.
             # They are populated only if the computations were already required
             # by settings.actions.
-            "project_name": self.project_name,
+            "metadata": {
+                "project_name": self.project_name,
+                "fawltydeps_version": self.version,
+            },
             "code_dirs": self.code_dirs,
             "deps_file": [
                 {
@@ -229,7 +232,6 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
                 for dep, count in self.dep_files.items()
             ],
             "imports": self._detected_imports,
-            "fawltydeps_version": self.version,
         }
         json.dump(json_dict, out, indent=2, default=encoder)
 
