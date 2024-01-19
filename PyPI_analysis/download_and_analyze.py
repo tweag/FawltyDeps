@@ -2,6 +2,7 @@ import json
 import subprocess
 
 from git import Repo
+import datetime
 
 
 class pypi_analysis:
@@ -22,6 +23,10 @@ class pypi_analysis:
             # Parse the JSON output
             try:
                 analysis_data = json.loads(result.stdout)
+                analysis_data["metadata"]["repo_url"] = self.repo_url
+                analysis_data["metadata"][
+                    "creation_timestamp"
+                ] = datetime.datetime.now().isoformat()
 
                 # Specify the path to the JSON file
                 json_file_path = f"results/{self.repo_name}.json"
