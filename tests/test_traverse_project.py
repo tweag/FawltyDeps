@@ -1,6 +1,7 @@
 """Test that we can traverse a project to find our inputs."""
 import dataclasses
 import logging
+import os
 import sys
 from pathlib import Path
 from typing import Callable, List, Optional, Set, Type
@@ -883,7 +884,7 @@ def test_find_sources_with_absolute_paths(vector: TraverseProjectVector, caplog)
     assert actual_pyenv_src == expect_pyenv_src
 
     actual_warnings = [
-        record.message.replace(f"{project_dir}/", "")
+        record.message.replace(f"{project_dir}{os.sep}", "")
         for record in caplog.records
         if record.levelno == logging.WARNING
     ]
