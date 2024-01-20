@@ -4,7 +4,7 @@ from __future__ import annotations
 import hashlib
 import logging
 import os
-import shlex
+import shutil
 import subprocess
 import sys
 from abc import ABC, abstractmethod
@@ -129,81 +129,62 @@ class CachedExperimentVenv:
 
     requirements: List[str]  # PEP 508 requirements, passed to 'pip install'
 
-    def venv_script_lines(self, venv_path: Path) -> List[str]:
-        if sys.platform.startswith("win"):
-            pip_path = venv_path / "Scripts" / "pip.exe"
-            python_path = venv_path / "Scripts" / "python.exe"
-            return (
-                [
-                    f"rd /s /q {venv_path}",
-                    f"{sys.executable} -m venv {venv_path}",
-                    f"{python_path} -m pip install --upgrade pip",
-                ]
-                + [
-                    f'{python_path} -m pip install --no-deps "{req}"'
-                    for req in self.requirements
-                ]
-                + [
-                    f"type nul > {venv_path / '.installed'}",
-                ]
-            )
+    def venv_commands(
+        self, venv_path: Path, python_exe: Optional[str] = None
+    ) -> Iterator[List[str]]:
+        """Yield commands to run in order to create and populate the given venv.
 
-        pip_path = venv_path / "bin" / "pip"
-        return (
-            [
-                f"rm -rf {venv_path}",
-                f"{sys.executable} -m venv {venv_path}",
-                f"{pip_path} install --upgrade pip",
-            ]
-            + [
-                f"{pip_path} install --no-deps {shlex.quote(req)}"
-                for req in self.requirements
-            ]
-            + [
-                f"touch {venv_path / '.installed'}",
-            ]
-        )
+        The commands are yielded as argv-style lists of strings. The commands
+        must be run in sequence, and each command must return successfully in
+        order for the venv to be considered successfully created.
+        """
+        if python_exe is None:  # Default to current Python executable
+            python_exe = sys.executable
+
+        if sys.platform.startswith("win"):  # Windows
+            venv_python = str(venv_path / "Scripts" / "python.exe")
+        else:  # Assume POSIX
+            venv_python = str(venv_path / "bin" / "python")
+
+        yield [python_exe, "-m", "venv", str(venv_path)]
+        yield [venv_python, "-m", "pip", "install", "--upgrade", "pip"]
+        for req in self.requirements:
+            yield [venv_python, "-m", "pip", "install", "--no-deps", req]
 
     def venv_hash(self) -> str:
-        """Returns a hash that depends on the venv script and python version.
+        """Returns a hash that depends on the venv script and Python version.
 
-        The installation script will change if the code to setup the venv in
-        venv_script_lines() changes, or if the requirements of the experiment
+        The venv script will change if the code to setup the venv in
+        venv_commands() changes, or if the requirements of the experiment
         changes. It will also be different for different Python versions.
-        The Python version currently used to run the tests is used to compute
-        the hash and create the venv.
         """
-        dummy_script = self.venv_script_lines(Path(os.devnull))
-        py_version = f"{sys.version_info.major},{sys.version_info.minor}"
-        script_and_version_bytes = ("".join(dummy_script) + py_version).encode()
-        return hashlib.sha256(script_and_version_bytes).hexdigest()
+        dummy_script = [
+            " ".join(argv) for argv in self.venv_commands(Path(os.devnull), "python")
+        ] + [f"# Python {sys.version_info.major}.{sys.version_info.minor}"]
+        return hashlib.sha256("\n".join(dummy_script).encode()).hexdigest()
 
     def __call__(self, cache: pytest.Cache) -> Path:
-        """Get this venv's dir and create it if necessary.
+        """Get this venv's dir from cache, or create it if necessary.
 
         The venv_dir is where we install the dependencies of the current
-        experiment. It is keyed by the sha256 checksum of the requirements
-        file and the script we use for setting up the venv. This way, we
-        don't risk using a previously cached venv for a different if the
-        script or the requirements to create that venv change.
+        experiment. It is keyed by the sha256 checksum of the commands we use
+        to create and populate the venv with this experiment's requirements.
+        This way, we don't risk reusing a previously cached venv if the commands
+        or the requirements has changed.
         """
-        # We cache venv dirs using the hash from create_venv_hash
+        # We cache venv dirs using the hash from create_venv_hash() as key
         cached_str = cache.get(str(Path("fawltydeps", self.venv_hash())), None)
         if cached_str is not None and Path(cached_str, ".installed").is_file():
             return Path(cached_str)  # already cached
 
-        # Must run the script to set up the venv
+        # Must run the commands to set up the venv
         venv_dir = Path(cache.mkdir(f"fawltydeps_venv_{self.venv_hash()}"))
         logger.info(f"Creating venv at {venv_dir}...")
-        venv_script = self.venv_script_lines(venv_dir)
 
-        subprocess.run(
-            " && ".join(venv_script),
-            check=True,  # fail if any of the commands fail
-            shell=True,  # pass multiple shell commands to the subprocess
-        )
-        # Make sure the venv has been installed
-        assert (venv_dir / ".installed").is_file()
+        shutil.rmtree(venv_dir)  # start from a clean slate
+        for argv in self.venv_commands(venv_dir):
+            subprocess.run(argv, check=True)  # fail if any of the commands fail
+        (venv_dir / ".installed").touch()  # touch install marker on no errors
         cache.set(str(Path("fawltydeps", self.venv_hash())), str(venv_dir))
         return venv_dir
 
