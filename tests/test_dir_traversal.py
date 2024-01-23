@@ -1005,6 +1005,25 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
             ),
         ],
     ),
+    #
+    # Testing combination of .exclude() and .exclude_from() patterns
+    #
+    DirectoryTraversalVector(
+        "exclude_patterns_take_precedence_over_exclude_from_patterns",
+        given=[
+            File(".gitignore", "foo/*"),  # exclude everything inside foo/
+            File("foo/bar"),  # NOT excluded due to exclude_pattern below
+            File("foo/baz"),  # excluded
+        ],
+        exclude_patterns=[
+            ExcludePattern("!foo/bar"),  # overrides "foo/*" in .gitignore
+        ],
+        exclude_from=[".gitignore"],
+        expect=[
+            ExpectedTraverseStep(".", subdirs=["foo"], files=[".gitignore"]),
+            ExpectedTraverseStep("foo", files=["bar"], excluded_files=["baz"]),
+        ],
+    ),
 ]
 
 

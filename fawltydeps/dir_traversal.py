@@ -173,7 +173,9 @@ class DirectoryTraversal(Generic[T]):
         See .exclude() for details about how each gitignore pattern is used.
         """
         logger.debug(f"Reading exclude patterns from {file_with_exclude_patterns}...")
-        self.exclude_rules.extend(parse_gitignore(file_with_exclude_patterns))
+        self.exclude_rules = (
+            list(parse_gitignore(file_with_exclude_patterns)) + self.exclude_rules
+        )
 
     def is_excluded(self, path: Path, is_dir: bool) -> bool:
         """Check if given path is excluded by any of our exclude rules."""
