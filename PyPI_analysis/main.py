@@ -231,7 +231,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
                 }
                 for dep, count in self.dep_files.items()
             ],
-            "imports": self._detected_imports,
+            "imports": self.detected_imports,
         }
         json.dump(json_dict, out, indent=2, default=encoder)
 

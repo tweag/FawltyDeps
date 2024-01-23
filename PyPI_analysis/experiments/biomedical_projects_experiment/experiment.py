@@ -1,11 +1,12 @@
 import json
 import os
+import shutil
+from concurrent.futures import ThreadPoolExecutor, wait
+
 import boto3
 from botocore.exceptions import ClientError
-import shutil
 from git.exc import GitCommandError
 from tqdm import tqdm
-from concurrent.futures import ThreadPoolExecutor, wait
 
 from PyPI_analysis.download_and_analyze import pypi_analysis
 
