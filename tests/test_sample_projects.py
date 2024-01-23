@@ -61,6 +61,7 @@ class Experiment(BaseExperiment):
     pyenvs: Optional[List[str]]
     install_deps: bool
     exclude: List[str]
+    exclude_from: Optional[List[str]]
 
     @classmethod
     def from_toml(cls, name: str, data: TomlData) -> Experiment:
@@ -70,6 +71,7 @@ class Experiment(BaseExperiment):
             pyenvs=data.get("pyenvs", None),
             install_deps=data.get("install_deps", False),
             exclude=data.get("exclude", None),
+            exclude_from=data.get("exclude_from", None),
             **cls._init_args_from_toml(name, data),
         )
 
@@ -86,6 +88,7 @@ class Experiment(BaseExperiment):
             pyenvs=pyenvs,
             install_deps=self.install_deps,
             exclude=Settings().exclude if self.exclude is None else set(self.exclude),
+            exclude_from={Path(path) for path in (self.exclude_from or [])},
         )
 
 
