@@ -137,18 +137,12 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
     @calculated_once
     def code_dirs(self) -> Optional[Dict[str, Dict[str, int]]]:
         """The directory that contains the code directory and Python files count"""
-        code_paths = [
-            src.path
-            for src in self.sources
-            if isinstance(src, CodeSource)
-            and len(src.path.parts) > 1
-            and "test" not in src.path.parts[0]
-            and "example" not in src.path.parts[0]
-            and "test" not in src.path.name
+        code_paths = [src.path for src in self.sources if isinstance(src, CodeSource)]
+        directories_py = [
+            str(path.parent) for path in code_paths if path.suffix == ".py"
         ]
-        directories_py = [path.parts[0] for path in code_paths if path.suffix == ".py"]
         directories_ipynb = [
-            path.parts[0] for path in code_paths if path.suffix == ".ipynb"
+            str(path.parent) for path in code_paths if path.suffix == ".ipynb"
         ]
         directories_py_counts = Counter(directories_py)
         directories_ipynb_counts = Counter(directories_ipynb)
