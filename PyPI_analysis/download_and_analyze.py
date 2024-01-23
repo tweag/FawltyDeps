@@ -1,8 +1,8 @@
+import datetime
 import json
 import subprocess
 
 from git import Repo
-import datetime
 
 
 class pypi_analysis:
