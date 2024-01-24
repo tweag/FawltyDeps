@@ -163,42 +163,42 @@ def parse_code(
                                         )
                                     }
 
-    def dynamic_imports(parsed_code: ast.Module):
-        for node in ast.walk(parsed_code):
+    def dynamic_imports(node: ast.AST):
+        ...
+        if (isinstance(node, ast.Assign) or isinstance(node, ast.Expr)) and isinstance(
+            node.value, ast.Call
+        ):
             if (
-                isinstance(node, ast.Assign) or isinstance(node, ast.Expr)
-            ) and isinstance(node.value, ast.Call):
-                if (
-                    isinstance(node.value.func, ast.Attribute)
-                    and isinstance(node.value.func.value, ast.Name)
-                    and node.value.func.value.id == "importlib"
-                    and node.value.func.attr == "import_module"
-                ) or (
-                    isinstance(node.value.func, ast.Name)
-                    and node.value.func.id == "import_module"
-                ):
-                    for imp in node.value.args:
-                        if isinstance(imp, ast.Constant):
-                            yield {
-                                "Dynamic imports": ParsedImport(
-                                    name=imp.value,
-                                    source=source.supply(lineno=node.lineno),
-                                )
-                            }
-                elif (
-                    isinstance(node.value.func, ast.Attribute)
-                    and isinstance(node.value.func.value, ast.Name)
-                    and node.value.func.value.id == "pytest"
-                    and node.value.func.attr == "importorskip"
-                ):
-                    for imp in node.value.args:
-                        if isinstance(imp, ast.Constant):
-                            yield {
-                                "Dynamic imports (pytest)": ParsedImport(
-                                    name=imp.value,
-                                    source=source.supply(lineno=node.lineno),
-                                )
-                            }
+                isinstance(node.value.func, ast.Attribute)
+                and isinstance(node.value.func.value, ast.Name)
+                and node.value.func.value.id == "importlib"
+                and node.value.func.attr == "import_module"
+            ) or (
+                isinstance(node.value.func, ast.Name)
+                and node.value.func.id == "import_module"
+            ):
+                for imp in node.value.args:
+                    if isinstance(imp, ast.Constant):
+                        yield {
+                            "Dynamic imports": ParsedImport(
+                                name=imp.value,
+                                source=source.supply(lineno=node.lineno),
+                            )
+                        }
+            elif (
+                isinstance(node.value.func, ast.Attribute)
+                and isinstance(node.value.func.value, ast.Name)
+                and node.value.func.value.id == "pytest"
+                and node.value.func.attr == "importorskip"
+            ):
+                for imp in node.value.args:
+                    if isinstance(imp, ast.Constant):
+                        yield {
+                            "Dynamic imports (pytest)": ParsedImport(
+                                name=imp.value,
+                                source=source.supply(lineno=node.lineno),
+                            )
+                        }
 
     def docstring(node: ast.AST):
         # Only these types of nodes have docstring attributes.
