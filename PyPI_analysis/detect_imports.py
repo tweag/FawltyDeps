@@ -259,7 +259,7 @@ def parse_code(
                                         )
                                     }
 
-    def regular_imports(node: ast.AST):
+    def all_imports(node: ast.AST):
         if isinstance(node, ast.Import):
             logger.debug(ast.dump(node))
             for alias in node.names:
@@ -294,7 +294,7 @@ def parse_code(
         yield from alternative_imports(node)
         yield from dynamic_imports(node)
         yield from docstring(node)
-        yield from regular_imports(node)
+        yield from all_imports(node)
 
 
 def parse_notebook_file(
