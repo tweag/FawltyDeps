@@ -116,7 +116,7 @@ requirements = [
     "pandas",
     "pillow",
     "projectq",
-    "qiskit",
+    "qiskit<1",
     "requests",
     "rich",
     "scikit-fuzzy",
