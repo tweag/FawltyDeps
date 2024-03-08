@@ -10,6 +10,9 @@ import sys
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from dataclasses import fields as dataclass_fields
+from enum import Flag, auto
+from functools import reduce
+from operator import or_ as bitwise_or
 from pathlib import Path
 from textwrap import dedent
 from typing import Any, Callable, Dict, Iterable, Iterator, List, Optional, Set, Type
@@ -31,6 +34,42 @@ JsonData = Dict[str, Any]
 PACKAGES_TOML_PATH = Path(__file__).with_name("python_packages.toml")
 
 logger = logging.getLogger(__name__)
+
+
+class Compatibility(Flag):
+    """Represent a project/experiment's platform compatibility.
+
+    By default, we assume tests are compatible with all platforms (represented
+    as the bitwise OR of all compatibility flags, as returned from .all()), but
+    this can be limited to any combination of the flag values below.
+
+    This compatibility can then be against the current platform by bitwise AND-
+    ing it against the Compatibility value corresponding to the current platform
+    (as returned from .current()).
+    """
+
+    POSIX = auto()
+    WINDOWS = auto()
+
+    @classmethod
+    def current(cls) -> Compatibility:
+        """Return the current platform's compatibility."""
+        return cls.WINDOWS if sys.platform.startswith("win") else cls.POSIX
+
+    @classmethod
+    def all(cls) -> Compatibility:
+        """Return the combination of all compatibility flags."""
+        # Iterate over class to get individual flag values, and combine them all
+        values: Iterator[Compatibility] = iter(cls)
+        return reduce(bitwise_or, values)
+
+    @classmethod
+    def parse(cls, value: Optional[str]) -> Compatibility:
+        """Parse the given string into a compatibility flag.
+
+        If the given value is None, return the combination of all flags.
+        """
+        return cls.all() if value is None else Compatibility.__members__[value]
 
 
 @dataclass
@@ -250,9 +289,10 @@ class BaseExperiment(ABC):
 
     An experiment is part of a bigger project (see BaseProject below) and has:
     - A name and description, for documentation purposes.
-    - Optional posix_only or windows_only flags to control where this experiment
-      can be run. If one of these flags is given, and does not match the current
-      platform, the experiment will be skipped.
+    - Optional compatibility flag to control where this experiment can be run.
+      If this is given, and does not include the current platform, then the
+      experiment will be skipped. When not given, the experiment inherits the
+      compatibility of the parent project.
     - A list of requirements, to be installed into a virtualenv and made
       available to FawltyDeps when this experiment is run
       (see CachedExperimentVenv for details).
@@ -262,8 +302,7 @@ class BaseExperiment(ABC):
 
     name: str
     description: Optional[str]
-    posix_only: bool
-    windows_only: bool
+    compatibility: Optional[Compatibility]
     requirements: List[str]
     expectations: AnalysisExpectations
 
@@ -271,12 +310,12 @@ class BaseExperiment(ABC):
     def _init_args_from_toml(name: str, data: TomlData) -> Dict[str, Any]:
         """Extract members from TOML into kwargs for a subclass constructor."""
         description = data.get("description")
+        compat = data.get("compatibility")
         return dict(
             name=name,
             description=None if description is None else dedent(description),
             requirements=data.get("requirements", []),
-            posix_only=data.get("posix_only", False),
-            windows_only=data.get("windows_only", False),
+            compatibility=None if compat is None else Compatibility.parse(compat),
             expectations=AnalysisExpectations.from_toml(data),
         )
 
@@ -287,13 +326,12 @@ class BaseExperiment(ABC):
         raise NotImplementedError
 
     def maybe_skip(self, project: BaseProject):
-        posix_only = self.posix_only or project.posix_only
-        windows_only = self.windows_only or project.windows_only
-        assert not (posix_only and windows_only)  # cannot have both!
-        if posix_only and sys.platform.startswith("win"):
-            pytest.skip("POSIX-only experiment, but we're on Windows")
-        elif windows_only and not sys.platform.startswith("win"):
-            pytest.skip("Windows-only experiment, but we're on POSIX")
+        compatibility = self.compatibility or project.compatibility
+        if not compatibility & Compatibility.current():  # Failed compat check
+            pytest.skip(
+                "Test not compatible with current system"
+                f" ({compatibility} != {Compatibility.current()})"
+            )
 
     def get_venv_dir(self, cache: pytest.Cache) -> Path:
         """Get this venv's dir and create it if necessary."""
@@ -307,9 +345,11 @@ class BaseProject(ABC):
     This represents a project on which we want to run FawltyDeps in one or more
     experiments. It has at least:
     - A name and optional description, for documentation purposes.
-    - Optional posix_only or windows_only flags to signal where this project
-      can be run. If one of these flags is given, and does not match the current
-      platform, all experiments in this project will be skipped.
+    - Optional compatibility flag to control where this project can be run. If
+      this is given, and does not include the current platform, then all of the
+      experiments in this project will be skipped by default (unless overridden
+      by the experiment itself). By default, the project is assumed to be
+      compatible with all platforms.
     - A list of experiments (see BaseExperiment above), describing one or more
       scenarios for running FawltyDeps on this project, and what results to
       expect in those scenarios.
@@ -317,8 +357,7 @@ class BaseProject(ABC):
 
     name: str
     description: Optional[str]
-    posix_only: bool
-    windows_only: bool
+    compatibility: Compatibility
     experiments: List[BaseExperiment]
 
     @staticmethod
@@ -332,8 +371,9 @@ class BaseProject(ABC):
         return dict(
             name=project_name,
             description=dedent(toml_data["project"].get("description")),
-            posix_only=toml_data["project"].get("posix_only", False),
-            windows_only=toml_data["project"].get("windows_only", False),
+            compatibility=Compatibility.parse(
+                toml_data["project"].get("compatibility")
+            ),
             experiments=[
                 ExperimentClass.from_toml(f"{project_name}:{name}", data)
                 for name, data in toml_data["experiments"].items()

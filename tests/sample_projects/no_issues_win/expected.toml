@@ -10,7 +10,7 @@ description = """
     This example was build to test command-line options in a happy case.
     Tests are implemented in 'test_cmdline_options.py'
 """
-windows_only = true
+compatibility = "WINDOWS"
 
 [experiments.default]
 description = "Default run"
