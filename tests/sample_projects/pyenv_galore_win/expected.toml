@@ -8,7 +8,7 @@ description = """
     and any code or dependency files within should NOT be picked up by .code or
     .deps.
 """
-windows_only = true
+compatibility = "WINDOWS"
 
 [experiments.default]
 description = "Run fawltydeps in an empty project with Python envs present."

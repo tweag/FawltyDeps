@@ -115,7 +115,7 @@ description = """
     their expected import names. Additionally, there appears to be several true
     undeclared unused deps.
 """
-posix_only = true
+compatibility = "POSIX"
 args = []
 requirements = [
     "beautifulsoup4",
