@@ -231,6 +231,10 @@ def test_gitignore_parser_w_rel_paths(vector: GitignoreParserTestVector):
         )
 
 
+@pytest.mark.skipif(
+    sys.platform.startswith("win"),
+    reason="Symlinks on Windows may be created only by administrators",
+)
 def test_symlink_to_another_directory(tmp_path):
     project_dir = tmp_path / "project_dir"
     link = project_dir / "link"
