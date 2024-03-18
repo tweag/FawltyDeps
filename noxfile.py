@@ -1,5 +1,4 @@
 import hashlib
-import sys
 from pathlib import Path
 from typing import Iterable
 
@@ -86,8 +85,6 @@ def integration_tests(session):
 def self_test(session):
     # Install all optional dependency groups for a self test
     install_groups(session, include=["nox", "test", "lint", "format", "dev"])
-    # For --pyenv, use Nox's virtualenv, or fall back to current virtualenv
-    venv_path = getattr(session.virtualenv, "location", sys.prefix)
     session.run("fawltydeps")
 
 
