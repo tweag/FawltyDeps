@@ -233,7 +233,7 @@ class InstalledPackageResolver(BasePackageResolver):
 
         # We're reaching into the internals of importlib_metadata here, which
         # Mypy is not overly fond of, hence lots of "type: ignore"...
-        context = DistributionFinder.Context(path=env_paths)  # type: ignore
+        context = DistributionFinder.Context(path=env_paths)  # type: ignore[no-untyped-call]
         for dist in MetadataPathFinder().find_distributions(context):
             normalized_name = Package.normalize_name(dist.name)
             parent_dir = dist.locate_file("")
@@ -248,8 +248,8 @@ class InstalledPackageResolver(BasePackageResolver):
             logger.debug(f"Found {dist.name} {dist.version} under {parent_dir}")
             seen.add(normalized_name)
             imports = list(
-                _top_level_declared(dist)  # type: ignore
-                or _top_level_inferred(dist)  # type: ignore
+                _top_level_declared(dist)  # type: ignore[no-untyped-call]
+                or _top_level_inferred(dist)  # type: ignore[no-untyped-call]
             )
             yield {dist.name: imports}, str(parent_dir)
 

@@ -12,7 +12,7 @@ from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Callable, Iterable, Iterator, NamedTuple, Optional, Tuple
 
-from pip_requirements_parser import RequirementsFile  # type: ignore
+from pip_requirements_parser import RequirementsFile  # type: ignore[import]
 from pkg_resources import Requirement
 
 from fawltydeps.limited_eval import CannotResolve, VariableTracker
@@ -120,7 +120,7 @@ def parse_setup_py(path: Path) -> Iterator[DeclaredDependency]:
         if _is_setup_function_call(node):
             # Below line is not checked by mypy, but `_is_setup_function_call`
             # makes sure that `node` is of a proper type.
-            yield from _extract_deps_from_setup_call(node.value)  # type: ignore
+            yield from _extract_deps_from_setup_call(node.value)  # type: ignore[attr-defined]
             break
 
 

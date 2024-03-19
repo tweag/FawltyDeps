@@ -285,7 +285,7 @@ def print_toml_config(settings: Settings, out: TextIO = sys.stdout) -> None:
 
     dictionary_options = {"custom_mapping"}
 
-    def _option_to_toml(name, value) -> str:  # type: ignore
+    def _option_to_toml(name, value) -> str:  # type: ignore[no-untyped-def]
         """Serialize options to toml configuration entries
 
         Options that are of dictionary type must be given a section entry.
