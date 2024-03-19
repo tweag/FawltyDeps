@@ -20,7 +20,7 @@ from fawltydeps.utils import version
 class ArgparseUnionAction(argparse.Action):
     """Action for doing taking union of multiple command-line arguments for a single option"""
 
-    def __call__(  # type: ignore
+    def __call__(  # type: ignore[misc, override]
         self,
         parser: argparse.ArgumentParser,
         namespace: argparse.Namespace,

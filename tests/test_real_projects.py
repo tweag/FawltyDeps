@@ -61,7 +61,7 @@ def run_fawltydeps_json(
     proc = subprocess.run(argv, stdout=subprocess.PIPE, check=False, cwd=cwd)
     # Check if return code does not indicate error (see main.main for the full list)
     assert proc.returncode in {0, 3, 4}
-    return json.loads(proc.stdout)  # type: ignore
+    return json.loads(proc.stdout)  # type: ignore[no-any-return]
 
 
 @dataclass

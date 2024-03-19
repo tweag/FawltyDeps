@@ -19,7 +19,7 @@ else:
 
 SpecialPath = Literal["<stdin>"]
 PathOrSpecial = Union[SpecialPath, Path]
-TomlData = Dict[str, Any]  # type: ignore
+TomlData = Dict[str, Any]  # type: ignore[misc]
 CustomMapping = Dict[str, List[str]]
 
 
