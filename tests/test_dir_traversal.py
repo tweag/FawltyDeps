@@ -131,7 +131,7 @@ class DirectoryTraversalVector:
     expect_alternatives: Optional[List[List[ExpectedTraverseStep]]] = None
     skip_me: Optional[str] = None
 
-    def setup(self, setup_dir: Path) -> DirectoryTraversal:
+    def setup(self, setup_dir: Path) -> DirectoryTraversal:  # noqa: C901
         """Perform the setup of a DirectoryTraversal object.
 
         Set up the file structure in self.given under the given 'setup_dir', and
@@ -158,12 +158,12 @@ class DirectoryTraversalVector:
             base_dir = None if ipat.base_dir is None else setup_dir / ipat.base_dir
             try:
                 traversal.exclude(ipat.pattern, base_dir=base_dir)
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 exceptions_from_exclude.append(e)
         for exclude_file in self.exclude_from:
             try:
                 traversal.exclude_from(setup_dir / exclude_file)
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 exceptions_from_exclude.append(e)
         if not self.exclude_exceptions:  # no exceptions are expected
             for exc in exceptions_from_exclude:
@@ -1039,7 +1039,7 @@ def test_DirectoryTraversal_w_abs_paths(vector: DirectoryTraversalVector, tmp_pa
     "vector", [pytest.param(v, id=v.id) for v in directory_traversal_vectors]
 )
 def test_DirectoryTraversal_w_rel_paths(
-    vector: DirectoryTraversalVector, inside_tmp_path
+    vector: DirectoryTraversalVector, inside_tmp_path  # noqa: ARG001
 ):
     traversal = vector.setup(Path("."))  # Traverse relatively from inside tmp_path
     vector.verify_traversal(traversal, Path("."))

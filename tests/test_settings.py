@@ -211,7 +211,7 @@ def multivalued_optargs_grid() -> Iterable[List[str]]:
     def subsequence_pairs(
         xs: Tuple[T, ...]
     ) -> Iterable[Tuple[Tuple[T, ...], Tuple[T, ...]]]:
-        assert len(xs) >= 2
+        assert len(xs) >= 2  # noqa: PLR2004
         for i in range(1, len(xs)):
             yield xs[:i], xs[i:]
 
@@ -239,7 +239,10 @@ def test_multivalued_options_are_aggregated_correctly(optargs):
 
 @pytest.mark.parametrize(
     "optname",
-    set(act.dest for act in build_parser()._actions)  # pylint: disable=protected-access
+    set(
+        act.dest
+        for act in build_parser()._actions  # pylint: disable=protected-access  # noqa: SLF001
+    )
     & set(Settings.__fields__.keys()),
 )
 def test_settings_members_are_absent_from_namespace_if_not_provided_at_cli(optname):

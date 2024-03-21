@@ -126,7 +126,7 @@ class ThirdPartyProject(BaseProject):
         unpack_dir = self.unpacked_project_dir(cache)
         logger.info(f"Unpacking {tarball_path} to {unpack_dir}...")
         with tarfile.open(tarball_path) as f:
-            f.extractall(unpack_dir)
+            f.extractall(unpack_dir)  # noqa: S202
         assert unpack_dir.is_dir()
         cache.set(self.unpacked_project_key, str(unpack_dir))
         return unpack_dir

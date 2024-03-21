@@ -86,7 +86,7 @@ def parse_code(
                     )
 
 
-def parse_notebook_file(
+def parse_notebook_file(  # noqa: C901
     path: Path, local_context: Optional[isort.Config] = None
 ) -> Iterator[ParsedImport]:
     """Extract import statements from an ipynb notebook.
@@ -185,7 +185,7 @@ def parse_source(
             logger.warning("Reading code from terminal input. Ctrl+D to stop.")
         return parse_code(stdin.read(), source=Location(src.path))
 
-    assert isinstance(src.path, Path)  # sanity check / silence mypy
+    assert isinstance(src.path, Path)  # noqa: S101, sanity check / silence mypy
 
     local_context = (
         None
@@ -226,7 +226,7 @@ def validate_code_source(
     """
     if path == "<stdin>":
         return CodeSource(path, base_dir)
-    assert isinstance(path, Path)  # sanity check: SpecialPath handled above
+    assert isinstance(path, Path)  # noqa: S101, sanity check: SpecialPath handled above
     if path.is_dir():
         logger.info("Finding Python files under %s", path)
         return None

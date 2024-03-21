@@ -185,15 +185,15 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
 
         # Compute only the properties needed to satisfy settings.actions:
         if ret.is_enabled(Action.LIST_SOURCES):
-            ret.sources  # pylint: disable=pointless-statement
+            ret.sources  # pylint: disable=pointless-statement  # noqa: B018
         if ret.is_enabled(Action.LIST_IMPORTS):
-            ret.imports  # pylint: disable=pointless-statement
+            ret.imports  # pylint: disable=pointless-statement  # noqa: B018
         if ret.is_enabled(Action.LIST_DEPS):
-            ret.declared_deps  # pylint: disable=pointless-statement
+            ret.declared_deps  # pylint: disable=pointless-statement  # noqa: B018
         if ret.is_enabled(Action.REPORT_UNDECLARED):
-            ret.undeclared_deps  # pylint: disable=pointless-statement
+            ret.undeclared_deps  # pylint: disable=pointless-statement  # noqa: B018
         if ret.is_enabled(Action.REPORT_UNUSED):
-            ret.unused_deps  # pylint: disable=pointless-statement
+            ret.unused_deps  # pylint: disable=pointless-statement  # noqa: B018
 
         return ret
 
@@ -226,7 +226,9 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
         }
         json.dump(json_dict, out, indent=2, default=encoder)
 
-    def print_human_readable(self, out: TextIO, detailed: bool = True) -> None:
+    def print_human_readable(  # noqa: C901
+        self, out: TextIO, detailed: bool = True
+    ) -> None:
         """Print a human-readable rendering of this analysis to 'out'."""
 
         def render_sources() -> Iterator[str]:

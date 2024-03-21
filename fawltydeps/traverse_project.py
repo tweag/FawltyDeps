@@ -30,7 +30,7 @@ AttachedData = Union[
 ]
 
 
-def find_sources(  # pylint: disable=too-many-branches,too-many-statements
+def find_sources(  # pylint: disable=too-many-branches,too-many-statements  # noqa: C901, PLR0912, PLR0915
     settings: Settings,
     source_types: AbstractSet[Type[Source]] = frozenset(
         [CodeSource, DepsSource, PyEnvSource]
@@ -108,7 +108,7 @@ def find_sources(  # pylint: disable=too-many-branches,too-many-statements
             yield validated
         else:  # must traverse directory
             # sanity check: convince mypy that SpecialPath is already handled
-            assert isinstance(path_or_special, Path)
+            assert isinstance(path_or_special, Path)  # noqa: S101, sanity check
             # record also base dir for later
             traversal.add(path_or_special, (CodeSource, path_or_special))
 
@@ -141,8 +141,8 @@ def find_sources(  # pylint: disable=too-many-branches,too-many-statements
         #   - We should not be looking for any _other_ source types than those
         #     that were given in our `source_types` argument.
         types = {t[0] if isinstance(t, tuple) else t for t in step.attached}
-        assert len(types) > 0
-        assert all(t in source_types for t in types)
+        assert len(types) > 0  # noqa: S101, sanity check
+        assert all(t in source_types for t in types)  # noqa: S101, sanity check
 
         if PyEnvSource in types:
             for path in step.subdirs | step.excluded_subdirs:
@@ -156,11 +156,12 @@ def find_sources(  # pylint: disable=too-many-branches,too-many-statements
                 (t[1] for t in reversed(step.attached) if isinstance(t, tuple)),
                 None,
             )
-            assert base_dir is not None  # sanity check: No CodeSource w/o base_dir
+            # Sanity check: No CodeSource w/o base_dir
+            assert base_dir is not None  # noqa: S101
             for path in step.files:
                 try:  # catch all exceptions while traversing dirs
                     validated = validate_code_source(path, base_dir)
-                    assert validated is not None  # sanity check
+                    assert validated is not None  # noqa: S101, sanity check
                     yield validated
                 except UnparseablePathException:  # don't abort directory walk for this
                     pass
@@ -170,7 +171,7 @@ def find_sources(  # pylint: disable=too-many-branches,too-many-statements
                     validated = validate_deps_source(
                         path, settings.deps_parser_choice, filter_by_parser=True
                     )
-                    assert validated is not None  # sanity check
+                    assert validated is not None  # noqa: S101, sanity check
                     yield validated
                 except UnparseablePathException:  # don't abort directory walk for this
                     pass

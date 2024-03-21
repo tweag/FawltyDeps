@@ -139,7 +139,7 @@ class TarballPackage:
         # Must (re)download
         tarball_path = self.tarball_path(cache)
         logger.info(f"Downloading {self.url!r} to {tarball_path}...")
-        urlretrieve(self.url, tarball_path)
+        urlretrieve(self.url, tarball_path)  # noqa: S310
         if not self.is_cached(tarball_path):
             logger.error(f"Failed integrity check after downloading {self.url!r}!")
             logger.error(f"    Downloaded file: {tarball_path}")
@@ -370,7 +370,7 @@ class BaseProject(ABC):
 
     @staticmethod
     def _init_args_from_toml(
-        toml_data: TomlData, ExperimentClass: Type[BaseExperiment]
+        toml_data: TomlData, ExperimentClass: Type[BaseExperiment]  # noqa: N803
     ) -> Dict[str, Any]:
         """Extract members from TOML into kwargs for a subclass constructor."""
         # We ultimately _trust_ the .toml files read here, so we can skip all
