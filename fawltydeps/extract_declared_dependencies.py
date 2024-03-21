@@ -65,7 +65,7 @@ def parse_requirements_txt(path: Path) -> Iterator[DeclaredDependency]:
             yield DeclaredDependency(dep.name, source)
 
 
-def parse_setup_py(path: Path) -> Iterator[DeclaredDependency]:
+def parse_setup_py(path: Path) -> Iterator[DeclaredDependency]:  # noqa: C901
     """Extract dependencies (package names) from setup.py.
 
     This file can contain arbitrary Python code, and simply executing it has
@@ -80,7 +80,9 @@ def parse_setup_py(path: Path) -> Iterator[DeclaredDependency]:
     # resolve any variable references in the arguments to the setup() call.
     tracked_vars = VariableTracker(source)
 
-    def _extract_deps_from_setup_call(node: ast.Call) -> Iterator[DeclaredDependency]:
+    def _extract_deps_from_setup_call(  # noqa: C901
+        node: ast.Call,
+    ) -> Iterator[DeclaredDependency]:
         for keyword in node.keywords:
             try:
                 if keyword.arg == "install_requires":
@@ -203,14 +205,16 @@ def parse_poetry_pyproject_dependencies(
 
     def parse_main(contents: TomlData, src: Location) -> NamedLocations:
         return (
-            (req, src) for req in contents["dependencies"].keys() if req != "python"
+            (req, src)
+            for req in contents["dependencies"].keys()  # noqa: SIM118
+            if req != "python"
         )
 
     def parse_group(contents: TomlData, src: Location) -> NamedLocations:
         return (
             (req, src)
             for group in contents["group"].values()
-            for req in group["dependencies"].keys()
+            for req in group["dependencies"].keys()  # noqa: SIM118
             if req != "python"
         )
 
@@ -230,7 +234,7 @@ def parse_poetry_pyproject_dependencies(
     yield from parse_pyproject_elements(poetry_config, source, "Poetry", fields_parsers)
 
 
-def parse_pep621_pyproject_contents(
+def parse_pep621_pyproject_contents(  # noqa: C901
     parsed_contents: TomlData, source: Location
 ) -> Iterator[DeclaredDependency]:
     """Extract dependencies from a pyproject.toml using the PEP 621 fields."""

@@ -43,7 +43,7 @@ class DirId(NamedTuple):
     @lru_cache()  # Cache stat() calls, but only with absolute paths
     def from_abs_path(cls, abs_path: Path) -> DirId:
         """Construct DirId from given absolute directory path."""
-        assert abs_path.is_absolute()  # sanity check
+        assert abs_path.is_absolute()  # noqa: S101, sanity check
         dir_stat = abs_path.stat()  # <- expensive
         return cls(dir_stat.st_dev, dir_stat.st_ino)
 
@@ -222,7 +222,7 @@ class DirectoryTraversal(Generic[T]):
                 break
             logger.debug(f"Left to traverse: {remaining}")
             base_dir = min(remaining.keys())
-            assert base_dir.is_dir()  # sanity check
+            assert base_dir.is_dir()  # noqa: S101, sanity check
             for cur, subdirs, filenames in os.walk(base_dir, followlinks=True):
                 cur_dir = Path(cur)
                 cur_id = DirId.from_path(cur_dir)

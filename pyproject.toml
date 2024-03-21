@@ -169,8 +169,130 @@ extend-exclude = [
     "tests/sample_projects/legacy_encoding/big5.py",  # Fails with E902 (not UTF-8)
 ]
 
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    # Ignore some unwanted checks:
+    "ANN10",  # Deprecated: Missing type annotation for self/cls in (class)method
+    "ANN204",  # Missing return type annotation for special method
+    "D104",  # Missing docstring in public package
+    "D105",  # Missing docstring in magic method
+    "D107",  # Missing docstring in `__init__`
+    "D203",  # one-blank-line-before-class conflicts with D211: no-blank-line-before-class
+    "D213",  # multi-line-summary-second-line conflicts with D212: multi-line-summary-first-line
+    "EM",  # Exception must not use a (f-)string literal, assign to variable first
+
+    # To be fixed soon:
+    "ARG002",  # Unused method argument: `...`
+    "C401",  # Unnecessary generator (rewrite as a `set` comprehension)
+    "D102",  # Missing docstring in public method
+    "D202",  # No blank lines allowed after function docstring
+    "D205",  # 1 blank line required between summary line and description
+    "D209",  # Multi-line docstring closing quotes should be on a separate line
+    "D212",  # Multi-line docstring summary should start at the first line
+    "D400",  # First line should end with a period
+    "D401",  # First line of docstring should be in imperative mood
+    "D415",  # First line should end with a period, question mark, or exclamation point
+    "FBT001",  # Boolean-typed positional argument in function definition
+    "FBT002",  # Boolean default positional argument in function definition"
+    "FBT003",  # Boolean positional value in function call
+    "N818",  # Exception name `...` should be named with an Error suffix
+    "PLR1714",  # Consider merging multiple comparisons. Use a `set` if the elements are hashable.
+    "PLR5501",  # Use `elif` instead of `else` then `if`, to reduce indentation
+    "PTH108",  # `os.unlink()` should be replaced by `Path.unlink()`
+    "PTH123",  # `open()` should be replaced by `Path.open()`
+    "PTH201",  # Do not pass the current directory explicitly to `Path`
+    "RUF005",  # Consider `[...]` instead of concatenation
+    "SIM102",  # Use a single `if` statement instead of nested `if` statements
+    "SIM114",  # Combine `if` branches using logical `or` operator
+    "UP028",  # Replace `yield` over `for` loop with `yield from`
+    "UP034",  # Avoid extraneous parentheses
+
+    # Probably not fixed so soon:
+    "FIX002",  # Line contains TODO, consider resolving the issue
+    "G004",  # Logging statement uses f-string
+    "PERF203",  # `try`-`except` within a loop incurs performance overhead
+    "TD",  # Ignore checks on TODO comments
+    "TRY003",  # Avoid specifying long messages outside the exception class
+    "TRY301",  # Abstract `raise` to an inner function
+    "TRY400",  # Use `logging.exception` instead of `logging.error`
+
+    # To be fixed in a larger refactoring of our type annotations
+    "FA100",  # Missing `from __future__ import annotations`, but uses `typing.*`
+    "TCH002",  # Move third-party import `...` into a type-checking block
+    "TCH003",  # Move standard library import `...` into a type-checking block
+    "UP006",  # Use `list` instead of `List` for type annotation
+    "UP007",  # Use `X | Y` for type annotations
+
+    # Ruff recommends avoiding these checks when using `ruff format`. Since
+    # `ruff format` is a drop-in replacement for `black`, we avoid the same
+    # checks here (https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules
+    # has more details):
+    "W191",  # tab-indentation
+    "E111",  # indentation-with-invalid-multiple
+    "E114",  # indentation-with-invalid-multiple-comment
+    "E117",  # over-indented
+    "D206",  # indent-with-spaces
+    "D300",  # triple-single-quotes
+    "Q000",  # bad-quotes-inline-string
+    "Q001",  # bad-quotes-multiline-string
+    "Q002",  # bad-quotes-docstring
+    "Q003",  # avoidable-escaped-quote
+    "COM812",  # missing-trailing-comma
+    "COM819",  # prohibited-trailing-comma
+    "ISC001",  # single-line-implicit-string-concatenation
+    "ISC002",  # multi-line-implicit-string-concatenation
+    "E501",  # line-too-long
+]
+
 [tool.ruff.lint.per-file-ignores]
-"tests/sample_projects/*" = ["F401"]  # Allow unused imports in sample projects
+"noxfile.py" = [
+    "ANN",  # Missing type annotations
+    "D",  # Missing docstrings
+]
+"tests/sample_projects/*" = [
+    "F401",  # Allow unused imports in sample projects
+    "ICN001",  # `<module>` should be imported as `<mod>`
+    "INP001",  # File `...` is part of an implicit namespace package. Add an `__init__.py`.
+]
+"tests/*" = [
+    # Ignore some groups of checks in our test code
+    "ANN",  # Type annotations
+    "D10",  # Missing docstrings
+    "TCH00",  # Imports and type checking blocks
+
+    # Ignore some more specific checks in our test code
+    "C408",  # Unnecessary `dict` call (rewrite as a literal)
+    "D401",  # First line of docstring should be in imperative mood
+    "N802",  # Function name `...` should be lowercase
+    "N806",  # Variable `...` in function should be lowercase
+    "PLR0913",  # Too many arguments in function definition
+    "PT018",  # Assertion should be broken down into multiple parts
+    "S101",  # Use of `assert` detected
+    "S603",  # `subprocess` call: check for execution of untrusted input
+    "T201",  # `print` found
+
+    # To be fixed soon:
+    "A001",  # Variable `id` is shadowing a Python builtin
+    "ARG001",  # Unused function argument: `py_version`
+    "B011",  # Do not `assert False` (`python -O` removes these calls), raise `AssertionError()`
+    "C405",  # Unnecessary `list` literal (rewrite as a `set` literal)
+    "D200",  # One-line docstring should fit on one line
+    "D210",  # No whitespaces allowed surrounding docstring text
+    "PLR2004",  # Magic value used in comparison, consider replacing ... with a constant variable
+    "PT001",  # Use `@pytest.fixture()` over `@pytest.fixture`
+    "PT006",  # Wrong name(s) type in `@pytest.mark.parametrize`, expected `tuple`
+    "PT015",  # Assertion always fails, replace with `pytest.fail()`
+    "PT019",  # Fixture `_` without value is injected as parameter, use `@pytest.mark.usefixtures` instead
+    "RUF003",  # Comment contains ambiguous `’` (RIGHT SINGLE QUOTATION MARK). Did you mean ``` (GRAVE ACCENT)?
+    "RUF010",  # Use explicit conversion flag
+    "RUF100",  # Unused `noqa` directive (unused: `ARG001`)
+    "SIM108",  # Use ternary operator `...` instead of `if`-`else`-block
+    "SIM118",  # Use `key in dict` instead of `key in dict.keys()`
+    "SIM910",  # Use `...get(dep)` instead of `...get(..., None)`
+    "UP021",  # `universal_newlines` is deprecated, use `text`
+    "UP022",  # Prefer `capture_output` over sending `stdout` and `stderr` to `PIPE`
+]
 
 [tool.codespell]
 skip = ".git,.mypy_cache,.nox,.vscode,__pycache__,poetry.lock"

@@ -79,7 +79,7 @@ def install_groups(
     if include_self:
         session.install("-e", ".")
 
-    if not session.virtualenv._reused:
+    if not session.virtualenv._reused:  # noqa: SLF001
         patch_binaries_if_needed(session, session.virtualenv.location)
 
 
@@ -137,7 +137,7 @@ def lint(session):
 
 
 @nox.session
-def format(session):
+def format(session):  # noqa: A001
     install_groups(session, include=["format"], include_self=False)
     session.run("codespell", "--enable-colors")
     session.run("isort", "fawltydeps", "tests", "--check", "--diff", "--color")

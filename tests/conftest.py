@@ -27,7 +27,7 @@ def inside_tmp_path(monkeypatch, tmp_path):
 
 
 @pytest.fixture
-def local_pypi(request, monkeypatch):
+def local_pypi(request, monkeypatch):  # noqa: PT004
     cache_dir = TarballPackage.cache_dir(request.config.cache)
     TarballPackage.get_tarballs(request.config.cache)
     # set the test's env variables so that pip would install from the local repo
@@ -120,7 +120,7 @@ def isolate_default_resolver(
 
 
 @pytest.fixture
-def fake_project(write_tmp_files, fake_venv):
+def fake_project(write_tmp_files, fake_venv):  # noqa: C901
     """Create a temporary Python project with the given contents/properties.
 
     This is a generalized helper to create the directory structure and file

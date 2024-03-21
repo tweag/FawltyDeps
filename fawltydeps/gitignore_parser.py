@@ -78,7 +78,7 @@ def parse_gitignore_lines(
     """
     for lineno, line in enumerate(lines, start=1):
         source = None if file_hint is None else Location(file_hint, lineno=lineno)
-        line = line.rstrip("\n")
+        line = line.rstrip("\n")  # noqa: PLW2901
         try:
             yield Rule.from_pattern(line, base_dir, source)
         except RuleMissing as exc:
@@ -114,7 +114,7 @@ class Rule(NamedTuple):
         return f"Rule({self.pattern!r}, {self.regex!r}, ...)"
 
     @classmethod
-    def from_pattern(
+    def from_pattern(  # noqa: C901
         cls,
         pattern: str,
         base_dir: Optional[Path] = None,
@@ -234,7 +234,7 @@ def fnmatch_pathname_to_regex(pattern: str, anchored: bool = False) -> CompiledR
     result = []
 
     def handle_character_set(pattern: str) -> Tuple[str, str]:
-        assert pattern.startswith("[")  # precondition
+        assert pattern.startswith("[")  # noqa: S101, sanity check precondition
         try:
             end = pattern.index("]")
         except ValueError:  # "]" not found

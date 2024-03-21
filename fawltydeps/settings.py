@@ -192,7 +192,7 @@ class Settings(BaseSettings):
             cls,
             init_settings: SettingsSourceCallable,
             env_settings: SettingsSourceCallable,
-            file_secret_settings: SettingsSourceCallable,  # pylint: disable=W0613
+            file_secret_settings: SettingsSourceCallable,  # pylint: disable=W0613  # noqa: ARG003
         ) -> Tuple[SettingsSourceCallable, ...]:
             """Select and prioritize the various configuration sources."""
             # Use class vars in Settings to determine which configuration file
@@ -216,7 +216,7 @@ class Settings(BaseSettings):
         configuration file is read).
         """
         for key, value in kwargs.items():
-            assert key in cls.__class_vars__
+            assert key in cls.__class_vars__  # noqa: S101, sanity check
             setattr(cls, key, value)
         return cls
 
@@ -285,7 +285,7 @@ def print_toml_config(settings: Settings, out: TextIO = sys.stdout) -> None:
 
     dictionary_options = {"custom_mapping"}
 
-    def _option_to_toml(name, value) -> str:  # type: ignore[no-untyped-def]
+    def _option_to_toml(name, value) -> str:  # type: ignore[no-untyped-def]  # noqa: ANN001
         """Serialize options to toml configuration entries
 
         Options that are of dictionary type must be given a section entry.
@@ -301,7 +301,7 @@ def print_toml_config(settings: Settings, out: TextIO = sys.stdout) -> None:
         if value is None:
             # sanity check: None values are represented in TOML by omission,
             # hence make sure these are always commented (i.e. equal to default)
-            assert has_default_value[name]
+            assert has_default_value[name]  # noqa: S101
 
         prefix = "# " if has_default_value[name] else ""
 

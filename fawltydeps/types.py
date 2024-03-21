@@ -86,7 +86,7 @@ class CodeSource(Source):
     def __post_init__(self) -> None:
         super().__post_init__()
         if self.path != "<stdin>":
-            assert isinstance(self.path, Path)
+            assert isinstance(self.path, Path)  # noqa: S101, sanity check
             if not self.path.is_file():
                 raise UnparseablePathException(
                     ctx="Code path to parse is neither dir nor file",
@@ -124,7 +124,7 @@ class DepsSource(Source):
 
     def __post_init__(self) -> None:
         super().__post_init__()
-        assert self.path.is_file()  # sanity check
+        assert self.path.is_file()  # noqa: S101, sanity check
 
     def render(self, detailed: bool) -> str:
         if detailed:
@@ -148,7 +148,7 @@ class PyEnvSource(Source):
 
     def __post_init__(self) -> None:
         super().__post_init__()
-        assert self.path.is_dir()  # sanity check
+        assert self.path.is_dir()  # noqa: S101, sanity check
 
         # Support Windows projects
         if sys.platform.startswith("win"):

@@ -140,7 +140,7 @@ def accumulate_mappings(
             else:  # replace existing Package instance with "augmented" version
                 prev = result[normalized_name]
                 debug_info = prev.debug_info
-                assert isinstance(debug_info, dict)
+                assert isinstance(debug_info, dict)  # noqa: S101, sanity check
                 debug_info.setdefault(debug_key, set()).update(imports)
                 result[normalized_name] = replace(
                     prev,
@@ -310,7 +310,7 @@ class LocalPackageResolver(InstalledPackageResolver):
         self.package_dirs: Set[Path] = set(src.path for src in srcs)
 
     @classmethod
-    def find_package_dirs(cls, path: Path) -> Iterator[Path]:
+    def find_package_dirs(cls, path: Path) -> Iterator[Path]:  # noqa: C901, PLR0912
         """Return the packages directories corresponding to the given path.
 
         The given 'path' is a user-provided directory path meant to point to
@@ -473,7 +473,7 @@ class TemporaryPipInstallResolver(BasePackageResolver):
         .installed_requirements() above. The caller is expected to handle any
         requirements that we failed to install.
         """
-        with tempfile.TemporaryDirectory() as tmpdir:
+        with tempfile.TemporaryDirectory() as tmpdir:  # noqa: SIM117
             with cls.installed_requirements(Path(tmpdir), requirements) as venv_dir:
                 yield venv_dir
 
