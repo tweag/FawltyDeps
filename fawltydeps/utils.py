@@ -1,4 +1,4 @@
-"""Common utilities"""
+"""Common utilities."""
 
 import logging
 import sys
@@ -17,8 +17,7 @@ logger = logging.getLogger(__name__)
 
 @no_type_check
 def version() -> str:
-    """Returns the version of fawltydeps."""
-
+    """Return the version of fawltydeps."""
     # This function is extracted to allow annotation with `@no_type_check`.
     # Using `#type: ignore` on the line below leads to an
     # "unused type ignore comment" MyPy error in python's version 3.8 and
@@ -78,7 +77,9 @@ def calculated_once(method: Callable[[Instance], T]) -> Callable[[Instance], T]:
 
 def site_packages(venv_dir: Path = Path()) -> Path:
     """Return the site-packages directory of a virtual environment.
-    Works for both, Windows and POSIX."""
+
+    Works for both, Windows and POSIX.
+    """
     # Windows
     if sys.platform.startswith("win"):
         return venv_dir / "Lib" / "site-packages"

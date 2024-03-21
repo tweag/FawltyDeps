@@ -57,7 +57,6 @@ def find_sources(  # pylint: disable=too-many-branches,too-many-statements  # no
       symlinks-to-dirs. We should be resistant to infinite traversal loops
       caused by symlinks. (This is handled by DirectoryTraversal)
     """
-
     logger.debug("find_sources() Looking for sources under:")
     logger.debug(f"    code:         {settings.code}")
     logger.debug(f"    deps:         {settings.deps}")

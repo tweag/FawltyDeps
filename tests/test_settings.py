@@ -77,7 +77,7 @@ def make_settings_dict(**kwargs):
 
 @pytest.fixture
 def setup_env(monkeypatch):
-    """Allow setup of fawltydeps_* env vars in a test case"""
+    """Allow setup of fawltydeps_* env vars in a test case."""
 
     def _inner(**kwargs: str):
         for k, v in kwargs.items():
@@ -203,9 +203,11 @@ OPTION_VALUES = {
 
 
 def multivalued_optargs_grid() -> Iterable[List[str]]:
-    """Create command-line option/argument combinations which
-    mix order and number of multivalued parameters."""
+    """Create shuffled argument list from OPTION_VALUES.
 
+    Generate command-line option/argument combinations which mix order and
+    number of multivalued parameters.
+    """
     T = TypeVar("T")
 
     def subsequence_pairs(

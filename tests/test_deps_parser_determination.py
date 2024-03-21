@@ -1,4 +1,4 @@
-""" Test the determination of strategy to parse dependency declarations. """
+"""Test the determination of strategy to parse dependency declarations."""
 
 import logging
 import shutil

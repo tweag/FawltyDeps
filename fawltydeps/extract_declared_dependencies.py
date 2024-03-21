@@ -1,4 +1,4 @@
-"""Collect declared dependencies of the project"""
+"""Collect declared dependencies of the project."""
 
 import ast
 import configparser
@@ -38,7 +38,7 @@ NamedLocations = Iterator[Tuple[str, Location]]
 
 
 class DependencyParsingError(Exception):
-    """Error raised when parsing of dependency fails"""
+    """Error raised when parsing of dependency fails."""
 
     def __init__(self, node: ast.AST):
         super().__init__(node)
@@ -46,7 +46,7 @@ class DependencyParsingError(Exception):
 
 
 def parse_one_req(req_text: str, source: Location) -> DeclaredDependency:
-    """Returns the name of a dependency declared in a requirement specifier."""
+    """Return the name of a dependency declared in a requirement specifier."""
     req = Requirement.parse(req_text)
     req_name = req.unsafe_name
     return DeclaredDependency(req_name, source)
@@ -273,8 +273,7 @@ def parse_pep621_pyproject_contents(  # noqa: C901
 def parse_dynamic_pyproject_contents(
     parsed_contents: TomlData, source: Location
 ) -> Iterator[DeclaredDependency]:
-    """Extract dynamic dependencies from a pyproject.toml using the PEP 621 fields"""
-
+    """Extract dynamic dependencies from a pyproject.toml using the PEP 621 fields."""
     dynamic = parsed_contents["project"]["dynamic"]
 
     deps_files = []
@@ -364,7 +363,7 @@ def parse_pyproject_toml(path: Path) -> Iterator[DeclaredDependency]:
 
 
 class ParsingStrategy(NamedTuple):
-    """Named pairing of an applicability criterion and a dependency parser"""
+    """Named pairing of an applicability criterion and a dependency parser."""
 
     applies_to_path: Callable[[Path], bool]
     execute: Callable[[Path], Iterator[DeclaredDependency]]

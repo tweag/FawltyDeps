@@ -24,14 +24,14 @@ CustomMapping = Dict[str, List[str]]
 
 
 class UnparseablePathException(Exception):
-    """Exception type when alleged path (deps or code) can't be parsed"""
+    """Exception type when alleged path (deps or code) can't be parsed."""
 
     def __init__(self, ctx: str, path: Path):
         self.msg = f"{ctx}: {path}"
 
 
 class UnresolvedDependenciesError(Exception):
-    """Exception type when not all dependencies were are resolved"""
+    """Exception type when not all dependencies were are resolved."""
 
     def __init__(self, names: Set[str]):
         self.msg = f"Unresolved dependencies: {', '.join(sorted(names))}"
@@ -99,6 +99,7 @@ class CodeSource(Source):
                 )
 
     def render(self, detailed: bool) -> str:
+        """Return a human-readable string representation of this source."""
         if detailed and self.base_dir is not None:
             return f"{self.path} (using {self.base_dir} as base for 1st-party imports)"
         return f"{self.path}"
@@ -127,6 +128,7 @@ class DepsSource(Source):
         assert self.path.is_file()  # noqa: S101, sanity check
 
     def render(self, detailed: bool) -> str:
+        """Return a human-readable string representation of this source."""
         if detailed:
             return f"{self.path} (parsed as a {self.parser_choice} file)"
         return f"{self.path}"
@@ -168,6 +170,7 @@ class PyEnvSource(Source):
         raise ValueError(f"{self.path} is not a valid dir for Python packages!")
 
     def render(self, detailed: bool) -> str:
+        """Return a human-readable string representation of this source."""
         if detailed:
             return f"{self.path} (as a source of Python packages)"
         return f"{self.path}"
@@ -265,7 +268,7 @@ class ParsedImport:
 
 @dataclass(eq=True, frozen=True, order=True)
 class DeclaredDependency:
-    """Declared dependencies parsed from configuration-containing files"""
+    """Declared dependencies parsed from configuration-containing files."""
 
     name: str
     source: Location
