@@ -232,7 +232,6 @@ class Settings(BaseSettings):
         ultimately - from the hardcoded defaults above) must NOT appear in
         these keyword args (cf. use of argparse.SUPPRESS above).
         """
-
         args_dict = cmdline_args.__dict__
 
         base_paths = set(getattr(cmdline_args, "basepaths", []))
@@ -286,7 +285,7 @@ def print_toml_config(settings: Settings, out: TextIO = sys.stdout) -> None:
     dictionary_options = {"custom_mapping"}
 
     def _option_to_toml(name, value) -> str:  # type: ignore[no-untyped-def]  # noqa: ANN001
-        """Serialize options to toml configuration entries
+        """Serialize options to toml configuration entries.
 
         Options that are of dictionary type must be given a section entry.
         Assumption: dictionaries options are not nested.

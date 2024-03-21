@@ -1,5 +1,4 @@
-"""
-Parametrized property-based tests for command line interface.
+"""Parametrized property-based tests for command line interface.
 
 Contains a strategy, for generating a CLI commands with
 combination of parameters in a randomized order (apart from positional args).
@@ -187,10 +186,7 @@ def cli_arguments_combinations(draw):
     max_examples=100,
 )
 def test_options_interactions__correct_options__does_not_abort(cli_arguments):
-    """Check if a combination of valid options
-
-    makes a valid run of fawltydeps CLI tool.
-    """
+    """Check if a combination of valid options makes a valid run of fawltydeps CLI tool."""
     project_dir, drawn_args, to_stdin = cli_arguments
     basepath = (
         [] if {"--code", "--deps"}.issubset(set(drawn_args)) else [str(project_dir)]

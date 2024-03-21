@@ -1,4 +1,4 @@
-"""Verify behavior of packages resolver"""
+"""Verify behavior of packages resolver."""
 
 import sys
 import time
@@ -77,8 +77,7 @@ def generate_expected_resolved_deps(
     user_mapping_file: Optional[Path] = None,
     install_deps: bool = False,
 ) -> Dict[str, Package]:
-    """
-    Returns a dict of resolved packages.
+    """Returns a dict of resolved packages.
 
     This function does not actually resolve its input dependencies.
     It just constructs a valid dict of resolved dependencies that respects

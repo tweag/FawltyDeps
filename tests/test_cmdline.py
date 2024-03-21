@@ -33,9 +33,7 @@ logger = logging.getLogger(__name__)
 
 
 def make_json_settings_dict(**kwargs):
-    """
-    Create an expected version of Settings.dict(), with customizations.
-    """
+    """Create an expected version of Settings.dict(), with customizations."""
     settings = {
         "actions": ["check_undeclared", "check_unused"],
         "code": ["."],

@@ -18,7 +18,7 @@ from fawltydeps.utils import version
 
 
 class ArgparseUnionAction(argparse.Action):
-    """Action for doing taking union of multiple command-line arguments for a single option"""
+    """Action to take the union of given arguments/values for one CLI option."""
 
     def __call__(  # type: ignore[misc, override]
         self,
@@ -27,6 +27,7 @@ class ArgparseUnionAction(argparse.Action):
         values: Sequence[Any],
         option_string: Optional[str] = None,
     ) -> None:
+        """Compute the union of 'values' and any previously given values'."""
         items = getattr(namespace, self.dest, [])
         setattr(namespace, self.dest, set(items) | set(values))
 
@@ -274,7 +275,7 @@ def populate_parser_configuration(parser: argparse._ActionsContainer) -> None:
 
 
 def populate_parser_other_options(parser: argparse._ActionsContainer) -> None:
-    """Add options not related to the Settings object"""
+    """Add options not related to the Settings object."""
     parser.add_argument(
         "--generate-toml-config",
         action="store_true",

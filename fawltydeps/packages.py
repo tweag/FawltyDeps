@@ -84,7 +84,7 @@ class Package:
         object.__setattr__(self, "package_name", self.normalize_name(self.package_name))
 
     def has_type_stubs(self) -> Set[str]:
-        """Returns a set of import names without type stubs suffix."""
+        """Return a set of import names without type stubs suffix."""
         provides_stubs_for = [
             import_name[: -len("-stubs")]
             for import_name in self.import_names
@@ -151,7 +151,7 @@ def accumulate_mappings(
 
 
 class UserDefinedMapping(BasePackageResolver):
-    """Use user-defined mapping loaded from a toml file"""
+    """Use user-defined mapping loaded from a toml file."""
 
     def __init__(
         self,
@@ -382,10 +382,10 @@ class LocalPackageResolver(InstalledPackageResolver):
 
 
 def pyenv_sources(*pyenv_paths: Path) -> Set[PyEnvSource]:
-    """Helper for converting Python environment paths into PyEnvSources.
+    """Convert Python environment paths into PyEnvSources.
 
-    Convenience when you want to construct a LocalPackageResolver from one or
-    more Python environment paths.
+    Convenience helper when you want to construct a LocalPackageResolver from
+    one or more Python environment paths.
     """
     ret: Set[PyEnvSource] = set()
     for path in pyenv_paths:
@@ -405,7 +405,8 @@ class TemporaryPipInstallResolver(BasePackageResolver):
     local environment. This is done by creating a temporary venv, and then
     `pip install`ing the packages into this venv, and then resolving the
     packages in this venv. The venv is automatically deleted before as soon as
-    the packages have been resolved."""
+    the packages have been resolved.
+    """
 
     # This is only used in tests by `test_resolver`
     cached_venv: Optional[Path] = None

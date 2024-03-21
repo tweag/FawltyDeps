@@ -1,4 +1,4 @@
-""" Utilities to share among test modules """
+"""Utilities to share among test modules."""
 
 import io
 import logging
@@ -62,7 +62,7 @@ def imports_factory(*imports: str) -> List[ParsedImport]:
 
 
 def deps_factory(*deps: str, path: str = "foo") -> List[DeclaredDependency]:
-    "Dependency generator with a common path for all dependencies"
+    """Dependency generator with a common path for all dependencies."""
     return [DeclaredDependency(name=dep, source=Location(Path(path))) for dep in deps]
 
 

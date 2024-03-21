@@ -1,4 +1,4 @@
-"""Fixtures for tests"""
+"""Fixtures for tests."""
 import sys
 import venv
 from pathlib import Path
@@ -151,7 +151,6 @@ def fake_project(write_tmp_files, fake_venv):  # noqa: C901
     Returns tmp_path, which is regarded as the root directory of the temporary
     Python project.
     """
-
     Imports = List[str]
     Deps = List[str]
     ExtraDeps = Dict[str, Deps]

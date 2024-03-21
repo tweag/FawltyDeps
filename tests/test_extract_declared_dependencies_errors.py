@@ -1,4 +1,4 @@
-"""Test unhappy path, where parsing of dependencies fails"""
+"""Test unhappy path, where parsing of dependencies fails."""
 
 import logging
 

@@ -292,7 +292,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
 
     @staticmethod
     def success_message(check_undeclared: bool, check_unused: bool) -> Optional[str]:
-        """Returns the message to print when the analysis finds no errors."""
+        """Return the message to print when the analysis finds no errors."""
         checking = []
         if check_undeclared:
             checking.append("undeclared")
@@ -304,8 +304,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
 
 
 def assign_exit_code(analysis: Analysis) -> int:
-    """
-    Assign exit code based on the analysis results.
+    """Assign exit code based on the analysis results.
 
     Exit codes:
     0 - success, no problems found

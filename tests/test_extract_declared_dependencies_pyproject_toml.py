@@ -1,4 +1,4 @@
-"""Test extracting dependencies from pyproject.toml"""
+"""Test extracting dependencies from pyproject.toml."""
 import logging
 from dataclasses import dataclass, field
 from typing import List
