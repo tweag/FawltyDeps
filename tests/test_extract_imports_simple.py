@@ -55,10 +55,9 @@ def generate_notebook(
             "source": source,
         }
 
-    if isinstance(cell_types, str):
-        types = [cell_types] * len(cells_source)
-    else:
-        types = cell_types
+    types = (
+        [cell_types] * len(cells_source) if isinstance(cell_types, str) else cell_types
+    )
 
     notebook = {
         "nbformat": 4,

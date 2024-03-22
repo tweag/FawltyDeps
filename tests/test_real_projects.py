@@ -152,10 +152,7 @@ class ThirdPartyProject(BaseProject):
 
         # Most tarballs contains a single leading directory; descend into it.
         entries = list(unpack_dir.iterdir())
-        if len(entries) == 1:
-            project_dir = entries[0]
-        else:
-            project_dir = unpack_dir
+        project_dir = entries[0] if len(entries) == 1 else unpack_dir
 
         logger.info(f"Unpacked project is at {project_dir}")
         return project_dir
