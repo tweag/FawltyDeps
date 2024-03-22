@@ -189,8 +189,6 @@ ignore = [
     "N818",  # Exception name `...` should be named with an Error suffix
     "PLR1714",  # Consider merging multiple comparisons. Use a `set` if the elements are hashable.
     "PLR5501",  # Use `elif` instead of `else` then `if`, to reduce indentation
-    "PTH108",  # `os.unlink()` should be replaced by `Path.unlink()`
-    "PTH123",  # `open()` should be replaced by `Path.open()`
     "PTH201",  # Do not pass the current directory explicitly to `Path`
     "RUF005",  # Consider `[...]` instead of concatenation
     "SIM102",  # Use a single `if` statement instead of nested `if` statements

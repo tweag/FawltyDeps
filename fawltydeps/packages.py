@@ -191,7 +191,7 @@ class UserDefinedMapping(BasePackageResolver):
             if self.mapping_paths is not None:
                 for path in self.mapping_paths:
                     logger.debug(f"Loading user-defined mapping from {path}")
-                    with open(path, "rb") as mapping_file:
+                    with Path(path).open("rb") as mapping_file:
                         yield tomllib.load(mapping_file), str(path)
 
         return accumulate_mappings(self.__class__, _custom_mappings())

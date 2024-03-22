@@ -58,7 +58,7 @@ def parse_gitignore(full_path: Path, base_dir: Optional[Path] = None) -> Iterato
     """
     if base_dir is None:
         base_dir = full_path.parent
-    with open(full_path) as ignore_file:
+    with Path(full_path).open() as ignore_file:
         yield from parse_gitignore_lines(ignore_file, base_dir, full_path)
 
 
