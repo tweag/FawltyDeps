@@ -113,8 +113,7 @@ def run_fawltydeps_subprocess(
 ) -> Tuple[str, str, int]:
     """Run FawltyDeps as a subprocess. Designed for integration tests."""
     proc = subprocess.run(
-        [sys.executable, "-m", "fawltydeps", f"--config-file={config_file}"]
-        + list(args),
+        [sys.executable, "-m", "fawltydeps", f"--config-file={config_file}", *args],
         input=to_stdin,
         capture_output=True,
         text=True,
@@ -204,8 +203,10 @@ test_vectors = [
     ),
     FDTestVector(
         "mixed_imports_from_diff_files_with_unused_and_undeclared_deps",
-        imports=imports_factory("pandas")
-        + [ParsedImport("numpy", Location(Path("my_file.py"), lineno=3))],
+        imports=[
+            *imports_factory("pandas"),
+            ParsedImport("numpy", Location(Path("my_file.py"), lineno=3)),
+        ],
         declared_deps=deps_factory("pandas", "scipy"),
         expect_resolved_deps=resolved_factory("pandas", "scipy"),
         expect_undeclared_deps=[

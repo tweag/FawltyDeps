@@ -142,7 +142,7 @@ def test_path_option_overrides_base_path(basepaths, filled, unfilled, fillers):
     assert filled and unfilled and (unfilled | filled) == path_options.keys()
     args = list(basepaths)
     for option in filled:
-        args += [option] + list(fillers)
+        args += [option, *list(fillers)]
     settings = run_build_settings(args)
     for option in filled:
         assert getattr(settings, path_options[option]) == to_path_set(fillers)
@@ -227,7 +227,7 @@ def multivalued_optargs_grid() -> Iterable[List[str]]:
     for param_grid in set(product(*option_partitions)):
         xss = list(chain(*param_grid))
         random.shuffle(xss)
-        yield list(chain(*[[f"--{opt_by_arg[xs[0]]}"] + list(xs) for xs in xss]))
+        yield list(chain(*[[f"--{opt_by_arg[xs[0]]}", *list(xs)] for xs in xss]))
 
 
 @pytest.mark.parametrize("optargs", multivalued_optargs_grid())

@@ -96,7 +96,7 @@ def code_option_strategy(paths: List[str]):
         st.sampled_from(paths),
         min_size=0,
         max_size=MAX_NUMBER_OF_CODE_ARGS,
-    ).map(lambda xs: ["--code"] + xs if xs else [])
+    ).map(lambda xs: ["--code", *xs] if xs else [])
 
 
 def deps_option_strategy(paths: List[str]):
@@ -106,15 +106,15 @@ def deps_option_strategy(paths: List[str]):
         st.sampled_from(paths),
         min_size=0,
         max_size=MAX_NUMBER_OF_DEPS_ARGS,
-    ).map(lambda xs: ["--deps"] + xs if xs else [])
+    ).map(lambda xs: ["--deps", *xs] if xs else [])
 
 
 ignored_strategy = st.lists(safe_string, min_size=0, max_size=MAX_IGNORE_ARGS)
 ignored_undeclared_strategy = ignored_strategy.map(
-    lambda xs: ["--ignore-undeclared"] + xs if xs else []
+    lambda xs: ["--ignore-undeclared", *xs] if xs else []
 )
 ignored_unused_strategy = ignored_strategy.map(
-    lambda xs: ["--ignore-unused"] + xs if xs else []
+    lambda xs: ["--ignore-unused", *xs] if xs else []
 )
 
 deps_parser_choice_strategy = st.one_of(st.sampled_from(deps_parser_choice), st.none())
