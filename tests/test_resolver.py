@@ -70,6 +70,7 @@ def user_mapping_to_file_content(user_mapping: Dict[str, List[str]]) -> str:
 
 
 def generate_expected_resolved_deps(
+    *,
     locally_installed_deps: Dict[str, Set[str]],
     other_deps: Dict[str, Set[str]],
     user_defined_deps: List[str],

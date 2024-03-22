@@ -227,7 +227,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
         json.dump(json_dict, out, indent=2, default=encoder)
 
     def print_human_readable(  # noqa: C901
-        self, out: TextIO, detailed: bool = True
+        self, out: TextIO, *, detailed: bool = True
     ) -> None:
         """Print a human-readable rendering of this analysis to 'out'."""
 
@@ -243,9 +243,11 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
                     filtered = {s for s in self.sources if s.source_type is source_type}
                     if filtered:
                         yield "\n" + heading
-                        yield from sorted([f"  {src.render(True)}" for src in filtered])
+                        yield from sorted(
+                            [f"  {src.render(detailed=True)}" for src in filtered]
+                        )
             else:
-                yield from sorted({src.render(False) for src in self.sources})
+                yield from sorted({src.render(detailed=False) for src in self.sources})
 
         def render_imports() -> Iterator[str]:
             if detailed:
@@ -268,12 +270,12 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
         def render_undeclared() -> Iterator[str]:
             yield "\nThese imports appear to be undeclared dependencies:"
             for undeclared in self.undeclared_deps:
-                yield f"- {undeclared.render(detailed)}"
+                yield f"- {undeclared.render(include_references=detailed)}"
 
         def render_unused() -> Iterator[str]:
             yield f"\n{UNUSED_DEPS_OUTPUT_PREFIX}:"
             for unused in sorted(self.unused_deps, key=lambda d: d.name):
-                yield f"- {unused.render(detailed)}"
+                yield f"- {unused.render(include_references=detailed)}"
 
         def output(lines: Iterator[str]) -> None:
             for line in lines:
@@ -291,7 +293,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
             output(render_unused())
 
     @staticmethod
-    def success_message(check_undeclared: bool, check_unused: bool) -> Optional[str]:
+    def success_message(*, check_undeclared: bool, check_unused: bool) -> Optional[str]:
         """Return the message to print when the analysis finds no errors."""
         checking = []
         if check_undeclared:
@@ -329,8 +331,8 @@ def print_output(
 ) -> None:
     """Print the output of the given 'analysis' to 'stdout'."""
     success_message = Analysis.success_message(
-        analysis.is_enabled(Action.REPORT_UNDECLARED),
-        analysis.is_enabled(Action.REPORT_UNUSED),
+        check_undeclared=analysis.is_enabled(Action.REPORT_UNDECLARED),
+        check_unused=analysis.is_enabled(Action.REPORT_UNUSED),
     )
 
     if analysis.settings.output_format == OutputFormat.JSON:

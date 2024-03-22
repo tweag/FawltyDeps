@@ -427,6 +427,7 @@ def parse_sources(sources: Iterable[DepsSource]) -> Iterator[DeclaredDependency]
 def validate_deps_source(
     path: Path,
     parser_choice: Optional[ParserChoice] = None,
+    *,
     filter_by_parser: bool = False,
 ) -> Optional[DepsSource]:
     """Check if the given file path is a valid source for parsing declared deps.
