@@ -116,9 +116,8 @@ def run_fawltydeps_subprocess(
         [sys.executable, "-m", "fawltydeps", f"--config-file={config_file}"]
         + list(args),
         input=to_stdin,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        universal_newlines=True,
+        capture_output=True,
+        text=True,
         check=False,
         cwd=cwd,
     )
