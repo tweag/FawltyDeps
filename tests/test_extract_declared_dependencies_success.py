@@ -23,7 +23,7 @@ from .utils import (
 
 
 @pytest.mark.parametrize(
-    "file_content,expect_deps",
+    ("file_content", "expect_deps"),
     [
         pytest.param(
             """\
@@ -93,7 +93,7 @@ def test_parse_requirements_txt(write_tmp_files, file_content, expect_deps):
 
 
 @pytest.mark.parametrize(
-    "file_content,expect_deps",
+    ("file_content", "expect_deps"),
     [
         pytest.param(
             """\
@@ -313,7 +313,7 @@ def test_parse_setup_py(write_tmp_files, file_content, expect_deps):
 
 
 @pytest.mark.parametrize(
-    "file_content,expect_deps",
+    ("file_content", "expect_deps"),
     [
         pytest.param(
             """\
@@ -744,7 +744,7 @@ def test_find_and_parse_sources__project_with_setup_cfg_pyproject_requirements__
 
 
 @pytest.mark.parametrize(
-    ["deps_file_content", "exp_deps"],
+    ("deps_file_content", "exp_deps"),
     [
         pytest.param(dedent(lines), exp, id=id_)
         for lines, exp, id_ in [

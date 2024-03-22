@@ -28,7 +28,7 @@ def test_parse_setup_cfg__malformed__logs_error(write_tmp_files, caplog):
 
 
 @pytest.mark.parametrize(
-    "code,expect,fail_arg",
+    ("code", "expect", "fail_arg"),
     [
         pytest.param(
             """\

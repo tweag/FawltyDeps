@@ -20,7 +20,7 @@ from .utils import assert_unordered_equivalence, collect_dep_names
 
 
 @pytest.mark.parametrize(
-    ["path", "expect_choice"],
+    ("path", "expect_choice"),
     [
         pytest.param(Path(path), expect_choice, id=path)
         for path, expect_choice in [
@@ -70,7 +70,7 @@ PARSER_CHOICE_FILE_NAME_MISMATCH_GRID = {
 
 
 @pytest.mark.parametrize(
-    ["parser_choice", "deps_file_name", "has_log"],
+    ("parser_choice", "deps_file_name", "has_log"),
     [
         pytest.param(pc, fn, has_log, id=f"{pc}__{fn}__{has_log}")
         for pc, fn, has_log in [
@@ -99,7 +99,7 @@ def test_explicit_parse_strategy__mismatch_yields_appropriate_logging(
 
 
 @pytest.mark.parametrize(
-    ["deps_file_name", "exp_deps"],
+    ("deps_file_name", "exp_deps"),
     [
         pytest.param(fn, deps, id=fn)
         for fn, deps in [
@@ -127,7 +127,7 @@ def test_filepath_inference(
 
 
 @pytest.mark.parametrize(
-    ["parser_choice", "exp_deps"],
+    ("parser_choice", "exp_deps"),
     [
         pytest.param(choice, exp, id=f"{choice.name}")
         for choice, exp in [
@@ -155,7 +155,7 @@ def test_extract_from_directory_applies_manual_parser_choice_iff_choice_applies(
 
 
 @pytest.mark.parametrize(
-    ["parser_choice", "fn1", "fn2", "exp_deps"],
+    ("parser_choice", "fn1", "fn2", "exp_deps"),
     [
         pytest.param(choice, fn1, fn2, exp, id=f"{choice.name}__{fn1}__{fn2}")
         for choice, fn1, fn2, exp in [

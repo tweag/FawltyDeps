@@ -10,7 +10,7 @@ from fawltydeps.types import DeclaredDependency, Location
 
 
 @pytest.mark.parametrize(
-    "pyproject_toml,expected_deps",
+    ("pyproject_toml", "expected_deps"),
     [
         pytest.param(
             """\
@@ -280,7 +280,7 @@ def test_parse_pyproject_content__malformatted_poetry_dependencies__yields_no_de
 
 
 @pytest.mark.parametrize(
-    "pyproject_toml,expected,expected_logs",
+    ("pyproject_toml", "expected", "expected_logs"),
     [
         pytest.param(
             """\

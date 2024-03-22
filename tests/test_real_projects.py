@@ -169,7 +169,7 @@ class ThirdPartyProject(BaseProject):
 
 
 @pytest.mark.parametrize(
-    "project, experiment",
+    ("project", "experiment"),
     [
         pytest.param(project, experiment, id=experiment.name)
         for project in ThirdPartyProject.collect()
