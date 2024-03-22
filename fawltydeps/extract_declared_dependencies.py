@@ -452,12 +452,12 @@ def validate_deps_source(
             ctx="Dependencies declaration path is neither dir nor file", path=path
         )
 
-    if parser_choice is not None:  # user wants a specific parser
-        if filter_by_parser:  # but only if the file matches
-            if not PARSER_CHOICES[parser_choice].applies_to_path(path):
-                raise UnparseablePathException(
-                    ctx=f"Path does not match {parser_choice} parser", path=path
-                )
+    if parser_choice is not None:
+        # User wants a specific parser, but only if the file matches:
+        if filter_by_parser and not PARSER_CHOICES[parser_choice].applies_to_path(path):
+            raise UnparseablePathException(
+                ctx=f"Path does not match {parser_choice} parser", path=path
+            )
     else:  # no parser chosen, automatically determine parser for this path
         parser_choice = first_applicable_parser(path)
     if parser_choice is None:  # no suitable parser given
