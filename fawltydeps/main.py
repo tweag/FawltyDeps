@@ -263,7 +263,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
                 for dep in sorted(unique_deps, key=attrgetter("source", "name")):
                     yield f"{dep.source}: {dep.name}"
             else:
-                yield from sorted(set(d.name for d in self.declared_deps))
+                yield from sorted({d.name for d in self.declared_deps})
 
         def render_undeclared() -> Iterator[str]:
             yield "\nThese imports appear to be undeclared dependencies:"

@@ -241,10 +241,10 @@ def test_multivalued_options_are_aggregated_correctly(optargs):
 
 @pytest.mark.parametrize(
     "optname",
-    set(
+    {
         act.dest
         for act in build_parser()._actions  # pylint: disable=protected-access  # noqa: SLF001
-    )
+    }
     & set(Settings.__fields__.keys()),
 )
 def test_settings_members_are_absent_from_namespace_if_not_provided_at_cli(optname):
