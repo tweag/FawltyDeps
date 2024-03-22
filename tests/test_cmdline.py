@@ -64,7 +64,7 @@ def make_json_settings_dict(**kwargs):
 
 
 @pytest.mark.parametrize(
-    "cli_options,expect_output,expect_logs",
+    ("cli_options", "expect_output", "expect_logs"),
     [
         pytest.param(
             ["--detailed", "--verbose"],
@@ -1080,7 +1080,7 @@ def test_check_json__no_pyenvs_found__falls_back_to_current_env(fake_project):
 
 
 @pytest.mark.parametrize(
-    "args,imports,dependencies,expected",
+    ("args", "imports", "dependencies", "expected"),
     [
         pytest.param(
             ["--check-unused"],
@@ -1161,7 +1161,7 @@ def test_cmdline_on_ignored_undeclared_option(
 
 
 @pytest.mark.parametrize(
-    "config,args,expect",
+    ("config", "args", "expect"),
     [
         pytest.param(
             {},

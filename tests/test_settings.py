@@ -132,7 +132,7 @@ def subsets(
 
 @given(basepaths=nonempty_string_set, fillers=nonempty_string_set)
 @pytest.mark.parametrize(
-    ["filled", "unfilled"],
+    ("filled", "unfilled"),
     [
         pytest.param(opts, path_options.keys() - opts, id="Passing " + ", ".join(opts))
         for opts in subsets(set(path_options.keys()), 1, len(path_options) - 1)
@@ -159,7 +159,7 @@ def test_base_path_fills_path_options_when_other_path_settings_are_absent(basepa
 
 
 @pytest.mark.parametrize(
-    ["config_settings", "basepaths"],
+    ("config_settings", "basepaths"),
     [
         pytest.param(conf_sett, base, id=test_name)
         for conf_sett, base, test_name in [

@@ -43,7 +43,7 @@ testdata = {  # Test ID -> (Location args, expected string representation, sort 
 
 
 @pytest.mark.parametrize(
-    "args,string,_",
+    ("args", "string", "_"),
     [
         pytest.param(
             *data,

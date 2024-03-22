@@ -92,7 +92,7 @@ def write_code_sources(write_tmp_files):
 
 
 @pytest.mark.parametrize(
-    "code,expected_import_line_pairs",
+    ("code", "expected_import_line_pairs"),
     [
         pytest.param("", [], id="no_code__has_no_imports"),
         pytest.param(
@@ -493,7 +493,7 @@ def test_parse_sources__imports__are_extracted_in_order_of_encounter(
 
 
 @pytest.mark.parametrize(
-    "code,expect_data",
+    ("code", "expect_data"),
     [
         pytest.param(
             {

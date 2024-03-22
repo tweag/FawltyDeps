@@ -35,7 +35,7 @@ def test_package__empty_package__matches_nothing():
 
 
 @pytest.mark.parametrize(
-    "package_name,matching_imports,non_matching_imports",
+    ("package_name", "matching_imports", "non_matching_imports"),
     [
         pytest.param(
             "foobar",
@@ -74,7 +74,7 @@ def test_package__identity_mapping(
 
 
 @pytest.mark.parametrize(
-    "package_name,import_names,matching_imports,non_matching_imports",
+    ("package_name", "import_names", "matching_imports", "non_matching_imports"),
     [
         pytest.param(
             "foobar",
@@ -148,7 +148,7 @@ def test_package__local_env_mapping(
 
 
 @pytest.mark.parametrize(
-    "mapping_files_content,custom_mapping,expect",
+    ("mapping_files_content", "custom_mapping", "expect"),
     [
         pytest.param(
             [
@@ -240,7 +240,7 @@ def test_user_defined_mapping__no_input__returns_empty_mapping():
 
 
 @pytest.mark.parametrize(
-    "dep_name,expect_import_names",
+    ("dep_name", "expect_import_names"),
     [
         pytest.param(
             "NOT_A_PACKAGE",

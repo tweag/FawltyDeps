@@ -117,7 +117,7 @@ class SampleProject(BaseProject):
 
 
 @pytest.mark.parametrize(
-    "project, experiment",
+    ("project", "experiment"),
     [
         pytest.param(project, experiment, id=experiment.name)
         for project in SampleProject.collect()

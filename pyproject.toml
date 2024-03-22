@@ -265,7 +265,6 @@ ignore = [
     # To be fixed soon:
     "C405",  # Unnecessary `list` literal (rewrite as a `set` literal)
     "PT001",  # Use `@pytest.fixture()` over `@pytest.fixture`
-    "PT006",  # Wrong name(s) type in `@pytest.mark.parametrize`, expected `tuple`
     "PT019",  # Fixture `_` without value is injected as parameter, use `@pytest.mark.usefixtures` instead
     "RUF003",  # Comment contains ambiguous `’` (RIGHT SINGLE QUOTATION MARK). Did you mean ``` (GRAVE ACCENT)?
     "RUF010",  # Use explicit conversion flag
