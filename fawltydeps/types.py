@@ -160,12 +160,11 @@ class PyEnvSource(Source):
             ):
                 return  # also ok
         # Support vitualenvs, poetry2nix envs, system-wide installs, etc.
-        else:
-            if (
-                self.path.match("lib/python?.*/site-packages")
-                and (self.path.parent.parent.parent / "bin/python").is_file()
-            ):
-                return  # all ok
+        elif (
+            self.path.match("lib/python?.*/site-packages")
+            and (self.path.parent.parent.parent / "bin/python").is_file()
+        ):
+            return  # all ok
 
         # Also support projects using __pypackages__ from PEP582:
         if self.path.match("__pypackages__/?.*/lib"):

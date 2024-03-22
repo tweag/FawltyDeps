@@ -260,9 +260,8 @@ def parse_pep621_pyproject_contents(  # noqa: C901
                 fields_parsers = []
             else:
                 fields_parsers = [("optional", parse_optional)]
-        else:
-            if "optional-dependencies" in parsed_contents["project"]["dynamic"]:
-                fields_parsers = [("main", parse_main)]
+        elif "optional-dependencies" in parsed_contents["project"]["dynamic"]:
+            fields_parsers = [("main", parse_main)]
 
     yield from parse_pyproject_elements(
         parsed_contents, source, "PEP621", fields_parsers
