@@ -154,14 +154,18 @@ class PyEnvSource(Source):
 
         # Support Windows projects
         if sys.platform.startswith("win"):
-            if self.path.match(str(Path("Lib", "site-packages"))):
-                if (self.path.parent.parent / "Scripts" / "python.exe").is_file():
-                    return  # also ok
+            if (
+                self.path.match(str(Path("Lib", "site-packages")))
+                and (self.path.parent.parent / "Scripts" / "python.exe").is_file()
+            ):
+                return  # also ok
         # Support vitualenvs, poetry2nix envs, system-wide installs, etc.
         else:
-            if self.path.match("lib/python?.*/site-packages"):
-                if (self.path.parent.parent.parent / "bin/python").is_file():
-                    return  # all ok
+            if (
+                self.path.match("lib/python?.*/site-packages")
+                and (self.path.parent.parent.parent / "bin/python").is_file()
+            ):
+                return  # all ok
 
         # Also support projects using __pypackages__ from PEP582:
         if self.path.match("__pypackages__/?.*/lib"):

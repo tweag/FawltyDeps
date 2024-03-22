@@ -66,10 +66,8 @@ class VariableTracker:
                         )
                 else:
                     logger.warning(f"Don't known how to parse {self._dump(node)}")
-        elif isinstance(node, ast.AnnAssign):
-            logger.warning(f"Don't known how to parse {self._dump(node)}!")
-        elif isinstance(node, ast.AugAssign):
-            logger.warning(f"Don't known how to parse {self._dump(node)}!")
+        elif isinstance(node, (ast.AnnAssign, ast.AugAssign)):
+            logger.warning(f"Don't know how to parse {self._dump(node)}!")
 
     def resolve(self, node: ast.AST) -> TrackedValue:
         """Convert a literal or a variable reference to the ultimate value.
@@ -93,9 +91,12 @@ class VariableTracker:
                 for key, val in zip(node.keys, node.values)
                 if isinstance(key, ast.AST)
             }
-        if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load):
-            if node.id in self.vars:
-                return self.vars[node.id]
+        if (
+            isinstance(node, ast.Name)
+            and isinstance(node.ctx, ast.Load)
+            and node.id in self.vars
+        ):
+            return self.vars[node.id]
 
         logger.warning(f"Unable to resolve {self._dump(node)}")
         raise CannotResolve(node, self.source.supply(lineno=node.lineno))
