@@ -307,7 +307,7 @@ class LocalPackageResolver(InstalledPackageResolver):
         provided import names.
         """
         super().__init__()
-        self.package_dirs: Set[Path] = set(src.path for src in srcs)
+        self.package_dirs: Set[Path] = {src.path for src in srcs}
 
     @classmethod
     def find_package_dirs(cls, path: Path) -> Iterator[Path]:  # noqa: C901, PLR0912
