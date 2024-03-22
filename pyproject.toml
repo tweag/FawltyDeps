@@ -263,7 +263,6 @@ ignore = [
     "T201",  # `print` found
 
     # To be fixed soon:
-    "C405",  # Unnecessary `list` literal (rewrite as a `set` literal)
     "PT001",  # Use `@pytest.fixture()` over `@pytest.fixture`
     "PT019",  # Fixture `_` without value is injected as parameter, use `@pytest.mark.usefixtures` instead
     "SIM108",  # Use ternary operator `...` instead of `if`-`else`-block

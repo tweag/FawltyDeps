@@ -92,7 +92,7 @@ def generate_expected_resolved_deps(
     )
     if user_defined_deps:
         user_mapping = UserDefinedMapping(
-            set([user_mapping_file]) if user_mapping_file else None,
+            {user_mapping_file} if user_mapping_file else None,
             user_mapping_from_config,
         )
         resolved_packages = user_mapping.lookup_packages(set(user_defined_deps))
@@ -190,7 +190,7 @@ def test_resolve_dependencies__generates_expected_mappings(
         actual = resolve_dependencies(
             dep_names,
             setup_resolvers(
-                custom_mapping_files=set([custom_mapping_file])
+                custom_mapping_files={custom_mapping_file}
                 if custom_mapping_file
                 else None,
                 custom_mapping=user_config_mapping,
