@@ -32,6 +32,14 @@ from .utils import (
 logger = logging.getLogger(__name__)
 
 
+EXIT_SUCCESS = 0
+EXIT_EXCEPTION = 1
+EXIT_CLI_PARSE_ERROR = 2
+EXIT_UNDECLARED = 3
+EXIT_UNUSED = 4
+EXIT_UNRESOLVED = 5
+
+
 def make_json_settings_dict(**kwargs):
     """Create an expected version of Settings.dict(), with customizations."""
     settings = {
@@ -94,7 +102,7 @@ def test_list_imports__from_dash__prints_imports_from_stdin(
     )
     assert output.splitlines() == expect_output
     assert_unordered_equivalence(errors.splitlines(), expect_logs)
-    assert returncode == 0
+    assert returncode == EXIT_SUCCESS
 
 
 def test_list_imports__from_py_file__prints_imports_from_file(write_tmp_files):
@@ -119,7 +127,7 @@ def test_list_imports__from_py_file__prints_imports_from_file(write_tmp_files):
         "--list-imports", "--detailed", f"--code={tmp_path / 'myfile.py'}"
     )
     assert output.splitlines() == expect
-    assert returncode == 0
+    assert returncode == EXIT_SUCCESS
 
 
 def test_list_imports_json__from_py_file__prints_imports_from_file(write_tmp_files):
@@ -173,7 +181,7 @@ def test_list_imports_json__from_py_file__prints_imports_from_file(write_tmp_fil
         "--list-imports", "--json", f"--code={tmp_path / 'myfile.py'}"
     )
     assert json.loads(output) == expect
-    assert returncode == 0
+    assert returncode == EXIT_SUCCESS
 
 
 def test_list_imports__from_ipynb_file__prints_imports_from_file(write_tmp_files):
@@ -188,7 +196,7 @@ def test_list_imports__from_ipynb_file__prints_imports_from_file(write_tmp_files
         "--list-imports", "--detailed", f"--code={tmp_path / 'myfile.ipynb'}"
     )
     assert output.splitlines() == expect
-    assert returncode == 0
+    assert returncode == EXIT_SUCCESS
 
 
 def test_list_imports__from_dir__prints_imports_from_py_and_ipynb_files_only(
@@ -218,7 +226,7 @@ def test_list_imports__from_dir__prints_imports_from_py_and_ipynb_files_only(
         "--list-imports", "--detailed", f"--code={tmp_path}"
     )
     assert output.splitlines() == expect
-    assert returncode == 0
+    assert returncode == EXIT_SUCCESS
 
 
 def test_list_imports__from_dir_with_some_excluded__prints_imports_from_unexcluded_only(
@@ -245,7 +253,7 @@ def test_list_imports__from_dir_with_some_excluded__prints_imports_from_unexclud
         "--list-imports", "--detailed", f"--code={tmp_path}", "--exclude=*.py"
     )
     assert output.splitlines() == expect
-    assert returncode == 0
+    assert returncode == EXIT_SUCCESS
 
 
 def test_list_imports__from_unsupported_file__fails_with_exit_code_2(tmp_path):
@@ -257,7 +265,7 @@ def test_list_imports__from_unsupported_file__fails_with_exit_code_2(tmp_path):
     assert (
         f"Supported formats are .py and .ipynb; Cannot parse code: {filepath}" in errors
     )
-    assert returncode == 2
+    assert returncode == EXIT_CLI_PARSE_ERROR
 
 
 def test_list_imports__from_missing_file__fails_with_exit_code_2(tmp_path):
@@ -266,7 +274,7 @@ def test_list_imports__from_missing_file__fails_with_exit_code_2(tmp_path):
         "--list-imports", f"--code={missing_path}"
     )
     assert f"Code path to parse is neither dir nor file: {missing_path}" in errors
-    assert returncode == 2
+    assert returncode == EXIT_CLI_PARSE_ERROR
 
 
 def test_list_imports__missing_exclude_pattern__fails_with_exit_code_2():
@@ -274,7 +282,7 @@ def test_list_imports__missing_exclude_pattern__fails_with_exit_code_2():
         "--list-imports", "--exclude="
     )
     assert "Error while parsing exclude pattern: No rule found: ''" in errors
-    assert returncode == 2
+    assert returncode == EXIT_CLI_PARSE_ERROR
 
 
 def test_list_imports__comment_in_exclude_pattern__fails_with_exit_code_2():
@@ -282,7 +290,7 @@ def test_list_imports__comment_in_exclude_pattern__fails_with_exit_code_2():
         "--list-imports", "--exclude", "# comment"
     )
     assert "Error while parsing exclude pattern: No rule found: '# comment'" in errors
-    assert returncode == 2
+    assert returncode == EXIT_CLI_PARSE_ERROR
 
 
 def test_list_imports__from_empty_dir__logs_but_extracts_nothing(tmp_path):
@@ -295,7 +303,7 @@ def test_list_imports__from_empty_dir__logs_but_extracts_nothing(tmp_path):
     )
     assert output == ""
     assert_unordered_equivalence(errors.splitlines(), expect_logs)
-    assert returncode == 0
+    assert returncode == EXIT_SUCCESS
 
 
 def test_list_imports__pick_multiple_files_dir__prints_all_imports(
@@ -308,7 +316,7 @@ def test_list_imports__pick_multiple_files_dir__prints_all_imports(
     )
     expect = ["django", "pandas", "click"]
     assert_unordered_equivalence(output.splitlines()[:-2], expect)
-    assert returncode == 0
+    assert returncode == EXIT_SUCCESS
 
 
 def test_list_imports__pick_multiple_files_dir_and_code__prints_all_imports(
@@ -330,7 +338,7 @@ def test_list_imports__pick_multiple_files_dir_and_code__prints_all_imports(
     )
     expect = ["django", "requests", "foo", "numpy"]
     assert_unordered_equivalence(output.splitlines()[:-2], expect)
-    assert returncode == 0
+    assert returncode == EXIT_SUCCESS
 
 
 def test_list_imports__stdin_with_legacy_encoding__prints_all_imports():
@@ -349,7 +357,7 @@ def test_list_imports__stdin_with_legacy_encoding__prints_all_imports():
     )
     expect = ["numpy"]
     assert_unordered_equivalence(output.splitlines()[:-2], expect)
-    assert returncode == 0
+    assert returncode == EXIT_SUCCESS
 
 
 def test_list_deps_detailed__dir__prints_deps_from_requirements_txt(fake_project):
@@ -366,7 +374,7 @@ def test_list_deps_detailed__dir__prints_deps_from_requirements_txt(fake_project
         "--list-deps", "--detailed", f"--deps={tmp_path}"
     )
     assert output.splitlines() == expect
-    assert returncode == 0
+    assert returncode == EXIT_SUCCESS
 
 
 def test_list_deps_json__dir__prints_deps_from_requirements_txt(fake_project):
@@ -406,7 +414,7 @@ def test_list_deps_json__dir__prints_deps_from_requirements_txt(fake_project):
         "--list-deps", "--json", f"--deps={tmp_path}"
     )
     assert json.loads(output) == expect
-    assert returncode == 0
+    assert returncode == EXIT_SUCCESS
 
 
 def test_list_deps_summary__dir__prints_deps_from_requirements_txt(fake_project):
@@ -418,7 +426,7 @@ def test_list_deps_summary__dir__prints_deps_from_requirements_txt(fake_project)
     expect = ["pandas", "requests"]
     output, returncode = run_fawltydeps_function("--list-deps", f"--deps={tmp_path}")
     assert output.splitlines()[:-2] == expect
-    assert returncode == 0
+    assert returncode == EXIT_SUCCESS
 
 
 def test_list_deps__unsupported_file__fails_with_exit_code_2(tmp_path):
@@ -428,7 +436,7 @@ def test_list_deps__unsupported_file__fails_with_exit_code_2(tmp_path):
     _output, errors, returncode = run_fawltydeps_subprocess(
         "--list-deps", f"--deps={filepath}"
     )
-    assert returncode == 2
+    assert returncode == EXIT_CLI_PARSE_ERROR
     assert f"Parsing given dependencies path isn't supported: {filepath}" in errors
 
 
@@ -438,7 +446,7 @@ def test_list_deps__missing_path__fails_with_exit_code_2(tmp_path):
     _output, errors, returncode = run_fawltydeps_subprocess(
         "--list-deps", f"--deps={missing_path}"
     )
-    assert returncode == 2
+    assert returncode == EXIT_CLI_PARSE_ERROR
     assert (
         f"Dependencies declaration path is neither dir nor file: {missing_path}"
         in errors
@@ -452,7 +460,7 @@ def test_list_deps__empty_dir__verbosely_logs_but_extracts_nothing(tmp_path):
     )
     assert output == ""
     assert errors == ""  # TODO: Should there be a INFO-level log message here?
-    assert returncode == 0
+    assert returncode == EXIT_SUCCESS
 
 
 def test_list_deps__pick_multiple_listed_files__prints_all_dependencies(
@@ -465,14 +473,14 @@ def test_list_deps__pick_multiple_listed_files__prints_all_dependencies(
     )
     expect = ["annoy", "jieba", "click", "pandas", "tensorflow"]
     assert_unordered_equivalence(output.splitlines()[:-2], expect)
-    assert returncode == 0
+    assert returncode == EXIT_SUCCESS
 
 
 def test_list_sources__in_empty_project__lists_nothing(tmp_path):
     output, returncode = run_fawltydeps_function("--list-sources", f"{tmp_path}")
     expect = []
     assert_unordered_equivalence(output.splitlines()[:-2], expect)
-    assert returncode == 0
+    assert returncode == EXIT_SUCCESS
 
 
 def test_list_sources__in_varied_project__lists_all_files(fake_project):
@@ -508,7 +516,7 @@ def test_list_sources__in_varied_project__lists_all_files(fake_project):
         ]
     ]
     assert_unordered_equivalence(output.splitlines()[:-2], expect)
-    assert returncode == 0
+    assert returncode == EXIT_SUCCESS
 
 
 def test_list_sources_detailed__in_varied_project__lists_all_files(fake_project):
@@ -562,7 +570,7 @@ def test_list_sources_detailed__in_varied_project__lists_all_files(fake_project)
         *expect_pyenv_lines,
     ]
     assert output.splitlines() == expect
-    assert returncode == 0
+    assert returncode == EXIT_SUCCESS
 
 
 def test_list_sources_detailed__from_both_python_file_and_stdin(fake_project):
@@ -583,7 +591,7 @@ def test_list_sources_detailed__from_both_python_file_and_stdin(fake_project):
         ],
     ]
     assert output.splitlines() in expect
-    assert returncode == 0
+    assert returncode == EXIT_SUCCESS
 
 
 def test_list_sources__with_exclude_from(fake_project):
@@ -637,7 +645,7 @@ class ProjectTestVector:
 
     expect_output: List[str] = field(default_factory=list)
     expect_logs: List[str] = field(default_factory=list)
-    expect_returncode: int = 0
+    expect_returncode: int = EXIT_SUCCESS
 
 
 full_success_message = (
@@ -662,7 +670,7 @@ project_tests_samples = [
             "- 'requests' imported at:",
             f"    {Path('{path}', 'code.py')}:1",
         ],
-        expect_returncode=3,
+        expect_returncode=EXIT_UNDECLARED,
     ),
     ProjectTestVector(
         id="simple_project_with_extra_deps__reports_unused",
@@ -674,7 +682,7 @@ project_tests_samples = [
             "- 'pandas' declared in:",
             f"    {Path('{path}', 'requirements.txt')}",
         ],
-        expect_returncode=4,
+        expect_returncode=EXIT_UNUSED,
     ),
     ProjectTestVector(
         id="simple_project_with_extra_deps__reports_unused_and_undeclared",
@@ -690,7 +698,7 @@ project_tests_samples = [
             "- 'pandas' declared in:",
             f"    {Path('{path}', 'requirements.txt')}",
         ],
-        expect_returncode=3,  # undeclared is more important than unused
+        expect_returncode=EXIT_UNDECLARED,  # undeclared is more important than unused
     ),
     ProjectTestVector(
         id="simple_project__summary_report_with_verbose_logging",
@@ -713,7 +721,7 @@ project_tests_samples = [
             "INFO:fawltydeps.packages:'pandas' was not resolved."
             " Assuming it can be imported as 'pandas'.",
         ],
-        expect_returncode=3,  # undeclared is more important than unused
+        expect_returncode=EXIT_UNDECLARED,  # undeclared is more important than unused
     ),
     ProjectTestVector(
         id="simple_project__summary_report_with_quiet_logging",
@@ -729,7 +737,7 @@ project_tests_samples = [
             "- 'pandas' declared in:",
             f"    {Path('{path}', 'requirements.txt')}",
         ],
-        expect_returncode=3,  # undeclared is more important than unused
+        expect_returncode=EXIT_UNDECLARED,  # undeclared is more important than unused
     ),
 ]
 
@@ -831,7 +839,7 @@ def test_check_json__simple_project__can_report_both_undeclared_and_unused(
         f"--pyenv={tmp_path}",
     )
     assert json.loads(output) == expect
-    assert returncode == 3  # --json does not affect exit code
+    assert returncode == EXIT_UNDECLARED  # --json does not affect exit code
 
 
 def test_check_undeclared__simple_project__reports_only_undeclared(fake_project):
@@ -853,7 +861,7 @@ def test_check_undeclared__simple_project__reports_only_undeclared(fake_project)
         f"{tmp_path}",
     )
     assert output.splitlines() == expect
-    assert returncode == 3
+    assert returncode == EXIT_UNDECLARED
 
 
 def test_check_unused__simple_project__reports_only_unused(fake_project):
@@ -875,7 +883,7 @@ def test_check_unused__simple_project__reports_only_unused(fake_project):
         f"{tmp_path}",
     )
     assert output.splitlines() == expect
-    assert returncode == 4
+    assert returncode == EXIT_UNUSED
 
 
 def test__no_action__defaults_to_check_action(fake_project):
@@ -897,7 +905,7 @@ def test__no_action__defaults_to_check_action(fake_project):
         f"--code={tmp_path}", "--detailed", f"--deps={tmp_path}"
     )
     assert output.splitlines() == expect
-    assert returncode == 3
+    assert returncode == EXIT_UNDECLARED
 
 
 def test__no_options__defaults_to_check_action_in_current_dir(fake_project):
@@ -919,7 +927,7 @@ def test__no_options__defaults_to_check_action_in_current_dir(fake_project):
     output, errors, returncode = run_fawltydeps_subprocess("--detailed", cwd=tmp_path)
     assert output.splitlines() == expect
     assert_unordered_equivalence(errors.splitlines(), expect_logs)
-    assert returncode == 3
+    assert returncode == EXIT_UNDECLARED
 
 
 def test_check__summary__writes_only_names_of_unused_and_undeclared(fake_project):
@@ -939,7 +947,7 @@ def test_check__summary__writes_only_names_of_unused_and_undeclared(fake_project
     ]
     output, returncode = run_fawltydeps_function("--check", basepath=tmp_path)
     assert output.splitlines() == expect
-    assert returncode == 3
+    assert returncode == EXIT_UNDECLARED
 
 
 def test_check_detailed__simple_project_in_fake_venv__resolves_imports_vs_deps(
@@ -962,7 +970,7 @@ def test_check_detailed__simple_project_in_fake_venv__resolves_imports_vs_deps(
     assert output.splitlines() == [
         Analysis.success_message(check_undeclared=True, check_unused=True),
     ]
-    assert returncode == 0
+    assert returncode == EXIT_SUCCESS
 
 
 def test_check_detailed__simple_project_w_2_fake_venv__resolves_imports_vs_deps(
@@ -983,7 +991,7 @@ def test_check_detailed__simple_project_w_2_fake_venv__resolves_imports_vs_deps(
     assert output.splitlines() == [
         Analysis.success_message(check_undeclared=True, check_unused=True),
     ]
-    assert returncode == 0
+    assert returncode == EXIT_SUCCESS
 
 
 def test_check_json__no_pyenvs_found__falls_back_to_current_env(fake_project):
@@ -1068,7 +1076,7 @@ def test_check_json__no_pyenvs_found__falls_back_to_current_env(fake_project):
     }
     output, returncode = run_fawltydeps_function("--check", "--json", f"{tmp_path}")
     assert json.loads(output) == expect
-    assert returncode == 0  # --json does not affect exit code
+    assert returncode == EXIT_SUCCESS  # --json does not affect exit code
 
 
 @pytest.mark.parametrize(
@@ -1149,7 +1157,7 @@ def test_cmdline_on_ignored_undeclared_option(
     )
     output, returncode = run_fawltydeps_function(*args, basepath=tmp_path)
     assert output.splitlines() == expected
-    assert returncode == 0
+    assert returncode == EXIT_SUCCESS
 
 
 @pytest.mark.parametrize(
@@ -1360,7 +1368,7 @@ def test_cmdline_args_in_combination_with_config_file(
     )
     assert output.splitlines() == expect
     assert errors == ""
-    assert returncode in {0, 3, 4}
+    assert returncode in {EXIT_SUCCESS, EXIT_UNDECLARED, EXIT_UNUSED}
 
 
 def test_deps_across_groups_appear_just_once_in_list_deps_detailed(tmp_path):
