@@ -7,7 +7,6 @@ import re
 import sys
 import tokenize
 from dataclasses import replace
-from os import unlink
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Callable, Iterable, Iterator, NamedTuple, Optional, Tuple
@@ -169,7 +168,7 @@ def parse_setup_cfg(path: Path) -> Iterator[DeclaredDependency]:
             for dep in parse_requirements_txt(Path(temp_file.name)):
                 yield replace(dep, source=source)
         finally:
-            unlink(Path(temp_file.name))
+            Path(temp_file.name).unlink()
 
     def extract_section(section: str) -> Iterator[DeclaredDependency]:
         if section in parser:
