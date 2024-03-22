@@ -453,7 +453,7 @@ class TemporaryPipInstallResolver(BasePackageResolver):
                 logger.warning("Output:\n%s", proc.stdout)
             logger.info("Retrying each requirement individually...")
             for req in requirements:
-                proc = pip_install_runner(argv + [req])
+                proc = pip_install_runner([*argv, req])
                 if proc.returncode:  # pip install failed
                     logger.warning("Failed to install %s", repr(req))
                     if proc.stdout.strip():
