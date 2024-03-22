@@ -16,9 +16,8 @@ pytestmark = pytest.mark.integration
 def run_package_main(*args: str) -> Tuple[str, int]:
     proc = subprocess.run(
         [sys.executable, "-m", "fawltydeps", *args],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        universal_newlines=True,
+        capture_output=True,
+        text=True,
         check=False,
     )
     return proc.stdout.strip(), proc.returncode

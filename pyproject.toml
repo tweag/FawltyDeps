@@ -274,8 +274,6 @@ ignore = [
     "SIM108",  # Use ternary operator `...` instead of `if`-`else`-block
     "SIM118",  # Use `key in dict` instead of `key in dict.keys()`
     "SIM910",  # Use `...get(dep)` instead of `...get(..., None)`
-    "UP021",  # `universal_newlines` is deprecated, use `text`
-    "UP022",  # Prefer `capture_output` over sending `stdout` and `stderr` to `PIPE`
 ]
 
 [tool.codespell]
