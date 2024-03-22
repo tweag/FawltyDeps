@@ -1,5 +1,4 @@
 """Fixtures for tests."""
-import sys
 import venv
 from pathlib import Path
 from tempfile import mkdtemp
@@ -54,10 +53,7 @@ def write_tmp_files(tmp_path: Path):
 @pytest.fixture
 def fake_venv(tmp_path):
     def create_one_fake_venv(
-        fake_packages: Dict[str, Set[str]],
-        *,
-        venv_dir: Optional[Path] = None,
-        py_version: Tuple[int, int] = sys.version_info[:2],
+        fake_packages: Dict[str, Set[str]], *, venv_dir: Optional[Path] = None
     ) -> Tuple[Path, Path]:
         if venv_dir is None:
             venv_dir = Path(mkdtemp(prefix="fake_venv.", dir=tmp_path))

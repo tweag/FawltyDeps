@@ -546,7 +546,6 @@ def test_find_and_parse_sources__project_with_pyproject__returns_list(fake_proje
 
 
 def test_find_and_parse_dynamic_sources__project_with_pyproject__returns_list(
-    write_tmp_files,
     fake_project,
 ):
     # Write requirements files into a place where files should be initially ignored
@@ -577,7 +576,6 @@ def test_find_and_parse_dynamic_sources__project_with_pyproject__returns_list(
 
 
 def test_find_and_parse_static_and_dynamic_sources__project_with_pyproject__returns_list(
-    write_tmp_files,
     fake_project,
 ):
     # Write requirements files into a place where files should be initially ignored
@@ -615,7 +613,6 @@ def test_find_and_parse_static_and_dynamic_sources__project_with_pyproject__retu
 
 
 def test_find_and_parse_static_and_dynamic_dependencies__project_with_pyproject__returns_list(
-    write_tmp_files,
     fake_project,
 ):
     # Write requirements files into a place where files should be initially ignored
@@ -654,7 +651,6 @@ def test_find_and_parse_static_and_dynamic_dependencies__project_with_pyproject_
 
 
 def test_find_and_parse_static_and_dynamic_opt_dependencies__project_with_pyproject__returns_list(
-    write_tmp_files,
     fake_project,
 ):
     # Write requirements files into a place where files should be initially ignored

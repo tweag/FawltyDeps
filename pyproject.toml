@@ -263,7 +263,6 @@ ignore = [
     "T201",  # `print` found
 
     # To be fixed soon:
-    "ARG001",  # Unused function argument: `py_version`
     "B011",  # Do not `assert False` (`python -O` removes these calls), raise `AssertionError()`
     "C405",  # Unnecessary `list` literal (rewrite as a `set` literal)
     "PLR2004",  # Magic value used in comparison, consider replacing ... with a constant variable
