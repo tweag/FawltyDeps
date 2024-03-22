@@ -13,7 +13,7 @@ from fawltydeps.utils import site_packages
 from .project_helpers import TarballPackage
 
 
-@pytest.fixture
+@pytest.fixture()
 def inside_tmp_path(monkeypatch, tmp_path):
     """Convenience fixture to run a test with CWD set to tmp_path.
 
@@ -25,7 +25,7 @@ def inside_tmp_path(monkeypatch, tmp_path):
     return tmp_path
 
 
-@pytest.fixture
+@pytest.fixture()
 def local_pypi(request, monkeypatch):  # noqa: PT004
     cache_dir = TarballPackage.cache_dir(request.config.cache)
     TarballPackage.get_tarballs(request.config.cache)
@@ -34,7 +34,7 @@ def local_pypi(request, monkeypatch):  # noqa: PT004
     monkeypatch.setenv("PIP_FIND_LINKS", str(cache_dir))
 
 
-@pytest.fixture
+@pytest.fixture()
 def write_tmp_files(tmp_path: Path):
     def _inner(file_contents: Dict[str, Union[str, bytes]]) -> Path:
         for filename, contents in file_contents.items():
@@ -50,7 +50,7 @@ def write_tmp_files(tmp_path: Path):
     return _inner
 
 
-@pytest.fixture
+@pytest.fixture()
 def fake_venv(tmp_path):
     def create_one_fake_venv(
         fake_packages: Dict[str, Set[str]], *, venv_dir: Optional[Path] = None
@@ -81,7 +81,7 @@ def fake_venv(tmp_path):
     return create_one_fake_venv
 
 
-@pytest.fixture
+@pytest.fixture()
 def isolate_default_resolver(
     fake_venv: Callable[[Dict[str, Set[str]]], Tuple[Path, Path]], monkeypatch
 ):
@@ -115,7 +115,7 @@ def isolate_default_resolver(
     return inner
 
 
-@pytest.fixture
+@pytest.fixture()
 def fake_project(write_tmp_files, fake_venv):  # noqa: C901
     """Create a temporary Python project with the given contents/properties.
 
@@ -248,7 +248,7 @@ def fake_project(write_tmp_files, fake_venv):  # noqa: C901
     return create_one_fake_project
 
 
-@pytest.fixture
+@pytest.fixture()
 def project_with_setup_and_requirements(fake_project):
     return fake_project(
         files_with_declared_deps={
@@ -263,7 +263,7 @@ def project_with_setup_and_requirements(fake_project):
     )
 
 
-@pytest.fixture
+@pytest.fixture()
 def project_with_setup_with_cfg_pyproject_and_requirements(fake_project):
     return fake_project(
         files_with_declared_deps={
@@ -288,7 +288,7 @@ def project_with_setup_with_cfg_pyproject_and_requirements(fake_project):
     )
 
 
-@pytest.fixture
+@pytest.fixture()
 def project_with_multiple_python_files(fake_project):
     return fake_project(
         declared_deps=["pandas", "click"],
@@ -301,7 +301,7 @@ def project_with_multiple_python_files(fake_project):
     )
 
 
-@pytest.fixture
+@pytest.fixture()
 def setup_fawltydeps_config(write_tmp_files):
     """Write a custom tmp_path/pyproject.toml with a [tool.fawltydeps] section.
 
