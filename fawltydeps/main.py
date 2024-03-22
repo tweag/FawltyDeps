@@ -135,7 +135,7 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
         """The list of declared dependencies parsed from this project."""
         return list(
             extract_declared_dependencies.parse_sources(
-                (src for src in self.sources if isinstance(src, DepsSource))
+                src for src in self.sources if isinstance(src, DepsSource)
             )
         )
 

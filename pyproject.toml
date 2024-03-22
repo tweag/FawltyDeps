@@ -194,7 +194,6 @@ ignore = [
     "SIM102",  # Use a single `if` statement instead of nested `if` statements
     "SIM114",  # Combine `if` branches using logical `or` operator
     "UP028",  # Replace `yield` over `for` loop with `yield from`
-    "UP034",  # Avoid extraneous parentheses
 
     # Probably not fixed so soon:
     "FIX002",  # Line contains TODO, consider resolving the issue
