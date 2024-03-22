@@ -266,7 +266,6 @@ ignore = [
     "PT001",  # Use `@pytest.fixture()` over `@pytest.fixture`
     "PT019",  # Fixture `_` without value is injected as parameter, use `@pytest.mark.usefixtures` instead
     "SIM108",  # Use ternary operator `...` instead of `if`-`else`-block
-    "SIM910",  # Use `...get(dep)` instead of `...get(..., None)`
 ]
 
 [tool.codespell]

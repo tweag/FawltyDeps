@@ -81,7 +81,7 @@ default_sys_path_env_for_tests = {
 
 def resolved_factory(*deps: str) -> Dict[str, Package]:
     def make_package(dep: str) -> Package:
-        imports = default_sys_path_env_for_tests.get(dep, None)
+        imports = default_sys_path_env_for_tests.get(dep)
         if imports is not None:  # exists in local env
             return Package(dep, imports, SysPathPackageResolver)
         # fall back to identity mapping
