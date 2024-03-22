@@ -239,11 +239,7 @@ class Settings(BaseSettings):
             code_paths = args_dict.setdefault("code", base_paths)
             deps_paths = args_dict.setdefault("deps", base_paths)
             pyenv_paths = args_dict.setdefault("pyenvs", base_paths)
-            if (
-                code_paths != base_paths
-                and deps_paths != base_paths
-                and pyenv_paths != base_paths
-            ):
+            if base_paths not in (code_paths, deps_paths, pyenv_paths):
                 msg = (
                     "All four path specifications (code, deps, pyenvs, and base)"
                     f"have been used. Use at most 3. basepaths={base_paths}, "

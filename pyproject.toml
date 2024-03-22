@@ -184,7 +184,6 @@ ignore = [
 
     # To be fixed soon:
     "N818",  # Exception name `...` should be named with an Error suffix
-    "PLR1714",  # Consider merging multiple comparisons. Use a `set` if the elements are hashable.
     "PTH201",  # Do not pass the current directory explicitly to `Path`
 
     # Probably not fixed so soon:
