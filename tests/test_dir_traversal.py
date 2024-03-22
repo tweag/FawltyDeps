@@ -448,7 +448,7 @@ directory_traversal_vectors: List[DirectoryTraversalVector] = [
     # An optional prefix "!" which negates the pattern; any matching file
     # excluded by a previous pattern will become included again. It is not
     # possible to re-include a file if a parent directory of that file is
-    # excluded. Git doesn’t list excluded directories for performance reasons,
+    # excluded. Git doesn't list excluded directories for performance reasons,
     # so any patterns on contained files have no effect, no matter where they
     # are defined. Put a backslash ("\") in front of the first "!" for patterns
     # that begin with a literal "!", for example, "\!important!.txt".

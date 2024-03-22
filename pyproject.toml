@@ -266,7 +266,6 @@ ignore = [
     "C405",  # Unnecessary `list` literal (rewrite as a `set` literal)
     "PT001",  # Use `@pytest.fixture()` over `@pytest.fixture`
     "PT019",  # Fixture `_` without value is injected as parameter, use `@pytest.mark.usefixtures` instead
-    "RUF003",  # Comment contains ambiguous `’` (RIGHT SINGLE QUOTATION MARK). Did you mean ``` (GRAVE ACCENT)?
     "RUF010",  # Use explicit conversion flag
     "SIM108",  # Use ternary operator `...` instead of `if`-`else`-block
     "SIM118",  # Use `key in dict` instead of `key in dict.keys()`
