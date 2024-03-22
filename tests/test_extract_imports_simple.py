@@ -83,7 +83,7 @@ def write_code_sources(write_tmp_files):
     def _inner(file_contents: Dict[str, str]) -> Tuple[Path, List[CodeSource]]:
         tmp_path = write_tmp_files(file_contents)
         sources = []
-        for filepath in file_contents.keys():
+        for filepath in file_contents:
             assert filepath.endswith((".py", ".ipynb"))
             sources.append(CodeSource(tmp_path / filepath, tmp_path))
         return tmp_path, sources
