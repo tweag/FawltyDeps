@@ -269,7 +269,7 @@ def test_list_imports__from_missing_file__fails_with_exit_code_2(tmp_path):
     assert returncode == 2
 
 
-def test_list_imports__missing_exclude_pattern__fails_with_exit_code_2(tmp_path):
+def test_list_imports__missing_exclude_pattern__fails_with_exit_code_2():
     _output, errors, returncode = run_fawltydeps_subprocess(
         "--list-imports", "--exclude="
     )
@@ -277,7 +277,7 @@ def test_list_imports__missing_exclude_pattern__fails_with_exit_code_2(tmp_path)
     assert returncode == 2
 
 
-def test_list_imports__comment_in_exclude_pattern__fails_with_exit_code_2(tmp_path):
+def test_list_imports__comment_in_exclude_pattern__fails_with_exit_code_2():
     _output, errors, returncode = run_fawltydeps_subprocess(
         "--list-imports", "--exclude", "# comment"
     )
