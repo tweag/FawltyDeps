@@ -193,7 +193,6 @@ ignore = [
     "RUF005",  # Consider `[...]` instead of concatenation
     "SIM102",  # Use a single `if` statement instead of nested `if` statements
     "SIM114",  # Combine `if` branches using logical `or` operator
-    "UP028",  # Replace `yield` over `for` loop with `yield from`
 
     # Probably not fixed so soon:
     "FIX002",  # Line contains TODO, consider resolving the issue

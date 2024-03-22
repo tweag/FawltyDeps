@@ -209,8 +209,7 @@ class DirectoryTraversal(Generic[T]):
             yield each attached data item in the order they were attached.
             """
             for dir_path in reversed(list(dirs_between(parent_dir, child_dir))):
-                for data in self.attached.get(DirId.from_path(dir_path), []):
-                    yield data
+                yield from self.attached.get(DirId.from_path(dir_path), [])
 
         while True:
             remaining = {
