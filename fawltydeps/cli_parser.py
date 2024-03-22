@@ -22,10 +22,10 @@ class ArgparseUnionAction(argparse.Action):
 
     def __call__(  # type: ignore[misc, override]
         self,
-        parser: argparse.ArgumentParser,
+        _parser: argparse.ArgumentParser,
         namespace: argparse.Namespace,
         values: Sequence[Any],
-        option_string: Optional[str] = None,
+        _option_string: Optional[str] = None,
     ) -> None:
         """Compute the union of 'values' and any previously given values'."""
         items = getattr(namespace, self.dest, [])
