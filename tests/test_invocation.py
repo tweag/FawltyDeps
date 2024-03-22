@@ -60,5 +60,5 @@ def test_invocation_with_help(run_fawltydeps):
 @pytest.mark.parametrize("run_fawltydeps", invocation_methods)
 def test_invocation_in_empty_dir(run_fawltydeps, tmp_path):
     output, *_, exit_code = run_fawltydeps(str(tmp_path))
-    assert output == Analysis.success_message(True, True)
+    assert output == Analysis.success_message(check_undeclared=True, check_unused=True)
     assert exit_code == 0

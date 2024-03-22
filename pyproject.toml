@@ -183,9 +183,6 @@ ignore = [
     "EM",  # Exception must not use a (f-)string literal, assign to variable first
 
     # To be fixed soon:
-    "FBT001",  # Boolean-typed positional argument in function definition
-    "FBT002",  # Boolean default positional argument in function definition"
-    "FBT003",  # Boolean positional value in function call
     "N818",  # Exception name `...` should be named with an Error suffix
     "PLR1714",  # Consider merging multiple comparisons. Use a `set` if the elements are hashable.
     "PTH201",  # Do not pass the current directory explicitly to `Path`

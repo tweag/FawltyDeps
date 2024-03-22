@@ -204,11 +204,11 @@ def test_gitignore_parser_w_abs_paths(vector: GitignoreParserTestVector):
     # This trailing slash is stripped by Path() in any case.
     for path in vector.does_match:
         assert match_rules(
-            rules, absolutify(path), isinstance(path, str) and path.endswith("/")
+            rules, absolutify(path), is_dir=isinstance(path, str) and path.endswith("/")
         )
     for path in vector.doesnt_match:
         assert not match_rules(
-            rules, absolutify(path), isinstance(path, str) and path.endswith("/")
+            rules, absolutify(path), is_dir=isinstance(path, str) and path.endswith("/")
         )
 
 
@@ -223,11 +223,11 @@ def test_gitignore_parser_w_rel_paths(vector: GitignoreParserTestVector):
     # This trailing slash is stripped by Path() in any case.
     for path in vector.does_match:
         assert match_rules(
-            rules, Path(path), isinstance(path, str) and path.endswith("/")
+            rules, Path(path), is_dir=isinstance(path, str) and path.endswith("/")
         )
     for path in vector.doesnt_match:
         assert not match_rules(
-            rules, Path(path), isinstance(path, str) and path.endswith("/")
+            rules, Path(path), is_dir=isinstance(path, str) and path.endswith("/")
         )
 
 
@@ -248,4 +248,4 @@ def test_symlink_to_another_directory(tmp_path):
     )
     # Verify behavior according to https://git-scm.com/docs/gitignore#_notes:
     # Symlinks are not followed and are matched as if they were regular files.
-    assert match_rules(rules, link, False)
+    assert match_rules(rules, link, is_dir=False)

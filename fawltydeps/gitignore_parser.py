@@ -86,10 +86,10 @@ def parse_gitignore_lines(
             logger.debug(str(exc))
 
 
-def match_rules(rules: List[Rule], path: Path, is_dir: bool) -> bool:
+def match_rules(rules: List[Rule], path: Path, *, is_dir: bool) -> bool:
     """Match the given path against the given list of rules."""
     for rule in reversed(rules):
-        if rule.match(path, is_dir):
+        if rule.match(path, is_dir=is_dir):
             return not rule.negated
     return False
 
@@ -186,7 +186,7 @@ class Rule(NamedTuple):
 
         return cls(
             pattern=orig_pattern,
-            regex=fnmatch_pathname_to_regex(pattern, anchored),
+            regex=fnmatch_pathname_to_regex(pattern, anchored=anchored),
             negated=negated,
             dir_only=dir_only,
             anchored=anchored,
@@ -194,7 +194,7 @@ class Rule(NamedTuple):
             source=source,
         )
 
-    def match(self, path: Path, is_dir: bool) -> bool:
+    def match(self, path: Path, *, is_dir: bool) -> bool:
         """Return True iff the given path should be ignored."""
         if self.base_dir:
             try:
@@ -225,7 +225,7 @@ NONSEP = rf"[^{'|'.join(SEPS)}]"
 
 # Frustratingly, python's fnmatch doesn't provide the FNM_PATHNAME option that
 # .gitignore's behavior depends on, so convert the pattern to a regex instead.
-def fnmatch_pathname_to_regex(pattern: str, anchored: bool = False) -> CompiledRegex:
+def fnmatch_pathname_to_regex(pattern: str, *, anchored: bool = False) -> CompiledRegex:
     """Convert the given fnmatch-style pattern to the equivalent regex.
 
     Implements fnmatch style-behavior, as though with FNM_PATHNAME flagged;

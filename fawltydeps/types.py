@@ -62,7 +62,7 @@ class Source(ABC):
         object.__setattr__(self, "source_type", self.__class__)
 
     @abstractmethod
-    def render(self, detailed: bool) -> str:
+    def render(self, *, detailed: bool) -> str:
         """Return a human-readable string representation of this source."""
         raise NotImplementedError
 
@@ -98,7 +98,7 @@ class CodeSource(Source):
                     path=self.path,
                 )
 
-    def render(self, detailed: bool) -> str:
+    def render(self, *, detailed: bool) -> str:
         """Return a human-readable string representation of this source."""
         if detailed and self.base_dir is not None:
             return f"{self.path} (using {self.base_dir} as base for 1st-party imports)"
@@ -127,7 +127,7 @@ class DepsSource(Source):
         super().__post_init__()
         assert self.path.is_file()  # noqa: S101, sanity check
 
-    def render(self, detailed: bool) -> str:
+    def render(self, *, detailed: bool) -> str:
         """Return a human-readable string representation of this source."""
         if detailed:
             return f"{self.path} (parsed as a {self.parser_choice} file)"
@@ -172,7 +172,7 @@ class PyEnvSource(Source):
 
         raise ValueError(f"{self.path} is not a valid dir for Python packages!")
 
-    def render(self, detailed: bool) -> str:
+    def render(self, *, detailed: bool) -> str:
         """Return a human-readable string representation of this source."""
         if detailed:
             return f"{self.path} (as a source of Python packages)"
@@ -284,7 +284,7 @@ class UndeclaredDependency:
     name: str
     references: List[Location]
 
-    def render(self, include_references: bool) -> str:
+    def render(self, *, include_references: bool) -> str:
         """Return a human-readable string representation.
 
         Level of detail is determined by `include_references`.
@@ -301,7 +301,7 @@ class UnusedDependency:
     name: str
     references: List[Location]
 
-    def render(self, include_references: bool) -> str:
+    def render(self, *, include_references: bool) -> str:
         """Return a human-readable string representation.
 
         Level of detail is determined by `include_references`.

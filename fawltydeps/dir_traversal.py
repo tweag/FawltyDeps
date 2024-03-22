@@ -177,9 +177,9 @@ class DirectoryTraversal(Generic[T]):
             list(parse_gitignore(file_with_exclude_patterns)) + self.exclude_rules
         )
 
-    def is_excluded(self, path: Path, is_dir: bool) -> bool:
+    def is_excluded(self, path: Path, *, is_dir: bool) -> bool:
         """Check if given path is excluded by any of our exclude rules."""
-        return match_rules(self.exclude_rules, path, is_dir)
+        return match_rules(self.exclude_rules, path, is_dir=is_dir)
 
     def traverse(self) -> Iterator[TraversalStep[T]]:
         """Perform the traversal of the added directories.
@@ -240,14 +240,14 @@ class DirectoryTraversal(Generic[T]):
                 exclude_subdirs = {
                     path
                     for path in subdir_paths
-                    if self.is_excluded(path, True)
+                    if self.is_excluded(path, is_dir=True)
                     and (DirId.from_path(path) not in remaining.values())
                 }
                 for subdir in exclude_subdirs:
                     logger.debug(f"    skip traversing excluded subdir {subdir}")
                     self.skip_dir(subdir)
                 exclude_files = {
-                    path for path in file_paths if self.is_excluded(path, False)
+                    path for path in file_paths if self.is_excluded(path, is_dir=False)
                 }
 
                 # At this yield, the caller takes over control, and may modify
