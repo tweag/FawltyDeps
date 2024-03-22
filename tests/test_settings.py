@@ -462,10 +462,9 @@ def test_settings(
     setup_fawltydeps_config,
     setup_env,
 ):  # pylint: disable=too-many-arguments
-    if vector.config is None:
-        config_file = None
-    else:
-        config_file = setup_fawltydeps_config(vector.config)
+    config_file = (
+        None if vector.config is None else setup_fawltydeps_config(vector.config)
+    )
     setup_env(**vector.env)
     cmdline_args = argparse.Namespace(**vector.cmdline)
     if isinstance(vector.expect, dict):
