@@ -188,7 +188,6 @@ ignore = [
     "FBT003",  # Boolean positional value in function call
     "N818",  # Exception name `...` should be named with an Error suffix
     "PLR1714",  # Consider merging multiple comparisons. Use a `set` if the elements are hashable.
-    "PLR5501",  # Use `elif` instead of `else` then `if`, to reduce indentation
     "PTH201",  # Do not pass the current directory explicitly to `Path`
 
     # Probably not fixed so soon:
