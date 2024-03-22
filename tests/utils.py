@@ -145,7 +145,7 @@ def run_fawltydeps_function(
     output = io.StringIO()
     exit_code = main(
         cmdline_args=([str(basepath)] if basepath else [])
-        + [f"--config-file={str(config_file)}"]
+        + [f"--config-file={config_file}"]
         + list(args),
         stdin=io.BytesIO(to_stdin or b""),
         stdout=output,
