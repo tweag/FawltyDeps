@@ -75,7 +75,7 @@ def make_settings_dict(**kwargs):
     return ret
 
 
-@pytest.fixture
+@pytest.fixture()
 def setup_env(monkeypatch):
     """Allow setup of fawltydeps_* env vars in a test case."""
 
