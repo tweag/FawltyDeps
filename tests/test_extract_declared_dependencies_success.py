@@ -750,8 +750,8 @@ def test_find_and_parse_sources__project_with_setup_cfg_pyproject_requirements__
 @pytest.mark.parametrize(
     ["deps_file_content", "exp_deps"],
     [
-        pytest.param(dedent(lines), exp, id=id)
-        for lines, exp, id in [
+        pytest.param(dedent(lines), exp, id=id_)
+        for lines, exp, id_ in [
             (
                 """
                 FooProject >= 1.2 --global-option="--no-user-cfg" \\
