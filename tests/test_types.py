@@ -43,20 +43,21 @@ testdata = {  # Test ID -> (Location args, expected string representation, sort 
 
 
 @pytest.mark.parametrize(
-    ("args", "string", "_"),
+    ("args", "string"),
     [
         pytest.param(
-            *data,
+            args,
+            string,
             id=key,
             marks=pytest.mark.skipif(
                 key == "abs_path_drive_prefix" and not sys.platform.startswith("win"),
                 reason="Drive prefix is used in Windows systems only.",
             ),
         )
-        for key, data in testdata.items()
+        for key, (args, string, _) in testdata.items()
     ],
 )
-def test_location__str(args, string, _):
+def test_location__str(args, string):
     assert str(Location(*args)) == string.replace("/", os.sep)
 
 

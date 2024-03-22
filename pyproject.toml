@@ -261,9 +261,6 @@ ignore = [
     "S101",  # Use of `assert` detected
     "S603",  # `subprocess` call: check for execution of untrusted input
     "T201",  # `print` found
-
-    # To be fixed soon:
-    "PT019",  # Fixture `_` without value is injected as parameter, use `@pytest.mark.usefixtures` instead
 ]
 
 [tool.codespell]
