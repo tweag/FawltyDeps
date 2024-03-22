@@ -145,7 +145,7 @@ class TarballPackage:
             logger.error(f"    Downloaded file: {tarball_path}")
             logger.error(f"    Retrieved SHA256 {sha256sum(tarball_path)}")
             logger.error(f"     Expected SHA256 {self.sha256}")
-            assert False
+            pytest.fail(f"Failed integrity check after downloading {self.url!r}!")
         cache.set(self.cache_key, str(tarball_path))
         return tarball_path
 

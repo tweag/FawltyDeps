@@ -188,7 +188,7 @@ class DirectoryTraversalVector:
                 else:  # this alternative passed
                     break  # abort loop and skip below else clause
             else:  # we exhausted all alternatives
-                assert False, f"None of the alternatives matched {actual}"
+                pytest.fail(f"None of the alternatives matched {actual}")
 
 
 def on_windows(msg: str) -> Optional[str]:
