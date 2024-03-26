@@ -61,6 +61,7 @@ class Experiment(BaseExperiment):
     pyenvs: Optional[List[str]]
     install_deps: bool
     exclude: List[str]
+    exclude_from: Optional[List[str]]
 
     @classmethod
     def from_toml(cls, name: str, data: TomlData) -> Experiment:
@@ -70,22 +71,24 @@ class Experiment(BaseExperiment):
             pyenvs=data.get("pyenvs", None),
             install_deps=data.get("install_deps", False),
             exclude=data.get("exclude", None),
+            exclude_from=data.get("exclude_from", None),
             **cls._init_args_from_toml(name, data),
         )
 
-    def build_settings(self, project_path: Path, cache: pytest.Cache) -> Settings:
+    def build_settings(self, cache: pytest.Cache) -> Settings:
         """Construct a Settings object appropriate for this experiment."""
         if self.pyenvs is None:  # use cached venv
             pyenvs = {self.get_venv_dir(cache)}
         else:  # use given pyenvs relative to project directory
-            pyenvs = {(project_path / path) for path in self.pyenvs}
+            pyenvs = {Path(path) for path in self.pyenvs}
         return Settings(
             actions={Action.REPORT_UNDECLARED, Action.REPORT_UNUSED},
-            code={(project_path / path) for path in self.code},
-            deps={(project_path / path) for path in self.deps},
+            code={Path(path) for path in self.code},
+            deps={Path(path) for path in self.deps},
             pyenvs=pyenvs,
             install_deps=self.install_deps,
             exclude=Settings().exclude if self.exclude is None else set(self.exclude),
+            exclude_from={Path(path) for path in (self.exclude_from or [])},
         )
 
 
@@ -121,7 +124,7 @@ class SampleProject(BaseProject):
         for experiment in project.experiments
     ],
 )
-def test_sample_projects(request, project, experiment):
+def test_sample_projects(request, project, experiment, monkeypatch):
     experiment.maybe_skip(project)
     print(f"Testing sample project: {project.name} under {project.path}")
     print(f"Project description: {project.description}")
@@ -130,7 +133,8 @@ def test_sample_projects(request, project, experiment):
     print(f"Experiment description: {experiment.description}")
     print()
     print("Experiment settings:")
-    settings = experiment.build_settings(project.path, request.config.cache)
+    monkeypatch.chdir(project.path)
+    settings = experiment.build_settings(request.config.cache)
     print_toml_config(settings)
     print()
     analysis = Analysis.create(settings)

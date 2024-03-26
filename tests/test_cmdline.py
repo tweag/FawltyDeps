@@ -48,6 +48,7 @@ def make_json_settings_dict(**kwargs):
         "deps_parser_choice": None,
         "install_deps": False,
         "exclude": [".*"],
+        "exclude_from": [],
         "verbosity": 0,
         "custom_mapping_file": [],
     }
@@ -584,6 +585,46 @@ def test_list_sources_detailed__from_both_python_file_and_stdin(fake_project):
         ],
     ]
     assert output.splitlines() in expect
+    assert returncode == 0
+
+
+def test_list_sources__with_exclude_from(fake_project):
+    tmp_path = fake_project(
+        files_with_imports={
+            "code.py": ["foo"],
+            str(Path("subdir", "notebook.ipynb")): ["foo"],
+            str(Path("subdir", "other.py")): ["foo"],
+        },
+        files_with_declared_deps={
+            "pyproject.toml": ["foo"],
+            "requirements.txt": ["foo"],
+            "setup.cfg": ["foo"],
+            "setup.py": ["foo"],
+        },
+        fake_venvs={"venvs/my_venv": {}},
+        extra_file_contents={
+            "my_ignore": dedent(
+                """
+                subdir/*.py
+                /setup.*
+                *envs
+                """
+            )
+        },
+    )
+    output, returncode = run_fawltydeps_function(
+        "--list-sources", f"{tmp_path}", "--exclude-from", f"{tmp_path / 'my_ignore'}"
+    )
+    expect = [
+        str(tmp_path / filename)
+        for filename in [
+            "code.py",
+            str(Path("subdir", "notebook.ipynb")),
+            "requirements.txt",
+            "pyproject.toml",
+        ]
+    ]
+    assert_unordered_equivalence(output.splitlines()[:-2], expect)
     assert returncode == 0
 
 
@@ -1192,6 +1233,7 @@ def test_cmdline_on_ignored_undeclared_option(
                 # deps_parser_choice = ...
                 # install_deps = false
                 # exclude = ['.*']
+                # exclude_from = []
                 # verbosity = 0
                 # custom_mapping_file = []
                 # [tool.fawltydeps.custom_mapping]
@@ -1217,6 +1259,7 @@ def test_cmdline_on_ignored_undeclared_option(
                 # deps_parser_choice = ...
                 # install_deps = false
                 # exclude = ['.*']
+                # exclude_from = []
                 # verbosity = 0
                 # custom_mapping_file = []
                 # [tool.fawltydeps.custom_mapping]
@@ -1242,6 +1285,7 @@ def test_cmdline_on_ignored_undeclared_option(
                 # deps_parser_choice = ...
                 # install_deps = false
                 # exclude = ['.*']
+                # exclude_from = []
                 # verbosity = 0
                 # custom_mapping_file = []
                 # [tool.fawltydeps.custom_mapping]
@@ -1267,12 +1311,39 @@ def test_cmdline_on_ignored_undeclared_option(
                 # deps_parser_choice = ...
                 install_deps = true
                 exclude = ['bar/', 'foo*']
+                # exclude_from = []
                 # verbosity = 0
                 # custom_mapping_file = []
                 # [tool.fawltydeps.custom_mapping]
                 """
             ).splitlines(),
             id="generate_toml_config_with_install_deps",
+        ),
+        pytest.param(
+            {"exclude": ["/foo/bar", "baz/*"]},
+            ["--list-sources", "--exclude-from", "my_ignore", "--generate-toml-config"],
+            dedent(
+                f"""\
+                # Copy this TOML section into your pyproject.toml to configure FawltyDeps
+                # (default values are commented)
+                [tool.fawltydeps]
+                actions = ['list_sources']
+                # output_format = 'human_summary'
+                # code = ['.']
+                # deps = ['.']
+                # pyenvs = ['.']
+                # ignore_undeclared = []
+                # ignore_unused = {sorted(DEFAULT_IGNORE_UNUSED)}
+                # deps_parser_choice = ...
+                # install_deps = false
+                exclude = ['/foo/bar', 'baz/*']
+                exclude_from = ['my_ignore']
+                # verbosity = 0
+                # custom_mapping_file = []
+                # [tool.fawltydeps.custom_mapping]
+                """
+            ).splitlines(),
+            id="generate_toml_config_with_list_sources_exclude_and_exclude_from",
         ),
     ],
 )

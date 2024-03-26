@@ -1,0 +1,7 @@
+[project]
+name = "mixed"
+
+dependencies = ["numpy", "setuptools", "black"]
+
+[tool.black]
+target-version = ["py37"]

@@ -1,0 +1,157 @@
+[project]
+# General information about a simplified project: Its name, why we test it,
+# its relation to real world projects
+name = "mixed_project_with_exclude_files"
+description = """
+    A project with multiple exclude files:
+    - ./.ignore excludes "/subdir1/*"
+    - ./custom_ignore_subdir2 excludes "subdir2/*"
+"""
+
+[experiments.default]
+description = "FawltyDeps does not obey .ignore by default"
+imports = [
+    # ./main.py:
+    "click",
+    # ./subdir1/notebook.ipynb:
+    "pandas",
+    "pytorch",
+    # ./subdir1/script.py
+    "requests",
+    # ./subdir2/notebook.ipynb:
+    "pandas",
+    "numpy",
+    # ./subdir2/script.py
+    "requests",
+    "tomli",
+    # ./subdir2/setup.py
+    "setuptools",
+]
+declared_deps = [
+    # ./pyproject.toml:
+    "numpy",
+    "setuptools",
+    "black",
+    # ./subdir1/setup.cfg:
+    "pandas",
+    "tox",
+    "pytorch",
+    # ./subdir2/setup.py:
+    "pandas",
+    "click",
+    "requests",
+    "jieba",
+]
+undeclared_deps = ["tomli"]
+unused_deps = [
+    # "black" and "tox" are in the default_ignored_unused list.
+    "jieba",
+]
+
+[experiments.exclude_from_ignore_file]
+description = "FawltyDeps obeys .ignore when asked directly"
+exclude_from = [".ignore"]
+imports = [
+    # ./main.py:
+    "click",
+    # ./subdir2/notebook.ipynb:
+    "pandas",
+    "numpy",
+    # ./subdir2/script.py
+    "requests",
+    "tomli",
+    # ./subdir2/setup.py
+    "setuptools",
+]
+declared_deps = [
+    # ./pyproject.toml:
+    "numpy",
+    "setuptools",
+    "black",
+    # ./subdir2/setup.py:
+    "pandas",
+    "click",
+    "requests",
+    "jieba",
+]
+
+# Import names in the code that do not have a matching dependency declared:
+undeclared_deps = ["tomli"]
+
+# Declared dependencies which were never `import`ed from the code:
+unused_deps = [
+    # "black" is in the default_ignored_unused list.
+    "jieba",
+]
+
+[experiments.exclude_from_other_ignore_file]
+description = "FawltyDeps obeys only custom_ignore_subdir2 when told so"
+exclude_from = ["custom_ignore_subdir2"]
+imports = [
+    # ./main.py:
+    "click",
+    # ./subdir1/notebook.ipynb:
+    "pandas",
+    "pytorch",
+    # ./subdir1/script.py
+    "requests",
+]
+declared_deps = [
+    # ./pyproject.toml:
+    "numpy",
+    "setuptools",
+    "black",
+    # ./subdir1/setup.cfg:
+    "pandas",
+    "tox",
+    "pytorch",
+]
+undeclared_deps = ["click", "requests"]
+unused_deps = [
+    # "black" and "tox" are in the default_ignored_unused list.
+    "numpy",
+    "setuptools",
+]
+
+[experiments.multiple_exclude_from]
+description = "FawltyDeps obeys both exclude_from files"
+exclude_from = ["custom_ignore_subdir2", ".ignore"]
+imports = [
+    # ./main.py:
+    "click",
+]
+declared_deps = [
+    # ./pyproject.toml:
+    "numpy",
+    "setuptools",
+    "black",
+]
+undeclared_deps = ["click"]
+unused_deps = [
+    # "black" is in the default_ignored_unused list.
+    "numpy",
+    "setuptools",
+]
+
+[experiments.combine_exclude_and_exclude_from]
+description = "Combine --exclude and --exclude-from in one run"
+exclude = [
+    "/main.*",
+    "/*.toml",
+    "!subdir1/setup.cfg",
+    "!/subdir2/notebook.ipynb"
+]
+exclude_from = ["custom_ignore_subdir2", ".ignore"]
+imports = [
+    # ./subdir2/notebook.ipynb:
+    "pandas",
+    "numpy",
+]
+declared_deps = [
+    # ./subdir1/setup.cfg:
+    "pandas",
+    "tox",
+    "pytorch",
+]
+undeclared_deps = ["numpy"]
+unused_deps = ["pytorch"]  # "tox" is in the default_ignored_unused list
