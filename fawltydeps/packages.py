@@ -38,7 +38,7 @@ from importlib_metadata import (
 from fawltydeps.types import (
     CustomMapping,
     PyEnvSource,
-    UnparseablePathException,
+    UnparseablePathError,
     UnresolvedDependenciesError,
 )
 from fawltydeps.utils import calculated_once, site_packages
@@ -161,7 +161,7 @@ class UserDefinedMapping(BasePackageResolver):
         self.mapping_paths = mapping_paths or set()
         for path in self.mapping_paths:
             if not path.is_file():
-                raise UnparseablePathException(
+                raise UnparseablePathError(
                     ctx="Given mapping path is not a file.", path=path
                 )
         self.custom_mapping = custom_mapping
@@ -592,10 +592,10 @@ def validate_pyenv_source(path: Path) -> Optional[Set[PyEnvSource]]:
       package dirs (typically only one) found within this Python environment.
     - Return None if this is a directory that must be traversed further to find
       Python environments within.
-    - Raise UnparseablePathException if the given path is not a directory.
+    - Raise UnparseablePathError if the given path is not a directory.
     """
     if not path.is_dir():
-        raise UnparseablePathException(ctx="Not a directory!", path=path)
+        raise UnparseablePathError(ctx="Not a directory!", path=path)
     try:
         return pyenv_sources(path)
     except ValueError:

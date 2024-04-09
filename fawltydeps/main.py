@@ -44,7 +44,7 @@ from fawltydeps.types import (
     PyEnvSource,
     Source,
     UndeclaredDependency,
-    UnparseablePathException,
+    UnparseablePathError,
     UnresolvedDependenciesError,
     UnusedDependency,
 )
@@ -369,7 +369,7 @@ def main(
 
     try:
         analysis = Analysis.create(settings, stdin)
-    except UnparseablePathException as exc:
+    except UnparseablePathError as exc:
         return parser.error(exc.msg)  # exit code 2
     except ExcludeRuleError as exc:
         return parser.error(f"Error while parsing exclude pattern: {exc}")

@@ -14,7 +14,7 @@ from fawltydeps.types import (
     Location,
     ParsedImport,
     PathOrSpecial,
-    UnparseablePathException,
+    UnparseablePathError,
 )
 from fawltydeps.utils import dirs_between
 
@@ -178,7 +178,7 @@ def parse_source(
     """
     if src.path == "<stdin>":
         if stdin is None:
-            raise UnparseablePathException(ctx="Missing <stdin> handle", path=Path("-"))
+            raise UnparseablePathError(ctx="Missing <stdin> handle", path=Path("-"))
         logger.info("Parsing Python code from standard input")
         # 'isatty' checks if the stream is interactive.
         if stdin.isatty():
@@ -222,7 +222,7 @@ def validate_code_source(
       file (or the "<stdin>" special case).
     - Return None if this is a directory that must be traversed further to find
       parseable files within.
-    - Raise UnparseablePathException if the given path cannot be parsed.
+    - Raise UnparseablePathError if the given path cannot be parsed.
     """
     if path == "<stdin>":
         return CodeSource(path, base_dir)

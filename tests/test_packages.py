@@ -16,7 +16,7 @@ from fawltydeps.packages import (
 )
 from fawltydeps.types import (
     PyEnvSource,
-    UnparseablePathException,
+    UnparseablePathError,
     UnresolvedDependenciesError,
 )
 
@@ -230,7 +230,7 @@ def test_user_defined_mapping__well_formated_input_file__parses_correctly(
 
 
 def test_user_defined_mapping__input_is_no_file__raises_unparsable_path_exeption():
-    with pytest.raises(UnparseablePathException):
+    with pytest.raises(UnparseablePathError):
         UserDefinedMapping({SAMPLE_PROJECTS_DIR})
 
 

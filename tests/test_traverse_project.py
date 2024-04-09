@@ -16,7 +16,7 @@ from fawltydeps.types import (
     DepsSource,
     PathOrSpecial,
     PyEnvSource,
-    UnparseablePathException,
+    UnparseablePathError,
 )
 
 from .test_sample_projects import SAMPLE_PROJECTS_DIR
@@ -75,7 +75,7 @@ find_sources_vectors = [
         code={"missing.py"},
         deps=set(),
         pyenvs=set(),
-        expect_raised=UnparseablePathException,
+        expect_raised=UnparseablePathError,
     ),
     TraverseProjectVector(
         "given_code_as_non_py_file__raises_exception",
@@ -83,7 +83,7 @@ find_sources_vectors = [
         code={"README.md"},
         deps=set(),
         pyenvs=set(),
-        expect_raised=UnparseablePathException,
+        expect_raised=UnparseablePathError,
     ),
     TraverseProjectVector(
         "given_code_as_specialpath_stdin__yields_preserved_specialpath_stdin",
@@ -191,7 +191,7 @@ find_sources_vectors = [
         code=set(),
         deps={"missing_requirements.txt"},
         pyenvs=set(),
-        expect_raised=UnparseablePathException,
+        expect_raised=UnparseablePathError,
     ),
     TraverseProjectVector(
         "given_deps_as_non_deps_file__raises_exception",
@@ -199,7 +199,7 @@ find_sources_vectors = [
         code=set(),
         deps={"README.md"},
         pyenvs=set(),
-        expect_raised=UnparseablePathException,
+        expect_raised=UnparseablePathError,
     ),
     TraverseProjectVector(
         "given_deps_as_requirements_txt__yields_file",
@@ -394,7 +394,7 @@ find_sources_vectors = [
         code=set(),
         deps=set(),
         pyenvs={".does_not_exist"},
-        expect_raised=UnparseablePathException,
+        expect_raised=UnparseablePathError,
     ),
     TraverseProjectVector(
         "given_pyenv_as_non_env_dir__yields_nothing",
