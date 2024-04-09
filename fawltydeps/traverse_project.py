@@ -14,7 +14,7 @@ from fawltydeps.types import (
     DepsSource,
     PyEnvSource,
     Source,
-    UnparseablePathException,
+    UnparseablePathError,
 )
 
 logger = logging.getLogger(__name__)
@@ -162,7 +162,7 @@ def find_sources(  # pylint: disable=too-many-branches,too-many-statements  # no
                     validated = validate_code_source(path, base_dir)
                     assert validated is not None  # noqa: S101, sanity check
                     yield validated
-                except UnparseablePathException:  # don't abort directory walk for this
+                except UnparseablePathError:  # don't abort directory walk for this
                     pass
         if DepsSource in types:
             for path in step.files:
@@ -172,5 +172,5 @@ def find_sources(  # pylint: disable=too-many-branches,too-many-statements  # no
                     )
                     assert validated is not None  # noqa: S101, sanity check
                     yield validated
-                except UnparseablePathException:  # don't abort directory walk for this
+                except UnparseablePathError:  # don't abort directory walk for this
                     pass

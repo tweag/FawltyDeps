@@ -23,7 +23,7 @@ TomlData = Dict[str, Any]  # type: ignore[misc]
 CustomMapping = Dict[str, List[str]]
 
 
-class UnparseablePathException(Exception):
+class UnparseablePathError(Exception):
     """Exception type when alleged path (deps or code) can't be parsed."""
 
     def __init__(self, ctx: str, path: Path):
@@ -88,12 +88,12 @@ class CodeSource(Source):
         if self.path != "<stdin>":
             assert isinstance(self.path, Path)  # noqa: S101, sanity check
             if not self.path.is_file():
-                raise UnparseablePathException(
+                raise UnparseablePathError(
                     ctx="Code path to parse is neither dir nor file",
                     path=self.path,
                 )
             if self.path.suffix not in {".py", ".ipynb"}:
-                raise UnparseablePathException(
+                raise UnparseablePathError(
                     ctx="Supported formats are .py and .ipynb; Cannot parse code",
                     path=self.path,
                 )

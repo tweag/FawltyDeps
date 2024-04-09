@@ -21,7 +21,7 @@ from fawltydeps.types import (
     DepsSource,
     Location,
     TomlData,
-    UnparseablePathException,
+    UnparseablePathError,
 )
 
 if sys.version_info >= (3, 11):
@@ -436,7 +436,7 @@ def validate_deps_source(
       how to parse.
     - Return None if this is a directory that must be traversed further to find
       parseable files within.
-    - Raise UnparseablePathException if the given path cannot be parsed.
+    - Raise UnparseablePathError if the given path cannot be parsed.
 
     The given 'parser_choice' and 'filter_by_parser' determine which file paths
     we consider valid sources, and how they are parsed: With parser_choice=None,
@@ -448,20 +448,20 @@ def validate_deps_source(
     if path.is_dir():
         return None
     if not path.is_file():
-        raise UnparseablePathException(
+        raise UnparseablePathError(
             ctx="Dependencies declaration path is neither dir nor file", path=path
         )
 
     if parser_choice is not None:
         # User wants a specific parser, but only if the file matches:
         if filter_by_parser and not PARSER_CHOICES[parser_choice].applies_to_path(path):
-            raise UnparseablePathException(
+            raise UnparseablePathError(
                 ctx=f"Path does not match {parser_choice} parser", path=path
             )
     else:  # no parser chosen, automatically determine parser for this path
         parser_choice = first_applicable_parser(path)
     if parser_choice is None:  # no suitable parser given
-        raise UnparseablePathException(
+        raise UnparseablePathError(
             ctx="Parsing given dependencies path isn't supported", path=path
         )
     return DepsSource(path, parser_choice)
