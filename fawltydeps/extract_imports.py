@@ -34,7 +34,7 @@ def make_isort_config(path: Path, src_paths: Tuple[Path, ...] = ()) -> isort.Con
     )
 
 
-ISORT_FALLBACK_CONFIG = make_isort_config(Path("."))
+ISORT_FALLBACK_CONFIG = make_isort_config(Path())
 
 
 def parse_code(
@@ -95,7 +95,7 @@ def parse_notebook_file(  # noqa: C901
     they appear in the file.
     """
     if not local_context:
-        local_context = make_isort_config(Path("."), (path.parent,))
+        local_context = make_isort_config(Path(), (path.parent,))
 
     def filter_out_magic_commands(
         lines: Iterable[str], source: Location
@@ -159,7 +159,7 @@ def parse_python_file(
     they appear in the file.
     """
     if not local_context:
-        local_context = make_isort_config(Path("."), (path.parent,))
+        local_context = make_isort_config(Path(), (path.parent,))
     with tokenize.open(path) as pyfile:
         yield from parse_code(
             pyfile.read(), source=Location(path), local_context=local_context

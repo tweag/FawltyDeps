@@ -1041,8 +1041,8 @@ def test_DirectoryTraversal_w_abs_paths(vector: DirectoryTraversalVector, tmp_pa
 def test_DirectoryTraversal_w_rel_paths(
     vector: DirectoryTraversalVector, inside_tmp_path  # noqa: ARG001
 ):
-    traversal = vector.setup(Path("."))  # Traverse relatively from inside tmp_path
-    vector.verify_traversal(traversal, Path("."))
+    traversal = vector.setup(Path())  # Traverse relatively from inside tmp_path
+    vector.verify_traversal(traversal, Path())
 
 
 def test_DirectoryTraversal__raises_error__when_adding_missing_dir(tmp_path):
