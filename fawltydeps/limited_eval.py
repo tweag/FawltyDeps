@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 TrackedValue = Union[str, List[str], Dict[str, "TrackedValue"]]
 
 
-class CannotResolve(Exception):
+class CannotResolve(Exception):  # noqa: N818
     """Error raised when we fail to resolve the value of a variable."""
 
     def __init__(self, node: ast.AST, source: Location):
