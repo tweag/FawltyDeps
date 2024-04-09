@@ -42,9 +42,9 @@ except ModuleNotFoundError:
 
 EXPECT_DEFAULTS = dict(
     actions={Action.REPORT_UNDECLARED, Action.REPORT_UNUSED},
-    code={Path(".")},
-    deps={Path(".")},
-    pyenvs={Path(".")},
+    code={Path()},
+    deps={Path()},
+    pyenvs={Path()},
     custom_mapping=None,
     output_format=OutputFormat.HUMAN_SUMMARY,
     ignore_undeclared=set(),

@@ -182,9 +182,6 @@ ignore = [
     "D213",  # multi-line-summary-second-line conflicts with D212: multi-line-summary-first-line
     "EM",  # Exception must not use a (f-)string literal, assign to variable first
 
-    # To be fixed soon:
-    "PTH201",  # Do not pass the current directory explicitly to `Path`
-
     # Probably not fixed so soon:
     "FIX002",  # Line contains TODO, consider resolving the issue
     "G004",  # Logging statement uses f-string

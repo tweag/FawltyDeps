@@ -156,9 +156,9 @@ class Settings(BaseSettings):
 
     actions: Set[Action] = {Action.REPORT_UNDECLARED, Action.REPORT_UNUSED}
     output_format: OutputFormat = OutputFormat.HUMAN_SUMMARY
-    code: Set[PathOrSpecial] = {Path(".")}
-    deps: Set[Path] = {Path(".")}
-    pyenvs: Set[Path] = {Path(".")}
+    code: Set[PathOrSpecial] = {Path()}
+    deps: Set[Path] = {Path()}
+    pyenvs: Set[Path] = {Path()}
     custom_mapping: Optional[CustomMapping] = None
     ignore_undeclared: Set[str] = set()
     ignore_unused: Set[str] = DEFAULT_IGNORE_UNUSED
