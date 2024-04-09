@@ -43,7 +43,7 @@ class RuleError(ValueError):
         return f"{self.msg}: {self.pattern!r}"
 
 
-class RuleMissing(RuleError):
+class RuleMissing(RuleError):  # noqa: N818
     """A blank line or comment passed to DirectoryTraversal.ignore()."""
 
 

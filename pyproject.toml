@@ -183,7 +183,6 @@ ignore = [
     "EM",  # Exception must not use a (f-)string literal, assign to variable first
 
     # To be fixed soon:
-    "N818",  # Exception name `...` should be named with an Error suffix
     "PTH201",  # Do not pass the current directory explicitly to `Path`
 
     # Probably not fixed so soon:
