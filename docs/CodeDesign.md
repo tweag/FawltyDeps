@@ -21,7 +21,7 @@ We value composability and functional style.
 We want the code to be readable, testable and maintainable. That is why we use:
 
 - code formatter `black` to unify the code style,
-- `pylint` and `isort` for linting
+- `ruff` and `isort` for linting
 - `mypy` for typecheck
 - `pytest` for testing
   to ensure this quality.

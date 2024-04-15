@@ -77,7 +77,7 @@ nox -R            # Run all available sessions, while reusing virtualenvs (i.e. 
 nox -s tests      # Run unit tests on supported Python versions (that are available)
 nox -s tests-3.7  # Run unit tests on Python v3.7 (assuming it is available locally)
 nox -s integration_tests-3.11  # Run integration tests on Python 3.11
-nox -s lint       # Run linters (mypy + pylint) on all supported Python versions
+nox -s lint       # Run linters (mypy + ruff) on all supported Python versions
 nox -s format     # Check formatting (isort + black)
 nox -s reformat   # Fix formatting (isort + black)
 ```
@@ -90,7 +90,7 @@ commands will work:
 pytest                   # Run unit tests
 pytest -m integration    # Run integration tests
 mypy                     # Run static type checking
-pylint fawltydeps tests  # Run Pylint
+ruff check .             # Run ruff
 isort fawltydeps tests   # Fix sorting of import statements
 black .                  # Fix code formatting
 ```
