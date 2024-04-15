@@ -75,11 +75,6 @@ optional = true
 hypothesis = "^6.68.2"
 mypy = "^1.0.1"
 nox = "^2022.11.21"
-pylint = [
-    # pylint v3.0.0 drops support for Python v3.7:
-    {version = "^3", python = ">=3.8"},
-    {version = "^2.15.8", python = "<3.8"},
-]
 pytest = "^7.1.0"
 ruff = ">=0.3"
 types-setuptools = "^65.6.0.2"
@@ -109,11 +104,6 @@ codespell = "^2.2.4"
 hypothesis = "^6.68.2"
 mypy = "^1.0.1"
 nox = "^2022.11.21"
-pylint = [
-    # pylint v3.0.0 drops support for Python v3.7:
-    {version = "^3", python = ">=3.8"},
-    {version = "^2.15.8", python = "<3.8"},
-]
 pytest = "^7.1.0"
 ruff = ">=0.3"
 types-setuptools = "^65.6.0.2"
@@ -123,12 +113,6 @@ target-version = ["py37"]
 
 [tool.isort]
 profile = "black"
-
-[tool.pylint]
-main.jobs = 4
-main.py-version = "3.7"
-reports.output-format = "colorized"
-"messages control".disable = "fixme,logging-fstring-interpolation,unspecified-encoding,too-few-public-methods,consider-using-in,duplicate-code,too-many-locals,too-many-branches"
 
 [tool.mypy]
 files = ['*.py', 'fawltydeps/*.py', 'tests/*.py']
@@ -268,7 +252,6 @@ ignore_unused = [
     "hypothesis",
     "mypy",
     "nox",
-    "pylint",
     "pytest",
     "ruff",
 ]
