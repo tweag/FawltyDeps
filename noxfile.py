@@ -114,26 +114,6 @@ def lint(session):
     install_groups(session, include=["lint"])
     session.run("mypy")
     session.run("ruff", "check", ".")
-    session.run("pylint", "fawltydeps")
-    test_extra_pylint_disable = [
-        "broad-exception-caught",
-        "invalid-name",
-        "missing-function-docstring",
-        "protected-access",
-        "redefined-outer-name",
-        "too-many-arguments",
-        "too-many-branches",
-        "too-many-instance-attributes",
-        "too-many-lines",
-        "unused-argument",
-        "use-dict-literal",
-        "use-implicit-booleaness-not-comparison",
-    ]
-    session.run(
-        "pylint",
-        f"--disable={','.join(test_extra_pylint_disable)}",
-        "tests",
-    )
 
 
 @nox.session
