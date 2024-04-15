@@ -56,7 +56,7 @@ VERBOSE_PROMPT = "For a more verbose report re-run with the `--detailed` option.
 UNUSED_DEPS_OUTPUT_PREFIX = "These dependencies appear to be unused (i.e. not imported)"
 
 
-class Analysis:  # pylint: disable=too-many-instance-attributes
+class Analysis:
     """Result from FawltyDeps analysis, to be presented to the user.
 
     This collects the various data structures that are central to FawltyDeps'
@@ -185,15 +185,15 @@ class Analysis:  # pylint: disable=too-many-instance-attributes
 
         # Compute only the properties needed to satisfy settings.actions:
         if ret.is_enabled(Action.LIST_SOURCES):
-            ret.sources  # pylint: disable=pointless-statement  # noqa: B018
+            ret.sources  # noqa: B018
         if ret.is_enabled(Action.LIST_IMPORTS):
-            ret.imports  # pylint: disable=pointless-statement  # noqa: B018
+            ret.imports  # noqa: B018
         if ret.is_enabled(Action.LIST_DEPS):
-            ret.declared_deps  # pylint: disable=pointless-statement  # noqa: B018
+            ret.declared_deps  # noqa: B018
         if ret.is_enabled(Action.REPORT_UNDECLARED):
-            ret.undeclared_deps  # pylint: disable=pointless-statement  # noqa: B018
+            ret.undeclared_deps  # noqa: B018
         if ret.is_enabled(Action.REPORT_UNUSED):
-            ret.unused_deps  # pylint: disable=pointless-statement  # noqa: B018
+            ret.unused_deps  # noqa: B018
 
         return ret
 

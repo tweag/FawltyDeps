@@ -25,7 +25,7 @@ from fawltydeps.types import (
 )
 
 if sys.version_info >= (3, 11):
-    import tomllib  # pylint: disable=E1101
+    import tomllib
 else:
     import tomli as tomllib
 
@@ -99,7 +99,7 @@ def parse_setup_py(path: Path) -> Iterator[DeclaredDependency]:  # noqa: C901
                             yield parse_one_req(item, source)
             except (DependencyParsingError, CannotResolve) as exc:
                 if sys.version_info >= (3, 9):
-                    unparsed_content = ast.unparse(exc.node)  # pylint: disable=E1101
+                    unparsed_content = ast.unparse(exc.node)
                 else:
                     unparsed_content = ast.dump(exc.node)
                 logger.warning(
@@ -153,7 +153,7 @@ def parse_setup_cfg(path: Path) -> Iterator[DeclaredDependency]:
         # See:  https://github.com/nexB/pip-requirements-parser/pull/17
 
         # https://github.com/nexB/pip-requirements-parser/pull/19#discussion_r1379279880
-        temp_file = NamedTemporaryFile(  # pylint: disable=consider-using-with
+        temp_file = NamedTemporaryFile(
             "wt",
             delete=False,
             # we prefer utf8 encoded strings, but ...

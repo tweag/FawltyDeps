@@ -25,7 +25,7 @@ from fawltydeps.main import Analysis
 from fawltydeps.types import TomlData
 
 if sys.version_info >= (3, 11):
-    import tomllib  # pylint: disable=E1101
+    import tomllib
 else:
     import tomli as tomllib
 

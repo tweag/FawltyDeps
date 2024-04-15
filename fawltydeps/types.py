@@ -13,7 +13,7 @@ from typing import Any, Dict, List, Optional, Set, Tuple, Type, Union
 from fawltydeps.utils import hide_dataclass_fields
 
 if sys.version_info >= (3, 8):
-    from typing import Literal  # pylint: disable=no-member
+    from typing import Literal
 else:
     from typing_extensions import Literal
 

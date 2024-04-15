@@ -22,7 +22,7 @@ except ModuleNotFoundError:
 from fawltydeps.types import CustomMapping, ParserChoice, PathOrSpecial, TomlData
 
 if sys.version_info >= (3, 11):
-    import tomllib  # pylint: disable=no-member
+    import tomllib
 else:
     import tomli as tomllib
 
@@ -192,7 +192,7 @@ class Settings(BaseSettings):
             cls,
             init_settings: SettingsSourceCallable,
             env_settings: SettingsSourceCallable,
-            file_secret_settings: SettingsSourceCallable,  # pylint: disable=W0613  # noqa: ARG003
+            file_secret_settings: SettingsSourceCallable,  # noqa: ARG003
         ) -> Tuple[SettingsSourceCallable, ...]:
             """Select and prioritize the various configuration sources."""
             # Use class vars in Settings to determine which configuration file

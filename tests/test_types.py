@@ -90,7 +90,7 @@ def test_location__hashable_and_unique():
     # equal, i.e. that Location instances constructed from the same args
     # are considered equal.
     test_dict = {Location(*args): True for args, *_ in testdata.values()}
-    for args, *_ in testdata.values():  # pylint: disable=unbalanced-dict-unpacking
+    for args, *_ in testdata.values():
         loc = Location(*args)
         test_dict[loc] = loc  # reset {loc: True} to {loc: loc}
 

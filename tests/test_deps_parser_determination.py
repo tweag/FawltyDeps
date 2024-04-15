@@ -110,7 +110,6 @@ def test_explicit_parse_strategy__mismatch_yields_appropriate_logging(
         ]
     ],
 )
-# pylint: disable=unused-argument
 def test_filepath_inference(
     tmp_path,
     project_with_setup_with_cfg_pyproject_and_requirements,  # noqa: ARG001
@@ -141,7 +140,6 @@ def test_filepath_inference(
         ]
     ],
 )
-# pylint: disable=unused-argument
 def test_extract_from_directory_applies_manual_parser_choice_iff_choice_applies(
     tmp_path,
     project_with_setup_with_cfg_pyproject_and_requirements,  # noqa: ARG001
@@ -181,8 +179,6 @@ def test_extract_from_directory_applies_manual_parser_choice_iff_choice_applies(
         ]
     ],
 )
-# pylint: disable=unused-argument
-# pylint: disable=too-many-arguments
 def test_extract_from_file_applies_manual_choice_even_if_mismatched(
     caplog,
     tmp_path,
