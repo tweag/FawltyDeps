@@ -30,7 +30,7 @@ AttachedData = Union[
 ]
 
 
-def find_sources(  # pylint: disable=too-many-branches,too-many-statements  # noqa: C901, PLR0912, PLR0915
+def find_sources(  # noqa: C901, PLR0912, PLR0915
     settings: Settings,
     source_types: AbstractSet[Type[Source]] = frozenset(
         [CodeSource, DepsSource, PyEnvSource]

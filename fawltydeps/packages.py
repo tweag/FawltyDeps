@@ -44,7 +44,7 @@ from fawltydeps.types import (
 from fawltydeps.utils import calculated_once, site_packages
 
 if sys.version_info >= (3, 11):
-    import tomllib  # pylint: disable=no-member
+    import tomllib
 else:
     import tomli as tomllib
 

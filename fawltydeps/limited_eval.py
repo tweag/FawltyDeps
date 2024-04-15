@@ -38,7 +38,7 @@ class VariableTracker:
     def _show(self, node: ast.AST) -> str:
         """Human-readable representation of this node, mostly for debug logs."""
         if sys.version_info >= (3, 9):
-            code = ast.unparse(node)  # pylint: disable=no-member
+            code = ast.unparse(node)
         else:
             code = "<code>"
         return f"{code} @ {self.source.supply(lineno=node.lineno)}"

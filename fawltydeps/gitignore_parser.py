@@ -22,7 +22,7 @@ from typing import (
 from fawltydeps.types import Location
 
 if TYPE_CHECKING or sys.version_info >= (3, 9):
-    CompiledRegex = re.Pattern[str]  # pylint: disable=unsubscriptable-object
+    CompiledRegex = re.Pattern[str]
 else:  # re.Pattern not subscriptable before Python 3.9
     CompiledRegex = re.Pattern
 

@@ -29,7 +29,7 @@ from fawltydeps.settings import DEFAULT_IGNORE_UNUSED, Action, OutputFormat, Set
 from fawltydeps.types import TomlData
 
 if sys.version_info >= (3, 11):
-    from tomllib import TOMLDecodeError  # pylint: disable=no-member
+    from tomllib import TOMLDecodeError
 else:
     from tomli import TOMLDecodeError
 
@@ -241,10 +241,7 @@ def test_multivalued_options_are_aggregated_correctly(optargs):
 
 @pytest.mark.parametrize(
     "optname",
-    {
-        act.dest
-        for act in build_parser()._actions  # pylint: disable=protected-access  # noqa: SLF001
-    }
+    {act.dest for act in build_parser()._actions}  # noqa: SLF001
     & set(Settings.__fields__.keys()),
 )
 def test_settings_members_are_absent_from_namespace_if_not_provided_at_cli(optname):
@@ -457,11 +454,7 @@ settings_tests_samples = [
 @pytest.mark.parametrize(
     "vector", [pytest.param(v, id=v.id) for v in settings_tests_samples]
 )
-def test_settings(
-    vector,
-    setup_fawltydeps_config,
-    setup_env,
-):  # pylint: disable=too-many-arguments
+def test_settings(vector, setup_fawltydeps_config, setup_env):
     config_file = (
         None if vector.config is None else setup_fawltydeps_config(vector.config)
     )

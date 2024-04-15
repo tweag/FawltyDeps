@@ -161,7 +161,7 @@ def run_fawltydeps_function(
 
 
 @dataclass
-class FDTestVector:  # pylint: disable=too-many-instance-attributes
+class FDTestVector:
     """Test vectors for various parts of the FawltyDeps core logic."""
 
     id: str
