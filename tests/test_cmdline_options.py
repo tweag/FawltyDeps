@@ -14,6 +14,7 @@ Strategy setup consists of three phases:
 The strategy construction can be viewed as a reference
 to how the CLI options are expected to be used.
 """
+
 import io
 import os
 import string

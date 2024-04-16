@@ -1,4 +1,5 @@
 """Verify behavior of the Analysis class."""
+
 # ruff: noqa: PLR2004,SLF001
 from fawltydeps.main import calculated_once
 

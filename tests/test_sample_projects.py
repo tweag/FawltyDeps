@@ -19,6 +19,7 @@ tests/sample_projects
     ├── expected.toml (mandatory)
     └── ... (regular Python project)
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass

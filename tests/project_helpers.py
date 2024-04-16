@@ -1,4 +1,5 @@
 """Common helpers shared between test_real_project and test_sample_projects."""
+
 from __future__ import annotations
 
 import hashlib
@@ -370,7 +371,8 @@ class BaseProject(ABC):
 
     @staticmethod
     def _init_args_from_toml(
-        toml_data: TomlData, ExperimentClass: Type[BaseExperiment]  # noqa: N803
+        toml_data: TomlData,
+        ExperimentClass: Type[BaseExperiment],  # noqa: N803
     ) -> Dict[str, Any]:
         """Extract members from TOML into kwargs for a subclass constructor."""
         # We ultimately _trust_ the .toml files read here, so we can skip all

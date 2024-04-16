@@ -5,6 +5,7 @@ We download/extract pinned releases several 3rd-party Python projects, and run
 FawltyDeps on them, with hardcoded expectations per project on what FawltyDeps
 should find/report.
 """
+
 from __future__ import annotations
 
 import json

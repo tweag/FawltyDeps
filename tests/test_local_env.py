@@ -1,4 +1,5 @@
 """Verify behavior of package module looking at a given Python environment."""
+
 import sys
 import venv
 from pathlib import Path

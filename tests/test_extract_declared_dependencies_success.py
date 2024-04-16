@@ -1,4 +1,5 @@
 """Test that dependencies are parsed from requirements files."""
+
 from textwrap import dedent
 
 import pytest

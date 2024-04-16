@@ -1,4 +1,5 @@
 """Test the imports to dependencies comparison function."""
+
 import logging
 
 import pytest

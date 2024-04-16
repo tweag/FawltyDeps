@@ -1,4 +1,5 @@
 """Test that we can extract simple imports from Python code."""
+
 import json
 import logging
 from io import BytesIO
