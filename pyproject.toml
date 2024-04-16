@@ -83,11 +83,6 @@ types-setuptools = "^65.6.0.2"
 optional = true
 
 [tool.poetry.group.format.dependencies]
-isort = [
-    # isort 5.12.0 drops support for Python v3.7:
-    {version = "^5.10", extras = ["colors"], python = ">=3.8"},
-    {version = ">=5.10,<5.12.0", extras = ["colors"], python = "<3.8"},
-]
 codespell = "^2.2.4"
 ruff = ">=0.3"
 
@@ -106,9 +101,6 @@ nox = "^2022.11.21"
 pytest = "^7.1.0"
 ruff = ">=0.3"
 types-setuptools = "^65.6.0.2"
-
-[tool.isort]
-profile = "black"
 
 [tool.mypy]
 files = ['*.py', 'fawltydeps/*.py', 'tests/*.py']
