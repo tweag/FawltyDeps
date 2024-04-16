@@ -1,4 +1,5 @@
 """Traverse a project to identify appropriate inputs to FawltyDeps."""
+
 import logging
 from pathlib import Path
 from typing import AbstractSet, Iterator, Optional, Set, Tuple, Type, Union

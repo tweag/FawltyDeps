@@ -1,4 +1,5 @@
 """FawltyDeps configuration and command-line options."""
+
 from __future__ import annotations
 
 import argparse

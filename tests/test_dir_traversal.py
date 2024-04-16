@@ -1,4 +1,5 @@
 """Test core functionality of DirectoryTraversal class."""
+
 import sys
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
@@ -1039,7 +1040,8 @@ def test_DirectoryTraversal_w_abs_paths(vector: DirectoryTraversalVector, tmp_pa
     "vector", [pytest.param(v, id=v.id) for v in directory_traversal_vectors]
 )
 def test_DirectoryTraversal_w_rel_paths(
-    vector: DirectoryTraversalVector, inside_tmp_path  # noqa: ARG001
+    vector: DirectoryTraversalVector,
+    inside_tmp_path,  # noqa: ARG001
 ):
     traversal = vector.setup(Path())  # Traverse relatively from inside tmp_path
     vector.verify_traversal(traversal, Path())

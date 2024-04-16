@@ -1,4 +1,5 @@
 """Fixtures for tests."""
+
 import venv
 from pathlib import Path
 from tempfile import mkdtemp
@@ -171,23 +172,19 @@ def fake_project(write_tmp_files, fake_venv):  # noqa: C901
 
     def format_setup_cfg(deps: Deps, no_extras: ExtraDeps) -> str:
         assert not no_extras  # not supported
-        return (
-            dedent(
-                """\
+        return dedent(
+            """\
                 [metadata]
                 name = "MyLib"
 
                 [options]
                 install_requires =
                 """
-            )
-            + "\n".join(f"    {d}" for d in deps)
-        )
+        ) + "\n".join(f"    {d}" for d in deps)
 
     def format_pyproject_toml(deps: Deps, extras: ExtraDeps) -> str:
-        return (
-            dedent(
-                f"""\
+        return dedent(
+            f"""\
                 [project]
                 name = "MyLib"
 
@@ -195,9 +192,7 @@ def fake_project(write_tmp_files, fake_venv):  # noqa: C901
 
                 [project.optional-dependencies]
                 """
-            )
-            + "\n".join(f"{k} = {v!r}" for k, v in extras.items())
-        )
+        ) + "\n".join(f"{k} = {v!r}" for k, v in extras.items())
 
     def format_deps(
         filename: str, all_deps: Union[Deps, Tuple[Deps, ExtraDeps]]

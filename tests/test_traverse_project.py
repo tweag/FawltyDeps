@@ -1,4 +1,5 @@
 """Test that we can traverse a project to find our inputs."""
+
 import dataclasses
 import logging
 import os

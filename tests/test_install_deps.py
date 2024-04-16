@@ -1,4 +1,5 @@
 """Verify behavior of TemporaryPipInstallResolver."""
+
 import logging
 
 import pytest
@@ -26,7 +27,8 @@ def test_resolve_dependencies_install_deps__via_local_cache(local_pypi):  # noqa
 
 
 def test_resolve_dependencies_install_deps__raises_unresolved_error_on_pip_install_failure(
-    caplog, local_pypi  # noqa: ARG001
+    caplog,
+    local_pypi,  # noqa: ARG001
 ):
     # This tests the case where TemporaryPipInstallResolver encounters the
     # inevitable pip install error and returns to resolve_dependencies()
@@ -42,7 +44,8 @@ def test_resolve_dependencies_install_deps__raises_unresolved_error_on_pip_insta
 
 
 def test_resolve_dependencies_install_deps__unresolved_error_only_warns_failing_packages(
-    caplog, local_pypi  # noqa: ARG001
+    caplog,
+    local_pypi,  # noqa: ARG001
 ):
     # When we fail to install _some_ - but not all - packages, the error message
     # should only mention the packages that we failed to install.
@@ -58,7 +61,8 @@ def test_resolve_dependencies_install_deps__unresolved_error_only_warns_failing_
 
 
 def test_resolve_dependencies_install_deps_on_mixed_packages__raises_unresolved_error(
-    caplog, local_pypi  # noqa: ARG001
+    caplog,
+    local_pypi,  # noqa: ARG001
 ):
     caplog.set_level(logging.DEBUG)
     deps = {"click", "does_not_exist", "leftpadx"}

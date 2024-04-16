@@ -1,4 +1,5 @@
 """Test how settings cascade/combine across command-line, config file, etc."""
+
 import argparse
 import logging
 import random
@@ -211,7 +212,7 @@ def multivalued_optargs_grid() -> Iterable[List[str]]:
     T = TypeVar("T")
 
     def subsequence_pairs(
-        xs: Tuple[T, ...]
+        xs: Tuple[T, ...],
     ) -> Iterable[Tuple[Tuple[T, ...], Tuple[T, ...]]]:
         assert len(xs) >= 2  # noqa: PLR2004
         for i in range(1, len(xs)):
