@@ -90,6 +90,7 @@ isort = [
     {version = ">=5.10,<5.12.0", extras = ["colors"], python = "<3.8"},
 ]
 codespell = "^2.2.4"
+ruff = ">=0.3"
 
 [tool.poetry.group.dev]
 optional = true
@@ -180,10 +181,8 @@ ignore = [
     "UP006",  # Use `list` instead of `List` for type annotation
     "UP007",  # Use `X | Y` for type annotations
 
-    # Ruff recommends avoiding these checks when using `ruff format`. Since
-    # `ruff format` is a drop-in replacement for `black`, we avoid the same
-    # checks here (https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules
-    # has more details):
+    # Ruff recommends avoiding these checks when using `ruff format`.
+    # Details: https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules
     "W191",  # tab-indentation
     "E111",  # indentation-with-invalid-multiple
     "E114",  # indentation-with-invalid-multiple-comment

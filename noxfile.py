@@ -121,7 +121,7 @@ def format(session):  # noqa: A001
     install_groups(session, include=["format"], include_self=False)
     session.run("codespell", "--enable-colors")
     session.run("isort", "fawltydeps", "tests", "--check", "--diff", "--color")
-    session.run("black", ".", "--check", "--diff", "--color")
+    session.run("ruff", "format", "--diff", ".")
 
 
 @nox.session
@@ -129,4 +129,4 @@ def reformat(session):
     install_groups(session, include=["format"], include_self=False)
     session.run("codespell", "--write-changes")
     session.run("isort", "fawltydeps", "tests")
-    session.run("black", ".")
+    session.run("ruff", "format", ".")
