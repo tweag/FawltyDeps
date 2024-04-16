@@ -145,9 +145,6 @@ addopts = "-m 'not integration'"
 cache_dir = "~/.cache/pytest"
 
 [tool.ruff]
-# Black uses line-length = 88, but allows exceptions when breaking the line
-# would lead to other rule violations. Use 100 as a maximum hard limit:
-line-length = 100
 target-version = "py37"
 extend-include = ["*.ipynb"]
 extend-exclude = [
