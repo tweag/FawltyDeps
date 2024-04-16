@@ -109,7 +109,7 @@ def self_test(session):
     session.run("fawltydeps")
 
 
-@nox.session(python=python_versions)
+@nox.session
 def lint(session):
     install_groups(session, include=["lint"])
     session.run("mypy")
