@@ -77,9 +77,9 @@ nox -R            # Run all available sessions, while reusing virtualenvs (i.e. 
 nox -s tests      # Run unit tests on supported Python versions (that are available)
 nox -s tests-3.7  # Run unit tests on Python v3.7 (assuming it is available locally)
 nox -s integration_tests-3.11  # Run integration tests on Python 3.11
-nox -s lint       # Run linters (mypy + ruff) on all supported Python versions
-nox -s format     # Check formatting (isort + black)
-nox -s reformat   # Fix formatting (isort + black)
+nox -s lint       # Run linters (mypy + ruff check) on all supported Python versions
+nox -s format     # Check formatting (ruff format)
+nox -s reformat   # Fix formatting (ruff format)
 ```
 
 If you want to run a command individually, the corresponding session is defined inside
@@ -90,9 +90,8 @@ commands will work:
 pytest                   # Run unit tests
 pytest -m integration    # Run integration tests
 mypy                     # Run static type checking
-ruff check .             # Run ruff
-isort fawltydeps tests   # Fix sorting of import statements
-black .                  # Fix code formatting
+ruff check .             # Run ruff linter
+ruff format .            # Run ruff formatter
 ```
 
 #### Shortcut: Nix
