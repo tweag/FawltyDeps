@@ -165,6 +165,7 @@ cache_dir = "~/.cache/pytest"
 # would lead to other rule violations. Use 100 as a maximum hard limit:
 line-length = 100
 target-version = "py37"
+extend-include = ["*.ipynb"]
 extend-exclude = [
     "tests/sample_projects/legacy_encoding/big5.py",  # Fails with E902 (not UTF-8)
 ]
