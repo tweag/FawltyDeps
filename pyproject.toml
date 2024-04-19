@@ -59,7 +59,10 @@ setuptools = [
 optional = true
 
 [tool.poetry.group.nox.dependencies]
-nox = "^2022.11.21"
+nox = [
+    {version="^2024.03.02", python = "<3.8"},
+    {version="^2024.03.02", extras=["uv"], python = ">=3.8"},
+]
 
 [tool.poetry.group.test]
 optional = true
@@ -74,7 +77,7 @@ optional = true
 [tool.poetry.group.lint.dependencies]
 hypothesis = "^6.68.2"
 mypy = "^1.0.1"
-nox = "^2022.11.21"
+nox = "^2024.03.02"
 pytest = "^7.1.0"
 ruff = ">=0.3"
 types-setuptools = "^65.6.0.2"
@@ -97,7 +100,10 @@ optional = true
 codespell = "^2.2.4"
 hypothesis = "^6.68.2"
 mypy = "^1.0.1"
-nox = "^2022.11.21"
+nox = [
+    {version="^2024.03.02", python = "<3.8"},
+    {version="^2024.03.02", extras=["uv"], python = ">=3.8"},
+]
 pytest = "^7.1.0"
 ruff = ">=0.3"
 types-setuptools = "^65.6.0.2"

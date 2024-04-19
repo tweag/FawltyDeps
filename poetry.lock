@@ -308,25 +308,26 @@ files = [
 
 [[package]]
 name = "nox"
-version = "2022.11.21"
+version = "2024.4.15"
 description = "Flexible test automation."
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "nox-2022.11.21-py3-none-any.whl", hash = "sha256:0e41a990e290e274cb205a976c4c97ee3c5234441a8132c8c3fd9ea3c22149eb"},
-    {file = "nox-2022.11.21.tar.gz", hash = "sha256:e21c31de0711d1274ca585a2c5fde36b1aa962005ba8e9322bf5eeed16dcd684"},
+    {file = "nox-2024.4.15-py3-none-any.whl", hash = "sha256:6492236efa15a460ecb98e7b67562a28b70da006ab0be164e8821177577c0565"},
+    {file = "nox-2024.4.15.tar.gz", hash = "sha256:ecf6700199cdfa9e5ea0a41ff5e6ef4641d09508eda6edb89d9987864115817f"},
 ]
 
 [package.dependencies]
-argcomplete = ">=1.9.4,<3.0"
+argcomplete = ">=1.9.4,<4.0"
 colorlog = ">=2.6.1,<7.0.0"
-importlib-metadata = {version = "*", markers = "python_version < \"3.8\""}
 packaging = ">=20.9"
-typing-extensions = {version = ">=3.7.4", markers = "python_version < \"3.8\""}
-virtualenv = ">=14"
+tomli = {version = ">=1", markers = "python_version < \"3.11\""}
+uv = {version = ">=0.1.6", optional = true, markers = "extra == \"uv\""}
+virtualenv = ">=20.14.1"
 
 [package.extras]
 tox-to-nox = ["jinja2", "tox"]
+uv = ["uv (>=0.1.6)"]
 
 [[package]]
 name = "packaging"
@@ -368,9 +369,6 @@ files = [
     {file = "platformdirs-4.0.0-py3-none-any.whl", hash = "sha256:118c954d7e949b35437270383a3f2531e99dd93cf7ce4dc8340d3356d30f173b"},
     {file = "platformdirs-4.0.0.tar.gz", hash = "sha256:cb633b2bcf10c51af60beb0ab06d2f1d69064b43abf4c185ca6b28865f3f9731"},
 ]
-
-[package.dependencies]
-typing-extensions = {version = ">=4.7.1", markers = "python_version < \"3.8\""}
 
 [package.extras]
 docs = ["furo (>=2023.7.26)", "proselint (>=0.13)", "sphinx (>=7.1.1)", "sphinx-autodoc-typehints (>=1.24)"]
@@ -735,6 +733,32 @@ files = [
 ]
 
 [[package]]
+name = "uv"
+version = "0.1.32"
+description = "An extremely fast Python package installer and resolver, written in Rust."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "uv-0.1.32-py3-none-linux_armv6l.whl", hash = "sha256:ac453ebbc52da083501a56e0378a71be637920c4cbf60b6dca64292464a00c23"},
+    {file = "uv-0.1.32-py3-none-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:f61de511a3296aa9519ac9cc1d30987aea00a94cd964c8227088a14f0b3f3ab3"},
+    {file = "uv-0.1.32-py3-none-macosx_10_12_x86_64.whl", hash = "sha256:11f1df69d5adad54871e12ed7d7c9250deda9da4800b3dadfa84a65625e945f5"},
+    {file = "uv-0.1.32-py3-none-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:0c9ca49cc73bf61eaf88d005bc16193a2f211a736f26c7612fa158a9a44c4efc"},
+    {file = "uv-0.1.32-py3-none-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:907ff64b74da60e2280b4536f7ae64539219254286c81b857f709ab2e91487ff"},
+    {file = "uv-0.1.32-py3-none-manylinux_2_17_ppc64.manylinux2014_ppc64.whl", hash = "sha256:faf8bba1feb328b93376c2ff26a436a4a41ac45e12c3e46a850edb289e7653fd"},
+    {file = "uv-0.1.32-py3-none-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:ed6a41164aac4538a5bbb850ab52a6c2a679e9aa642f32f001799fd5a3ccf00c"},
+    {file = "uv-0.1.32-py3-none-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:dac71a5abac7c45914acbdc5760be1c7c14c8ce4da7447dfa4f661a57d3d0afe"},
+    {file = "uv-0.1.32-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a7547b19596bec70a041d4c74af1cdd5c3f426c9dd0edb5b6c98a159cc65f43f"},
+    {file = "uv-0.1.32-py3-none-manylinux_2_28_aarch64.whl", hash = "sha256:2d1c85698040efe36b2ddf8b9072c8f01c14a9fa164b5d0a2e6b0dbb11443439"},
+    {file = "uv-0.1.32-py3-none-musllinux_1_2_aarch64.whl", hash = "sha256:0db70283655a2bee8129562b0d0c33979a9ea0586572402a226ffae370e24d20"},
+    {file = "uv-0.1.32-py3-none-musllinux_1_2_armv7l.whl", hash = "sha256:47ff7ab9cdadf01033663b74d65a57648f41b81d07f047370b7eefff934680ec"},
+    {file = "uv-0.1.32-py3-none-musllinux_1_2_i686.whl", hash = "sha256:5af112155bbd9b0abe7748d6b31186c3c0c8cf7931dc99762cc45ad9f44732f7"},
+    {file = "uv-0.1.32-py3-none-musllinux_1_2_x86_64.whl", hash = "sha256:c3b9bb6194e3e2ea41174fc49d66d09eeb5566a5b3c6a6476f30ea2342e547f5"},
+    {file = "uv-0.1.32-py3-none-win32.whl", hash = "sha256:e10e3a44c73934a78eaac199952585aed1f8b0c742b8b034570b3816cb9071af"},
+    {file = "uv-0.1.32-py3-none-win_amd64.whl", hash = "sha256:9365a51e1dd711b8cab661a481b1222dba721497b8a7604bb1fe8e63db900476"},
+    {file = "uv-0.1.32.tar.gz", hash = "sha256:339a275711f2c1faab155f47c2e06e272292401ab054ede37d92ef7ebbffad9b"},
+]
+
+[[package]]
 name = "virtualenv"
 version = "20.25.0"
 description = "Virtual Python Environment builder"
@@ -748,7 +772,6 @@ files = [
 [package.dependencies]
 distlib = ">=0.3.7,<1"
 filelock = ">=3.12.2,<4"
-importlib-metadata = {version = ">=6.6", markers = "python_version < \"3.8\""}
 platformdirs = ">=3.9.1,<5"
 
 [package.extras]
@@ -788,4 +811,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.7.2"
-content-hash = "398c15b845f1da197ed4b41f9b13e83caaf7a69356a8c8f01c50d60f6558a5cf"
+content-hash = "c4a21bc30b8cc6eff9fc63c61ecbee3c21e2407bee0a5df439c63edc546c8b85"
