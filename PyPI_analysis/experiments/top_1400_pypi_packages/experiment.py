@@ -10,10 +10,10 @@ from tqdm import tqdm
 
 from PyPI_analysis.download_and_analyze import pypi_analysis
 
-json_file_path = "repositories.json"
+json_file_path = "pypi_repositories.json"
 client = boto3.client("s3")
 bucket = "fawltydeps-tweag"
-results_dir_name = "results_20240126/"
+results_dir_name = "results_20240220/"
 
 
 def upload_to_aws(local_folder, s3_location):
@@ -48,22 +48,26 @@ def do_analysis(repo_url, repo_name, save_location):
 
     upload_to_aws(save_location, "pypi_analysis/data/" + repo_name)
 
-    repository.analysis()
-
-    if os.path.exists(os.path.join(results_dir_name, repo_name + ".json")):
-        try:
-            client.upload_file(
-                os.path.join(results_dir_name, repo_name + ".json"),
-                bucket,
-                os.path.join("pypi_analysis", results_dir_name, repo_name + ".json"),
-            )
-        except ClientError as e:
-            print(f"Client error {e} occurs.")
+    try:
+        repository.analysis()
+    except:
+        print(f"Could not analyse repository {repo_name} due to error:\n {e}")
     else:
-        print(f"Cannot find analysis results of {repo_name}!")
 
-    if os.path.exists(save_location):
-        shutil.rmtree(save_location)
+        if os.path.exists(os.path.join(results_dir_name, repo_name + ".json")):
+            try:
+                client.upload_file(
+                    os.path.join(results_dir_name, repo_name + ".json"),
+                    bucket,
+                    os.path.join("pypi_analysis", results_dir_name, repo_name + ".json"),
+                )
+            except ClientError as e:
+                print(f"Client error {e} occurs.")
+        else:
+            print(f"Cannot find analysis results of {repo_name}!")
+
+        if os.path.exists(save_location):
+            shutil.rmtree(save_location)
 
 
 with open(json_file_path, "r") as file:
@@ -72,14 +76,16 @@ with open(json_file_path, "r") as file:
 tasks = []
 with tqdm(
     desc="Running FawltyDeps analysis",
-    total=len(repositories[1620:]),
+    total=len(repositories),
     position=0,
     leave=True,
 ) as pbar:
-    with ThreadPoolExecutor() as ex:
-        for repo in repositories[1620:]:
-            repo_url = "https://:@" + repo["domain"] + "/" + repo["repository"] + ".git"
-            repo_name = repo["repository"].split("/")[-1]
+    with ThreadPoolExecutor(max_workers=1) as ex:
+        for repo in repositories:
+            address = repo["repo_url"].split("github.com/")[1].split("/")
+            owner = address[0]
+            repo_name = address[1]
+            repo_url = f"https://:@github.com/{owner}/{repo_name}.git"
             save_location = "temp/" + repo_name
 
             result = ex.submit(do_analysis, repo_url, repo_name, save_location)

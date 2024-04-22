@@ -10,3 +10,6 @@ dist/
 # Testing-related
 .hypothesis/
 
+# data
+PyPI_analysis/experiments/**/*.json
+
