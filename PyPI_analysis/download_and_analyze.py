@@ -6,13 +6,23 @@ from git import Repo
 
 
 class pypi_analysis:
-    def __init__(self, repo_url: str, repo_name: str, save_location: str):
+    def __init__(
+        self,
+        repo_url: str,
+        repo_name: str,
+        save_location: str,
+        results_location: str = "results",
+    ):
         self.repo_url = repo_url
         self.repo_name = repo_name
         self.save_location = save_location
+        self.json_file_path = f"{results_location}/{self.repo_name}.json"
 
     def clone_repo(self):
-        Repo.clone_from(self.repo_url, self.save_location)
+        #     --depth <depth>
+        # Create a shallow clone with a history truncated to the specified number of commits.
+        # We do not need commit history for the analysis
+        Repo.clone_from(self.repo_url, self.save_location, depth=1)
 
     def analysis(self):
         command = f"cd {self.save_location} && python -m PyPI_analysis --project-name {self.repo_name} --json"
@@ -28,11 +38,8 @@ class pypi_analysis:
                     "creation_timestamp"
                 ] = datetime.datetime.now().isoformat()
 
-                # Specify the path to the JSON file
-                json_file_path = f"results/{self.repo_name}.json"
-
                 # Save the analysis data to the JSON file
-                with open(json_file_path, "w") as json_file:
+                with open(self.json_file_path, "w") as json_file:
                     json.dump(analysis_data, json_file, indent=2)
 
             except json.JSONDecodeError as e:
