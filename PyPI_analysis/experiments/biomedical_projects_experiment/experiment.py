@@ -72,12 +72,12 @@ with open(json_file_path, "r") as file:
 tasks = []
 with tqdm(
     desc="Running FawltyDeps analysis",
-    total=len(repositories[1620:]),
+    total=len(repositories),
     position=0,
     leave=True,
 ) as pbar:
     with ThreadPoolExecutor() as ex:
-        for repo in repositories[1620:]:
+        for repo in repositories:
             repo_url = "https://:@" + repo["domain"] + "/" + repo["repository"] + ".git"
             repo_name = repo["repository"].split("/")[-1]
             save_location = "temp/" + repo_name
