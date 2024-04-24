@@ -58,7 +58,7 @@ def do_analysis(repo_url, repo_name, save_location, save_on_aws=False):
     else:
 
         if os.path.exists(os.path.join(results_dir_name, repo_name + ".json")):
-            print("Writing results of FalwtyDeps analysis to disk.")
+            print("Writing results of FawltyDeps analysis to disk.")
 
             # try:
             #     client.upload_file(
