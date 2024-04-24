@@ -53,7 +53,7 @@ def do_analysis(repo_url, repo_name, save_location, save_on_aws=False):
 
     try:
         repository.analysis()
-    except:
+    except Exception as e:
         print(f"Could not analyse repository {repo_name} due to error:\n {e}")
     else:
 
