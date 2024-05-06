@@ -9,6 +9,10 @@ jobs:
       matrix:
         python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
         os: [macos-latest, windows-latest, ubuntu-latest]
+        exclude:
+          # GHA no longer supports Python v3.7 on macos (no v3.7 available for arm64)
+          - python-version: "3.7"
+            os: macos-latest
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
 
