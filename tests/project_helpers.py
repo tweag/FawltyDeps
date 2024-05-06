@@ -48,13 +48,21 @@ class Compatibility(Flag):
     (as returned from .current()).
     """
 
-    POSIX = auto()
+    LINUX = auto()
+    MACOS = auto()
     WINDOWS = auto()
+    POSIX = LINUX | MACOS
 
     @classmethod
     def current(cls) -> Compatibility:
-        """Return the current platform's compatibility."""
-        return cls.WINDOWS if sys.platform.startswith("win") else cls.POSIX
+        """Return the current platform as a compatibility flag."""
+        if sys.platform.startswith("win"):
+            return cls.WINDOWS
+        if sys.platform.startswith("darwin"):
+            return cls.MACOS
+        if sys.platform.startswith("linux"):
+            return cls.LINUX
+        raise RuntimeError(f"Unexpected platform {sys.platform!r}!")
 
     @classmethod
     def all(cls) -> Compatibility:
