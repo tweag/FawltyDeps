@@ -110,12 +110,12 @@ unused_deps = [
 description = """
     Running FD on the TheAlgorithms/Python project, with all requirements
     installed. This improves the situation somewhat, compared to the above, but
-    there are still several problems: qiskit and tensorflow (on Windows only)
-    are "placeholder packages" that rely on transitive dependencies to provide
-    their expected import names. Additionally, there appears to be several true
-    undeclared unused deps.
+    there are still several problems: qiskit and tensorflow (only on Windows and
+    ARM-based MacOS in some versions) are "placeholder packages" that rely on
+    transitive dependencies to provide their expected import names.
+    Additionally, there appears to be several true undeclared unused deps.
 """
-compatibility = "POSIX"
+compatibility = "LINUX"
 args = []
 requirements = [
     "beautifulsoup4",
