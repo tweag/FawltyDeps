@@ -397,14 +397,14 @@ def pyenv_sources(*pyenv_paths: Path) -> Set[PyEnvSource]:
     return ret
 
 
-class TemporaryPipInstallResolver(BasePackageResolver):
+class TemporaryAutoInstallResolver(BasePackageResolver):
     """Resolve packages by installing them in to a temporary venv.
 
     This provides a resolver for packages that are not installed in an existing
-    local environment. This is done by creating a temporary venv, and then
-    `pip install`ing the packages into this venv, and then resolving the
-    packages in this venv. The venv is automatically deleted before as soon as
-    the packages have been resolved.
+    local environment. This is done by creating a temporary venv, installing
+    the packages into this venv, and then resolving the packages in this venv.
+    The venv is automatically deleted before as soon as the packages have been
+    resolved.
     """
 
     # This is only used in tests by `test_resolver`
@@ -466,8 +466,8 @@ class TemporaryPipInstallResolver(BasePackageResolver):
         """Create a temporary venv and install the given requirements into it.
 
         Provide a path to the temporary venv into the caller's context in which
-        the given requirements have been `pip install`ed. Automatically remove
-        the venv at the end of the context.
+        the given requirements have been installed. Automatically remove the
+        venv at the end of the context.
 
         Installation is done on a "best effort" basis as documented by
         .installed_requirements() above. The caller is expected to handle any
@@ -478,12 +478,11 @@ class TemporaryPipInstallResolver(BasePackageResolver):
                 yield venv_dir
 
     def lookup_packages(self, package_names: Set[str]) -> Dict[str, Package]:
-        """Convert package names into Package objects via temporary pip install.
+        """Convert package names into Package objects via temporary auto-install.
 
-        Use the temp_installed_requirements() above to `pip install` the given
-        package names into a temporary venv, and then use LocalPackageResolver
-        on this venv to provide the Package objects that correspond to the
-        package names.
+        Use the temp_installed_requirements() above to install the given package
+        names into a temporary venv, then use LocalPackageResolver on this venv
+        to provide the Package objects that correspond to the package names.
         """
         if self.cached_venv is None:
             installed = self.temp_installed_requirements
@@ -499,7 +498,7 @@ class TemporaryPipInstallResolver(BasePackageResolver):
                 name: replace(
                     package,
                     resolved_with=self.__class__,
-                    debug_info="Provided by temporary `pip install`",
+                    debug_info="Provided by temporary auto-install",
                 )
                 for name, package in resolver.lookup_packages(package_names).items()
             }
@@ -550,7 +549,7 @@ def setup_resolvers(
         yield SysPathPackageResolver()
 
     if install_deps:
-        yield TemporaryPipInstallResolver()
+        yield TemporaryAutoInstallResolver()
     else:
         yield IdentityMapping()
 
