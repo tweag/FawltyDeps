@@ -13,7 +13,7 @@ from fawltydeps.packages import (
     IdentityMapping,
     Package,
     SysPathPackageResolver,
-    TemporaryPipInstallResolver,
+    TemporaryAutoInstallResolver,
     UserDefinedMapping,
     resolve_dependencies,
     setup_resolvers,
@@ -101,7 +101,7 @@ def generate_expected_resolved_deps(
     if install_deps:
         ret.update(
             {
-                dep: Package(dep, imports, TemporaryPipInstallResolver)
+                dep: Package(dep, imports, TemporaryAutoInstallResolver)
                 for dep, imports in other_deps.items()
             }
         )
@@ -179,7 +179,7 @@ def test_resolve_dependencies__generates_expected_mappings(
 
     isolate_default_resolver(installed_deps)
 
-    # Tell TemporaryPipInstallResolver to reuse our cached venv, instead of
+    # Tell TemporaryAutoInstallResolver to reuse our cached venv, instead of
     # potentially creating a new venv for every test case.
     cached_venv = Path(
         request.config.cache.mkdir(
@@ -187,7 +187,7 @@ def test_resolve_dependencies__generates_expected_mappings(
         )
     )
     try:
-        TemporaryPipInstallResolver.cached_venv = cached_venv
+        TemporaryAutoInstallResolver.cached_venv = cached_venv
         actual = resolve_dependencies(
             dep_names,
             setup_resolvers(
@@ -200,7 +200,7 @@ def test_resolve_dependencies__generates_expected_mappings(
             ),
         )
     finally:
-        TemporaryPipInstallResolver.cached_venv = None
+        TemporaryAutoInstallResolver.cached_venv = None
 
     end_time = time.time()
     elapsed_time = end_time - start_time

@@ -49,7 +49,7 @@ class Experiment(BaseExperiment):
     - pyenvs: Settings.pyenvs paths relative to the sample project root.
               If not given (or None), a cached venv with the requirements from
               BaseExperiment.requirements installed will be used instead.
-    - install_deps: Whether or not to include the TemporaryPipInstall resolver
+    - install_deps: Whether or not to include the TemporaryAutoInstall resolver
                     when resolving dependencies (default: False)
     - exclude: Settings.exclude strings with gitignore patterns. If not given
                (or None), the default [".*"] pattern is used.
