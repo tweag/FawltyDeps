@@ -31,6 +31,7 @@ jobs:
           path: |
             ~/.cache/pypoetry/virtualenvs
             ~/.cache/pytest
+            ~/.cache/uv
           key: ${{ runner.os }}-poetry-tests-${{ hashFiles('poetry.lock') }}
       - name: Install project
         run: poetry install --no-interaction --sync --with=nox,test
