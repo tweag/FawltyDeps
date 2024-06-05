@@ -106,65 +106,13 @@ unused_deps = [
     "yulewalker",
 ]
 
-[experiments.all_reqs_installed]
-description = """
-    Running FD on the TheAlgorithms/Python project, with all requirements
-    installed. This improves the situation somewhat, compared to the above, but
-    there are still several problems: qiskit and tensorflow (only on Windows and
-    ARM-based MacOS in some versions) are "placeholder packages" that rely on
-    transitive dependencies to provide their expected import names.
-    Additionally, there appears to be several true undeclared unused deps.
-"""
-compatibility = "LINUX"
-args = []
-requirements = [
-    "beautifulsoup4",
-    "fake_useragent",
-    "keras",
-    "lxml",
-    "matplotlib",
-    "numpy",
-    "opencv-python",
-    "pandas",
-    "pillow",
-    "projectq",
-    "qiskit<1",
-    "requests",
-    "rich",
-    "scikit-fuzzy",
-    "scikit-learn",
-    "statsmodels",
-    "sympy",
-    "tensorflow; python_version < '3.11'",
-    "texttable",
-    "tweepy",
-    "xgboost",
-    "yulewalker",
-]
-# When we run FawltyDeps with the above arguments, we expect these results:
-undeclared_deps = [
-    "django",
-    "mpmath",
-    "pytest",
-    "qiskit",
-    "scipy",
-    "seaborn",
-]
-
-unused_deps = [
-    "keras",
-    "projectq",
-    "qiskit",
-    "texttable",
-    "yulewalker",
-]
-
 [experiments.some_reqs_customized]
 description = """
     Running FD on the TheAlgorithms/Python project, with some requirements
     resolved via custom_mapping, and all other requirements installed.
     This solved the "placeholder package" problem for qiskit and tensorflow
-    by side-stepping it with a custom_mapping.
+    and the failing `uv pip install` for projectq, by side-stepping it with a
+    custom_mapping.
 """
 # TheAlgorithms/Python depends on a couple of "placeholder" packages:
 # - The qiskit package does not provide the "qiskit" import name, but depends
@@ -194,7 +142,6 @@ requirements = [
     "opencv-python",
     "pandas",
     "pillow",
-    "projectq",
     "requests",
     "rich",
     "scikit-fuzzy",
@@ -225,3 +172,4 @@ unused_deps = [
 [tool.fawltydeps.custom_mapping]
 qiskit = ["qiskit"]
 tensorflow = ["tensorflow"]
+projectq = ["projectq"]
