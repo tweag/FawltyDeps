@@ -232,14 +232,13 @@ fallback strategy.
 
 #### Mapping by temporarily installing packages
 
-Your local Python environements might not always have all your project's
+Your local Python environments might not always have all your project's
 dependencies installed. Assuming that you don’t want to go through the
 bother of installing packages manually, and you also don't want to rely on
 the inaccurate identity mapping as your fallback strategy, you can use the
-`--install-deps` option. This will `pip install`
-missing dependencies (from [PyPI](https://pypi.org/), by default) into a
-_temporary virtualenv_, and allow FawltyDeps to use this to come up with the
-correct mapping.
+`--install-deps` option. This will automatically install missing dependencies
+(from [PyPI](https://pypi.org/), by default) into a _temporary virtualenv_,
+and allow FawltyDeps to use this to come up with the correct mapping.
 
 Since this is a potentially expensive strategy (e.g. downloading packages from
 PyPI), we have chosen to hide it behind the `--install-deps` command-line
@@ -247,8 +246,14 @@ option. If you want to always enable this option, you can set the corresponding
 `install_deps` configuration variable to `true` in the `[tool.fawltydeps]`
 section of your `pyproject.toml`.
 
-To customize how this auto-installation happens (e.g. use a different package index),
-you can use [pip’s environment variables](https://pip.pypa.io/en/stable/topics/configuration/).
+FawltyDeps will use [`uv`](https://github.com/astral-sh/uv) by default to
+temporarily install missing dependencies. If `uv` not available, `pip` will be
+used instead.
+
+To further customize how this automatic installation is done (e.g. if you need
+to use a different package index), you can use environment variables to alter
+[`uv`'s](https://github.com/astral-sh/uv?tab=readme-ov-file#environment-variables)
+or [`pip`’s ](https://pip.pypa.io/en/stable/topics/configuration/) behavior.
 
 Note that we’re never guaranteed to be able to resolve _all_ dependencies with
 this method: For example, there could be a typo in your `requirements.txt` that
