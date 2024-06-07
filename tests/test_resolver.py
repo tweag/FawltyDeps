@@ -1,5 +1,6 @@
 """Verify behavior of packages resolver."""
 
+import shutil
 import sys
 import time
 from pathlib import Path
@@ -179,15 +180,20 @@ def test_resolve_dependencies__generates_expected_mappings(
 
     isolate_default_resolver(installed_deps)
 
-    # Tell TemporaryAutoInstallResolver to reuse our cached venv, instead of
-    # potentially creating a new venv for every test case.
-    cached_venv = Path(
-        request.config.cache.mkdir(
-            f"fawltydeps_reused_venv_{sys.version_info.major}.{sys.version_info.minor}"
+    # If we're using `venv.create()` to create virtualenvs and `pip install` to
+    # populate them, we will waste a lot of time recreating and repopulating
+    # virtualenvs in these tests. This is not the case for `uv` which caches
+    # packages locally, and is simply much faster than venv/pip. Therefore, tell
+    # TemporaryAutoInstallResolver to reuse our cached venv, instead of creating
+    # a new venv for every test case, but only when we're not using uv...
+    if shutil.which("uv") is None:
+        cached_venv = Path(
+            request.config.cache.mkdir(
+                f"fawltydeps_reused_venv_{sys.version_info.major}.{sys.version_info.minor}"
+            )
         )
-    )
-    try:
         TemporaryAutoInstallResolver.cached_venv = cached_venv
+    try:
         actual = resolve_dependencies(
             dep_names,
             setup_resolvers(
