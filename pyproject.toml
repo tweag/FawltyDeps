@@ -55,6 +55,12 @@ setuptools = [
     {version = ">=68.0.0,<68.1.0", python = "<3.8"},
 ]
 
+# Optional dependencies, covered by .extras below:
+uv = {version = ">=0.1.6", python = ">=3.8", optional = true}
+
+[tool.poetry.extras]
+uv = ["uv"]
+
 [tool.poetry.group.nox]
 optional = true
 
@@ -242,4 +248,5 @@ ignore_unused = [
     "nox",
     "pytest",
     "ruff",
+    "uv",
 ]
