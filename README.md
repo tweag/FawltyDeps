@@ -248,7 +248,8 @@ section of your `pyproject.toml`.
 
 FawltyDeps will use [`uv`](https://github.com/astral-sh/uv) by default to
 temporarily install missing dependencies. If `uv` not available, `pip` will be
-used instead.
+used instead. If you want to ensure that the faster `uv` is available, you can
+install `fawltydeps` with the `uv` extra (e.g. `pip install fawltydeps[uv]`).
 
 To further customize how this automatic installation is done (e.g. if you need
 to use a different package index), you can use environment variables to alter
