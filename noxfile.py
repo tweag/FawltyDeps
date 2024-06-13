@@ -59,7 +59,11 @@ def install_groups(
     requirements_txt = Path(session.cache_dir, session.name, "reqs_from_poetry.txt")
     hashfile = requirements_txt.with_suffix(".hash")
 
-    if not hashfile.is_file() or hashfile.read_text() != digest:
+    if (
+        not requirements_txt.is_file()
+        or not hashfile.is_file()
+        or hashfile.read_text() != digest
+    ):
         requirements_txt.parent.mkdir(parents=True, exist_ok=True)
         argv = [
             "poetry",
