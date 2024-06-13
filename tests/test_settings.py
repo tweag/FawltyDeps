@@ -34,12 +34,14 @@ if sys.version_info >= (3, 11):
 else:
     from tomli import TOMLDecodeError
 
-try:  # import from Pydantic V2
-    from pydantic.v1 import ValidationError
+import pydantic
+
+if pydantic.__version__.startswith("1."):
+    from pydantic import ValidationError
+    from pydantic.env_settings import SettingsError
+else:  # import from Pydantic v2
+    from pydantic.v1 import ValidationError  # type: ignore[assignment]
     from pydantic.v1.env_settings import SettingsError
-except ModuleNotFoundError:
-    from pydantic import ValidationError  # type: ignore[assignment]
-    from pydantic.env_settings import SettingsError  # type: ignore[no-redef]
 
 EXPECT_DEFAULTS = dict(
     actions={Action.REPORT_UNDECLARED, Action.REPORT_UNUSED},
