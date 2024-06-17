@@ -9,7 +9,7 @@ import tokenize
 from dataclasses import replace
 from pathlib import Path
 from tempfile import NamedTemporaryFile
-from typing import Callable, Iterable, Iterator, NamedTuple, Optional, Tuple
+from typing import Callable, Iterable, Iterator, NamedTuple, Optional, Tuple, Union
 
 from pip_requirements_parser import RequirementsFile  # type: ignore[import]
 from pkg_resources import Requirement
@@ -79,24 +79,32 @@ def parse_setup_py(path: Path) -> Iterator[DeclaredDependency]:  # noqa: C901
     # resolve any variable references in the arguments to the setup() call.
     tracked_vars = VariableTracker(source)
 
-    def _extract_deps_from_setup_call(  # noqa: C901
+    def _extract_deps_from_value(
+        value: Union[str, Iterable[str]],
+        node: ast.AST,
+    ) -> Iterator[DeclaredDependency]:
+        if isinstance(value, str):  # expected list, but got string
+            value = [value]  # parse as if a single-element list is given
+        try:
+            for item in value:
+                yield parse_one_req(item, source)
+        except ValueError as e:  # parse_one_req() failed
+            raise DependencyParsingError(node) from e
+
+    def _extract_deps_from_setup_call(
         node: ast.Call,
     ) -> Iterator[DeclaredDependency]:
         for keyword in node.keywords:
             try:
                 if keyword.arg == "install_requires":
                     value = tracked_vars.resolve(keyword.value)
-                    if not isinstance(value, list):
-                        raise DependencyParsingError(keyword.value)
-                    for item in value:
-                        yield parse_one_req(item, source)
+                    yield from _extract_deps_from_value(value, keyword.value)
                 elif keyword.arg == "extras_require":
                     value = tracked_vars.resolve(keyword.value)
                     if not isinstance(value, dict):
                         raise DependencyParsingError(keyword.value)
                     for items in value.values():
-                        for item in items:
-                            yield parse_one_req(item, source)
+                        yield from _extract_deps_from_value(items, keyword.value)
             except (DependencyParsingError, CannotResolve) as exc:
                 if sys.version_info >= (3, 9):
                     unparsed_content = ast.unparse(exc.node)
