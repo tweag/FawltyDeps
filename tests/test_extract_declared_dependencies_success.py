@@ -302,6 +302,21 @@ def test_parse_requirements_txt(write_tmp_files, file_content, expect_deps):
             ["pandas", "click"],
             id="legacy_encoding__succeeds",
         ),
+        pytest.param(
+            """\
+            from setuptools import setup
+
+            setup(
+                extras_require={
+                    'crt1': 'botocore1>=1.33.2,<2.0a.0',
+                    'crt2': 'botocore2[crt]',
+                    'crt3': ['botocore3'],
+                },
+            )
+            """,
+            ["botocore1", "botocore2", "botocore3"],
+            id="extras_with_varying_types",
+        ),
     ],
 )
 def test_parse_setup_py(write_tmp_files, file_content, expect_deps):
