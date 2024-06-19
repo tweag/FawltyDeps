@@ -1,4 +1,4 @@
-"""Verify behavior of TemporaryPipInstallResolver."""
+"""Verify behavior of TemporaryAutoInstallResolver."""
 
 import logging
 
@@ -6,7 +6,7 @@ import pytest
 
 from fawltydeps.packages import (
     Package,
-    TemporaryPipInstallResolver,
+    TemporaryAutoInstallResolver,
     resolve_dependencies,
     setup_resolvers,
 )
@@ -14,15 +14,15 @@ from fawltydeps.types import UnresolvedDependenciesError
 
 
 def test_resolve_dependencies_install_deps__via_local_cache(local_pypi):  # noqa: ARG001
-    debug_info = "Provided by temporary `pip install`"
+    debug_info = "Provided by temporary auto-install"
     actual = resolve_dependencies(
         ["leftpadx", "click"], setup_resolvers(install_deps=True)
     )
     assert actual == {
         "leftpadx": Package(
-            "leftpadx", {"leftpad"}, TemporaryPipInstallResolver, debug_info
+            "leftpadx", {"leftpad"}, TemporaryAutoInstallResolver, debug_info
         ),
-        "click": Package("click", {"click"}, TemporaryPipInstallResolver, debug_info),
+        "click": Package("click", {"click"}, TemporaryAutoInstallResolver, debug_info),
     }
 
 
@@ -30,7 +30,7 @@ def test_resolve_dependencies_install_deps__raises_unresolved_error_on_pip_insta
     caplog,
     local_pypi,  # noqa: ARG001
 ):
-    # This tests the case where TemporaryPipInstallResolver encounters the
+    # This tests the case where TemporaryAutoInstallResolver encounters the
     # inevitable pip install error and returns to resolve_dependencies()
     # with the missing package unresolved.
     # Since either install_deps or IdentityMapping are the final resolvers,
@@ -70,8 +70,8 @@ def test_resolve_dependencies_install_deps_on_mixed_packages__raises_unresolved_
     # will result in an `UnresolvedDependenciesError`.
     with pytest.raises(UnresolvedDependenciesError):
         resolve_dependencies(deps, setup_resolvers(install_deps=True))
-    # Attempted to install deps with TemporaryPipInstall
+    # Attempted to install deps with TemporaryAutoInstallResolver
     assert (
-        f"Trying to resolve {deps!r} with <fawltydeps.packages.TemporaryPipInstallResolver"
+        f"Trying to resolve {deps!r} with <fawltydeps.packages.TemporaryAutoInstallResolver"
         in caplog.text
     )

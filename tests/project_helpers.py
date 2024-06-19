@@ -177,8 +177,39 @@ class CachedExperimentVenv:
 
     requirements: List[str]  # PEP 508 requirements, passed to 'pip install'
 
+    @staticmethod
+    def _venv_python(venv_path: Path) -> Path:
+        """Return path to Python executable inside the given venv."""
+        if sys.platform.startswith("win"):  # Windows
+            return venv_path / "Scripts" / "python.exe"
+        # Assume POSIX
+        return venv_path / "bin" / "python"
+
+    def _venv_commands_pip(
+        self, venv_path: Path, python_exe: str
+    ) -> Iterator[List[str]]:
+        """Yield pip commands to run in order to create/populate venv_path."""
+        venv_python = str(self._venv_python(venv_path))
+        yield [python_exe, "-m", "venv", str(venv_path)]
+        yield [venv_python, "-m", "pip", "install", "--upgrade", "pip"]
+        for req in self.requirements:
+            yield [venv_python, "-m", "pip", "install", "--no-deps", req]
+
+    def _venv_commands_uv(
+        self, venv_path: Path, python_exe: str, uv_exe: str
+    ) -> Iterator[List[str]]:
+        """Yield uv commands to run in order to create/populate venv_path."""
+        venv_python = str(self._venv_python(venv_path))
+        yield [uv_exe, "venv", "--python", python_exe, str(venv_path)]
+        for req in self.requirements:
+            yield [uv_exe, "pip", "install", "--python", venv_python, "--no-deps", req]
+
     def venv_commands(
-        self, venv_path: Path, python_exe: Optional[str] = None
+        self,
+        venv_path: Path,
+        python_exe: Optional[str] = None,
+        *,
+        prefer_uv_if_available: Optional[bool] = True,
     ) -> Iterator[List[str]]:
         """Yield commands to run in order to create and populate the given venv.
 
@@ -186,18 +217,14 @@ class CachedExperimentVenv:
         must be run in sequence, and each command must return successfully in
         order for the venv to be considered successfully created.
         """
+        uv_exe = shutil.which("uv") if prefer_uv_if_available else None
         if python_exe is None:  # Default to current Python executable
             python_exe = sys.executable
 
-        if sys.platform.startswith("win"):  # Windows
-            venv_python = str(venv_path / "Scripts" / "python.exe")
-        else:  # Assume POSIX
-            venv_python = str(venv_path / "bin" / "python")
-
-        yield [python_exe, "-m", "venv", str(venv_path)]
-        yield [venv_python, "-m", "pip", "install", "--upgrade", "pip"]
-        for req in self.requirements:
-            yield [venv_python, "-m", "pip", "install", "--no-deps", req]
+        if uv_exe is not None:
+            yield from self._venv_commands_uv(venv_path, python_exe, uv_exe)
+        else:
+            yield from self._venv_commands_pip(venv_path, python_exe)
 
     def venv_hash(self) -> str:
         """Returns a hash that depends on the venv script and Python version.

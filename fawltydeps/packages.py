@@ -1,6 +1,7 @@
 """Encapsulate the lookup of packages and their provided import names."""
 
 import logging
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -397,66 +398,106 @@ def pyenv_sources(*pyenv_paths: Path) -> Set[PyEnvSource]:
     return ret
 
 
-class TemporaryPipInstallResolver(BasePackageResolver):
+class TemporaryAutoInstallResolver(BasePackageResolver):
     """Resolve packages by installing them in to a temporary venv.
 
     This provides a resolver for packages that are not installed in an existing
-    local environment. This is done by creating a temporary venv, and then
-    `pip install`ing the packages into this venv, and then resolving the
-    packages in this venv. The venv is automatically deleted before as soon as
-    the packages have been resolved.
+    local environment. This is done by creating a temporary venv, installing
+    the packages into this venv, and then resolving the packages in this venv.
+    The venv is automatically deleted before as soon as the packages have been
+    resolved.
     """
 
     # This is only used in tests by `test_resolver`
     cached_venv: Optional[Path] = None
 
     @staticmethod
+    def _venv_create(venv_dir: Path, uv_exe: Optional[str] = None) -> None:
+        """Create a new virtualenv at the given venv_dir."""
+        if uv_exe is None:  # use venv module
+            venv.create(venv_dir, clear=True, with_pip=True)
+        else:
+            subprocess.run(
+                [uv_exe, "venv", "--python", sys.executable, str(venv_dir)],  # noqa: S603
+                check=True,
+            )
+
+    @staticmethod
+    def _venv_install_cmd(venv_dir: Path, uv_exe: Optional[str] = None) -> List[str]:
+        """Return argv prefix for installing packages into the given venv.
+
+        Construct the initial part of the command line (argv) for installing one
+        or more packages into the given venv_dir. The caller will append one or
+        more packages to the returned list, and run it via subprocess.run().
+        """
+        if sys.platform.startswith("win"):  # Windows
+            python_exe = venv_dir / "Scripts" / "python.exe"
+        else:  # Assume POSIX
+            python_exe = venv_dir / "bin" / "python"
+
+        if uv_exe is None:  # use `$python_exe -m pip install`
+            return [
+                f"{python_exe}",
+                "-m",
+                "pip",
+                "install",
+                "--no-deps",
+                "--quiet",
+                "--disable-pip-version-check",
+            ]
+        # else use `uv pip install`
+        return [
+            uv_exe,
+            "pip",
+            "install",
+            f"--python={python_exe}",
+            "--no-deps",
+            "--quiet",
+        ]
+
+    @classmethod
     @contextmanager
     def installed_requirements(
-        venv_dir: Path, requirements: List[str]
+        cls, venv_dir: Path, requirements: List[str]
     ) -> Iterator[Path]:
-        """Install the given requirements into venv_dir with `pip install`.
+        """Install the given requirements into venv_dir.
 
         We try to install as many of the given requirements as possible. Failed
         requirements will be logged with warning messages, but no matter how
         many failures we get, we will still enter the caller's context. It is
         up to the caller to handle any requirements that we failed to install.
         """
+        uv_exe = shutil.which("uv")  # None -> fall back to venv/pip
+
         marker_file = venv_dir / ".installed"
         if not marker_file.is_file():
-            venv.create(venv_dir, clear=True, with_pip=True)
-        # Capture output from `pip install` to prevent polluting our own stdout
-        pip_install_runner = partial(
-            subprocess.run,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True,
-            check=False,
-        )
-        if sys.platform.startswith("win"):  # Windows
-            pip_path = venv_dir / "Scripts" / "pip.exe"
-        else:  # Assume POSIX
-            pip_path = venv_dir / "bin" / "pip"
+            cls._venv_create(venv_dir, uv_exe)
 
-        argv = [
-            f"{pip_path}",
-            "install",
-            "--no-deps",
-            "--quiet",
-            "--disable-pip-version-check",
-        ]
-        proc = pip_install_runner(argv + requirements)
-        if proc.returncode:  # pip install failed
-            logger.warning("Command failed: %s", argv + requirements)
-            if proc.stdout.strip():
-                logger.warning("Output:\n%s", proc.stdout)
+        def install_helper(*packages: str) -> int:
+            """Install the given package(s) into venv_dir.
+
+            Return the subprocess exit code from the install process.
+            """
+            argv = cls._venv_install_cmd(venv_dir, uv_exe) + list(packages)
+            proc = subprocess.run(
+                argv,  # noqa: S603
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                check=False,
+            )
+            if proc.returncode:  # log warnings on failure
+                logger.warning("Command failed (%i): %s", proc.returncode, argv)
+                if proc.stdout.strip():
+                    logger.warning("Output:\n%s", proc.stdout)
+            return proc.returncode
+
+        if install_helper(*requirements):  # install failed
             logger.info("Retrying each requirement individually...")
             for req in requirements:
-                proc = pip_install_runner([*argv, req])
-                if proc.returncode:  # pip install failed
+                if install_helper(req):
                     logger.warning("Failed to install %s", repr(req))
-                    if proc.stdout.strip():
-                        logger.warning("Output:\n%s", proc.stdout)
+
         marker_file.touch()
         yield venv_dir
 
@@ -466,8 +507,8 @@ class TemporaryPipInstallResolver(BasePackageResolver):
         """Create a temporary venv and install the given requirements into it.
 
         Provide a path to the temporary venv into the caller's context in which
-        the given requirements have been `pip install`ed. Automatically remove
-        the venv at the end of the context.
+        the given requirements have been installed. Automatically remove the
+        venv at the end of the context.
 
         Installation is done on a "best effort" basis as documented by
         .installed_requirements() above. The caller is expected to handle any
@@ -478,19 +519,20 @@ class TemporaryPipInstallResolver(BasePackageResolver):
                 yield venv_dir
 
     def lookup_packages(self, package_names: Set[str]) -> Dict[str, Package]:
-        """Convert package names into Package objects via temporary pip install.
+        """Convert package names into Package objects via temporary auto-install.
 
-        Use the temp_installed_requirements() above to `pip install` the given
-        package names into a temporary venv, and then use LocalPackageResolver
-        on this venv to provide the Package objects that correspond to the
-        package names.
+        Use the temp_installed_requirements() above to install the given package
+        names into a temporary venv, then use LocalPackageResolver on this venv
+        to provide the Package objects that correspond to the package names.
         """
         if self.cached_venv is None:
+            # Use .temp_installed_requirements() to create a new virtualenv for
+            # installing these packages (and then automatically remove it).
             installed = self.temp_installed_requirements
             logger.info("Installing dependencies into a temporary Python environment.")
-        # If self.cached_venv has been set, then use that path instead of creating
-        # a temporary venv for package installation.
         else:
+            # self.cached_venv has been set, so pass that path directly to
+            # .installed_requirements() instead of creating a temporary dir.
             installed = partial(self.installed_requirements, self.cached_venv)
             logger.info(f"Installing dependencies into {self.cached_venv}.")
         with installed(sorted(package_names)) as venv_dir:
@@ -499,7 +541,7 @@ class TemporaryPipInstallResolver(BasePackageResolver):
                 name: replace(
                     package,
                     resolved_with=self.__class__,
-                    debug_info="Provided by temporary `pip install`",
+                    debug_info="Provided by temporary auto-install",
                 )
                 for name, package in resolver.lookup_packages(package_names).items()
             }
@@ -550,7 +592,7 @@ def setup_resolvers(
         yield SysPathPackageResolver()
 
     if install_deps:
-        yield TemporaryPipInstallResolver()
+        yield TemporaryAutoInstallResolver()
     else:
         yield IdentityMapping()
 

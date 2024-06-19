@@ -208,7 +208,7 @@ def populate_parser_paths_options(parser: argparse._ActionsContainer) -> None:
         dest="install_deps",
         action="store_true",
         help=(
-            "Allow FawltyDeps to `pip install` declared dependencies into a"
+            "Allow FawltyDeps to auto-install declared dependencies into a"
             " separate temporary virtualenv to discover the imports they expose."
         ),
     )

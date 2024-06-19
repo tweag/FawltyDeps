@@ -1,5 +1,6 @@
 """Verify behavior of packages resolver."""
 
+import shutil
 import sys
 import time
 from pathlib import Path
@@ -13,7 +14,7 @@ from fawltydeps.packages import (
     IdentityMapping,
     Package,
     SysPathPackageResolver,
-    TemporaryPipInstallResolver,
+    TemporaryAutoInstallResolver,
     UserDefinedMapping,
     resolve_dependencies,
     setup_resolvers,
@@ -101,7 +102,7 @@ def generate_expected_resolved_deps(
     if install_deps:
         ret.update(
             {
-                dep: Package(dep, imports, TemporaryPipInstallResolver)
+                dep: Package(dep, imports, TemporaryAutoInstallResolver)
                 for dep, imports in other_deps.items()
             }
         )
@@ -179,15 +180,20 @@ def test_resolve_dependencies__generates_expected_mappings(
 
     isolate_default_resolver(installed_deps)
 
-    # Tell TemporaryPipInstallResolver to reuse our cached venv, instead of
-    # potentially creating a new venv for every test case.
-    cached_venv = Path(
-        request.config.cache.mkdir(
-            f"fawltydeps_reused_venv_{sys.version_info.major}.{sys.version_info.minor}"
+    # If we're using `venv.create()` to create virtualenvs and `pip install` to
+    # populate them, we will waste a lot of time recreating and repopulating
+    # virtualenvs in these tests. This is not the case for `uv` which caches
+    # packages locally, and is simply much faster than venv/pip. Therefore, tell
+    # TemporaryAutoInstallResolver to reuse our cached venv, instead of creating
+    # a new venv for every test case, but only when we're not using uv...
+    if shutil.which("uv") is None:
+        cached_venv = Path(
+            request.config.cache.mkdir(
+                f"fawltydeps_reused_venv_{sys.version_info.major}.{sys.version_info.minor}"
+            )
         )
-    )
+        TemporaryAutoInstallResolver.cached_venv = cached_venv
     try:
-        TemporaryPipInstallResolver.cached_venv = cached_venv
         actual = resolve_dependencies(
             dep_names,
             setup_resolvers(
@@ -200,7 +206,7 @@ def test_resolve_dependencies__generates_expected_mappings(
             ),
         )
     finally:
-        TemporaryPipInstallResolver.cached_venv = None
+        TemporaryAutoInstallResolver.cached_venv = None
 
     end_time = time.time()
     elapsed_time = end_time - start_time
