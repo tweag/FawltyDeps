@@ -26,12 +26,12 @@ def test_resolve_dependencies_install_deps__via_local_cache(local_pypi):  # noqa
     }
 
 
-def test_resolve_dependencies_install_deps__raises_unresolved_error_on_pip_install_failure(
+def test_resolve_dependencies_install_deps__raises_unresolved_error_on_install_failure(
     caplog,
     local_pypi,  # noqa: ARG001
 ):
     # This tests the case where TemporaryAutoInstallResolver encounters the
-    # inevitable pip install error and returns to resolve_dependencies()
+    # inevitable (uv) pip install error and returns to resolve_dependencies()
     # with the missing package unresolved.
     # Since either install_deps or IdentityMapping are the final resolvers,
     # this should raise an `UnresolvedDependenciesError`.
@@ -66,7 +66,7 @@ def test_resolve_dependencies_install_deps_on_mixed_packages__raises_unresolved_
 ):
     caplog.set_level(logging.DEBUG)
     deps = {"click", "does_not_exist", "leftpadx"}
-    # Attempting to pip install "does_not_exist"
+    # Attempting to (uv) pip install "does_not_exist"
     # will result in an `UnresolvedDependenciesError`.
     with pytest.raises(UnresolvedDependenciesError):
         resolve_dependencies(deps, setup_resolvers(install_deps=True))
