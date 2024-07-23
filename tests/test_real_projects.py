@@ -18,7 +18,7 @@ from pathlib import Path
 from typing import Iterator, List, Optional
 
 import pytest
-from pkg_resources import Requirement
+from packaging.requirements import Requirement
 
 from fawltydeps.packages import LocalPackageResolver, pyenv_sources
 from fawltydeps.types import TomlData
@@ -44,7 +44,7 @@ REAL_PROJECTS_DIR = Path(__file__).with_name("real_projects")
 
 def verify_requirements(venv_path: Path, requirements: List[str]) -> None:
     deps = {
-        Requirement.parse(req).unsafe_name
+        Requirement(req).name
         for req in requirements
         if "python_version" not in req  # we don't know how to parse these (yet)
     }

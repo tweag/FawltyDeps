@@ -11,8 +11,8 @@ from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Callable, Iterable, Iterator, NamedTuple, Optional, Tuple, Union
 
+from packaging.requirements import Requirement
 from pip_requirements_parser import RequirementsFile  # type: ignore[import]
-from pkg_resources import Requirement
 
 from fawltydeps.limited_eval import CannotResolve, VariableTracker
 from fawltydeps.settings import ParserChoice
@@ -46,9 +46,7 @@ class DependencyParsingError(Exception):
 
 def parse_one_req(req_text: str, source: Location) -> DeclaredDependency:
     """Return the name of a dependency declared in a requirement specifier."""
-    req = Requirement.parse(req_text)
-    req_name = req.unsafe_name
-    return DeclaredDependency(req_name, source)
+    return DeclaredDependency(Requirement(req_text).name, source)
 
 
 def parse_requirements_txt(path: Path) -> Iterator[DeclaredDependency]:
