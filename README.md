@@ -439,8 +439,8 @@ Here is a complete list of configuration directives we support:
   `"setup.cfg"`, `"pyproject.toml"`, or leave it unset (i.e. the default) for
   auto-detection (based on filename).
 - `install-deps`: Automatically install Python dependencies gathered with
-  FawltyDeps into a temporary virtual environment. This will use `pip install`,
-  which downloads packages from PyPI by default.
+  FawltyDeps into a temporary virtual environment. This will use `uv` or `pip`
+  to download and install packages from PyPI by default.
 - `exclude`: File/directory patterns to exclude/ignore when looking for code
   (imports), dependency declarations and/or Python environments. Defaults to
   `exclude = [".*"]`, meaning that hidden/dot paths are excluded from traversal.

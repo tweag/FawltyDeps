@@ -187,11 +187,11 @@ Requirements files may have non-standard names so to extract dependencies Fawlty
 
 Some Python packages require other packages to be installed first (like `numpy` for `pandas`). We call them transitive dependencies. When a transitive dependency `A` is imported explicitly in the code, it becomes a direct dependency. Even though the code would work without explicitly declaring `A`, it is a better practice to do so.
 
-To determine the list of transitive dependencies of a library `myLibrary`, the pip command:
+To determine the list of transitive dependencies of a library `myLibrary`, one of these commands may be used:
 
     pip show myLibrary
-
-may be used or the `poetry show` command.
+    uv pip show myLibrary
+    poetry show
 
 Since a transitive dependency does not need to be explicitly declared, declaring transitive dependencies that are not also direct dependencies in requirements is not a common practice. Checking for these dependencies is therefore not supported by FawltyDeps.
 

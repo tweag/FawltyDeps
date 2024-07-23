@@ -175,7 +175,7 @@ class CachedExperimentVenv:
     ~/.cache/pytest/d/...
     """
 
-    requirements: List[str]  # PEP 508 requirements, passed to 'pip install'
+    requirements: List[str]  # PEP 508 requirements, passed to (uv) pip install
 
     @staticmethod
     def _venv_python(venv_path: Path) -> Path:
