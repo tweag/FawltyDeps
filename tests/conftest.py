@@ -2,7 +2,7 @@
 
 import venv
 from pathlib import Path
-from tempfile import mkdtemp
+from tempfile import NamedTemporaryFile, mkdtemp
 from textwrap import dedent
 from typing import Callable, Dict, List, Optional, Set, Tuple, Union
 
@@ -30,9 +30,32 @@ def inside_tmp_path(monkeypatch, tmp_path):
 def local_pypi(request, monkeypatch):  # noqa: PT004
     cache_dir = TarballPackage.cache_dir(request.config.cache)
     TarballPackage.get_tarballs(request.config.cache)
-    # set the test's env variables so that pip would install from the local repo
-    monkeypatch.setenv("PIP_NO_INDEX", "True")
-    monkeypatch.setenv("PIP_FIND_LINKS", str(cache_dir))
+    # Make sure we install from the local repo, and not from PyPI.
+    # This goes for both the uv and pip install methods.
+
+    # uv does not (yet) allow this to be configured via the environment, so we
+    # need to go via a temporary config file:
+    tmp_uv_config = NamedTemporaryFile("wt", delete=False, suffix=".toml")
+    try:
+        tmp_uv_config.write(
+            dedent(f"""
+                [pip]
+                no-index = true
+                find-links = ["{Path(cache_dir).as_posix()}"]
+            """)
+        )
+        tmp_uv_config.close()
+
+        # Point uv to the temporary config file
+        monkeypatch.setenv("UV_CONFIG_FILE", tmp_uv_config.name)
+
+        # pip is configured via these env vars
+        monkeypatch.setenv("PIP_NO_INDEX", "True")
+        monkeypatch.setenv("PIP_FIND_LINKS", str(cache_dir))
+
+        yield  # Test code runs here
+    finally:  # Clean up temporary file afterwards
+        Path(tmp_uv_config.name).unlink()
 
 
 @pytest.fixture()
