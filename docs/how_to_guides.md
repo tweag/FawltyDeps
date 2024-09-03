@@ -65,7 +65,7 @@ run for each `libX`:
 fawltydeps libX
 ```
 
-## How can I pass Python code to FawltyDeps via standard input?
+## Passing Python code to FawltyDeps via standard input.
 
 The `--code` argument accepts a single hyphen (`-`) as a special value meaning
 that code should be read from standard input. When using this you may pipe or
@@ -86,9 +86,9 @@ fawltydeps --code -
 # then press Ctrl+D to signal EOF (end-of-file).
 ```
 
-## Can I use FawltyDeps as a pre-commit hook?
+## Using FawltyDeps as a pre-commit hook
 
-Yes! Assuming that you already use the [pre-commit](https://pre-commit.com)
+Assuming that you already use the [pre-commit](https://pre-commit.com)
 tool, you can add something like this to your project's
 `.pre-commit-config.yaml`:
 
