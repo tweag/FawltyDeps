@@ -37,22 +37,22 @@ fawltydeps = "fawltydeps.main:main"
 python = ">=3.7.2"
 importlib_metadata = [
     # v6.8.0 drops support for Python v3.7:
-    {version = ">=6.6.0", python = ">=3.8"},
-    {version = ">=6.6.0,<6.8.0", python = "<3.8"},
+    { version = ">=6.6.0", python = ">=3.8" },
+    { version = ">=6.6.0,<6.8.0", python = "<3.8" },
 ]
 isort = [
     # v5.12.0 drops support for Python v3.7:
-    {version = "^5.10", python = ">=3.8"},
-    {version = ">=5.10,<5.12.0", python = "<3.8"},
+    { version = "^5.10", python = ">=3.8" },
+    { version = ">=5.10,<5.12.0", python = "<3.8" },
 ]
 packaging = ">=24.0"
 pip-requirements-parser = ">=32.0.1"
 pydantic = ">=1.10.4,<3.0.0"
-tomli = {version = "^2.0.1", python = "<3.11"}
-typing-extensions = {version = ">=4.4.0", python = "<3.8"}
+tomli = { version = "^2.0.1", python = "<3.11" }
+typing-extensions = { version = ">=4.4.0", python = "<3.8" }
 
 # Optional dependencies, covered by .extras below:
-uv = {version = ">=0.1.6", python = ">=3.8", optional = true}
+uv = { version = ">=0.1.6", python = ">=3.8", optional = true }
 
 [tool.poetry.extras]
 uv = ["uv"]
@@ -62,8 +62,10 @@ optional = true
 
 [tool.poetry.group.nox.dependencies]
 nox = [
-    {version="^2024.03.02", python = "<3.8"},
-    {version="^2024.03.02", extras=["uv"], python = ">=3.8"},
+    { version = "^2024.03.02", python = "<3.8" },
+    { version = "^2024.03.02", extras = [
+        "uv",
+    ], python = ">=3.8" },
 ]
 
 [tool.poetry.group.test]
@@ -102,11 +104,20 @@ codespell = "^2.2.4"
 hypothesis = "^6.68.2"
 mypy = "^1.0.1"
 nox = [
-    {version="^2024.03.02", python = "<3.8"},
-    {version="^2024.03.02", extras=["uv"], python = ">=3.8"},
+    { version = "^2024.03.02", python = "<3.8" },
+    { version = "^2024.03.02", extras = [
+        "uv",
+    ], python = ">=3.8" },
 ]
 pytest = "^7.1.0"
 ruff = ">=0.3"
+
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
+Python = ">=3.8"
+mkdocs = "*"
 
 [tool.mypy]
 files = ['*.py', 'fawltydeps/*.py', 'tests/*.py']
@@ -142,7 +153,7 @@ cache_dir = "~/.cache/pytest"
 target-version = "py37"
 extend-include = ["*.ipynb"]
 extend-exclude = [
-    "tests/sample_projects/legacy_encoding/big5.py",  # Fails with E902 (not UTF-8)
+    "tests/sample_projects/legacy_encoding/big5.py", # Fails with E902 (not UTF-8)
 ]
 
 [tool.ruff.lint]
@@ -150,81 +161,81 @@ select = ["ALL"]
 ignore = [
     # Ignore some unwanted checks:
     "ANN10",  # Deprecated: Missing type annotation for self/cls in (class)method
-    "ANN204",  # Missing return type annotation for special method
-    "D104",  # Missing docstring in public package
-    "D105",  # Missing docstring in magic method
-    "D107",  # Missing docstring in `__init__`
-    "D203",  # one-blank-line-before-class conflicts with D211: no-blank-line-before-class
-    "D213",  # multi-line-summary-second-line conflicts with D212: multi-line-summary-first-line
-    "EM",  # Exception must not use a (f-)string literal, assign to variable first
+    "ANN204", # Missing return type annotation for special method
+    "D104",   # Missing docstring in public package
+    "D105",   # Missing docstring in magic method
+    "D107",   # Missing docstring in `__init__`
+    "D203",   # one-blank-line-before-class conflicts with D211: no-blank-line-before-class
+    "D213",   # multi-line-summary-second-line conflicts with D212: multi-line-summary-first-line
+    "EM",     # Exception must not use a (f-)string literal, assign to variable first
 
     # Probably not fixed so soon:
     "FIX002",  # Line contains TODO, consider resolving the issue
-    "G004",  # Logging statement uses f-string
-    "PERF203",  # `try`-`except` within a loop incurs performance overhead
-    "TD",  # Ignore checks on TODO comments
+    "G004",    # Logging statement uses f-string
+    "PERF203", # `try`-`except` within a loop incurs performance overhead
+    "TD",      # Ignore checks on TODO comments
     "TRY003",  # Avoid specifying long messages outside the exception class
     "TRY301",  # Abstract `raise` to an inner function
     "TRY400",  # Use `logging.exception` instead of `logging.error`
 
     # To be fixed in a larger refactoring of our type annotations
     "FA100",  # Missing `from __future__ import annotations`, but uses `typing.*`
-    "TCH002",  # Move third-party import `...` into a type-checking block
-    "TCH003",  # Move standard library import `...` into a type-checking block
+    "TCH002", # Move third-party import `...` into a type-checking block
+    "TCH003", # Move standard library import `...` into a type-checking block
     "UP006",  # Use `list` instead of `List` for type annotation
     "UP007",  # Use `X | Y` for type annotations
 
     # Ruff recommends avoiding these checks when using `ruff format`.
     # Details: https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules
-    "W191",  # tab-indentation
-    "E111",  # indentation-with-invalid-multiple
-    "E114",  # indentation-with-invalid-multiple-comment
-    "E117",  # over-indented
-    "D206",  # indent-with-spaces
-    "D300",  # triple-single-quotes
-    "Q000",  # bad-quotes-inline-string
-    "Q001",  # bad-quotes-multiline-string
-    "Q002",  # bad-quotes-docstring
-    "Q003",  # avoidable-escaped-quote
-    "COM812",  # missing-trailing-comma
-    "COM819",  # prohibited-trailing-comma
-    "ISC001",  # single-line-implicit-string-concatenation
-    "ISC002",  # multi-line-implicit-string-concatenation
-    "E501",  # line-too-long
+    "W191",   # tab-indentation
+    "E111",   # indentation-with-invalid-multiple
+    "E114",   # indentation-with-invalid-multiple-comment
+    "E117",   # over-indented
+    "D206",   # indent-with-spaces
+    "D300",   # triple-single-quotes
+    "Q000",   # bad-quotes-inline-string
+    "Q001",   # bad-quotes-multiline-string
+    "Q002",   # bad-quotes-docstring
+    "Q003",   # avoidable-escaped-quote
+    "COM812", # missing-trailing-comma
+    "COM819", # prohibited-trailing-comma
+    "ISC001", # single-line-implicit-string-concatenation
+    "ISC002", # multi-line-implicit-string-concatenation
+    "E501",   # line-too-long
 ]
 
 [tool.ruff.lint.per-file-ignores]
 "noxfile.py" = [
-    "ANN",  # Missing type annotations
-    "D",  # Missing docstrings
+    "ANN", # Missing type annotations
+    "D",   # Missing docstrings
 ]
 "tests/sample_projects/*" = [
-    "F401",  # Allow unused imports in sample projects
-    "ICN001",  # `<module>` should be imported as `<mod>`
-    "INP001",  # File `...` is part of an implicit namespace package. Add an `__init__.py`.
+    "F401",   # Allow unused imports in sample projects
+    "ICN001", # `<module>` should be imported as `<mod>`
+    "INP001", # File `...` is part of an implicit namespace package. Add an `__init__.py`.
 ]
 "tests/*" = [
     # Ignore some groups of checks in our test code
-    "ANN",  # Type annotations
-    "D10",  # Missing docstrings
-    "TCH00",  # Imports and type checking blocks
+    "ANN",   # Type annotations
+    "D10",   # Missing docstrings
+    "TCH00", # Imports and type checking blocks
 
     # Ignore some more specific checks in our test code
-    "C408",  # Unnecessary `dict` call (rewrite as a literal)
-    "D401",  # First line of docstring should be in imperative mood
-    "N802",  # Function name `...` should be lowercase
-    "N806",  # Variable `...` in function should be lowercase
-    "PLR0913",  # Too many arguments in function definition
-    "PT018",  # Assertion should be broken down into multiple parts
-    "S101",  # Use of `assert` detected
-    "S603",  # `subprocess` call: check for execution of untrusted input
-    "T201",  # `print` found
+    "C408",    # Unnecessary `dict` call (rewrite as a literal)
+    "D401",    # First line of docstring should be in imperative mood
+    "N802",    # Function name `...` should be lowercase
+    "N806",    # Variable `...` in function should be lowercase
+    "PLR0913", # Too many arguments in function definition
+    "PT018",   # Assertion should be broken down into multiple parts
+    "S101",    # Use of `assert` detected
+    "S603",    # `subprocess` call: check for execution of untrusted input
+    "T201",    # `print` found
 ]
 
 [tool.codespell]
 skip = ".git,.mypy_cache,.nox,.vscode,__pycache__,poetry.lock"
 builtin = "clear,rare,informal,usage,code,names"
-ignore-words-list = "jupyter,iff"  # prevent jupyter -> jupiter, iff -> if
+ignore-words-list = "jupyter,iff"                              # prevent jupyter -> jupiter, iff -> if
 check-filenames = true
 uri-ignore-words-list = "*"
 
