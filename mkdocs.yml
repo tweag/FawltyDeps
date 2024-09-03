@@ -9,9 +9,9 @@ nav:
   - Home: index.md
   - Installation: installation.md
   - Explanation: explanation.md
-  - Refeence: reference.md
+  - Reference: reference.md
   - How To Guides: how_to_guides.md
-  - FAQ: faq.md
+  - FAQ: FAQ.md
 markdown_extensions:
   - toc:
       permalink: true
