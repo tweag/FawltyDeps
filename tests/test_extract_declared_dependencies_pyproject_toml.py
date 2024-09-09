@@ -323,6 +323,23 @@ from fawltydeps.types import DeclaredDependency, Location
             ["dep3", "twice", "dep4", "dep5", "dep6", "dep7", "dep1", "dep2"],
             id="pixi_pyproject_mixed_deps",
         ),
+        pytest.param(
+            """\
+            [project]
+            name = "my_project"
+            requires-python = ">= 3.9"
+
+            [tool.pixi.project]
+            channels = ["conda-forge"]
+            platforms = ["linux-64"]
+
+            [tool.pixi.pypi-dependencies]
+            my_project = { path = ".", editable = true }
+            pandas = "*"
+            """,
+            ["pandas"],
+            id="pixi_pyproject_self_dep_is_ignored",
+        ),
     ],
 )
 def test_parse_pyproject_toml__wellformed_dependencies__yields_dependencies(

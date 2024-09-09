@@ -2,6 +2,7 @@
 
 import ast
 import configparser
+import contextlib
 import logging
 import re
 import sys
@@ -406,6 +407,10 @@ def parse_pyproject_toml(path: Path) -> Iterator[DeclaredDependency]:
 
     skip = set()
 
+    # Skip dependencies onto self (such as Pixi's "editable mode" hack)
+    with contextlib.suppress(KeyError):
+        skip.add(parsed_contents["project"]["name"])
+
     # In Pixi, dependencies from [tool.pixi.dependencies] _override_
     # dependencies from PEP621 dependencies with the same name.
     # Therefore, parse the Pixi sections first, and skip dependencies with the
@@ -414,8 +419,9 @@ def parse_pyproject_toml(path: Path) -> Iterator[DeclaredDependency]:
         for dep in parse_pixi_pyproject_dependencies(
             parsed_contents["tool"]["pixi"], source
         ):
-            skip.add(dep.name)
-            yield dep
+            if dep.name not in skip:
+                skip.add(dep.name)
+                yield dep
     else:
         logger.debug("%s does not contain [tool.pixi].", source)
 
