@@ -244,6 +244,24 @@ def parse_poetry_pyproject_dependencies(
     yield from parse_pyproject_elements(poetry_config, source, "Poetry", fields_parsers)
 
 
+def parse_pixi_pyproject_dependencies(
+    pixi_config: TomlData, source: Location
+) -> Iterator[DeclaredDependency]:
+    """Extract dependencies from `tool.pixi` fields in a pyproject.toml."""
+
+    def parse_main(contents: TomlData, src: Location) -> NamedLocations:
+        return (
+            (req, src)
+            for req in contents["dependencies"].keys()  # noqa: SIM118
+            if req != "python"
+        )
+
+    fields_parsers = [
+        ("main", parse_main),
+    ]
+    yield from parse_pyproject_elements(pixi_config, source, "Pixi", fields_parsers)
+
+
 def parse_pep621_pyproject_contents(  # noqa: C901
     parsed_contents: TomlData, source: Location
 ) -> Iterator[DeclaredDependency]:
@@ -356,12 +374,30 @@ def parse_pyproject_toml(path: Path) -> Iterator[DeclaredDependency]:
     We currently handle:
     - PEP 621 core and dynamic metadata fields.
     - Poetry-specific metadata in `tool.poetry` sections.
+    - Pixi-specific metadata in `tool.pixi` sections.
     """
     source = Location(path)
     with path.open("rb") as tomlfile:
         parsed_contents = tomllib.load(tomlfile)
 
-    yield from parse_pep621_pyproject_contents(parsed_contents, source)
+    skip = set()
+
+    # In Pixi, dependencies from [tool.pixi.dependencies] _override_
+    # dependencies from PEP621 dependencies with the same name.
+    # Therefore, parse the Pixi sections first, and skip dependencies with the
+    # same name in the PEP621 section below.
+    if "pixi" in parsed_contents.get("tool", {}):
+        for dep in parse_pixi_pyproject_dependencies(
+            parsed_contents["tool"]["pixi"], source
+        ):
+            skip.add(dep.name)
+            yield dep
+    else:
+        logger.debug("%s does not contain [tool.pixi].", source)
+
+    for dep in parse_pep621_pyproject_contents(parsed_contents, source):
+        if dep.name not in skip:
+            yield dep
 
     if "poetry" in parsed_contents.get("tool", {}):
         yield from parse_poetry_pyproject_dependencies(

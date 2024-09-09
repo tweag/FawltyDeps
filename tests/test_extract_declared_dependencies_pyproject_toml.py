@@ -159,9 +159,89 @@ from fawltydeps.types import DeclaredDependency, Location
             ],
             id="pep_621_and_poetry_all_dependencies",
         ),
+        pytest.param(
+            """\
+            [project]
+            name = "my_project"
+            requires-python = ">=3.9"
+            dependencies = [
+                "numpy",
+                "pandas",
+                "matplotlib",
+            ]
+
+            [tool.pixi.project]
+            channels = ["conda-forge"]
+            platforms = ["linux-64", "osx-arm64", "osx-64", "win-64"]
+            """,
+            ["numpy", "pandas", "matplotlib"],
+            id="pixi_pyproject_pep621_deps",
+        ),
+        pytest.param(
+            """\
+            [project]
+            name = "my_project"
+            requires-python = ">=3.9"
+
+            [tool.pixi.project]
+            channels = ["conda-forge"]
+            platforms = ["linux-64", "osx-arm64", "osx-64", "win-64"]
+
+            [tool.pixi.dependencies]
+            numpy = "*"
+            pandas = "*"
+            matplotlib = "*"
+            """,
+            ["numpy", "pandas", "matplotlib"],
+            id="pixi_pyproject_conda_deps",
+        ),
+        pytest.param(
+            """\
+            [project]
+            name = "my_project"
+            requires-python = ">=3.9"
+            dependencies = [
+                "numpy",
+                "pandas",
+                "matplotlib",
+            ]
+
+            [tool.pixi.project]
+            channels = ["conda-forge"]
+            platforms = ["linux-64", "osx-arm64", "osx-64", "win-64"]
+
+            [tool.pixi.dependencies]
+            numpy = "*"
+            pandas = "*"
+            matplotlib = "*"
+            """,
+            ["numpy", "pandas", "matplotlib"],
+            id="pixi_pyproject_pep621_and_conda_same_deps",
+        ),
+        pytest.param(
+            """\
+            [project]
+            name = "my_project"
+            requires-python = ">=3.9"
+            dependencies = [
+                "numpy",
+                "pandas",
+            ]
+
+            [tool.pixi.project]
+            channels = ["conda-forge"]
+            platforms = ["linux-64", "osx-arm64", "osx-64", "win-64"]
+
+            [tool.pixi.dependencies]
+            pandas = "*"
+            matplotlib = "*"
+            """,
+            ["pandas", "matplotlib", "numpy"],
+            id="pixi_pyproject_pep621_and_conda_different_deps",
+        ),
     ],
 )
-def test_parse_pyproject_toml__pep621_or_poetry_dependencies__yields_dependencies(
+def test_parse_pyproject_toml__wellformed_dependencies__yields_dependencies(
     write_tmp_files, pyproject_toml, expected_deps
 ):
     tmp_path = write_tmp_files({"pyproject.toml": pyproject_toml})
@@ -264,7 +344,7 @@ pyproject_tests_malformed_samples = [
 @pytest.mark.parametrize(
     "vector", [pytest.param(v, id=v.id) for v in pyproject_tests_malformed_samples]
 )
-def test_parse_pyproject_content__malformatted_poetry_dependencies__yields_no_dependencies(
+def test_parse_pyproject_content__malformed_poetry_dependencies__yields_no_dependencies(
     write_tmp_files, caplog, vector
 ):
     tmp_path = write_tmp_files({"pyproject.toml": vector.data})
