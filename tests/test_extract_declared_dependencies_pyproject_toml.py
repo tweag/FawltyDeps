@@ -239,6 +239,22 @@ from fawltydeps.types import DeclaredDependency, Location
             ["pandas", "matplotlib", "numpy"],
             id="pixi_pyproject_pep621_and_conda_different_deps",
         ),
+        pytest.param(
+            """\
+            [project]
+            name = "my_project"
+            requires-python = ">= 3.9"
+
+            [tool.pixi.project]
+            channels = ["conda-forge"]
+            platforms = ["linux-64"]
+
+            [tool.pixi.pypi-dependencies]
+            numpy = "*"
+            """,
+            ["numpy"],
+            id="pixi_pyproject_pypi_deps",
+        ),
     ],
 )
 def test_parse_pyproject_toml__wellformed_dependencies__yields_dependencies(
