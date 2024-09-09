@@ -271,6 +271,58 @@ from fawltydeps.types import DeclaredDependency, Location
             ["pandas"],
             id="pixi_pyproject_optional_conda_deps",
         ),
+        pytest.param(
+            """\
+            [project]
+            name = "my_project"
+            requires-python = ">= 3.9"
+
+            [tool.pixi.project]
+            channels = ["conda-forge"]
+            platforms = ["linux-64"]
+
+            [tool.pixi.feature.my_feature.pypi-dependencies]
+            pandas = "*"
+            """,
+            ["pandas"],
+            id="pixi_pyproject_optional_pypi_deps",
+        ),
+        pytest.param(
+            """\
+            [project]
+            name = "my_project"
+            requires-python = ">= 3.9"
+            dependencies = [
+                "dep1",
+                "twice",
+            ]
+
+            [project.optional-dependencies]
+            group1 = ["dep2"]
+
+            [tool.pixi.project]
+            channels = ["conda-forge"]
+            platforms = ["linux-64"]
+
+            [tool.pixi.dependencies]
+            dep3 = "*"
+            twice = "*"
+
+            [tool.pixi.pypi-dependencies]
+            dep4 = "*"
+
+            [tool.pixi.feature.feature1.dependencies]
+            dep5 = "*"
+
+            [tool.pixi.feature.feature2.dependencies]
+            dep6 = "*"
+
+            [tool.pixi.feature.feature2.pypi-dependencies]
+            dep7 = "*"
+            """,
+            ["dep3", "twice", "dep4", "dep5", "dep6", "dep7", "dep1", "dep2"],
+            id="pixi_pyproject_mixed_deps",
+        ),
     ],
 )
 def test_parse_pyproject_toml__wellformed_dependencies__yields_dependencies(
