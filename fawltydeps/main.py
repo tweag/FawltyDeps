@@ -4,10 +4,10 @@ Supports finding 3rd-party imports in Python scripts (*.py) and Jupyter
 notebooks (*.ipynb).
 
 Supports finding dependency declarations in *requirements*.txt (and .in) files,
-pyproject.toml (following PEP 621 or Poetry conventions), setup.cfg, as well as
-limited support for setup.py files with a single, simple setup() call and
-minimal computation involved in setting the install_requires and extras_require
-arguments.
+pyproject.toml (following PEP 621, Poetry, or Pixi conventions), setup.cfg, as
+well as limited support for setup.py files with a single, simple setup() call
+and minimal computation involved in setting the install_requires and
+extras_require arguments.
 """
 
 from __future__ import annotations
