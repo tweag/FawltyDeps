@@ -255,6 +255,22 @@ from fawltydeps.types import DeclaredDependency, Location
             ["numpy"],
             id="pixi_pyproject_pypi_deps",
         ),
+        pytest.param(
+            """\
+            [project]
+            name = "my_project"
+            requires-python = ">= 3.9"
+
+            [tool.pixi.project]
+            channels = ["conda-forge"]
+            platforms = ["linux-64"]
+
+            [tool.pixi.feature.my_feature.dependencies]
+            pandas = "*"
+            """,
+            ["pandas"],
+            id="pixi_pyproject_optional_conda_deps",
+        ),
     ],
 )
 def test_parse_pyproject_toml__wellformed_dependencies__yields_dependencies(
