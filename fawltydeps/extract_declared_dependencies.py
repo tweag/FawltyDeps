@@ -248,7 +248,19 @@ def parse_poetry_pyproject_dependencies(
 def parse_pixi_pyproject_dependencies(
     pixi_config: TomlData, source: Location
 ) -> Iterator[DeclaredDependency]:
-    """Extract dependencies from `tool.pixi` fields in a pyproject.toml."""
+    """Extract dependencies from `tool.pixi` fields in a pyproject.toml.
+
+    - [tool.pixi.dependencies] contains mandatory Conda deps
+    - [tool.pixi.pypi-dependencies] contains mandatory PyPI deps
+    - [tool.pixi.feature.<NAME>.dependencies] contains optional Conda deps
+    - [tool.pixi.feature.<NAME>.pypi-dependencies] contains optional PyPI deps
+
+    NOTE: We do not currently differentiate between Conda dependencies and PyPI
+    dependencies, meaning that we assume that a Conda dependency named FOO will
+    map one-to-one to a Python package named FOO. This is certainly not true for
+    Conda dependencies that are not Python packages, and it probably isn't even
+    true for all Conda dependencies that do indeed include Python packages.
+    """
 
     def parse_main(contents: TomlData, src: Location) -> NamedLocations:
         return (

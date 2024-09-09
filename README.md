@@ -124,7 +124,7 @@ The `--deps` option tells FawltyDeps where to look for your project's declared
 dependencies. A number of file formats are supported:
 
 - `*requirements*.txt` and `*requirements*.in`
-- `pyproject.toml` (following PEP 621 or Poetry conventions)
+- `pyproject.toml` (following PEP 621, Poetry, or Pixi conventions)
 - `setup.py` (only limited support for simple files with a single `setup()`
   call and no computation involved for setting the `install_requires` and
   `extras_require` arguments)
