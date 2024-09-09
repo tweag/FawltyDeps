@@ -57,9 +57,14 @@ def parse_requirements_txt(path: Path) -> Iterator[DeclaredDependency]:
     https://pip.pypa.io/en/stable/reference/requirements-file-format/.
     """
     source = Location(path)
-    for dep in RequirementsFile.from_file(path).requirements:
+    parsed = RequirementsFile.from_file(path)
+    for dep in parsed.requirements:
         if dep.name:
             yield DeclaredDependency(dep.name, source)
+
+    if parsed.invalid_lines and logger.isEnabledFor(logging.DEBUG):
+        error_messages = "\n".join(line.dumps() for line in parsed.invalid_lines)
+        logger.debug(f"Invalid lines found in {source}:\n{error_messages}")
 
 
 def parse_setup_py(path: Path) -> Iterator[DeclaredDependency]:  # noqa: C901
