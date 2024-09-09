@@ -262,9 +262,18 @@ def parse_pixi_pyproject_dependencies(
             for req in contents["pypi-dependencies"].keys()  # noqa: SIM118
         )
 
+    def parse_feature(contents: TomlData, src: Location) -> NamedLocations:
+        return (
+            (req, src)
+            for feature in contents["feature"].values()
+            for req in feature.get("dependencies", {}).keys()  # noqa: SIM118
+            if req != "python"
+        )
+
     fields_parsers = [
         ("main", parse_main),
         ("pypi", parse_pypi),
+        ("feature", parse_feature),
     ]
     yield from parse_pyproject_elements(pixi_config, source, "Pixi", fields_parsers)
 
