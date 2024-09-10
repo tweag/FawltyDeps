@@ -1,0 +1,41 @@
+{
+  "build": "h297d8ca_0",
+  "build_number": 0,
+  "depends": [
+    "libgcc-ng >=12",
+    "libstdcxx-ng >=12"
+  ],
+  "license": "Apache-2.0",
+  "license_family": "Apache",
+  "md5": "3aa1c7e292afeff25a0091ddd7c69b72",
+  "name": "ninja",
+  "purls": [],
+  "sha256": "40f7b76b07067935f8a5886aab0164067b7aa71eb5ad20b7278618c0c2c98e06",
+  "size": 2198858,
+  "subdir": "linux-64",
+  "timestamp": 1715440571685,
+  "version": "1.12.1",
+  "fn": "ninja-1.12.1-h297d8ca_0.conda",
+  "url": "https://conda.anaconda.org/conda-forge/linux-64/ninja-1.12.1-h297d8ca_0.conda",
+  "channel": "https://conda.anaconda.org/conda-forge/",
+  "extracted_package_dir": "/home/jherland/.cache/rattler/cache/pkgs/ninja-1.12.1-h297d8ca_0",
+  "files": [
+    "bin/ninja"
+  ],
+  "paths_data": {
+    "paths_version": 1,
+    "paths": [
+      {
+        "_path": "bin/ninja",
+        "path_type": "hardlink",
+        "sha256": "b3aee46f212fcc09c222d02e600a060ba7cd5332d10b6fbaaac5f8ad56bdc9ee",
+        "sha256_in_prefix": "b3aee46f212fcc09c222d02e600a060ba7cd5332d10b6fbaaac5f8ad56bdc9ee",
+        "size_in_bytes": 7626496
+      }
+    ]
+  },
+  "link": {
+    "source": "/home/jherland/.cache/rattler/cache/pkgs/ninja-1.12.1-h297d8ca_0",
+    "type": 1
+  }
+}

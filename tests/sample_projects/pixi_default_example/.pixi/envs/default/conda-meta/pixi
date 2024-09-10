@@ -1,0 +1,5 @@
+{
+  "manifest_path": "/home/jherland/code/fawltydeps/tests/sample_projects/pixi_default_example/pixi.toml",
+  "environment_name": "default",
+  "pixi_version": "0.27.1"
+}
