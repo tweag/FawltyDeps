@@ -1,0 +1,26 @@
+[project]
+# General information about a simplified project: Its name, why we test it,
+# its relation to real world projects
+name = "pixi_default_example"
+description = "An example of a Pixi project with default settings."
+
+[experiments.default]
+description = "Run fawltydeps with no options on entire project"
+
+# 3rd-party imports found in the code:
+imports = [
+    "requests",  # main.py
+]
+
+# Declared dependencies found in the project configuration:
+declared_deps = [
+    "ninja",  # Conda dependency with no Python inside
+    "requests",  # PyPI dependency
+]
+
+# Import names in the code that do not have a matching dependency declared:
+undeclared_deps = []
+
+# Declared dependencies which were never `import`ed from the code:
+# TODO: Handle Conda dependencies that do not expose any Python code!
+unused_deps = ["ninja"]

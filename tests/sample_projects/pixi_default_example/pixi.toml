@@ -1,0 +1,16 @@
+[project]
+authors = ["Johan Herland <johan.herland@tweag.io>"]
+channels = ["conda-forge"]
+description = "Add a short description here"
+name = "pixi_default_example"
+platforms = ["linux-64"]
+version = "0.1.0"
+
+[tasks]
+
+[dependencies]
+python = ">=3.12.5,<4"
+ninja = ">=1.12.1,<2"
+
+[pypi-dependencies]
+requests = ">=2.32.3, <3"
