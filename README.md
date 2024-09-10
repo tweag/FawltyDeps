@@ -129,6 +129,7 @@ dependencies. A number of file formats are supported:
   call and no computation involved for setting the `install_requires` and
   `extras_require` arguments)
 - `setup.cfg`
+- `pixi.toml`
 
 The `--deps` option accepts a space-separated list of files or directories.
 Each file will be parsed for declared dependencies; each directory will
@@ -436,8 +437,8 @@ Here is a complete list of configuration directives we support:
   in the repository.
 - `deps_parser_choice`: Manually select which format to use for parsing
   declared dependencies. Must be one of `"requirements.txt"`, `"setup.py"`,
-  `"setup.cfg"`, `"pyproject.toml"`, or leave it unset (i.e. the default) for
-  auto-detection (based on filename).
+  `"setup.cfg"`, `"pyproject.toml"`, `"pixi.toml"`, or leave it unset
+  (i.e. the default) for auto-detection (based on filename).
 - `install-deps`: Automatically install Python dependencies gathered with
   FawltyDeps into a temporary virtual environment. This will use `uv` or `pip`
   to download and install packages from PyPI by default.

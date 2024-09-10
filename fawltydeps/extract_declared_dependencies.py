@@ -505,6 +505,9 @@ PARSER_CHOICES = {
     ParserChoice.SETUP_PY: ParsingStrategy(
         lambda path: path.name == "setup.py", parse_setup_py
     ),
+    ParserChoice.PIXI_TOML: ParsingStrategy(
+        lambda path: path.name == "pixi.toml", parse_pixi_toml
+    ),
 }
 
 

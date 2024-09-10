@@ -44,6 +44,7 @@ class ParserChoice(Enum):
     SETUP_PY = "setup.py"
     SETUP_CFG = "setup.cfg"
     PYPROJECT_TOML = "pyproject.toml"
+    PIXI_TOML = "pixi.toml"
 
     def __str__(self) -> str:
         return self.value

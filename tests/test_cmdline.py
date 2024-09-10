@@ -531,6 +531,7 @@ def test_list_sources_detailed__in_varied_project__lists_all_files(fake_project)
             "requirements.txt": ["foo"],
             "setup.cfg": ["foo"],
             "setup.py": ["foo"],
+            "pixi.toml": ["foo"],
         },
         fake_venvs={"my_venv": {}},
     )
@@ -549,6 +550,7 @@ def test_list_sources_detailed__in_varied_project__lists_all_files(fake_project)
     expect_deps_lines = [
         f"  {tmp_path / filename} (parsed as a {filename} file)"
         for filename in [
+            "pixi.toml",
             "pyproject.toml",
             "requirements.txt",
             "setup.cfg",
@@ -606,6 +608,7 @@ def test_list_sources__with_exclude_from(fake_project):
             "requirements.txt": ["foo"],
             "setup.cfg": ["foo"],
             "setup.py": ["foo"],
+            "pixi.toml": ["foo"],
         },
         fake_venvs={"venvs/my_venv": {}},
         extra_file_contents={
@@ -614,6 +617,7 @@ def test_list_sources__with_exclude_from(fake_project):
                 subdir/*.py
                 /setup.*
                 *envs
+                pixi.toml
                 """
             )
         },
