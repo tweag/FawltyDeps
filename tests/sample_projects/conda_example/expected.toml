@@ -1,0 +1,24 @@
+[project]
+# General information about a simplified project: Its name, why we test it,
+# its relation to real world projects
+name = "conda_example"
+description = "An example of a Conda project with default settings."
+
+[experiments.default]
+description = "Run fawltydeps with no options on entire project"
+
+# 3rd-party imports found in the code:
+imports = [
+    "requests",  # main.py
+]
+
+# Declared dependencies found in the project configuration:
+declared_deps = [
+    "requests",  # Conda dependency
+]
+
+# Import names in the code that do not have a matching dependency declared:
+undeclared_deps = []
+
+# Declared dependencies which were never `import`ed from the code:
+unused_deps = []

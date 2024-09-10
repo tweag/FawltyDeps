@@ -1,0 +1,7 @@
+name: conda_example
+channels:
+  - defaults
+dependencies:
+  - python=3.12
+  - requests
+prefix: /home/user/.conda/envs/conda_example
