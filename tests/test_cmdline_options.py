@@ -50,7 +50,13 @@ actions = [
     "--list-deps",
 ]
 output_formats = ["--summary", "--detailed", "--json"]
-deps_parser_choice = ["requirements.txt", "setup.py", "setup.cfg", "pyproject.toml"]
+deps_parser_choice = {
+    "requirements.txt",
+    "setup.py",
+    "setup.cfg",
+    "pyproject.toml",
+    "pixi.toml",
+}
 example_python_stdin = dedent(
     """\
     from pprint import pprint
@@ -72,11 +78,7 @@ def available_code_values(project_dir: Path) -> List[str]:
 
 
 def available_deps_values(project_dir: Path) -> List[str]:
-    return [
-        str(f)
-        for f in walk_dir(project_dir)
-        if f.name in {"setup.cfg", "setup.py", "requirements.txt", "pyproject.toml"}
-    ]
+    return [str(f) for f in walk_dir(project_dir) if f.name in deps_parser_choice]
 
 
 # ---------------------------------------------- #
@@ -118,7 +120,9 @@ ignored_unused_strategy = ignored_strategy.map(
     lambda xs: ["--ignore-unused", *xs] if xs else []
 )
 
-deps_parser_choice_strategy = st.one_of(st.sampled_from(deps_parser_choice), st.none())
+deps_parser_choice_strategy = st.one_of(
+    st.sampled_from(sorted(deps_parser_choice)), st.none()
+)
 
 verbosity_indicator = st.text(
     alphabet=["q", "v"], min_size=1, max_size=MAX_VERBOSITY_ARGS
