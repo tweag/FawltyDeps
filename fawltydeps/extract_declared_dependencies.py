@@ -449,6 +449,28 @@ def parse_pyproject_toml(path: Path) -> Iterator[DeclaredDependency]:
         logger.debug("%s does not contain [tool.poetry].", source)
 
 
+def parse_pixi_toml(path: Path) -> Iterator[DeclaredDependency]:
+    """Extract dependencies (package names) from pixi.toml.
+
+    See https://pixi.sh/latest/reference/project_configuration/ for more
+    information about the pixi.toml format.
+    """
+    source = Location(path)
+    with path.open("rb") as tomlfile:
+        parsed_contents = tomllib.load(tomlfile)
+
+    skip = set()
+
+    # Skip dependencies onto self (such as Pixi's "editable mode" hack)
+    with contextlib.suppress(KeyError):
+        skip.add(parsed_contents["project"]["name"])
+
+    for dep in parse_pixi_pyproject_dependencies(parsed_contents, source):
+        if dep.name not in skip:
+            skip.add(dep.name)
+            yield dep
+
+
 class ParsingStrategy(NamedTuple):
     """Named pairing of an applicability criterion and a dependency parser."""
 
