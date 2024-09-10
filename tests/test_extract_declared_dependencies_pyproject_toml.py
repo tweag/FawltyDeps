@@ -355,14 +355,12 @@ def test_parse_pyproject_toml__wellformed_dependencies__yields_dependencies(
 
 @dataclass
 class PyprojectTestVector:
-    """Test vectors for FawltyDeps Settings configuration."""
+    """Test vectors for parsing of malformed pyproject.toml."""
 
     id: str
     data: str
-    metadata_standard: str = field(
-        default_factory=lambda: "Poetry"
-    )  # possible options: 'Poetry' and 'PEP621'; Python 3.7 does not support 'Literal'
-    field_types: List[str] = field(default_factory=lambda: ["main"])
+    metadata_standard: str  # possible values: 'Poetry', 'PEP621', 'Pixi'
+    field_types: List[str]
     expect: List[str] = field(default_factory=list)
 
 
@@ -373,6 +371,8 @@ pyproject_tests_malformed_samples = [
             [tool.poetry]
             dependencies = ["pylint"]
             """,
+        metadata_standard="Poetry",
+        field_types=["main"],
     ),
     PyprojectTestVector(
         id="poetry_dependencies_as_str",
@@ -380,6 +380,8 @@ pyproject_tests_malformed_samples = [
             [tool.poetry]
             dependencies = "pylint"
             """,
+        metadata_standard="Poetry",
+        field_types=["main"],
     ),
     PyprojectTestVector(
         id="poetry_dependencies_as_list",
@@ -388,6 +390,7 @@ pyproject_tests_malformed_samples = [
             [tool.poetry.group.dev]
             dependencies = ["black > 22", "mypy"]
             """,
+        metadata_standard="Poetry",
         field_types=["group"],
     ),
     PyprojectTestVector(
@@ -397,6 +400,7 @@ pyproject_tests_malformed_samples = [
             [tool.poetry.extras]
             test = "pytest"
             """,
+        metadata_standard="Poetry",
         field_types=["extra"],
     ),
     PyprojectTestVector(
@@ -405,10 +409,11 @@ pyproject_tests_malformed_samples = [
             [tool.poetry]
             extras = ["pytest"]
             """,
+        metadata_standard="Poetry",
         field_types=["extra"],
     ),
     PyprojectTestVector(
-        id="poetry_all_dependencies_malformatted",
+        id="poetry_all_dependencies_malformed",
         data="""\
             [tool.poetry]
 
@@ -420,6 +425,7 @@ pyproject_tests_malformed_samples = [
             [tool.poetry.extras]
             black = "^22"
             """,
+        metadata_standard="Poetry",
         field_types=["main", "group", "extra"],
     ),
     PyprojectTestVector(
@@ -429,6 +435,7 @@ pyproject_tests_malformed_samples = [
             pylint = ""
             """,
         metadata_standard="PEP621",
+        field_types=["main"],
     ),
     PyprojectTestVector(
         id="pep621_optional_dependencies_as_list_instead_of_dict",
@@ -439,13 +446,103 @@ pyproject_tests_malformed_samples = [
         metadata_standard="PEP621",
         field_types=["optional"],
     ),
+    PyprojectTestVector(
+        id="pixi_conda_dependencies_as_one_element_list",
+        data="""\
+            [tool.pixi]
+            dependencies = ["pylint"]
+            """,
+        metadata_standard="Pixi",
+        field_types=["main"],
+    ),
+    PyprojectTestVector(
+        id="pixi_conda_dependencies_as_str",
+        data="""\
+            [tool.pixi]
+            dependencies = "pylint"
+            """,
+        metadata_standard="Pixi",
+        field_types=["main"],
+    ),
+    PyprojectTestVector(
+        id="pixi_pypi_dependencies_as_one_element_list",
+        data="""\
+            [tool.pixi]
+            pypi-dependencies = ["pylint"]
+            """,
+        metadata_standard="Pixi",
+        field_types=["pypi"],
+    ),
+    PyprojectTestVector(
+        id="pixi_pypi_dependencies_as_str",
+        data="""\
+            [tool.pixi]
+            pypi-dependencies = "pylint"
+            """,
+        metadata_standard="Pixi",
+        field_types=["pypi"],
+    ),
+    PyprojectTestVector(
+        id="pixi_feature_conda_dependencies_as_list",
+        data="""\
+            [tool.pixi]
+            [tool.pixi.feature.dev]
+            dependencies = ["black > 22", "mypy"]
+            """,
+        metadata_standard="Pixi",
+        field_types=["feature"],
+    ),
+    PyprojectTestVector(
+        id="pixi_feature_conda_dependencies_as_str",
+        data="""\
+            [tool.pixi]
+            [tool.pixi.feature.dev]
+            dependencies = "pytest"
+            """,
+        metadata_standard="Pixi",
+        field_types=["feature"],
+    ),
+    PyprojectTestVector(
+        id="pixi_feature_pypi_dependencies_as_list",
+        data="""\
+            [tool.pixi]
+            [tool.pixi.feature.dev]
+            pypi-dependencies = ["black > 22", "mypy"]
+            """,
+        metadata_standard="Pixi",
+        field_types=["feature pypi"],
+    ),
+    PyprojectTestVector(
+        id="pixi_feature_pypi_dependencies_as_str",
+        data="""\
+            [tool.pixi]
+            [tool.pixi.feature.dev]
+            pypi-dependencies = "pytest"
+            """,
+        metadata_standard="Pixi",
+        field_types=["feature pypi"],
+    ),
+    PyprojectTestVector(
+        id="pixi_all_dependencies_malformed",
+        data="""\
+            [tool.pixi]
+            dependencies = ["pylint"]
+            pypi-dependencies = "pytest"
+
+            [tool.pixi.feature.dev]
+            dependencies = ["black > 22", "mypy"]
+            pypi-dependencies = "numpy"
+            """,
+        metadata_standard="Pixi",
+        field_types=["main", "pypi", "feature", "feature pypi"],
+    ),
 ]
 
 
 @pytest.mark.parametrize(
     "vector", [pytest.param(v, id=v.id) for v in pyproject_tests_malformed_samples]
 )
-def test_parse_pyproject_content__malformed_poetry_dependencies__yields_no_dependencies(
+def test_parse_pyproject_content__malformed_deps__yields_no_deps(
     write_tmp_files, caplog, vector
 ):
     tmp_path = write_tmp_files({"pyproject.toml": vector.data})
@@ -488,6 +585,37 @@ def test_parse_pyproject_content__malformed_poetry_dependencies__yields_no_depen
             ],
             id="missing_pep621_and_poetry_fields",
         ),
+        pytest.param(
+            """\
+            [tool.pixi.dependencies]
+            numpy = "*"
+
+            [tool.pixi.feature.dev.pypi-dependencies]
+            pandas = "*"
+            """,
+            ["numpy", "pandas"],
+            [
+                ("Pixi", "pypi"),
+                ("PEP621", "main"),
+                ("PEP621", "optional"),
+            ],
+            id="missing_pixi_and_pep621_fields",
+        ),
+        pytest.param(
+            """\
+            [tool.pixi]
+            """,
+            [],
+            [
+                ("Pixi", "main"),
+                ("Pixi", "pypi"),
+                ("Pixi", "feature"),
+                ("Pixi", "feature pypi"),
+                ("PEP621", "main"),
+                ("PEP621", "optional"),
+            ],
+            id="missing_pixi_fields",
+        ),
     ],
 )
 def test_parse_pyproject_toml__missing_dependencies__logs_debug_message(
@@ -498,7 +626,8 @@ def test_parse_pyproject_toml__missing_dependencies__logs_debug_message(
 
     caplog.set_level(logging.DEBUG)
     result = list(parse_pyproject_toml(path))
-    assert expected == result
+    expected_deps = [DeclaredDependency(dep, Location(path)) for dep in expected]
+    assert expected_deps == result
     for metadata_standard, field_type in expected_logs:
         assert (
             f"Failed to find {metadata_standard} {field_type} dependencies in {path}"
