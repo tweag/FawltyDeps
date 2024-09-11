@@ -58,7 +58,7 @@ def not_on_windows(msg: str) -> Callable[[], Optional[str]]:
 
 find_sources_vectors = [
     TraverseProjectVector(
-        "default_traversal_in_empty_project_yields__nothing", "empty"
+        "default_traversal_in_empty_project__yields_nothing", "empty"
     ),
     TraverseProjectVector(
         "traverse_nothing_in_non_empty_project__yields_nothing",
@@ -66,6 +66,17 @@ find_sources_vectors = [
         code=set(),
         deps=set(),
         pyenvs=set(),
+    ),
+    TraverseProjectVector(
+        "default_traversal_in_pixi_default_example__yields_py_and_deps_file",
+        "pixi_default_example",
+        expect_imports_src={"main.py"},
+        expect_deps_src={"pixi.toml"},
+        # TODO? Cannot auto-detect Pixi/Python environment inside
+        # .pixi/envs/default/, as .pixi/ itself is not the root of the
+        # environment (like .venv/ typically is), and we do not descend into
+        # dot-paths by default.
+        # expect_pyenv_src={".pixi/envs/default/lib/python3.12/site-packages"},  # noqa: ERA001
     ),
     #
     # Testing 'code' alone:
@@ -257,6 +268,14 @@ find_sources_vectors = [
         deps={"subdir1", "subdir2/setup.py"},
         pyenvs=set(),
         expect_deps_src={"subdir1/setup.cfg", "subdir2/setup.py"},
+    ),
+    TraverseProjectVector(
+        "given_deps_as_pixi_toml__yields_file",
+        "pixi_default_example",
+        code=set(),
+        deps={"pixi.toml"},
+        pyenvs=set(),
+        expect_deps_src={"pixi.toml"},
     ),
     #
     # Test interaction of 'deps_parser_choice' and 'deps' as file vs dir
@@ -557,6 +576,18 @@ find_sources_vectors = [
         },
         skip_me=not_on_windows("Windows-style venvs skipped on POSIX"),
     ),
+    TraverseProjectVector(
+        "given_dot_pixi__finds_pyenv_inside_dot_pixi",
+        "pixi_pyproject_example",
+        code=set(),
+        deps=set(),
+        pyenvs={".pixi"},
+        expect_pyenv_src={
+            ".pixi/envs/default/lib/python3.1/site-packages",  # symlink
+            ".pixi/envs/default/lib/python3.12/site-packages",
+        },
+        skip_me=on_windows("POSIX-style Pixi environments skipped on Windows"),
+    ),
     #
     # Test interaction of 'pyenvs' with 'code' and 'deps':
     #
@@ -661,6 +692,18 @@ find_sources_vectors = [
             ".venvs/another-venv/Lib/site-packages",
         },
         skip_me=not_on_windows("Windows-style venvs skipped on POSIX"),
+    ),
+    TraverseProjectVector(
+        "given_pyenv_dot_pixi__finds_everything_inside_pixi_project",
+        "pixi_default_example",
+        pyenvs={".pixi"},
+        expect_imports_src={"main.py"},
+        expect_deps_src={"pixi.toml"},
+        expect_pyenv_src={
+            ".pixi/envs/default/lib/python3.1/site-packages",  # symlink
+            ".pixi/envs/default/lib/python3.12/site-packages",
+        },
+        skip_me=on_windows("POSIX-style Pixi environments skipped on Windows"),
     ),
     #
     # Test invalid 'exclude':
