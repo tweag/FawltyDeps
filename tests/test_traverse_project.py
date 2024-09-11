@@ -78,6 +78,12 @@ find_sources_vectors = [
         # dot-paths by default.
         # expect_pyenv_src={".pixi/envs/default/lib/python3.12/site-packages"},  # noqa: ERA001
     ),
+    TraverseProjectVector(
+        "default_traversal_in_conda_example__yields_py_and_deps_file",
+        "conda_example",
+        expect_imports_src={"main.py"},
+        expect_deps_src={"environment.yml"},
+    ),
     #
     # Testing 'code' alone:
     #
@@ -276,6 +282,14 @@ find_sources_vectors = [
         deps={"pixi.toml"},
         pyenvs=set(),
         expect_deps_src={"pixi.toml"},
+    ),
+    TraverseProjectVector(
+        "given_deps_as_environment_yml__yields_file",
+        "conda_example",
+        code=set(),
+        deps={"environment.yml"},
+        pyenvs=set(),
+        expect_deps_src={"environment.yml"},
     ),
     #
     # Test interaction of 'deps_parser_choice' and 'deps' as file vs dir
@@ -588,6 +602,20 @@ find_sources_vectors = [
         },
         skip_me=on_windows("POSIX-style Pixi environments skipped on Windows"),
     ),
+    TraverseProjectVector(
+        "given_dot_conda__finds_pyenv_inside_dot_conda",
+        "conda_example",
+        code=set(),
+        deps=set(),
+        pyenvs={".conda"},
+        # .conda/ here really is a stand-in for ~/.conda, which is where Conda
+        # usually keeps its environments.
+        expect_pyenv_src={
+            ".conda/envs/conda_example/lib/python3.1/site-packages",  # symlink
+            ".conda/envs/conda_example/lib/python3.12/site-packages",
+        },
+        skip_me=on_windows("POSIX-style Conda environments skipped on Windows"),
+    ),
     #
     # Test interaction of 'pyenvs' with 'code' and 'deps':
     #
@@ -704,6 +732,18 @@ find_sources_vectors = [
             ".pixi/envs/default/lib/python3.12/site-packages",
         },
         skip_me=on_windows("POSIX-style Pixi environments skipped on Windows"),
+    ),
+    TraverseProjectVector(
+        "given_pyenv_dot_conda__finds_everything_inside_conda_project",
+        "conda_example",
+        pyenvs={".conda"},
+        expect_imports_src={"main.py"},
+        expect_deps_src={"environment.yml"},
+        expect_pyenv_src={
+            ".conda/envs/conda_example/lib/python3.1/site-packages",  # symlink
+            ".conda/envs/conda_example/lib/python3.12/site-packages",
+        },
+        skip_me=on_windows("POSIX-style Conda environments skipped on Windows"),
     ),
     #
     # Test invalid 'exclude':
