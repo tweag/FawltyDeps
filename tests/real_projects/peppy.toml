@@ -53,7 +53,7 @@ declared_deps = [
 
 undeclared_deps = [
     "numpy", 
-    "yaml",
+    # "yaml",  # found via SysPathResolver due to fawltydeps' own yaml dependency
     "setuptools"
 ]
 
@@ -66,7 +66,7 @@ unused_deps = [
     "pydoc-markdown",
     "pytest-cov",
     "pytest-remotedata",
-    "pyyaml"
+    # "pyyaml",  # found via SysPathResolver due to fawltydeps' own yaml dependency
 ]
 
 [experiments.all_reqs_installed]

@@ -103,7 +103,7 @@ undeclared_deps = [
   "cv2",
   "iterstrat",
   "PIL",
-  "yaml",
+  # "yaml",  # found via SysPathResolver due to fawltydeps' own yaml dependency
   "sklearn",
   "skimage",
 ]
@@ -117,7 +117,7 @@ unused_deps =  [
   "opencv-contrib-python",
   "iterative-stratification",
   "Pillow",
-  "pyyaml",
+  # "pyyaml",  # found via SysPathResolver due to fawltydeps' own yaml dependency
   "scikit-learn",
   "scikit-image",
 ]
