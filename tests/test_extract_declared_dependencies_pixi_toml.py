@@ -159,6 +159,18 @@ def test_parse_pixi_toml__wellformed_dependencies__yields_dependencies(
     assert result == expected
 
 
+def test_parse_pixi_toml__invalid_toml__yields_no_deps_and_error_message(
+    write_tmp_files, caplog
+):
+    tmp_path = write_tmp_files({"pixi.toml": "[this is not valid toml\n"})
+    path = tmp_path / "pixi.toml"
+
+    caplog.set_level(logging.ERROR)
+    result = list(parse_pixi_toml(path))
+    assert result == []
+    assert f"Failed to parse {path}:" in caplog.text
+
+
 @dataclass
 class PixiTestVector:
     """Test vectors for parsing of malformed pixi.toml."""
