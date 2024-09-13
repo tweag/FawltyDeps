@@ -415,7 +415,11 @@ def parse_pyproject_toml(path: Path) -> Iterator[DeclaredDependency]:
     """
     source = Location(path)
     with path.open("rb") as tomlfile:
-        parsed_contents = tomllib.load(tomlfile)
+        try:
+            parsed_contents = tomllib.load(tomlfile)
+        except tomllib.TOMLDecodeError as e:
+            logger.error(f"Failed to parse {source}: {e}")
+            return
 
     skip = set()
 
@@ -457,7 +461,11 @@ def parse_pixi_toml(path: Path) -> Iterator[DeclaredDependency]:
     """
     source = Location(path)
     with path.open("rb") as tomlfile:
-        parsed_contents = tomllib.load(tomlfile)
+        try:
+            parsed_contents = tomllib.load(tomlfile)
+        except tomllib.TOMLDecodeError as e:
+            logger.error(f"Failed to parse {source}: {e}")
+            return
 
     skip = set()
 

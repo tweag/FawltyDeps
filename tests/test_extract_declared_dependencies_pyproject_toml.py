@@ -353,6 +353,18 @@ def test_parse_pyproject_toml__wellformed_dependencies__yields_dependencies(
     assert result == expected
 
 
+def test_parse_pyproject_toml__invalid_toml__yields_no_deps_and_error_message(
+    write_tmp_files, caplog
+):
+    tmp_path = write_tmp_files({"pyproject.toml": "[this is not valid toml\n"})
+    path = tmp_path / "pyproject.toml"
+
+    caplog.set_level(logging.ERROR)
+    result = list(parse_pyproject_toml(path))
+    assert result == []
+    assert f"Failed to parse {path}:" in caplog.text
+
+
 @dataclass
 class PyprojectTestVector:
     """Test vectors for parsing of malformed pyproject.toml."""
