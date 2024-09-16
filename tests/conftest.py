@@ -164,7 +164,7 @@ def fake_project(write_tmp_files, fake_venv):  # noqa: C901
             lists of strings (extras/optional deps).
         The dependencies will be written into associated files, formatted
         according to the filenames (must be one of requirements.txt, setup.py,
-        setup.cfg, pyproject.toml, or pixi.toml).
+        setup.cfg, pyproject.toml, pixi.toml, or environment.yml).
     - extra_file_contents: a dict with extra files and their associated contents
         to be forwarded directly to write_tmp_files().
 
@@ -231,6 +231,16 @@ def fake_project(write_tmp_files, fake_venv):  # noqa: C901
             ret += "\n".join(f'{dep} = "*"' for dep in deps)
         return ret
 
+    def format_environment_yml(deps: Deps, no_extras: ExtraDeps) -> str:
+        assert not no_extras  # not supported
+        return dedent(
+            """\
+                name: MyLib
+
+                dependencies:
+                """
+        ) + "".join(f"  - {dep}\n" for dep in deps)
+
     def format_deps(
         filename: str, all_deps: Union[Deps, Tuple[Deps, ExtraDeps]]
     ) -> str:
@@ -244,6 +254,7 @@ def fake_project(write_tmp_files, fake_venv):  # noqa: C901
             "setup.cfg": format_setup_cfg,
             "pyproject.toml": format_pyproject_toml,
             "pixi.toml": format_pixi_toml,
+            "environment.yml": format_environment_yml,
         }
         formatter = formatters.get(Path(filename).name, format_requirements_txt)
         return formatter(deps, extras)
