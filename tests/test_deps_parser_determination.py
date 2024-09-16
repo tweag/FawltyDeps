@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from fawltydeps.extract_declared_dependencies import (
+from fawltydeps.extract_deps import (
     first_applicable_parser,
     parse_source,
     parse_sources,
