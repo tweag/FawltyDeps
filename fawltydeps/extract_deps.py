@@ -5,6 +5,7 @@ import re
 from pathlib import Path
 from typing import Callable, Iterable, Iterator, NamedTuple, Optional
 
+from fawltydeps.extract_deps_environment_yml import parse_environment_yml
 from fawltydeps.extract_deps_pixi import parse_pixi_toml
 from fawltydeps.extract_deps_pyproject import parse_pyproject_toml
 from fawltydeps.extract_deps_requirements import parse_requirements_txt
@@ -52,6 +53,9 @@ PARSER_CHOICES = {
     ),
     ParserChoice.PIXI_TOML: ParsingStrategy(
         lambda path: path.name == "pixi.toml", parse_pixi_toml
+    ),
+    ParserChoice.ENVIRONMENT_YML: ParsingStrategy(
+        lambda path: path.name == "environment.yml", parse_environment_yml
     ),
 }
 
