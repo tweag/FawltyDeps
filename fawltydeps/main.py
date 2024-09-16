@@ -20,7 +20,7 @@ try:  # import from Pydantic V2
 except ModuleNotFoundError:
     from pydantic.json import custom_pydantic_encoder  # type: ignore[no-redef]
 
-from fawltydeps import extract_declared_dependencies, extract_imports
+from fawltydeps import extract_deps, extract_imports
 from fawltydeps.check import calculate_undeclared, calculate_unused
 from fawltydeps.cli_parser import build_parser
 from fawltydeps.gitignore_parser import RuleError as ExcludeRuleError
@@ -130,7 +130,7 @@ class Analysis:
     def declared_deps(self) -> List[DeclaredDependency]:
         """The list of declared dependencies parsed from this project."""
         return list(
-            extract_declared_dependencies.parse_sources(
+            extract_deps.parse_sources(
                 src for src in self.sources if isinstance(src, DepsSource)
             )
         )

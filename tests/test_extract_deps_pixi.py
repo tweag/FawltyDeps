@@ -6,7 +6,7 @@ from typing import List
 
 import pytest
 
-from fawltydeps.extract_declared_dependencies import parse_pixi_toml
+from fawltydeps.extract_deps.pixi_toml_parser import parse_pixi_toml
 from fawltydeps.types import DeclaredDependency, Location
 
 
