@@ -4,13 +4,10 @@ from textwrap import dedent
 
 import pytest
 
-from fawltydeps.extract_declared_dependencies import (
-    parse_requirements_txt,
-    parse_setup_cfg,
-    parse_setup_py,
-    parse_sources,
-    validate_deps_source,
-)
+from fawltydeps.extract_deps import parse_sources, validate_deps_source
+from fawltydeps.extract_deps.requirements_parser import parse_requirements_txt
+from fawltydeps.extract_deps.setup_cfg_parser import parse_setup_cfg
+from fawltydeps.extract_deps.setup_py_parser import parse_setup_py
 from fawltydeps.settings import Settings
 from fawltydeps.traverse_project import find_sources
 from fawltydeps.types import DepsSource

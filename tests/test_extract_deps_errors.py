@@ -4,7 +4,8 @@ import logging
 
 import pytest
 
-from fawltydeps.extract_declared_dependencies import parse_setup_cfg, parse_setup_py
+from fawltydeps.extract_deps.setup_cfg_parser import parse_setup_cfg
+from fawltydeps.extract_deps.setup_py_parser import parse_setup_py
 from fawltydeps.types import Location
 
 
