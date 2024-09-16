@@ -56,6 +56,7 @@ deps_parser_choice = {
     "setup.cfg",
     "pyproject.toml",
     "pixi.toml",
+    "environment.yml",
 }
 example_python_stdin = dedent(
     """\

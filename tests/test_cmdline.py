@@ -495,6 +495,7 @@ def test_list_sources__in_varied_project__lists_all_files(fake_project):
             "pyproject.toml": ["foo"],
             "setup.py": ["foo"],
             "setup.cfg": ["foo"],
+            "environment.yml": ["foo"],
         },
         fake_venvs={"my_venv": {}},
     )
@@ -512,6 +513,7 @@ def test_list_sources__in_varied_project__lists_all_files(fake_project):
             "pyproject.toml",
             "setup.py",
             "setup.cfg",
+            "environment.yml",
             str(_site_packages),
         ]
     ]

@@ -30,6 +30,7 @@ from .utils import assert_unordered_equivalence, collect_dep_names
             ("setup.cfg", ParserChoice.SETUP_CFG),
             ("pyproject.toml", ParserChoice.PYPROJECT_TOML),
             ("pixi.toml", ParserChoice.PIXI_TOML),
+            ("environment.yml", ParserChoice.ENVIRONMENT_YML),
             ("anything_else", None),
             # in subdir:
             (str(Path("sub", "requirements.txt")), ParserChoice.REQUIREMENTS_TXT),
@@ -37,6 +38,7 @@ from .utils import assert_unordered_equivalence, collect_dep_names
             (str(Path("sub", "setup.cfg")), ParserChoice.SETUP_CFG),
             (str(Path("sub", "pyproject.toml")), ParserChoice.PYPROJECT_TOML),
             (str(Path("sub", "pixi.toml")), ParserChoice.PIXI_TOML),
+            (str(Path("sub", "environment.yml")), ParserChoice.ENVIRONMENT_YML),
             (str(Path("sub", "anything_else")), None),
             # TODO: Make these absolute paths?
             (str(Path("abs", "requirements.txt")), ParserChoice.REQUIREMENTS_TXT),
@@ -44,6 +46,7 @@ from .utils import assert_unordered_equivalence, collect_dep_names
             (str(Path("abs", "setup.cfg")), ParserChoice.SETUP_CFG),
             (str(Path("abs", "pyproject.toml")), ParserChoice.PYPROJECT_TOML),
             (str(Path("abs", "pixi.toml")), ParserChoice.PIXI_TOML),
+            (str(Path("abs", "environment.yml")), ParserChoice.ENVIRONMENT_YML),
             (str(Path("abs", "anything_else")), None),
             # using dep file name as a directory name is not supported:
             (str(Path("requirements.txt", "wat")), None),
@@ -51,6 +54,7 @@ from .utils import assert_unordered_equivalence, collect_dep_names
             (str(Path("setup.cfg", "wat")), None),
             (str(Path("pyproject.toml", "wat")), None),
             (str(Path("pixi.toml", "wat")), None),
+            (str(Path("environment.yml", "wat")), None),
             # variations that all map to requirements.txt parser;
             ("requirements-dev.txt", ParserChoice.REQUIREMENTS_TXT),
             ("test-requirements.txt", ParserChoice.REQUIREMENTS_TXT),
@@ -72,6 +76,7 @@ PARSER_CHOICE_FILE_NAME_MATCH_GRID = {
     ParserChoice.SETUP_CFG: "setup.cfg",
     ParserChoice.PYPROJECT_TOML: "pyproject.toml",
     ParserChoice.PIXI_TOML: "pixi.toml",
+    ParserChoice.ENVIRONMENT_YML: "environment.yml",
 }
 PARSER_CHOICE_FILE_NAME_MISMATCH_GRID = {
     pc: [fn for _pc, fn in PARSER_CHOICE_FILE_NAME_MATCH_GRID.items() if pc != _pc]

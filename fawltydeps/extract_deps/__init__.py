@@ -8,6 +8,7 @@ from typing import Callable, Iterable, Iterator, NamedTuple, Optional
 from fawltydeps.settings import ParserChoice
 from fawltydeps.types import DeclaredDependency, DepsSource, UnparseablePathError
 
+from .environment_yml_parser import parse_environment_yml
 from .pixi_toml_parser import parse_pixi_toml
 from .pyproject_toml_parser import parse_pyproject_toml
 from .requirements_parser import parse_requirements_txt
@@ -53,6 +54,9 @@ PARSER_CHOICES = {
     ),
     ParserChoice.PIXI_TOML: ParsingStrategy(
         lambda path: path.name == "pixi.toml", parse_pixi_toml
+    ),
+    ParserChoice.ENVIRONMENT_YML: ParsingStrategy(
+        lambda path: path.name == "environment.yml", parse_environment_yml
     ),
 }
 
