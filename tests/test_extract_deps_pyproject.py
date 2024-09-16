@@ -6,7 +6,7 @@ from typing import List
 
 import pytest
 
-from fawltydeps.extract_declared_dependencies import parse_pyproject_toml
+from fawltydeps.extract_deps_pyproject import parse_pyproject_toml
 from fawltydeps.types import DeclaredDependency, Location
 
 
