@@ -81,8 +81,12 @@ def parse_setup_py(path: Path) -> Iterator[DeclaredDependency]:  # noqa: C901
             and node.value.func.id == "setup"
         )
 
-    with tokenize.open(path) as setup_py:
-        setup_contents = ast.parse(setup_py.read(), filename=str(source.path))
+    try:
+        with tokenize.open(path) as setup_py:
+            setup_contents = ast.parse(setup_py.read(), filename=str(source.path))
+    except SyntaxError as e:
+        logger.error(f"Could not parse {path}: {e}")
+        return
     for node in ast.walk(setup_contents):
         tracked_vars.evaluate(node)
         if _is_setup_function_call(node):
