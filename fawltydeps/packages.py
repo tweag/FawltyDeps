@@ -339,13 +339,15 @@ class LocalPackageResolver(InstalledPackageResolver):
             if found:
                 return
 
-        elif (path / "bin/python").is_file():  # Assume POSIX
-            for _site_packages in path.glob("lib/python?.*/site-packages"):
-                if _site_packages.is_dir():
-                    yield _site_packages
-                    found = True
-            if found:
-                return
+        else:  # Assume POSIX
+            python_exe = path / "bin/python"
+            if python_exe.is_file() or python_exe.is_symlink():
+                for _site_packages in path.glob("lib/python?.*/site-packages"):
+                    if _site_packages.is_dir():
+                        yield _site_packages
+                        found = True
+                if found:
+                    return
 
         # Workaround for projects using PEP582:
         if path.name == "__pypackages__":
