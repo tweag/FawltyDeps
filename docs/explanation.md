@@ -2,10 +2,12 @@
 
 ## Key Concepts
 
-- **_undeclared_ dependency**: a package that's used (in particular, `import`ed) by a project and which lacks a corresponding declaration to ensure that it's available.
+- **_undeclared_ dependency**:
+  a package that's used (in particular, `import`ed) by a project and which lacks a corresponding declaration to ensure that it's available.
   For example, you `import numpy`, but you've forgotten to include `numpy` in your `requirements.txt`.
   Pragmatically, this means the project is prone to runtime errors.
-- **_unused_ dependency**: a package that's declared as necessary for a project but which is never used by project code.
+- **_unused_ dependency**:
+  a package that's declared as necessary for a project but which is never used by project code.
   For example, you have `numpy` listed in your `requirements.txt`, but you never actually `import numpy`.
   Pragmatically, this means that project installation may consume more space than needed and will be more likely to break with future software releases; in short, these are costs paid for no benefit.
 
@@ -25,7 +27,7 @@ FawltyDeps (each of which is introduced in the following subsections):
 - Identity mapping
 - User-defined mapping
 
-<img src="./images/resolvers_sequence.png" alt="Sequence of resolvers used by FawltyDeps" width="500"/>
+![Sequence of resolvers used by FawltyDeps](images/resolvers_sequence.png)
 
 The priority of each of these mappings, together with their default values and
 customization options are summarized in the table below:

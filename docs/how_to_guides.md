@@ -1,6 +1,8 @@
 # How-to guides
 
-## How not to display tools like `black` and `pylint` in _unused dependencies_?
+## Not displaying development tools
+
+How not to display tools like `black` and `pylint` in _unused dependencies_?
 
 By default, all packages declared as dependencies by your project are included
 in the FawltyDeps analysis, even if they only contain tools that were not meant
@@ -14,7 +16,7 @@ fawltydeps --ignore-unused black pylint
 or add an equivalent directive to the FawltyDeps configuration in your
 `pyproject.toml` (see below).
 
-## How can I store my `fawltydeps` command line options in a configuration file?
+## Storing `fawltydeps` options in a configuration file.
 
 You can run:
 
@@ -38,7 +40,7 @@ to get this:
 ignore_unused = ["black", "pylint"]
 ```
 
-## How to use FawltyDeps in a monorepo?
+## FawltyDeps with a monorepo.
 
 Running `fawltydeps` without arguments at the root of a monorepo
 will most likely not give you a useful result:
@@ -65,7 +67,7 @@ run for each `libX`:
 fawltydeps libX
 ```
 
-## Passing Python code to FawltyDeps via standard input.
+## Passing Python code via standard input.
 
 The `--code` argument accepts a single hyphen (`-`) as a special value meaning
 that code should be read from standard input. When using this you may pipe or
@@ -86,7 +88,7 @@ fawltydeps --code -
 # then press Ctrl+D to signal EOF (end-of-file).
 ```
 
-## Using FawltyDeps as a pre-commit hook
+## Pre-commit hook
 
 Assuming that you already use the [pre-commit](https://pre-commit.com)
 tool, you can add something like this to your project's

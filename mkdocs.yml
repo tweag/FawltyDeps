@@ -5,6 +5,10 @@ theme:
   palette:
     primary: 'indigo'
     accent: 'light blue'
+  hjls_language:
+    - python
+    - yaml
+    - json
 nav:
   - Home: index.md
   - Installation: installation.md
