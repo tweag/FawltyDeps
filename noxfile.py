@@ -6,7 +6,7 @@ from typing import Iterable
 
 import nox
 
-python_versions = ["3.8", "3.9", "3.10", "3.11", "3.12"]
+python_versions = ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
 
 # Use 'uv' to manager Nox' virtualenvs, if available
 if shutil.which("uv"):
