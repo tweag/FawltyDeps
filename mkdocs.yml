@@ -1,0 +1,21 @@
+site_name: FawltyDeps
+site_description: "FawltyDeps: A Python Dependency Checker"
+theme: 
+  name: readthedocs
+  palette:
+    primary: 'indigo'
+    accent: 'light blue'
+  hjls_language:
+    - python
+    - yaml
+    - json
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Explanation: explanation.md
+  - Reference: reference.md
+  - How To Guides: how_to_guides.md
+  - FAQ: FAQ.md
+markdown_extensions:
+  - toc:
+      permalink: true
