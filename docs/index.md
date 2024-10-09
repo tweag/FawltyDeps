@@ -2,6 +2,8 @@
 
 FawltyDeps is an open-source Python tool that checks your dependencies to ensure they are being used correctly. It helps you identify any dependencies listed in your `requirements.txt` or `pyproject.toml` that are not actually used in your codebase, and vice versa.
 
+![FawltyDeps demo](images/fawltydeps_demo_tqdm.gif)
+
 ## Features
 
 - Detect unused dependencies

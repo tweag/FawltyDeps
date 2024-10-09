@@ -18,7 +18,8 @@ When FawltyDeps looks for undeclared and unused dependencies, it needs to match
 declared in your project configuration.
 
 To solve this, FawltyDeps uses a sequence of resolvers (aka. mapping strategies)
-to determine which Python packages provide which import names. The diagram below
+to determine which Python packages provide which import names. For more details,
+check [FawltyDeps mapping strategy blogpost](https://www.tweag.io/blog/2023-09-21-fawltydeps-mapping-strategy/). The diagram below
 shows the dependencies' flow through the sequence of mappings supported by
 FawltyDeps (each of which is introduced in the following subsections):
 
@@ -241,27 +242,9 @@ We've introduced a `DEFAULT_IGNORE_UNUSED` list, which includes various
 categories of commonly used development tools and dependencies.
 FawltyDeps can automatically ignore these dependencies when checking for unused
 imports. For the complete list, please see the `DEFAULT_IGNORE_UNUSED`
-variable in the [`fawltydeps/settings.py`](./fawltydeps/settings.py) file
+variable in the `fawltydeps/settings.py` file
 in the repository. If you have additional dependencies that you want to exclude
 from the check for unused imports, you can use the `--ignore-unused` option
 to customize the ignore list. By providing your own list of dependencies with
 this option, you can effectively overwrite the default list. For example:
 `--ignore-unused black mypy some_other_module`
-
-### Output formats
-
-The default output from FawltyDeps is a summary outlining the relevant
-dependencies found (according to the selected actions).
-However you can also ask for more information from FawltyDeps:
-
-- `--summary`: Default (human-readable) summary output
-- `--detailed`: Longer (human-readable) output that includes the location of
-  the relevant dependencies.
-- `--json`: Verbose JSON-formatted output for other tools to consume and
-  process further.
-
-Only one of these options can be used at a time.
-
-### More help
-
-Run `fawltydeps --help` to get the full list of available options.

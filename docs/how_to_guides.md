@@ -1,6 +1,6 @@
 # How-to guides
 
-## Not displaying development tools
+## Ignore development tools
 
 How not to display tools like `black` and `pylint` in _unused dependencies_?
 
@@ -16,7 +16,7 @@ fawltydeps --ignore-unused black pylint
 or add an equivalent directive to the FawltyDeps configuration in your
 `pyproject.toml` (see below).
 
-## Storing `fawltydeps` options in a configuration file.
+## Store `fawltydeps` options in a configuration file.
 
 You can run:
 

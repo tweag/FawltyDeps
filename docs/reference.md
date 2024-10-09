@@ -1,5 +1,23 @@
 # References
 
+## Installation
+
+### Requirements
+
+- Python 3.7 or higher
+
+### Installation
+
+The library is distributed with PyPI, so simply:
+
+```sh
+pip install fawltydeps
+```
+
+or any other way to install Python packages from PyPI should be enough to make it available in your environment.
+
+Consider adding `fawltydeps` to your development dependencies, to help you catch undeclared and unused dependencies in your projects.
+
 ## Usage
 
 To check the project in the current directory run:
@@ -10,7 +28,7 @@ fawltydeps
 
 This will find imports in all the Python code under the current directory,
 extract dependencies declared by your project, and then report
-[_undeclared_ and _unused_ dependencies](#key-concepts).
+[_undeclared_ and _unused_ dependencies](explanation.md#key-concepts).
 
 ### Available Actions
 
@@ -126,7 +144,7 @@ Here is a complete list of configuration directives we support:
   The default is a list including common development tools. However, you have the
   flexibility to overwrite this list according to your project's specific requirements.
   For the complete default list, please see the `DEFAULT_IGNORE_UNUSED`
-  variable in the [`fawltydeps/settings.py`](./fawltydeps/settings.py) file
+  variable in the `fawltydeps/settings.py` file
   in the repository.
 - `deps_parser_choice`: Manually select which format to use for parsing
   declared dependencies. Must be one of `"requirements.txt"`, `"setup.py"`,
@@ -148,9 +166,9 @@ Here is a complete list of configuration directives we support:
   - `1`: `INFO`-level log messages and above are shown.
   - `2`: All log messages (including `DEBUG`) are shown.
 - `custom_mapping_file`: Paths to files containing user-defined mapping.
-  Expected file format is defined in the User-defined mapping [section](#user-defined-mapping).
+  Expected file format is defined in the User-defined mapping [section](explanation.md#user-defined-mapping).
 - `[tool.fawltydeps.custom_mapping]`: Section in the configuration, under which a custom mapping
-  can be added. Expected format is described in the User-defined mapping [section](#user-defined-mapping).
+  can be added. Expected format is described in the User-defined mapping [section](explanation.md#user-defined-mapping).
 
 ### Environment variables
 
@@ -167,3 +185,21 @@ set `fawltydeps_output_format=json` in FawltyDeps' environment.
 - Configuration in `pyproject.toml` override only the ultimate hardcoded defaults.
 - The ultimate defaults when no cutomizations takes place are hardcoded inside
   FawltyDeps, and are documented above.
+
+### Output formats
+
+The default output from FawltyDeps is a summary outlining the relevant
+dependencies found (according to the selected actions).
+However you can also ask for more information from FawltyDeps:
+
+- `--summary`: Default (human-readable) summary output
+- `--detailed`: Longer (human-readable) output that includes the location of
+  the relevant dependencies.
+- `--json`: Verbose JSON-formatted output for other tools to consume and
+  process further.
+
+Only one of these options can be used at a time.
+
+## More help
+
+Run `fawltydeps --help` to get the full list of available options.
