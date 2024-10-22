@@ -618,9 +618,9 @@ dependency, the _identity mapping_ that FawltyDeps falls back to will still do
 a good job for the majority of dependencies where the import name is indeed
 identical to the package name that you depend on.
 
-### My project is using Python version before v3.7, can I still use FawltyDeps?
+### My project is using Python version before v3.8, can I still use FawltyDeps?
 
-Yes! Even though FawltyDeps itself runs on Python >=v3.7, we try to support
+Yes! Even though FawltyDeps itself runs on Python >=v3.8, we try to support
 analyzing projects that run on any version of Python 3.
 
 As explained in the previous two questions, FawltyDeps itself does not need to
