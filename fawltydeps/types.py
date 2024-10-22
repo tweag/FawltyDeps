@@ -8,14 +8,9 @@ from dataclasses import asdict, dataclass, field, replace
 from enum import Enum
 from functools import total_ordering
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple, Type, Union
+from typing import Any, Dict, List, Literal, Optional, Set, Tuple, Type, Union
 
 from fawltydeps.utils import hide_dataclass_fields
-
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
 
 SpecialPath = Literal["<stdin>"]
 PathOrSpecial = Union[SpecialPath, Path]

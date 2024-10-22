@@ -18,7 +18,6 @@ classifiers = [
     "Topic :: Software Development :: Quality Assurance",
     "Intended Audience :: Developers",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
@@ -34,26 +33,17 @@ fawltydeps = "fawltydeps.main:main"
 [tool.poetry.dependencies]
 # These are the main dependencies for fawltydeps at runtime.
 # Do not add anything here that is only needed by CI/tests/linters/developers
-python = ">=3.7.2"
-importlib_metadata = [
-    # v6.8.0 drops support for Python v3.7:
-    {version = ">=6.6.0", python = ">=3.8"},
-    {version = ">=6.6.0,<6.8.0", python = "<3.8"},
-]
-isort = [
-    # v5.12.0 drops support for Python v3.7:
-    {version = "^5.10", python = ">=3.8"},
-    {version = ">=5.10,<5.12.0", python = "<3.8"},
-]
+python = ">=3.8"
+importlib_metadata = ">=6.6.0"
+isort = "^5.10"
 packaging = ">=24.0"
 pip-requirements-parser = ">=32.0.1"
 pydantic = ">=1.10.4,<3.0.0"
 PyYAML = ">=6.0.1"
 tomli = {version = "^2.0.1", python = "<3.11"}
-typing-extensions = {version = ">=4.4.0", python = "<3.8"}
 
 # Optional dependencies, covered by .extras below:
-uv = {version = ">=0.1.6", python = ">=3.8", optional = true}
+uv = {version = ">=0.1.6", optional = true}
 
 [tool.poetry.extras]
 uv = ["uv"]
@@ -62,10 +52,7 @@ uv = ["uv"]
 optional = true
 
 [tool.poetry.group.nox.dependencies]
-nox = [
-    {version="^2024.03.02", python = "<3.8"},
-    {version="^2024.03.02", extras=["uv"], python = ">=3.8"},
-]
+nox = {version="^2024.03.02", extras=["uv"]}
 
 [tool.poetry.group.test]
 optional = true
@@ -103,10 +90,7 @@ optional = true
 codespell = "^2.2.4"
 hypothesis = "^6.68.2"
 mypy = "^1.0.1"
-nox = [
-    {version="^2024.03.02", python = "<3.8"},
-    {version="^2024.03.02", extras=["uv"], python = ">=3.8"},
-]
+nox = {version="^2024.03.02", extras=["uv"]}
 pytest = "^7.1.0"
 ruff = ">=0.3"
 

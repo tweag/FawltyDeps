@@ -75,7 +75,7 @@ nox --list        # List sessions
 nox               # Run all available sessions
 nox -R            # Run all available sessions, while reusing virtualenvs (i.e. faster)
 nox -s tests      # Run unit tests on supported Python versions (that are available)
-nox -s tests-3.7  # Run unit tests on Python v3.7 (assuming it is available locally)
+nox -s tests-3.9  # Run unit tests on Python v3.9 (assuming it is available locally)
 nox -s integration_tests-3.11  # Run integration tests on Python 3.11
 nox -s lint       # Run linters (mypy + ruff check) on all supported Python versions
 nox -s format     # Check formatting (ruff format)
