@@ -574,14 +574,18 @@ run for each `libX`:
 fawltydeps libX
 ```
 
-### Why must FawltyDeps run in the same Python environment as my project dependencies?
+### Does FawltyDeps need to run in the same Python environment as my project?
 
-(This is no longer true since FawltyDeps v0.11: FawltyDeps should be able to
-automatically find your project dependencies when they are installed in a Python
-environment that exists within your project. If your project dependencies are
-installed elsewhere, you can point FawltyDeps in their direction with `--pyenv`,
-as explained above in the section on
-[Python environment mapping](#python-environment-mapping))
+No (not since FawltyDeps v0.11). FawltyDeps should be able to automatically find
+your project dependencies when they are installed in a Python environment that
+exists within your project. If your project dependencies are installed
+elsewhere, you can point FawltyDeps in their direction with `--pyenv`, as
+explained above in the section on
+[Python environment mapping](#python-environment-mapping)).
+
+See also the next question for more details.
+
+### Why does FawltyDeps need a Python environment with my project dependencies?
 
 The reason why FawltyDeps need to find your project dependencies _somewhere_ is
 that the core logic of FawltyDeps needs to match `import` statements in your
@@ -610,14 +614,39 @@ they provide. This is:
   i.e. the one in which FawltyDeps itself is running.
 
 As a final resort, when an installed package is not found for a declared
-dependency, the
-_identity mapping_ that FawltyDeps falls back to will still do a good job for
-the majority of dependencies where the import name is indeed identical to the
-package name that you depend on.
+dependency, the _identity mapping_ that FawltyDeps falls back to will still do
+a good job for the majority of dependencies where the import name is indeed
+identical to the package name that you depend on.
 
-This is an area of active development in FawltyDeps, and we are
-[working on better solutions](https://github.com/tweag/FawltyDeps/issues/195),
-to avoid having to fall back to this identity mapping.
+### My project is using Python version before v3.7, can I still use FawltyDeps?
+
+Yes! Even though FawltyDeps itself runs on Python >=v3.7, we try to support
+analyzing projects that run on any version of Python 3.
+
+As explained in the previous two questions, FawltyDeps itself does not need to
+run inside the same Python environment as your project and its dependencies.
+
+You can instead install FawltyDeps using a newer Python version (e.g. via
+[uvx](https://docs.astral.sh/uv/guides/tools/#running-tools) or
+[pipx](https://github.com/pypa/pipx)). Then run FawltyDeps from inside your
+project directory. If your project has an embedded Python environment (e.g.
+under `.venv/`) then FawltyDeps should automatically find it and use it to
+analyze your project dependencies. Alternatively, you can always use `--pyenv`
+to point FawltyDeps to where your dependencies are installed.
+
+Currently the lowest Python version that your project can use (and still be
+analyzed by FawltyDeps) is determined by our use of the
+[`ast` module](https://docs.python.org/3/library/ast.html#module-ast) in the
+Python standard library: As long as your project's Python syntax is compatible
+with the Python version that FawltyDeps runs on, you should be fine. If you run
+into problems with older Python syntax (e.g. using `async` or `await` as
+variable names), please open an issue, and we'll look into extending our
+support further.
+
+A final resort can be to downgrade to an older version of FawltyDeps that is
+compatible with the Python version used in your project. Currently, the only
+Python version we have dropped support for is v3.7, and FawltyDeps v0.18 is
+the last release to support this Python version.
 
 ### Why does FawltyDeps fail to match `sklearn` with `scikit-learn`?
 
