@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from fawltydeps.extract_declared_dependencies import (
+from fawltydeps.extract_deps import (
     first_applicable_parser,
     parse_source,
     parse_sources,
@@ -24,29 +24,38 @@ from .utils import assert_unordered_equivalence, collect_dep_names
     [
         pytest.param(Path(path), expect_choice, id=path)
         for path, expect_choice in [
+            # in current dir:
             ("requirements.txt", ParserChoice.REQUIREMENTS_TXT),
             ("setup.py", ParserChoice.SETUP_PY),
             ("setup.cfg", ParserChoice.SETUP_CFG),
             ("pyproject.toml", ParserChoice.PYPROJECT_TOML),
             ("pixi.toml", ParserChoice.PIXI_TOML),
+            ("environment.yml", ParserChoice.ENVIRONMENT_YML),
             ("anything_else", None),
+            # in subdir:
             (str(Path("sub", "requirements.txt")), ParserChoice.REQUIREMENTS_TXT),
             (str(Path("sub", "setup.py")), ParserChoice.SETUP_PY),
             (str(Path("sub", "setup.cfg")), ParserChoice.SETUP_CFG),
             (str(Path("sub", "pyproject.toml")), ParserChoice.PYPROJECT_TOML),
             (str(Path("sub", "pixi.toml")), ParserChoice.PIXI_TOML),
+            (str(Path("sub", "environment.yml")), ParserChoice.ENVIRONMENT_YML),
             (str(Path("sub", "anything_else")), None),
+            # TODO: Make these absolute paths?
             (str(Path("abs", "requirements.txt")), ParserChoice.REQUIREMENTS_TXT),
             (str(Path("abs", "setup.py")), ParserChoice.SETUP_PY),
             (str(Path("abs", "setup.cfg")), ParserChoice.SETUP_CFG),
             (str(Path("abs", "pyproject.toml")), ParserChoice.PYPROJECT_TOML),
             (str(Path("abs", "pixi.toml")), ParserChoice.PIXI_TOML),
+            (str(Path("abs", "environment.yml")), ParserChoice.ENVIRONMENT_YML),
             (str(Path("abs", "anything_else")), None),
+            # using dep file name as a directory name is not supported:
             (str(Path("requirements.txt", "wat")), None),
             (str(Path("setup.py", "wat")), None),
             (str(Path("setup.cfg", "wat")), None),
             (str(Path("pyproject.toml", "wat")), None),
             (str(Path("pixi.toml", "wat")), None),
+            (str(Path("environment.yml", "wat")), None),
+            # variations that all map to requirements.txt parser;
             ("requirements-dev.txt", ParserChoice.REQUIREMENTS_TXT),
             ("test-requirements.txt", ParserChoice.REQUIREMENTS_TXT),
             ("extra-requirements-dev.txt", ParserChoice.REQUIREMENTS_TXT),
@@ -67,6 +76,7 @@ PARSER_CHOICE_FILE_NAME_MATCH_GRID = {
     ParserChoice.SETUP_CFG: "setup.cfg",
     ParserChoice.PYPROJECT_TOML: "pyproject.toml",
     ParserChoice.PIXI_TOML: "pixi.toml",
+    ParserChoice.ENVIRONMENT_YML: "environment.yml",
 }
 PARSER_CHOICE_FILE_NAME_MISMATCH_GRID = {
     pc: [fn for _pc, fn in PARSER_CHOICE_FILE_NAME_MATCH_GRID.items() if pc != _pc]
@@ -75,10 +85,10 @@ PARSER_CHOICE_FILE_NAME_MISMATCH_GRID = {
 
 
 @pytest.mark.parametrize(
-    ("parser_choice", "deps_file_name", "has_log"),
+    ("parser_choice", "deps_file_name", "mismatch"),
     [
-        pytest.param(pc, fn, has_log, id=f"{pc}__{fn}__{has_log}")
-        for pc, fn, has_log in [
+        pytest.param(pc, fn, mismatch, id=f"{pc}__{fn}")
+        for pc, fn, mismatch in [
             (pc, fn, True)
             for pc, filenames in PARSER_CHOICE_FILE_NAME_MISMATCH_GRID.items()
             for fn in filenames
@@ -87,15 +97,25 @@ PARSER_CHOICE_FILE_NAME_MISMATCH_GRID = {
     ],
 )
 def test_explicit_parse_strategy__mismatch_yields_appropriate_logging(
-    tmp_path, caplog, parser_choice, deps_file_name, has_log
+    fake_project, caplog, parser_choice, deps_file_name, mismatch
 ):
-    """Logging message should be conditional on mismatch between strategy and filename."""
+    """Log message only when there is mismatch between strategy and filename.
+
+    In order to make sure that no warning/error messages are logged when there
+    is no mismatch between parser choice and filename, we need to ensure that
+    the given deps file has a _valid_ format. E.g. just passing an empty file
+    is not necessarily sufficient.
+    """
+    tmp_path = fake_project(
+        files_with_declared_deps={
+            deps_file_name: ["foo", "bar"],  # dependencies
+        },
+    )
     deps_path = tmp_path / deps_file_name
-    deps_path.touch()
     caplog.set_level(logging.WARNING)
     # Execute here just for side effect (log).
     list(parse_source(DepsSource(deps_path, parser_choice)))
-    if has_log:
+    if mismatch:
         assert (
             f"Manually applying parser '{parser_choice}' to dependencies: {deps_path}"
         ) in caplog.text
