@@ -5,7 +5,6 @@
     sha256 = "0zw1851mia86xqxdf8jgy1c6fm5lqw4rncv7v2lwxar3vhpn6c78";
   }) {},
   old_pythons_overlay ? self: super: {
-    python37 = pkgsWithOldPythons.python37;
     python38 = pkgsWithOldPythons.python38;
   },
   pkgs ? import (builtins.fetchTarball {
@@ -17,7 +16,6 @@
 pkgs.mkShell {
   name = "fawltydeps-env";
   buildInputs = with pkgs; [
-    python37
     python38
     python39
     python310
@@ -31,13 +29,7 @@ pkgs.mkShell {
     pythonManylinuxPackages.manylinux2014
   ];
   shellHook = ''
-    # This is needed to keep python3.7 working while in the same nix-shell
-    # as a later python (see https://github.com/NixOS/nixpkgs/issues/88711
-    # for more details):
-    unset _PYTHON_HOST_PLATFORM
-    unset _PYTHON_SYSCONFIGDATA_NAME
-
-    poetry env use "${pkgs.python311}/bin/python"
+    poetry env use "${pkgs.python312}/bin/python"
     poetry install --sync --with=dev
     # Patch binaries in the Poetry virtualenv to link against Nix deps
     autoPatchelf "$(poetry env info --path)"
