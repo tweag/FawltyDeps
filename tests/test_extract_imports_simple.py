@@ -76,7 +76,7 @@ def generate_notebook(
     return json.dumps(notebook, indent=2)
 
 
-@pytest.fixture()
+@pytest.fixture
 def write_code_sources(write_tmp_files):
     """A wrapper around write_tmp_files() that return CodeSource objects."""
 
