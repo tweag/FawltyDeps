@@ -210,7 +210,7 @@ ignore = [
 [tool.codespell]
 skip = ".git,.mypy_cache,.nox,.vscode,__pycache__,poetry.lock"
 builtin = "clear,rare,informal,usage,code,names"
-ignore-words-list = "jupyter,iff"  # prevent jupyter -> jupiter, iff -> if
+ignore-words-list = "jupyter,iff,THIRDPARTY"
 check-filenames = true
 uri-ignore-words-list = "*"
 
