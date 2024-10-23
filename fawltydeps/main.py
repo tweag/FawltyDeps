@@ -11,7 +11,7 @@ from __future__ import annotations
 import json
 import logging
 import sys
-from functools import partial
+from functools import cached_property, partial
 from operator import attrgetter
 from typing import BinaryIO, Dict, Iterator, List, Optional, Set, TextIO, Type
 
@@ -44,7 +44,7 @@ from fawltydeps.types import (
     UnresolvedDependenciesError,
     UnusedDependency,
 )
-from fawltydeps.utils import calculated_once, version
+from fawltydeps.utils import version
 
 logger = logging.getLogger(__name__)
 
@@ -82,21 +82,11 @@ class Analysis:
         self.stdin = stdin
         self.version = version()
 
-        # The following members are calculated once, on-demand, by the
-        # @property @calculated_once methods below:
-        self._sources: Optional[Set[Source]] = None
-        self._imports: Optional[List[ParsedImport]] = None
-        self._declared_deps: Optional[List[DeclaredDependency]] = None
-        self._resolved_deps: Optional[Dict[str, Package]] = None
-        self._undeclared_deps: Optional[List[UndeclaredDependency]] = None
-        self._unused_deps: Optional[List[UnusedDependency]] = None
-
     def is_enabled(self, *args: Action) -> bool:
         """Return True if any of the given actions are in self.settings."""
         return len(self.settings.actions.intersection(args)) > 0
 
-    @property
-    @calculated_once
+    @cached_property
     def sources(self) -> Set[Source]:
         """The input sources (code, deps, pyenv) found in this project."""
         # What Source types are needed for which action?
@@ -114,8 +104,7 @@ class Analysis:
             )
         )
 
-    @property
-    @calculated_once
+    @cached_property
     def imports(self) -> List[ParsedImport]:
         """The list of 3rd-party imports parsed from this project."""
         return list(
@@ -125,8 +114,7 @@ class Analysis:
             )
         )
 
-    @property
-    @calculated_once
+    @cached_property
     def declared_deps(self) -> List[DeclaredDependency]:
         """The list of declared dependencies parsed from this project."""
         return list(
@@ -135,8 +123,7 @@ class Analysis:
             )
         )
 
-    @property
-    @calculated_once
+    @cached_property
     def resolved_deps(self) -> Dict[str, Package]:
         """The resolved mapping of dependency names to provided import names."""
         pyenv_srcs = {src for src in self.sources if isinstance(src, PyEnvSource)}
@@ -151,14 +138,12 @@ class Analysis:
             ),
         )
 
-    @property
-    @calculated_once
+    @cached_property
     def undeclared_deps(self) -> List[UndeclaredDependency]:
         """The import statements for which no declared dependency is found."""
         return calculate_undeclared(self.imports, self.resolved_deps, self.settings)
 
-    @property
-    @calculated_once
+    @cached_property
     def unused_deps(self) -> List[UnusedDependency]:
         """The declared dependencies that appear to not be in use."""
         return calculate_unused(
@@ -208,17 +193,20 @@ class Analysis:
         }
         encoder = partial(custom_pydantic_encoder, custom_type_encoders)
         json_dict = {
-            "settings": self.settings,
-            # Using properties with an underscore do not trigger computations.
-            # They are populated only if the computations were already required
-            # by settings.actions.
-            "sources": self._sources,
-            "imports": self._imports,
-            "declared_deps": self._declared_deps,
-            "resolved_deps": self._resolved_deps,
-            "undeclared_deps": self._undeclared_deps,
-            "unused_deps": self._unused_deps,
-            "version": self.version,
+            # Using direct .__dict__ lookup does not trigger computation of
+            # cached properties. They are populated only if the computations
+            # were already required by settings.actions.
+            field: self.__dict__.get(field)
+            for field in [
+                "settings",
+                "sources",
+                "imports",
+                "declared_deps",
+                "resolved_deps",
+                "undeclared_deps",
+                "unused_deps",
+                "version",
+            ]
         }
         json.dump(json_dict, out, indent=2, default=encoder)
 
