@@ -137,7 +137,7 @@ class Rule(NamedTuple):
             parent directory of the .gitignore file. This allows e.g. rules from
             foo/.gitignore to only apply to paths under foo/.
 
-        For unanchored pattterns that do not originate from a .gitignore file,
+        For unanchored patterns that do not originate from a .gitignore file,
         the default base_dir = None is appropriate.
         """
         # Store the exact pattern for our repr and string functions

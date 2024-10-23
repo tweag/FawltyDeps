@@ -473,7 +473,7 @@ set `fawltydeps_output_format=json` in FawltyDeps' environment.
   passed via the environment or `pyproject.toml`.
 - Environment variables override corresponding settings from `pyproject.toml`.
 - Configuration in `pyproject.toml` override only the ultimate hardcoded defaults.
-- The ultimate defaults when no cutomizations takes place are hardcoded inside
+- The ultimate defaults when no customizations takes place are hardcoded inside
   FawltyDeps, and are documented above.
 
 ## Documentation
