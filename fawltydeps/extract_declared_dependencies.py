@@ -13,7 +13,7 @@ from tempfile import NamedTemporaryFile
 from typing import Callable, Iterable, Iterator, NamedTuple, Optional, Tuple, Union
 
 from packaging.requirements import Requirement
-from pip_requirements_parser import RequirementsFile  # type: ignore[import]
+from pip_requirements_parser import RequirementsFile  # type: ignore[import-untyped]
 
 from fawltydeps.limited_eval import CannotResolve, VariableTracker
 from fawltydeps.settings import ParserChoice
