@@ -41,7 +41,7 @@ class VariableTracker:
             code = ast.unparse(node)
         else:
             code = "<code>"
-        return f"{code} @ {self.source.supply(lineno=node.lineno)}"
+        return f"{code} @ {self.source.supply(lineno=node.lineno)}"  # type: ignore[attr-defined]
 
     def _dump(self, node: ast.AST) -> str:
         """Human-readable debug dump of this node."""
@@ -99,4 +99,4 @@ class VariableTracker:
             return self.vars[node.id]
 
         logger.warning(f"Unable to resolve {self._dump(node)}")
-        raise CannotResolve(node, self.source.supply(lineno=node.lineno))
+        raise CannotResolve(node, self.source.supply(lineno=node.lineno))  # type: ignore[attr-defined]

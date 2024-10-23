@@ -254,8 +254,15 @@ class Location:
             ret += f":{self.lineno}"
         return ret
 
-    def supply(self, **changes: int) -> Location:
+    def supply(
+        self, *, lineno: Optional[int] = None, cellno: Optional[int] = None
+    ) -> Location:
         """Create a new Location that contains additional information."""
+        changes = {
+            attr: value
+            for attr, value in locals().items()
+            if attr != "self" and value is not None
+        }
         return replace(self, **changes)
 
 

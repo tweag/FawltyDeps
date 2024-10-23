@@ -13,7 +13,18 @@ import logging
 import sys
 from functools import cached_property, partial
 from operator import attrgetter
-from typing import BinaryIO, Dict, Iterator, List, Optional, Set, TextIO, Type
+from typing import (
+    BinaryIO,
+    Callable,
+    Dict,
+    Iterator,
+    List,
+    Optional,
+    Set,
+    TextIO,
+    Type,
+    Union,
+)
 
 try:  # import from Pydantic V2
     from pydantic.v1.json import custom_pydantic_encoder
@@ -185,7 +196,7 @@ class Analysis:
         # However, not all elements that we store in a set are automatically
         # orderable (e.g. PathOrSpecial don't know how to order SpecialPath vs
         # Path), so order by string representation instead:
-        custom_type_encoders = {
+        custom_type_encoders: Dict[type, Callable[[type], Union[List[str], str]]] = {
             frozenset: partial(sorted, key=str),
             set: partial(sorted, key=str),
             type(BasePackageResolver): lambda klass: klass.__name__,
