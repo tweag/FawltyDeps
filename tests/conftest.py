@@ -14,7 +14,7 @@ from fawltydeps.utils import site_packages
 from .project_helpers import TarballPackage
 
 
-@pytest.fixture()
+@pytest.fixture
 def inside_tmp_path(monkeypatch, tmp_path):
     """Convenience fixture to run a test with CWD set to tmp_path.
 
@@ -26,8 +26,8 @@ def inside_tmp_path(monkeypatch, tmp_path):
     return tmp_path
 
 
-@pytest.fixture()
-def local_pypi(request, monkeypatch):  # noqa: PT004
+@pytest.fixture
+def local_pypi(request, monkeypatch):
     cache_dir = TarballPackage.cache_dir(request.config.cache)
     TarballPackage.get_tarballs(request.config.cache)
     # Make sure we install from the local repo, and not from PyPI.
@@ -35,7 +35,7 @@ def local_pypi(request, monkeypatch):  # noqa: PT004
 
     # uv does not (yet) allow this to be configured via the environment, so we
     # need to go via a temporary config file:
-    tmp_uv_config = NamedTemporaryFile("wt", delete=False, suffix=".toml")
+    tmp_uv_config = NamedTemporaryFile("wt", delete=False, suffix=".toml")  # noqa: SIM115
     try:
         tmp_uv_config.write(
             dedent(f"""
@@ -58,7 +58,7 @@ def local_pypi(request, monkeypatch):  # noqa: PT004
         Path(tmp_uv_config.name).unlink()
 
 
-@pytest.fixture()
+@pytest.fixture
 def write_tmp_files(tmp_path: Path):
     def _inner(file_contents: Dict[str, Union[str, bytes]]) -> Path:
         for filename, contents in file_contents.items():
@@ -74,7 +74,7 @@ def write_tmp_files(tmp_path: Path):
     return _inner
 
 
-@pytest.fixture()
+@pytest.fixture
 def fake_venv(tmp_path):
     def create_one_fake_venv(
         fake_packages: Dict[str, Set[str]], *, venv_dir: Optional[Path] = None
@@ -105,7 +105,7 @@ def fake_venv(tmp_path):
     return create_one_fake_venv
 
 
-@pytest.fixture()
+@pytest.fixture
 def isolate_default_resolver(
     fake_venv: Callable[[Dict[str, Set[str]]], Tuple[Path, Path]], monkeypatch
 ):
@@ -139,7 +139,7 @@ def isolate_default_resolver(
     return inner
 
 
-@pytest.fixture()
+@pytest.fixture
 def fake_project(write_tmp_files, fake_venv):  # noqa: C901
     """Create a temporary Python project with the given contents/properties.
 
@@ -226,9 +226,9 @@ def fake_project(write_tmp_files, fake_venv):  # noqa: C901
                 [dependencies]
                 """
         ) + "\n".join(f'{dep} = "*"' for dep in deps)
-        for feature, deps in extras.items():
+        for feature, extra_deps in extras.items():
             ret += f"\n[feature.{feature}.dependencies]\n"
-            ret += "\n".join(f'{dep} = "*"' for dep in deps)
+            ret += "\n".join(f'{dep} = "*"' for dep in extra_deps)
         return ret
 
     def format_environment_yml(deps: Deps, no_extras: ExtraDeps) -> str:
@@ -292,7 +292,7 @@ def fake_project(write_tmp_files, fake_venv):  # noqa: C901
     return create_one_fake_project
 
 
-@pytest.fixture()
+@pytest.fixture
 def project_with_setup_and_requirements(fake_project):
     return fake_project(
         files_with_declared_deps={
@@ -307,7 +307,7 @@ def project_with_setup_and_requirements(fake_project):
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def project_with_setup_with_cfg_pyproject_and_requirements(fake_project):
     return fake_project(
         files_with_declared_deps={
@@ -332,7 +332,7 @@ def project_with_setup_with_cfg_pyproject_and_requirements(fake_project):
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def project_with_multiple_python_files(fake_project):
     return fake_project(
         declared_deps=["pandas", "click"],
@@ -345,7 +345,7 @@ def project_with_multiple_python_files(fake_project):
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def setup_fawltydeps_config(write_tmp_files):
     """Write a custom tmp_path/pyproject.toml with a [tool.fawltydeps] section.
 

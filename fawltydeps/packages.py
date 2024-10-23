@@ -412,8 +412,8 @@ class TemporaryAutoInstallResolver(BasePackageResolver):
         if uv_exe is None:  # use venv module
             venv.create(venv_dir, clear=True, with_pip=True)
         else:
-            subprocess.run(
-                [uv_exe, "venv", "--python", sys.executable, str(venv_dir)],  # noqa: S603
+            subprocess.run(  # noqa: S603
+                [uv_exe, "venv", "--python", sys.executable, str(venv_dir)],
                 check=True,
             )
 
@@ -474,8 +474,8 @@ class TemporaryAutoInstallResolver(BasePackageResolver):
             Return the subprocess exit code from the install process.
             """
             argv = cls._venv_install_cmd(venv_dir, uv_exe) + list(packages)
-            proc = subprocess.run(
-                argv,  # noqa: S603
+            proc = subprocess.run(  # noqa: S603
+                argv,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 text=True,
