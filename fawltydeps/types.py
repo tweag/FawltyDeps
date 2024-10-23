@@ -6,16 +6,11 @@ import sys
 from abc import ABC, abstractmethod
 from dataclasses import asdict, dataclass, field, replace
 from enum import Enum
-from functools import total_ordering
+from functools import cached_property, total_ordering
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple, Type, Union
+from typing import Any, Dict, List, Literal, Optional, Set, Tuple, Type, Union
 
 from fawltydeps.utils import hide_dataclass_fields
-
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
 
 SpecialPath = Literal["<stdin>"]
 PathOrSpecial = Union[SpecialPath, Path]
@@ -206,6 +201,11 @@ class Location:
     cellno: Optional[int] = None
     lineno: Optional[int] = None
 
+    def __post_init__(self) -> None:
+        """Do magic to hide unset/None members from JSON representation."""
+        unset = [attr for attr, value in asdict(self).items() if value is None]
+        hide_dataclass_fields(self, *unset)
+
     # It would be ideal to use the automatic __eq__, __lt__, etc. methods that
     # @dataclass can provide for us, thus making Location objects automatically
     # orderable/sortable. However, the automatic implementations end up directly
@@ -213,11 +213,11 @@ class Location:
     # are None, with errors like e.g.: TypeError: '<' not supported between
     # instances of 'PosixPath' and 'NoneType'.
     # Instead, we must implement our own. Do so based on a comparable/sortable
-    # string created/cached together with the instance.
-    _sort_key: Tuple[str, int, int] = field(init=False, repr=False)
+    # tuple created on demand and cached inside the instance:
 
-    def __post_init__(self) -> None:
-        """Initialize a sort key that uniquely reflects this instance.
+    @cached_property
+    def _sort_key(self) -> Tuple[str, int, int]:
+        """Return a sortable key that uniquely reflects this instance.
 
         This is used to compare Location objects, and determine how they sort
         relative to each other. The following must hold:
@@ -226,16 +226,11 @@ class Location:
         - Unspecified members sort together, and separate from specified members
         - Paths sort alphabetically, the other members sort numerically
         """
-        sortable_tuple = (
+        return (
             repr(self.path),
             -1 if self.cellno is None else self.cellno,
             -1 if self.lineno is None else self.lineno,
         )
-        object.__setattr__(self, "_sort_key", sortable_tuple)
-
-        # Do magic to hide unset/None members from JSON representation
-        unset = [attr for attr, value in asdict(self).items() if value is None]
-        hide_dataclass_fields(self, "_sort_key", *unset)
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Location):
@@ -258,8 +253,15 @@ class Location:
             ret += f":{self.lineno}"
         return ret
 
-    def supply(self, **changes: int) -> Location:
+    def supply(
+        self, *, lineno: Optional[int] = None, cellno: Optional[int] = None
+    ) -> Location:
         """Create a new Location that contains additional information."""
+        changes = {
+            attr: value
+            for attr, value in locals().items()
+            if attr != "self" and value is not None
+        }
         return replace(self, **changes)
 
 
