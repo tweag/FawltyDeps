@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Iterator
 
 from packaging.requirements import Requirement
-from pip_requirements_parser import RequirementsFile  # type: ignore[import]
+from pip_requirements_parser import RequirementsFile  # type: ignore[import-untyped]
 
 from fawltydeps.types import DeclaredDependency, Location
 
