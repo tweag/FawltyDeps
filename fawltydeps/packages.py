@@ -9,7 +9,7 @@ import venv
 from abc import ABC, abstractmethod
 from contextlib import contextmanager, suppress
 from dataclasses import dataclass, replace
-from functools import partial
+from functools import cached_property, partial
 from pathlib import Path
 from typing import (
     AbstractSet,
@@ -42,7 +42,7 @@ from fawltydeps.types import (
     UnparseablePathError,
     UnresolvedDependenciesError,
 )
-from fawltydeps.utils import calculated_once, site_packages
+from fawltydeps.utils import site_packages
 
 if sys.version_info >= (3, 11):
     import tomllib
@@ -166,11 +166,8 @@ class UserDefinedMapping(BasePackageResolver):
                     ctx="Given mapping path is not a file.", path=path
                 )
         self.custom_mapping = custom_mapping
-        # We enumerate packages declared in the mapping _once_ and cache the result here:
-        self._packages: Optional[Dict[str, Package]] = None
 
-    @property
-    @calculated_once
+    @cached_property
     def packages(self) -> Dict[str, Package]:
         """Gather a custom mapping given by a user.
 
@@ -215,8 +212,6 @@ class InstalledPackageResolver(BasePackageResolver):
         Uses importlib_metadata to look up the mapping between packages and
         their provided import names.
         """
-        # We enumerate packages _once_ and cache the result here:
-        self._packages: Optional[Dict[str, Package]] = None
 
     def _from_one_env(
         self, env_paths: List[str]
@@ -254,7 +249,7 @@ class InstalledPackageResolver(BasePackageResolver):
             )
             yield {dist.name: imports}, str(parent_dir)
 
-    @property
+    @cached_property
     @abstractmethod
     def packages(self) -> Dict[str, Package]:
         """Return mapping of package names to Package objects."""
@@ -286,8 +281,7 @@ class InstalledPackageResolver(BasePackageResolver):
 class SysPathPackageResolver(InstalledPackageResolver):
     """Lookup imports exposed by packages installed in sys.path."""
 
-    @property
-    @calculated_once
+    @cached_property
     def packages(self) -> Dict[str, Package]:
         """Return mapping of package names to Package objects.
 
@@ -366,8 +360,7 @@ class LocalPackageResolver(InstalledPackageResolver):
                     package_dir.relative_to(path)  # ValueError if not relative
                     yield package_dir
 
-    @property
-    @calculated_once
+    @cached_property
     def packages(self) -> Dict[str, Package]:
         """Return mapping of package names to Package objects.
 
