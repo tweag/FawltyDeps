@@ -101,11 +101,11 @@ class Rule(NamedTuple):
     pattern: str
     regex: CompiledRegex
     # Behavior flags
-    negated: bool
-    dir_only: bool
-    anchored: bool
+    negated: bool  # Rule will (partially) negate an earlier rule
+    dir_only: bool  # Rule shall match directories only
+    anchored: bool  # Rule shall only match relative to .base_dir
     base_dir: Optional[Path]  # meaningful for gitignore-style behavior
-    source: Optional[Location]
+    source: Optional[Location]  # Location where this rule is defined
 
     def __str__(self) -> str:
         return self.pattern
@@ -210,11 +210,15 @@ class Rule(NamedTuple):
         if rel_path.startswith("./"):
             rel_path = rel_path[2:]
         match = self.regex.search(rel_path)
-        if match:
-            if self.dir_only and not is_dir and match.end() == match.endpos:
-                return False
-            return True
-        return False
+        if not match:
+            return False
+
+        # Rule matches given path or one of its parent dirs
+        return (
+            not self.dir_only  # rule matches and is not dir-specific
+            or is_dir  # path is a dir, so rule matches nonetheless
+            or match.end() < match.endpos  # rule matches only if parent dir
+        )
 
 
 # Static regex fragments used below:
