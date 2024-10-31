@@ -619,8 +619,8 @@ identical to the package name that you depend on.
 
 ### My project is using Python version before v3.8, can I still use FawltyDeps?
 
-Yes! Even though FawltyDeps itself runs on Python >=v3.8, we support analyzing
-projects that run on any version of Python 3.
+Yes! Even though FawltyDeps itself runs on Python >=v3.8, we try to support
+analyzing projects that run on any version of Python 3.
 
 As explained in the previous two questions, FawltyDeps itself does not need to
 run inside the same Python environment as you project and its dependencies.
@@ -632,6 +632,15 @@ from inside your project directory. If there is an embedded Python environment
 (e.g. under `.venv/`) then FawltyDeps should automatically find it and analyze
 your project dependencies installed within. Or you can always used `--pyenv` to
 point FawltyDeps to where your dependencies are installed.
+
+Currently the lowest Python version that your project can use (and still be
+analyzed by FawltyDeps) is determined by our use of the
+[`ast` module](https://docs.python.org/3/library/ast.html#module-ast) in the
+Python standard library: As long as your project's Python syntax is compatible
+with the Python version that FawltyDeps runs on, you should be fine. If you run
+into problems with older Python syntax (e.g. using `async` or `await` as
+variable names), please open an issue, and we'll look into extending our support
+further.
 
 ### Why does FawltyDeps fail to match `sklearn` with `scikit-learn`?
 
