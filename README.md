@@ -642,6 +642,11 @@ into problems with older Python syntax (e.g. using `async` or `await` as
 variable names), please open an issue, and we'll look into extending our support
 further.
 
+A final resort can be to downgrade to an older version of FawltyDeps that is
+compatible with the Python version used in your project. Currently, the only
+Python version we have dropped support for is v3.7, and FawltyDeps v0.17 was
+the last release to support this Python version.
+
 ### Why does FawltyDeps fail to match `sklearn` with `scikit-learn`?
 
 There are cases, where FawltyDeps may not match imports and obviously related
