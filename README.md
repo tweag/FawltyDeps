@@ -669,3 +669,11 @@ repos:
       - id: check-undeclared
       - id: check-unused
 ```
+
+
+### Can I use FawltyDeps in continuous integration?
+
+Yes! This works well when run as a lint step in continuous integration systems.
+
+Please see [tweag/FawltyDeps-action](https://github.com/tweag/FawltyDeps-action) for a GitHub Action that implements FawltyDeps linting. You can also get the FawltyDeps GitHub Action from the [Actions Marketplace](https://github.com/marketplace/actions/fawltydeps).
+
