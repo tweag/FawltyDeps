@@ -4,13 +4,10 @@ from textwrap import dedent
 
 import pytest
 
-from fawltydeps.extract_declared_dependencies import (
-    parse_requirements_txt,
-    parse_setup_cfg,
-    parse_setup_py,
-    parse_sources,
-    validate_deps_source,
-)
+from fawltydeps.extract_deps import parse_sources, validate_deps_source
+from fawltydeps.extract_deps.requirements_parser import parse_requirements_txt
+from fawltydeps.extract_deps.setup_cfg_parser import parse_setup_cfg
+from fawltydeps.extract_deps.setup_py_parser import parse_setup_py
 from fawltydeps.settings import Settings
 from fawltydeps.traverse_project import find_sources
 from fawltydeps.types import DepsSource
@@ -718,6 +715,21 @@ def test_find_and_parse_sources__project_with_pixi_toml__returns_list(fake_proje
         "pydantic",
         "pylint",
     ]
+    settings = Settings(code=set(), deps={tmp_path})
+    deps_sources = list(find_sources(settings, {DepsSource}))
+    actual = collect_dep_names(parse_sources(deps_sources))
+    assert_unordered_equivalence(actual, expect)
+
+
+def test_find_and_parse_sources__project_with_environment_yml__returns_list(
+    fake_project,
+):
+    tmp_path = fake_project(
+        files_with_declared_deps={
+            "environment.yml": ["numpy", "pandas"],  # dependencies
+        },
+    )
+    expect = ["numpy", "pandas"]
     settings = Settings(code=set(), deps={tmp_path})
     deps_sources = list(find_sources(settings, {DepsSource}))
     actual = collect_dep_names(parse_sources(deps_sources))

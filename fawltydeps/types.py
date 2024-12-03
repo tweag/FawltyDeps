@@ -45,6 +45,7 @@ class ParserChoice(Enum):
     SETUP_CFG = "setup.cfg"
     PYPROJECT_TOML = "pyproject.toml"
     PIXI_TOML = "pixi.toml"
+    ENVIRONMENT_YML = "environment.yml"
 
     def __str__(self) -> str:
         return self.value
@@ -118,7 +119,7 @@ class DepsSource(Source):
         dependency declarations from .path. If this is not passed in explicitly
         (via Settings.deps_parser_choice) it will be automatically determined
         from looking at .path's filename (see first_applicable_parser() in
-        extract_declared_dependencies.py).
+        extract_deps/__init__.py).
     """
 
     path: Path
