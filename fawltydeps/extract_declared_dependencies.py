@@ -13,7 +13,7 @@ from tempfile import NamedTemporaryFile
 from typing import Callable, Iterable, Iterator, NamedTuple, Optional, Tuple, Union
 
 from packaging.requirements import Requirement
-from pip_requirements_parser import RequirementsFile  # type: ignore[import]
+from pip_requirements_parser import RequirementsFile  # type: ignore[import-untyped]
 
 from fawltydeps.limited_eval import CannotResolve, VariableTracker
 from fawltydeps.settings import ParserChoice
@@ -165,7 +165,7 @@ def parse_setup_cfg(path: Path) -> Iterator[DeclaredDependency]:
         # See:  https://github.com/nexB/pip-requirements-parser/pull/17
 
         # https://github.com/nexB/pip-requirements-parser/pull/19#discussion_r1379279880
-        temp_file = NamedTemporaryFile(
+        temp_file = NamedTemporaryFile(  # noqa: SIM115
             "wt",
             delete=False,
             # we prefer utf8 encoded strings, but ...
