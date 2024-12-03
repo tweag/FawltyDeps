@@ -155,6 +155,70 @@ from fawltydeps.types import DeclaredDependency, Location
             ["scikit-learn", "pip"],
             id="mixed_conda_and_zero_pip_deps",
         ),
+        pytest.param(
+            """\
+            # To set up a development environment using conda, run:
+            #
+            #   conda env create -f environment.yml
+            #   conda activate cartopy-dev
+            #   pip install -e .
+            #
+            name: cartopy-dev
+            channels:
+              - conda-forge
+            dependencies:
+              - cython>=0.29.28
+              - numpy>=1.23
+              - shapely>=2.0
+              - pyshp>=2.3
+              - pyproj>=3.3.1
+              - packaging>=21
+              # The testing label has the proper version of freetype included
+              - conda-forge/label/testing::matplotlib-base>=3.6
+
+              # OWS
+              - owslib>=0.27
+              - pillow>=9.1
+              # Plotting
+              - scipy>=1.9
+              # Testing
+              - pytest
+              - pytest-mpl
+              - pytest-xdist
+              # Documentation
+              - pydata-sphinx-theme
+              - sphinx
+              - sphinx-gallery
+              # Extras
+              - pre-commit
+              - pykdtree
+              - ruff
+              - setuptools_scm
+            """,
+            [
+                "cython",
+                "numpy",
+                "shapely",
+                "pyshp",
+                "pyproj",
+                "packaging",
+                "matplotlib-base",
+                "owslib",
+                "pillow",
+                "scipy",
+                "pytest",
+                "pytest-mpl",
+                "pytest-xdist",
+                "pydata-sphinx-theme",
+                "sphinx",
+                "sphinx-gallery",
+                "pre-commit",
+                "pykdtree",
+                "ruff",
+                "setuptools_scm",
+            ],
+            id="cartopy_example",
+        ),
     ],
 )
 def test_parse_environment_yml__wellformed_dependencies__yields_dependencies(
@@ -238,6 +302,27 @@ conda_tests_malformed_samples = [
             """,
         error_msg_fragment="Failed to parse Pip dependencies in {path}: Not a string: ",
         expect=["foo", "bar"],
+    ),
+    CondaTestVector(
+        id="invalid_dependencies_malformed_names",
+        data="""\
+            dependencies:
+              - ">foo<"
+              - "bar"
+            """,
+        error_msg_fragment="Failed to parse Conda dependencies in {path}: Expected package name at the start of dependency specifier",
+        expect=["bar"],
+    ),
+    CondaTestVector(
+        id="invalid_dependencies_malformed_names",
+        data="""\
+            dependencies:
+              - "pip":
+                - "~foo"
+                - "bar"
+            """,
+        error_msg_fragment="Failed to parse Pip dependencies in {path}: Expected package name at the start of dependency specifier",
+        expect=["bar"],
     ),
 ]
 

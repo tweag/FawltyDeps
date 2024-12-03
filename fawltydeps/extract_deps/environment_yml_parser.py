@@ -1,6 +1,7 @@
 """Code for parsing dependencies from environment.yml files."""
 
 import logging
+import re
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterator, List, Union
 
@@ -11,6 +12,13 @@ from .requirements_parser import parse_one_req
 logger = logging.getLogger(__name__)
 
 YamlDependencyData = Union[List[str], Dict[str, "YamlDependencyData"], Any, None]  # type: ignore[misc]
+
+
+class InvalidCondaRequirement(ValueError):  # noqa: N818
+    """Invalid Conda dependency specifier.
+
+    Modeled on packaging.requirements.InvalidRequirement.
+    """
 
 
 def parse_one_conda_dep(req_str: str, source: Location) -> DeclaredDependency:
@@ -24,9 +32,13 @@ def parse_one_conda_dep(req_str: str, source: Location) -> DeclaredDependency:
         _, req_str = req_str.split("::", 1)
     if "[" in req_str:  # remove bracket stuff from back
         req_str, _ = req_str.split("[]", 1)
-    req_str, *_ = req_str.split()  # remove anything after whitespace
-    name, *_ = req_str.split("=")  # remove version/build info
-    return DeclaredDependency(name, source)
+    # package name comes before version/build info, which starts with one of "><!=~ "
+    name_match = re.match(r"[^ =<>!~]+", req_str)
+    if not name_match:
+        raise InvalidCondaRequirement(
+            f"Expected package name at the start of dependency specifier: {req_str!r}"
+        )
+    return DeclaredDependency(name_match.group(0), source)
 
 
 def parse_environment_yml_deps(
@@ -47,7 +59,11 @@ def parse_environment_yml_deps(
         return
     for dep_item in parsed_deps:
         if isinstance(dep_item, str):
-            yield parse_item(dep_item, source)
+            try:
+                yield parse_item(dep_item, source)
+            except ValueError as e:
+                # InvalidCondaRequirement or packaging.requirements.InvalidRequirement
+                logger.error(f"{error_msg} {e}")
         elif isinstance(dep_item, dict) and len(dep_item) == 1 and "pip" in dep_item:
             pip_deps = dep_item.get("pip")
             yield from parse_environment_yml_deps(
