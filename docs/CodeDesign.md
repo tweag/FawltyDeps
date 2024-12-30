@@ -9,7 +9,7 @@ project and immediately gets some useful and actionable information.
 ## Boundaries
 
 - Support all current Python versions: that means all Python versions that have
-  a stable release, and are not yet End Of Life. Currently this is: v3.7 - v3.11.
+  a stable release, and are not yet End Of Life. Currently this is: v3.8 - v3.13.
 - For now we support the CPython interpreter only
 - OS-wise, we have concentrated on Linux. We should still run fine on
   other Unix-like systems, most notably Mac. Windows remains an open question.
