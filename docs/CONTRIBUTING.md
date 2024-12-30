@@ -4,24 +4,6 @@ Thank you for your interest in contributing to FawltyDeps!
 We welcome contributions from the community to help improve our project.
 Please take a moment to review this guide before you get started.
 
-## Table of Contents
-
-[Code of Conduct](#code-of-conduct)
-
-[Getting Started](#getting-started)
-   - [Fork the Repository](#fork-the-repository)
-   - [Clone the Repository](#clone-the-repository)
-   - [Set Up Your Development Environment](#set-up-your-development-environment)
-
-[Making Changes](#making-changes)
-   - [Branch Naming](#branch-naming)
-   - [Commit Messages](#commit-messages)
-   - [Testing](#testing)
-
-[Submitting Pull Requests](#submitting-pull-requests)
-
-[Review Process](#review-process)
-
 ## Code of Conduct
 
 We expect all contributors to adhere to our [Code of Conduct](./CODE_OF_CONDUCT.md).

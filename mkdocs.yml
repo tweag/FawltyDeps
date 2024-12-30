@@ -41,8 +41,8 @@ nav:
   - Installation: installation.md
   - How it works:
     - Explanation: explanation.md
-    - Design Document: DesignDoc.md
     - Code Design: CodeDesign.md
+    - Initial Design Document: DesignDoc.md
   - Reference: reference.md
   - How To Guides: how_to_guides.md
   - FAQ: FAQ.md
