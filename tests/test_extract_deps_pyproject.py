@@ -340,6 +340,63 @@ from fawltydeps.types import DeclaredDependency, Location
             ["pandas"],
             id="pixi_pyproject_self_dep_is_ignored",
         ),
+        pytest.param(
+            """\
+            [project]
+            name = "myapp"
+            version = "1.0"
+            description = "My App"
+            requires-python = ">=3.13"
+            dependencies = [
+                "flask",
+            ]
+
+            [dependency-groups]
+            dev = [
+                "debugpy",
+                "fawltydeps>=0.18.0",
+                "pytest>=8.3.4",
+                "pytest-flask",
+                "pytest-order",
+                "pytest-timeout",
+                "rich",
+                "ruff",
+                "watchdog>=6.0.0",
+            ]
+            """,
+            [
+                "flask",
+                "debugpy",
+                "fawltydeps",
+                "pytest",
+                "pytest-flask",
+                "pytest-order",
+                "pytest-timeout",
+                "rich",
+                "ruff",
+                "watchdog",
+            ],
+            id="pep735_dependency_groups",
+        ),
+        pytest.param(
+            """\
+            [dependency-groups]
+            test = ["pytest", "coverage"]
+            docs = ["sphinx", "sphinx-rtd-theme"]
+            typing = ["mypy", "types-requests"]
+            typing-test = [{include-group = "typing"}, {include-group = "test"}, "useful-types"]
+            """,
+            [
+                "pytest",
+                "coverage",
+                "sphinx",
+                "sphinx-rtd-theme",
+                "mypy",
+                "types-requests",
+                "useful-types",
+            ],
+            id="pep735_dependency_groups_with_include_group",
+        ),
     ],
 )
 def test_parse_pyproject_toml__wellformed_dependencies__yields_dependencies(
