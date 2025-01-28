@@ -1,0 +1,55 @@
+[project]
+# General information about a simplified project: Its name, why we test it,
+# its relation to real world projects
+name = "top_level_venv"
+description = """
+    A project where the virtualenv is located in the _same_ directory as the
+    project itself. A highly unusual layout that we nonetheless should support.
+    We should pick up the code + deps within, but we should _not_ pick up
+    anything from bin/ or lib/.
+"""
+compatibility = "POSIX"
+
+[experiments.default]
+description = "Run fawltydeps with default settings."
+pyenvs = [""]  # Find all Python environments in project
+
+# 3rd-party imports found in the code:
+imports = [
+    "numpy",
+    "pandas",
+]
+
+# Declared dependencies found in the project configuration:
+declared_deps = [
+    "numpy",
+    "tensorflow",
+]
+
+# Import names in the code that do not have a matching dependency declared:
+undeclared_deps = ["pandas"]
+
+# Declared dependencies which were never `import`ed from the code:
+unused_deps = ["tensorflow"]
+
+[experiments.explicit]
+description = "Run fawltydeps with --pyenv pointing at top-level dir."
+pyenvs = ["."]  # Find all Python environments in project
+
+# 3rd-party imports found in the code:
+imports = [
+    "numpy",
+    "pandas",
+]
+
+# Declared dependencies found in the project configuration:
+declared_deps = [
+    "numpy",
+    "tensorflow",
+]
+
+# Import names in the code that do not have a matching dependency declared:
+undeclared_deps = ["pandas"]
+
+# Declared dependencies which were never `import`ed from the code:
+unused_deps = ["tensorflow"]
