@@ -1,6 +1,7 @@
 """Traverse a project to identify appropriate inputs to FawltyDeps."""
 
 import logging
+import sys
 from collections.abc import Iterator
 from collections.abc import Set as AbstractSet
 from pathlib import Path
@@ -131,7 +132,18 @@ def find_sources(  # noqa: C901, PLR0912, PLR0915
         if package_dirs is not None:  # Python environment dir given directly
             logger.debug(f"find_sources() Found {package_dirs}")
             yield from package_dirs
-            traversal.skip_dir(path)  # disable traversal of path below
+            if path in (settings.code | settings.deps):
+                # We are also searching this dir for code/deps, hence we should
+                # not skip it altogether, but rather only skip the parts of it
+                # that likely contain installed 3rd-party packages
+                for pyenv_src in package_dirs:
+                    traversal.skip_dir(pyenv_src.path)
+                if sys.platform.startswith("win"):  # Windows
+                    traversal.skip_dir(path / "Scripts")
+                else:  # Assume POSIX
+                    traversal.skip_dir(path / "bin")
+            else:
+                traversal.skip_dir(path)  # disable traversal of entire Python env
         else:  # must traverse directory to find Python environments
             traversal.add(path, PyEnvSource)
 
