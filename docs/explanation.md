@@ -17,7 +17,7 @@ declared in your project configuration.
 
 To solve this, FawltyDeps uses a sequence of resolvers (aka. mapping strategies)
 to determine which Python packages provide which import names. For more details,
-check [FawltyDeps mapping strategy blogpost](https://www.tweag.io/blog/2023-09-21-fawltydeps-mapping-strategy/). The diagram below
+check the [FawltyDeps mapping strategy blog post](https://www.tweag.io/blog/2023-09-21-fawltydeps-mapping-strategy/). The diagram below
 shows the dependencies' flow through the sequence of mappings supported by
 FawltyDeps (each of which is introduced in the following subsections):
 
