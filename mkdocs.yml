@@ -39,11 +39,12 @@ nav:
 
   - Home: index.md
   - Installation: installation.md
+  - Usage: usage.md
+  - Configuration: configuration.md
   - How it works:
     - Explanation: explanation.md
     - Code Design: CodeDesign.md
     - Initial Design Document: DesignDoc.md
-  - Reference: reference.md
   - How To Guides: how_to_guides.md
   - FAQ: FAQ.md
   - Contributing: CONTRIBUTING.md

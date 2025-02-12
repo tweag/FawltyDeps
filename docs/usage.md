@@ -1,6 +1,4 @@
-# References
-
-## Usage
+# Usage
 
 To check the project in the current directory run:
 
@@ -12,7 +10,7 @@ This will find imports in all the Python code under the current directory,
 extract dependencies declared by your project, and then report
 [_undeclared_ and _unused_ dependencies](explanation.md#key-concepts).
 
-### Available Actions
+## Available Actions
 
 FawltyDeps provides the following options for controlling what actions to perform. Only
 one of these can be used at a time:
@@ -27,7 +25,7 @@ one of these can be used at a time:
 
 When none of these are specified, the default action is `--check`.
 
-### Where to find code and dependency declarations
+## Where to find code and dependency declarations
 
 By default, FawltyDeps will look for Python code (`*.py` and `*.ipynb`) and
 dependency declarations (see list of supported files below) under the current
@@ -47,7 +45,7 @@ to passing both the `--code` and the `--deps` options, like this:
 fawltydeps --code my_project/ --deps my_project/
 ```
 
-#### Where to find Python code
+### Where to find Python code
 
 The `--code` option tells FawltyDeps where to find the Python code to parse for
 `import` statements. You can pass any number of these:
@@ -68,7 +66,7 @@ echo "import foo" | fawltydeps --list-imports --code - file.py
 At any time, if you want to see where FawltyDeps is looking for Python code,
 you can use the `--list-sources --detailed` options.
 
-#### Where to find declared dependencies
+### Where to find declared dependencies
 
 The `--deps` option tells FawltyDeps where to look for your project's declared
 dependencies. A number of file formats are supported:
@@ -91,87 +89,20 @@ be explicit about where to find the declared dependencies.
 If no `--deps` option is passed, FawltyDeps will look for the above files under
 the `basepath`, if given, or the current directory (i.e. same as `--deps .`).
 
+### How to match `import` statements with resolved dependencies 
 
-## Configuration
+When FawltyDeps looks for undeclared and unused dependencies, it needs to match
+`import` statements in your code with corresponding package dependencies
+declared in your project configuration. We support following options:
 
-You can use a `[tool.fawltydeps]` section in `pyproject.toml` to configure the
-default behavior of FawltyDeps. Here's a fairly comprehensive example:
+- `--pyenv`: Where to search for Python environments that have project dependencies installed. Dependency name is taken from the metadata of installed packages.
+- `--custom-mapping-files`: Files containing mapping of dependencies to imports defined by the user.
+- `--install-deps`: Allow FawltyDeps to auto-install declared dependencies into a separate temporary virtualenv to discover the imports they expose.
 
-```toml
-[tool.fawltydeps]
-code = ["myproject"]  # Only search for imports under ./myproject
-deps = ["pyproject.toml"]  # Only look for declared dependencies here
-ignore_unused = ["black"]  # We use `black`, but we don't intend to import it
-output_format = "human_detailed"  # Detailed report by default
-```
+See [Explanation](./explanation.md) for more details.
 
-Here is a complete list of configuration directives we support:
 
-- `actions`: A list of one or more of these actions to perform: `list_imports`,
-  `list_deps`, `check_undeclared`, `check_unused`. The default behavior
-  corresponds to `actions = ["check_undeclared", "check_unused"]`.
-- `output_format`: Which output format to use by default. One of `human_summary`,
-  `human_detailed`, or `json`.
-  The default corresponds to `output_format = "human_summary"`.
-- `code`: Files or directories containing the code to parse for import statements.
-  Defaults to the current directory, i.e. like `code = ["."]`.
-- `deps`: Files or directories containing the declared dependencies.
-  Defaults to the current directory, i.e. like `deps = ["."]`.
-- `pyenvs`: Where to look for Python environments (directories like `.venv`,
-  `__pypackages__`, or similar) to be used for resolving project dependencies
-  into provided import names. Defaults to looking for Python environments under
-  the current directory, i.e. like `pyenvs = ["."]`.
-- `ignore_undeclared`: A list of specific dependencies to ignore when reporting
-  undeclared dependencies, for example: `["some_module", "some_other_module"]`.
-  The default is the empty list: `ignore_undeclared = []`.
-- `ignore_unused`: A list of specific dependencies to ignore when reporting
-  unused dependencies, for example: `["black", "mypy", "some_other_module"]`.
-  The default is a list including common development tools. However, you have the
-  flexibility to overwrite this list according to your project's specific requirements.
-  For the complete default list, please see the `DEFAULT_IGNORE_UNUSED`
-  variable in the [`fawltydeps/settings.py`](https://github.com/tweag/FawltyDeps/blob/main/fawltydeps/settings.py) file
-  in the repository.
-- `deps_parser_choice`: Manually select which format to use for parsing
-  declared dependencies. Must be one of `"requirements.txt"`, `"setup.py"`,
-  `"setup.cfg"`, `"pyproject.toml"`, `"pixi.toml"`, `"environment.yml"`, or
-  leave it unset (i.e. the default) for auto-detection (based on filename).
-- `install-deps`: Automatically install Python dependencies gathered with
-  FawltyDeps into a temporary virtual environment. This will use `uv` or `pip`
-  to download and install packages from PyPI by default.
-- `exclude`: File/directory patterns to exclude/ignore when looking for code
-  (imports), dependency declarations and/or Python environments. Defaults to
-  `exclude = [".*"]`, meaning that hidden/dot paths are excluded from traversal.
-- `exclude_from`: Files (following the .gitignore format) containing exclude
-  patterns to use when looking for code (imports), dependency declarations
-  and/or Python environments. Defaults to an empty list: `exclude_from = []`.
-- `verbosity`: An integer controlling the default log level of FawltyDeps:
-  - `-2`: Only `CRITICAL`-level log messages are shown.
-  - `-1`: `ERROR`-level log messages and above are shown.
-  - `0`: `WARNING`-level log messages and above are shown. This is the default.
-  - `1`: `INFO`-level log messages and above are shown.
-  - `2`: All log messages (including `DEBUG`) are shown.
-- `custom_mapping_file`: Paths to files containing user-defined mapping.
-  Expected file format is defined in the User-defined mapping [section](explanation.md/#user-defined-mapping).
-- `[tool.fawltydeps.custom_mapping]`: Section in the configuration, under which a custom mapping
-  can be added. Expected format is described in the User-defined mapping [section](explanation.md/#user-defined-mapping).
-
-### Environment variables
-
-In addition to configuring FawltyDeps via `pyproject.toml` as show above, you
-may also pass the above configuration directives via the environment, using a
-`fawltydeps_` prefix. For example, to enable JSON output via the environment,
-set `fawltydeps_output_format=json` in FawltyDeps' environment.
-
-### Configuration cascade
-
-- Command-line options take precedence, and override corresponding settings
-  passed via the environment or `pyproject.toml`.
-- Environment variables override corresponding settings from `pyproject.toml`.
-- Configuration in `pyproject.toml` override only the ultimate hardcoded defaults.
-- The ultimate defaults when no customizations takes place are hardcoded inside
-  FawltyDeps, and are documented above.
-
-### Excluding paths
+## Excluding paths
 
 If you want FawltyDeps to exclude parts of your source tree when loooking for
 code, dependency declarations, or Python environments, then you can use the
@@ -220,7 +151,7 @@ notebooks:
 fawltydeps --code my_dir --exclude "*.ipynb"
 ```
 
-### Ignoring irrelevant results
+## Ignoring irrelevant results
 
 There may be `import` statements in your code that should not be considered an
 undeclared dependency. This might happen if you for example do a conditional
@@ -243,7 +174,8 @@ from the check for unused imports, you can use the `--ignore-unused` option
 to customize the ignore list. By providing your own list of dependencies with
 this option, you can effectively overwrite the default list. For example:
 `--ignore-unused black mypy some_other_module`
-### Output formats
+
+## Output formats
 
 The default output from FawltyDeps is a summary outlining the relevant
 dependencies found (according to the selected actions).
