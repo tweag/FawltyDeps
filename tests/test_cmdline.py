@@ -825,6 +825,7 @@ def test_check_json__simple_project__can_report_both_undeclared_and_unused(
             {
                 "name": "requests",
                 "references": [{"path": f"{tmp_path / 'code.py'}", "lineno": 1}],
+                "candidates": [],
             },
         ],
         "unused_deps": [
