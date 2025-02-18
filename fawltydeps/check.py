@@ -17,18 +17,16 @@ logger = logging.getLogger(__name__)
 
 
 def _candidates(
-    import_name: str, known_packages: Iterable[BasePackageResolver]
+    import_name: str, resolvers: Iterable[BasePackageResolver]
 ) -> Iterator[Package]:
-    for resolver in known_packages:
-        for package in resolver.all_packages():
-            if import_name in package.import_names:
-                yield package
+    for resolver in resolvers:
+        yield from resolver.lookup_import(import_name)
 
 
 def calculate_undeclared(
     imports: List[ParsedImport],
     resolved_deps: Dict[str, Package],
-    known_packages: Iterable[BasePackageResolver],
+    resolvers: Iterable[BasePackageResolver],
     settings: Settings,
 ) -> List[UndeclaredDependency]:
     """Calculate which imports are not covered by declared dependencies.
@@ -48,7 +46,7 @@ def calculate_undeclared(
         UndeclaredDependency(
             name,
             [i.source for i in imports],
-            list(_candidates(name, known_packages)),
+            list(_candidates(name, resolvers)),
         )
         for name, imports in groupby(undeclared, key=lambda i: i.name)
     ]

@@ -137,9 +137,9 @@ class UserDefinedMapping(BasePackageResolver):
             if Package.normalize_name(name) in self.packages
         }
 
-    def all_packages(self) -> Iterable[Package]:
-        """Return all Package object in this mapping."""
-        return self.packages.values()
+    def lookup_import(self, import_name: str) -> Iterable[Package]:
+        """Return all Package objects that provide the given import name."""
+        return (p for p in self.packages.values() if import_name in p.import_names)
 
 
 class InstalledPackageResolver(BasePackageResolver):
@@ -216,9 +216,9 @@ class InstalledPackageResolver(BasePackageResolver):
             if Package.normalize_name(name) in self.packages
         }
 
-    def all_packages(self) -> Iterable[Package]:
-        """Return all Package objects found in this Python environment."""
-        return self.packages.values()
+    def lookup_import(self, import_name: str) -> Iterable[Package]:
+        """Return all Package objects that provide the given import name."""
+        return (p for p in self.packages.values() if import_name in p.import_names)
 
 
 class SysPathPackageResolver(InstalledPackageResolver):

@@ -60,7 +60,7 @@ class BasePackageResolver(ABC):
 
     @abstractmethod
     def lookup_packages(self, package_names: Set[str]) -> Dict[str, Package]:
-        """Convert package names into a Package objects with available imports.
+        """Convert package names into corresponding Package objects.
 
         Resolve as many of the given package names as possible into their
         corresponding import names, and return a dict that maps the resolved
@@ -71,17 +71,18 @@ class BasePackageResolver(ABC):
         """
         raise NotImplementedError
 
-    def all_packages(self) -> Iterable[Package]:
-        """Iterate over all known packages found by this resolver.
+    def lookup_import(self, import_name: str) -> Iterable[Package]:
+        """Convert an import name into Package objects that provide this import.
 
-        This method should only be reimplemented by resolvers that can easily
-        access a collection of known-correct Package objects, typically
-        corresponding to either installed packages in a local Python
-        environment, or a custom mapping provided directly by the user.
+        This is a convenience helper for when we attempt to suggest a suitable
+        package name to depend on, in order to properly declare an undeclared
+        import.
 
-        For more "opportunistic" resolvers, such as TemporaryAutoInstallResolver
-        and IdentityMapping, the default implementation below (that returns an
-        empty list is appropriate), as for these we cannot quickly provide
-        known-correct Package objects.
+        This is the _reverse_ mapping of what .lookup_packages() provides, and
+        it is acceptable for a resolver to not provide this functionality (e.g.
+        the TemporaryAutoInstallResolver cannot provide this as long as PyPI
+        does not allow packages to be queried by provided import names, nor can
+        we allow the IdentityMapping to fabricate a nonsense package name based
+        on the given import name).
         """
-        return []
+        raise NotImplementedError
