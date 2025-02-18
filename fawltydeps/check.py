@@ -2,16 +2,13 @@
 
 import logging
 from itertools import groupby
-from typing import Dict, List, Iterable
+from typing import Dict, Iterable, Iterator, List
 
-from fawltydeps.packages import (
-    BasePackageResolver,
-    Package,
-    resolve_dependencies,
-)
 from fawltydeps.settings import Settings
 from fawltydeps.types import (
+    BasePackageResolver,
     DeclaredDependency,
+    Package,
     ParsedImport,
     UndeclaredDependency,
     UnusedDependency,
@@ -19,11 +16,15 @@ from fawltydeps.types import (
 
 logger = logging.getLogger(__name__)
 
-def _candidates(import_name: str, known_packages: Iterable[BasePackageResolver]) -> List[Package]:
+
+def _candidates(
+    import_name: str, known_packages: Iterable[BasePackageResolver]
+) -> Iterator[Package]:
     for resolver in known_packages:
         for package in resolver.all_packages():
             if import_name in package.import_names:
                 yield package
+
 
 def calculate_undeclared(
     imports: List[ParsedImport],
@@ -45,7 +46,11 @@ def calculate_undeclared(
     ]
     undeclared.sort(key=lambda i: i.name)  # groupby requires pre-sorting
     return [
-        UndeclaredDependency(name, [i.source for i in imports], list(_candidates(name, known_packages)))
+        UndeclaredDependency(
+            name,
+            [i.source for i in imports],
+            list(_candidates(name, known_packages)),
+        )
         for name, imports in groupby(undeclared, key=lambda i: i.name)
     ]
 

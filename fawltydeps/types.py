@@ -8,7 +8,7 @@ from dataclasses import asdict, dataclass, field, replace
 from enum import Enum
 from functools import cached_property, total_ordering
 from pathlib import Path
-from typing import Any, Dict, List, Literal, Optional, Set, Tuple, Type, Union
+from typing import Any, Dict, Iterable, List, Literal, Optional, Set, Tuple, Type, Union
 
 from fawltydeps.utils import hide_dataclass_fields
 
@@ -16,6 +16,7 @@ SpecialPath = Literal["<stdin>"]
 PathOrSpecial = Union[SpecialPath, Path]
 TomlData = Dict[str, Any]  # type: ignore[misc]
 CustomMapping = Dict[str, List[str]]
+PackageDebugInfo = Union[None, str, Dict[str, Set[str]]]
 
 
 class UnparseablePathError(Exception):
@@ -282,13 +283,91 @@ class DeclaredDependency:
     source: Location
 
 
+@dataclass(frozen=True)
+class Package:
+    """Encapsulate an installable Python package.
+
+    This encapsulates the mapping between a package name (i.e. something you can
+    pass to `pip install`) and the import names that it provides once it is
+    installed.
+    """
+
+    package_name: str  # auto-normalized in .__post_init__()
+    import_names: Set[str]
+    resolved_with: Type[BasePackageResolver]
+    debug_info: PackageDebugInfo = None
+
+    @staticmethod
+    def normalize_name(package_name: str) -> str:
+        """Perform standard normalization of package names.
+
+        Verbatim package names are not always appropriate to use in various
+        contexts: For example, a package can be installed using one spelling
+        (e.g. typing-extensions), but once installed, it is presented in the
+        context of the local environment with a slightly different spelling
+        (e.g. typing_extension).
+        """
+        return package_name.lower().replace("-", "_")
+
+    def __post_init__(self) -> None:
+        """Ensure Package object invariants."""
+        object.__setattr__(self, "package_name", self.normalize_name(self.package_name))
+
+    def has_type_stubs(self) -> Set[str]:
+        """Return a set of import names without type stubs suffix."""
+        provides_stubs_for = [
+            import_name[: -len("-stubs")]
+            for import_name in self.import_names
+            if import_name.endswith("-stubs")
+        ]
+        return set(provides_stubs_for)
+
+    def is_used(self, imported_names: Iterable[str]) -> bool:
+        """Return True iff this package is among the given import names."""
+        return bool(self.import_names.intersection(imported_names)) or bool(
+            self.has_type_stubs().intersection(imported_names)
+        )
+
+
+class BasePackageResolver(ABC):
+    """Define the interface for doing package -> import names lookup."""
+
+    @abstractmethod
+    def lookup_packages(self, package_names: Set[str]) -> Dict[str, Package]:
+        """Convert package names into a Package objects with available imports.
+
+        Resolve as many of the given package names as possible into their
+        corresponding import names, and return a dict that maps the resolved
+        names to their corresponding Package objects.
+
+        Return an empty dict if this PackageResolver is unable to resolve any
+        of the given packages.
+        """
+        raise NotImplementedError
+
+    def all_packages(self) -> Iterable[Package]:
+        """Iterate over all known packages found by this resolver.
+
+        This method should only be reimplemented by resolvers that can easily
+        access a collection of known-correct Package objects, typically
+        corresponding to either installed packages in a local Python
+        environment, or a custom mapping provided directly by the user.
+
+        For more "opportunistic" resolvers, such as TemporaryAutoInstallResolver
+        and IdentityMapping, the default implementation below (that returns an
+        empty list is appropriate), as for these we cannot quickly provide
+        known-correct Package objects.
+        """
+        return []
+
+
 @dataclass
 class UndeclaredDependency:
     """Undeclared dependency found by analysis in the 'check' module."""
 
     name: str
     references: List[Location]
-    candidates: List[Package]
+    candidates: List[Package] = field(default_factory=list)
 
     def render(self, *, include_references: bool) -> str:
         """Return a human-readable string representation.
