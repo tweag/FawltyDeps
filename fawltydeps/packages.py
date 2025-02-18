@@ -110,6 +110,18 @@ class BasePackageResolver(ABC):
         raise NotImplementedError
 
     def all_packages(self) -> Iterable[Package]:
+        """Iterate over all known packages found by this resolver.
+
+        This method should only be reimplemented by resolvers that can easily
+        access a collection of known-correct Package objects, typically
+        corresponding to either installed packages in a local Python
+        environment, or a custom mapping provided directly by the user.
+
+        For more "opportunistic" resolvers, such as TemporaryAutoInstallResolver
+        and IdentityMapping, the default implementation below (that returns an
+        empty list is appropriate), as for these we cannot quickly provide
+        known-correct Package objects.
+        """
         return []
 
 
@@ -191,7 +203,7 @@ class UserDefinedMapping(BasePackageResolver):
         return accumulate_mappings(self.__class__, _custom_mappings())
 
     def lookup_packages(self, package_names: set[str]) -> dict[str, Package]:
-        """Convert package names to locally available Package objects."""
+        """Convert package names to Package objects defined by this mapping."""
         return {
             name: self.packages[Package.normalize_name(name)]
             for name in package_names
@@ -199,7 +211,9 @@ class UserDefinedMapping(BasePackageResolver):
         }
 
     def all_packages(self) -> Iterable[Package]:
+        """Return all Package object in this mapping."""
         return self.packages.values()
+
 
 class InstalledPackageResolver(BasePackageResolver):
     """Lookup imports exposed by packages installed in a Python environment."""
@@ -276,6 +290,7 @@ class InstalledPackageResolver(BasePackageResolver):
         }
 
     def all_packages(self) -> Iterable[Package]:
+        """Return all Package objects found in this Python environment."""
         return self.packages.values()
 
 

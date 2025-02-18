@@ -18,7 +18,9 @@ def test_calculate_undeclared(vector):
     logger.info(f"imports: {vector.imports!r}")
     logger.info(f"declared_deps: {vector.declared_deps!r}")
     logger.info(f"resolved_deps: {vector.expect_resolved_deps!r}")
-    actual = calculate_undeclared(vector.imports, vector.expect_resolved_deps, settings)
+    actual = calculate_undeclared(
+        vector.imports, vector.expect_resolved_deps, [], settings
+    )
     assert actual == vector.expect_undeclared_deps
 
 
