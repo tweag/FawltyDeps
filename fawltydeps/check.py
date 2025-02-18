@@ -26,9 +26,10 @@ def suggest_packages(
     given resolvers.
     """
     for resolver in resolvers:
-        for package in resolver.all_packages():
-            if import_name in package.import_names:
-                yield package
+        try:
+            yield from resolver.lookup_import(import_name)
+        except NotImplementedError:
+            continue  # keep going on a best-effort basis
 
 
 def calculate_undeclared(
