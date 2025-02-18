@@ -22,7 +22,7 @@ jobs:
         uses: Gr1N/setup-poetry@v8
         with:
           poetry-version: "1.8.5"
-      - uses: actions/cache@v2
+      - uses: actions/cache@v4
         with:
           path: ~/.cache/pypoetry/virtualenvs
           key: ${{ runner.os }}-poetry-lint-${{ hashFiles('poetry.lock') }}
