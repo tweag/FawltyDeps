@@ -1,9 +1,10 @@
 """Compare imports and dependencies to determine undeclared and unused deps."""
 
 import logging
+from collections.abc import Iterable, Iterator
 from itertools import groupby
 
-from fawltydeps.packages import Package
+from fawltydeps.packages import BasePackageResolver, Package
 from fawltydeps.settings import Settings
 from fawltydeps.types import (
     DeclaredDependency,
@@ -15,9 +16,17 @@ from fawltydeps.types import (
 logger = logging.getLogger(__name__)
 
 
+def _candidates(import_name: str, known_packages: Iterable[BasePackageResolver]) -> Iterator[Package]:
+    for resolver in known_packages:
+        for package in resolver.all_packages():
+            if import_name in package.import_names:
+                yield package
+
+
 def calculate_undeclared(
     imports: list[ParsedImport],
     resolved_deps: dict[str, Package],
+    known_packages: Iterable[BasePackageResolver],
     settings: Settings,
 ) -> list[UndeclaredDependency]:
     """Calculate which imports are not covered by declared dependencies.
@@ -34,7 +43,7 @@ def calculate_undeclared(
     ]
     undeclared.sort(key=lambda i: i.name)  # groupby requires pre-sorting
     return [
-        UndeclaredDependency(name, [i.source for i in imports])
+        UndeclaredDependency(name, [i.source for i in imports], list(_candidates(name, known_packages)))
         for name, imports in groupby(undeclared, key=lambda i: i.name)
     ]
 
