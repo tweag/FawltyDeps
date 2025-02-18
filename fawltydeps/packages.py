@@ -109,6 +109,9 @@ class BasePackageResolver(ABC):
         """
         raise NotImplementedError
 
+    def all_packages(self) -> Iterable[Package]:
+        return []
+
 
 def accumulate_mappings(
     resolved_with: type[BasePackageResolver],
@@ -195,6 +198,8 @@ class UserDefinedMapping(BasePackageResolver):
             if Package.normalize_name(name) in self.packages
         }
 
+    def all_packages(self) -> Iterable[Package]:
+        return self.packages.values()
 
 class InstalledPackageResolver(BasePackageResolver):
     """Lookup imports exposed by packages installed in a Python environment."""
@@ -269,6 +274,9 @@ class InstalledPackageResolver(BasePackageResolver):
             for name in package_names
             if Package.normalize_name(name) in self.packages
         }
+
+    def all_packages(self) -> Iterable[Package]:
+        return self.packages.values()
 
 
 class SysPathPackageResolver(InstalledPackageResolver):

@@ -288,6 +288,7 @@ class UndeclaredDependency:
 
     name: str
     references: list[Location]
+    candidates: list[Package]
 
     def render(self, *, include_references: bool) -> str:
         """Return a human-readable string representation.
