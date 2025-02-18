@@ -639,6 +639,22 @@ def resolve_dependencies(
     return ret
 
 
+def suggest_packages(
+    import_name: str, resolvers: Iterable[BasePackageResolver]
+) -> Iterator[Package]:
+    """Return Package objects that claim to provide the given import name.
+
+    We don't have an all-knowing source of what packages may provide an import
+    name, so this is a best-effort guess based on the packages available in the
+    given resolvers.
+    """
+    for resolver in resolvers:
+        try:
+            yield from resolver.lookup_import(import_name)
+        except NotImplementedError:
+            continue  # keep going on a best-effort basis
+
+
 def validate_pyenv_source(path: Path) -> Optional[set[PyEnvSource]]:
     """Check if the given directory path is a valid Python environment.
 

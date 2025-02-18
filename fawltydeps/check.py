@@ -1,10 +1,10 @@
 """Compare imports and dependencies to determine undeclared and unused deps."""
 
 import logging
-from collections.abc import Iterable, Iterator
+from collections.abc import Iterable
 from itertools import groupby
 
-from fawltydeps.packages import BasePackageResolver, Package
+from fawltydeps.packages import BasePackageResolver, Package, suggest_packages
 from fawltydeps.settings import Settings
 from fawltydeps.types import (
     DeclaredDependency,
@@ -14,22 +14,6 @@ from fawltydeps.types import (
 )
 
 logger = logging.getLogger(__name__)
-
-
-def suggest_packages(
-    import_name: str, resolvers: Iterable[BasePackageResolver]
-) -> Iterator[Package]:
-    """Return Package objects that claim to provide the given import name.
-
-    We don't have an all-knowing source of what packages may provide an import
-    name, so this is a best-effort guess based on the packages available in the
-    given resolvers.
-    """
-    for resolver in resolvers:
-        try:
-            yield from resolver.lookup_import(import_name)
-        except NotImplementedError:
-            continue  # keep going on a best-effort basis
 
 
 def calculate_undeclared(

@@ -13,6 +13,7 @@ from fawltydeps.packages import (
     UserDefinedMapping,
     resolve_dependencies,
     setup_resolvers,
+    suggest_packages,
 )
 from fawltydeps.types import (
     PyEnvSource,
@@ -331,3 +332,70 @@ def test_resolve_dependencies__unresolved_dependencies__UnresolvedDependenciesEr
 
     with pytest.raises(UnresolvedDependenciesError):
         resolve_dependencies(dep_names, setup_resolvers(install_deps=True))
+
+
+@pytest.mark.parametrize(
+    ("import_name", "expect_package_names"),
+    [
+        pytest.param(
+            "something_else",
+            set(),
+            id="import_not_in_env__yields_no_suggestions",
+        ),
+        pytest.param(
+            "foo",
+            {"foo_package"},
+            id="import_with_one_match_in_venv__yields_one_suggestion",
+        ),
+        pytest.param(
+            "bar",
+            {"bar_package"},
+            id="other_import_with_one_match_in_venv__yields_one_suggestion",
+        ),
+        pytest.param(
+            "baz",
+            {"bar_package", "baz_package"},
+            id="import_with_two_matches_in_venv__yields_two_suggestions",
+        ),
+    ],
+)
+def test_suggest_packages_in_fake_venv(import_name, expect_package_names, fake_venv):
+    _venv_dir, site_dir = fake_venv(
+        {
+            "foo_package": {"foo"},
+            "bar_package": {"bar", "baz"},
+            "baz_package": {"baz"},
+        }
+    )
+    lpl = LocalPackageResolver({PyEnvSource(site_dir)})
+    actual = {p.package_name for p in suggest_packages(import_name, [lpl])}
+    assert actual == expect_package_names
+
+
+@pytest.mark.parametrize(
+    ("import_name", "expect_package_names"),
+    [
+        pytest.param(
+            "something_else",
+            set(),
+            id="import_not_in_env__yields_no_suggestions",
+        ),
+        pytest.param(
+            "isort",
+            {"isort"},
+            id="import_with_same_name_match_in_venv__yields_package",
+        ),
+        pytest.param(
+            "pkg_resources",
+            {"setuptools"},
+            id="import_with_diff_name_match_in_venv__yields_package",
+        ),
+    ],
+)
+def test_suggest_packages_in_default_sys_path_env_for_tests(
+    import_name, expect_package_names, isolate_default_resolver
+):
+    isolate_default_resolver(default_sys_path_env_for_tests)
+    resolvers = list(setup_resolvers(use_current_env=True))
+    actual = {p.package_name for p in suggest_packages(import_name, resolvers)}
+    assert actual == expect_package_names
