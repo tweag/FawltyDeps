@@ -2,9 +2,10 @@
 
 import logging
 from itertools import groupby
-from typing import Dict, Iterable, Iterator, List
+from typing import Dict, Iterable, List
 
 from fawltydeps.package_types import BasePackageResolver, Package
+from fawltydeps.packages import suggest_packages
 from fawltydeps.settings import Settings
 from fawltydeps.types import (
     DeclaredDependency,
@@ -14,13 +15,6 @@ from fawltydeps.types import (
 )
 
 logger = logging.getLogger(__name__)
-
-
-def _candidates(
-    import_name: str, resolvers: Iterable[BasePackageResolver]
-) -> Iterator[Package]:
-    for resolver in resolvers:
-        yield from resolver.lookup_import(import_name)
 
 
 def calculate_undeclared(
@@ -46,7 +40,7 @@ def calculate_undeclared(
         UndeclaredDependency(
             name,
             [i.source for i in imports],
-            list(_candidates(name, resolvers)),
+            list(suggest_packages(name, resolvers)),
         )
         for name, imports in groupby(undeclared, key=lambda i: i.name)
     ]
