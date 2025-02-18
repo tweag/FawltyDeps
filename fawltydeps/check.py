@@ -4,11 +4,10 @@ import logging
 from itertools import groupby
 from typing import Dict, Iterable, Iterator, List
 
+from fawltydeps.package_types import BasePackageResolver, Package
 from fawltydeps.settings import Settings
 from fawltydeps.types import (
-    BasePackageResolver,
     DeclaredDependency,
-    Package,
     ParsedImport,
     UndeclaredDependency,
     UnusedDependency,

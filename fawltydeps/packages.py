@@ -35,10 +35,9 @@ from importlib_metadata import (
     _top_level_inferred,
 )
 
+from fawltydeps.package_types import BasePackageResolver, Package
 from fawltydeps.types import (
-    BasePackageResolver,
     CustomMapping,
-    Package,
     PyEnvSource,
     UnparseablePathError,
     UnresolvedDependenciesError,
