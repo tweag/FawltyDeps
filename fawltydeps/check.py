@@ -2,9 +2,13 @@
 
 import logging
 from itertools import groupby
-from typing import Dict, List
+from typing import Dict, List, Iterable
 
-from fawltydeps.packages import Package
+from fawltydeps.packages import (
+    BasePackageResolver,
+    Package,
+    resolve_dependencies,
+)
 from fawltydeps.settings import Settings
 from fawltydeps.types import (
     DeclaredDependency,
@@ -15,10 +19,16 @@ from fawltydeps.types import (
 
 logger = logging.getLogger(__name__)
 
+def _candidates(import_name: str, known_packages: Iterable[BasePackageResolver]) -> List[Package]:
+    for resolver in known_packages:
+        for package in resolver.all_packages():
+            if import_name in package.import_names:
+                yield package
 
 def calculate_undeclared(
     imports: List[ParsedImport],
     resolved_deps: Dict[str, Package],
+    known_packages: Iterable[BasePackageResolver],
     settings: Settings,
 ) -> List[UndeclaredDependency]:
     """Calculate which imports are not covered by declared dependencies.
@@ -35,7 +45,7 @@ def calculate_undeclared(
     ]
     undeclared.sort(key=lambda i: i.name)  # groupby requires pre-sorting
     return [
-        UndeclaredDependency(name, [i.source for i in imports])
+        UndeclaredDependency(name, [i.source for i in imports], list(_candidates(name, known_packages)))
         for name, imports in groupby(undeclared, key=lambda i: i.name)
     ]
 
