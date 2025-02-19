@@ -18,7 +18,6 @@ classifiers = [
     "Topic :: Software Development :: Quality Assurance",
     "Intended Audience :: Developers",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -34,9 +33,9 @@ fawltydeps = "fawltydeps.main:main"
 [tool.poetry.dependencies]
 # These are the main dependencies for fawltydeps at runtime.
 # Do not add anything here that is only needed by CI/tests/linters/developers
-python = ">=3.8"
+python = ">=3.9"
 importlib_metadata = ">=6.6.0"
-isort = "^5.10"
+isort = ">=5.10"
 packaging = ">=24.0"
 pip-requirements-parser = ">=32.0.1"
 pydantic = ">=1.10.4,<3.0.0"
@@ -136,6 +135,7 @@ extend-exclude = [
 select = ["ALL"]
 ignore = [
     # Ignore some unwanted checks:
+    "A005",  # Module `...` shadows a Python standard-library module
     "ANN10",  # Deprecated: Missing type annotation for self/cls in (class)method
     "ANN204",  # Missing return type annotation for special method
     "D104",  # Missing docstring in public package
@@ -194,7 +194,10 @@ ignore = [
     # Ignore some groups of checks in our test code
     "ANN",  # Type annotations
     "D10",  # Missing docstrings
-    "TCH00",  # Imports and type checking blocks
+    "A005",  # Module `...` shadows a Python standard-library module
+    "TCH001",  # Move application import `...` into a type-checking block
+    "TCH002",  # Move third-party import `...` into a type-checking block
+    "TCH003",  # Move standard library import `...` into a type-checking block
 
     # Ignore some more specific checks in our test code
     "C408",  # Unnecessary `dict` call (rewrite as a literal)
