@@ -618,9 +618,9 @@ dependency, the _identity mapping_ that FawltyDeps falls back to will still do
 a good job for the majority of dependencies where the import name is indeed
 identical to the package name that you depend on.
 
-### My project is using Python version before v3.8, can I still use FawltyDeps?
+### My project is using Python version before v3.9, can I still use FawltyDeps?
 
-Yes! Even though FawltyDeps itself runs on Python >=v3.8, we try to support
+Yes! Even though FawltyDeps itself runs on Python >=v3.9, we try to support
 analyzing projects that run on any version of Python 3.
 
 As explained in the previous two questions, FawltyDeps itself does not need to
@@ -645,8 +645,8 @@ support further.
 
 A final resort can be to downgrade to an older version of FawltyDeps that is
 compatible with the Python version used in your project. Currently, the only
-Python version we have dropped support for is v3.7, and FawltyDeps v0.18 is
-the last release to support this Python version.
+Python versions we have dropped support for are v3.7 and v3.8. FawltyDeps v0.18
+is the last release to support these Python versions.
 
 ### Why does FawltyDeps fail to match `sklearn` with `scikit-learn`?
 
@@ -706,4 +706,3 @@ repos:
 Yes! This works well when run as a lint step in continuous integration systems.
 
 Please see [tweag/FawltyDeps-action](https://github.com/tweag/FawltyDeps-action) for a GitHub Action that implements FawltyDeps linting. You can also get the FawltyDeps GitHub Action from the [Actions Marketplace](https://github.com/marketplace/actions/fawltydeps).
-
