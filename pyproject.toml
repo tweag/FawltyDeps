@@ -36,7 +36,11 @@ fawltydeps = "fawltydeps.main:main"
 # Do not add anything here that is only needed by CI/tests/linters/developers
 python = ">=3.8"
 importlib_metadata = ">=6.6.0"
-isort = "^5.10"
+isort = [
+    # v6 drops support for Python v3.8:
+    {version = ">=5.10", python = ">=3.9"},
+    {version = ">=5.10,<6", python = "<3.9"},
+]
 packaging = ">=24.0"
 pip-requirements-parser = ">=32.0.1"
 pydantic = ">=1.10.4,<3.0.0"
