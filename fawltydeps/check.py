@@ -16,8 +16,16 @@ from fawltydeps.types import (
 logger = logging.getLogger(__name__)
 
 
-def _candidates(import_name: str, known_packages: Iterable[BasePackageResolver]) -> Iterator[Package]:
-    for resolver in known_packages:
+def suggest_packages(
+    import_name: str, resolvers: Iterable[BasePackageResolver]
+) -> Iterator[Package]:
+    """Return Package objects that claim to provide the given import name.
+
+    We don't have an all-knowing source of what packages may provide an import
+    name, so this is a best-effort guess based on the packages available in the
+    given resolvers.
+    """
+    for resolver in resolvers:
         for package in resolver.all_packages():
             if import_name in package.import_names:
                 yield package
@@ -26,7 +34,7 @@ def _candidates(import_name: str, known_packages: Iterable[BasePackageResolver])
 def calculate_undeclared(
     imports: list[ParsedImport],
     resolved_deps: dict[str, Package],
-    known_packages: Iterable[BasePackageResolver],
+    resolvers: Iterable[BasePackageResolver],
     settings: Settings,
 ) -> list[UndeclaredDependency]:
     """Calculate which imports are not covered by declared dependencies.
@@ -43,7 +51,11 @@ def calculate_undeclared(
     ]
     undeclared.sort(key=lambda i: i.name)  # groupby requires pre-sorting
     return [
-        UndeclaredDependency(name, [i.source for i in imports], list(_candidates(name, known_packages)))
+        UndeclaredDependency(
+            name,
+            [i.source for i in imports],
+            {p.package_name for p in suggest_packages(name, resolvers)},
+        )
         for name, imports in groupby(undeclared, key=lambda i: i.name)
     ]
 

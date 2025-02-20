@@ -288,7 +288,7 @@ class UndeclaredDependency:
 
     name: str
     references: list[Location]
-    candidates: list[Package]
+    candidates: set[str] = field(default_factory=set)
 
     def render(self, *, include_references: bool) -> str:
         """Return a human-readable string representation.
