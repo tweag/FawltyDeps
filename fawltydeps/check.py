@@ -4,8 +4,7 @@ import logging
 from itertools import groupby
 from typing import Dict, Iterable, List
 
-from fawltydeps.package_types import BasePackageResolver, Package
-from fawltydeps.packages import suggest_packages
+from fawltydeps.packages import BasePackageResolver, Package, suggest_packages
 from fawltydeps.settings import Settings
 from fawltydeps.types import (
     DeclaredDependency,
