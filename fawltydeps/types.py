@@ -8,23 +8,9 @@ from dataclasses import asdict, dataclass, field, replace
 from enum import Enum
 from functools import cached_property, total_ordering
 from pathlib import Path
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    List,
-    Literal,
-    Optional,
-    Set,
-    Tuple,
-    Type,
-    Union,
-)
+from typing import Any, Dict, List, Literal, Optional, Set, Tuple, Type, Union
 
 from fawltydeps.utils import hide_dataclass_fields
-
-if TYPE_CHECKING:
-    from fawltydeps.package_types import Package
 
 SpecialPath = Literal["<stdin>"]
 PathOrSpecial = Union[SpecialPath, Path]
@@ -302,7 +288,7 @@ class UndeclaredDependency:
 
     name: str
     references: List[Location]
-    candidates: List[Package] = field(default_factory=list)
+    candidates: List[str] = field(default_factory=list)
 
     def render(self, *, include_references: bool) -> str:
         """Return a human-readable string representation.

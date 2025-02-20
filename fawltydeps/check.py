@@ -40,7 +40,7 @@ def calculate_undeclared(
         UndeclaredDependency(
             name,
             [i.source for i in imports],
-            list(suggest_packages(name, resolvers)),
+            [p.package_name for p in suggest_packages(name, resolvers)],
         )
         for name, imports in groupby(undeclared, key=lambda i: i.name)
     ]
