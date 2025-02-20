@@ -261,6 +261,14 @@ class InstalledPackageResolver(BasePackageResolver):
                 _top_level_declared(dist)  # type: ignore[no-untyped-call]
                 or _top_level_inferred(dist)  # type: ignore[no-untyped-call]
             )
+            if not imports:
+                # We have found an installed package that provides zero import
+                # names. This might be a legitimate tool/application that is
+                # installed into the Python environment without providing any
+                # importable modules, but it might also be a symptom of broken/
+                # incomplete package metadata causing importlib_metadata to not
+                # find any provided import names.
+                logger.debug("  This module does not provide any import names!")
             yield {dist.name: imports}, str(parent_dir)
 
     @cached_property
