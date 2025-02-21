@@ -6,12 +6,14 @@
 
 ### Installation
 
-The library is distributed with PyPI, so simply:
+FawltyDeps is distributed with PyPI, so any way you install PyPI dependencies is supported, for example:
+- `pip install fawltydeps`
+- Use your project manager tool to install it as a development dependency, for example:
+  - `uv add --dev fawltydeps`
+  - `poetry add --group=dev fawltydeps`
+  - `pdm add -dG dev fawltydeps`
+  - manually add `fawltydeps` to you `dev-requirements.txt`
 
-```sh
-pip install fawltydeps
-```
-
-or any other way to install Python packages from PyPI should be enough to make it available in your environment.
-
-Consider adding `fawltydeps` to your development dependencies, to help you catch undeclared and unused dependencies in your projects.
+You can also install FawltyDeps as a stand-alone tool to make it generally available:
+- With uv: `uv tool install fawltydeps`
+- With pipx: `pipx install fawltydeps`
