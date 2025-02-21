@@ -5,7 +5,7 @@ on:
       - main
   workflow_dispatch:
     
-
+# Reference: https://squidfunk.github.io/mkdocs-material/publishing-your-site/#github-pages
 permissions:
   contents: write
 jobs:

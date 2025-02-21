@@ -9,7 +9,7 @@ The name is inspired by the Monty Python-adjacent
 
 📝 Full documentation available at: [tweag.github.io/FawltyDeps](https://tweag.github.io/FawltyDeps/)
 
-![FawltyDeps demo](https://github.com/tweag/FawltyDeps/raw/main/docs/fawltydeps_demo_tqdm.gif)
+![FawltyDeps demo](https://github.com/tweag/FawltyDeps/raw/main/docs/images/fawltydeps_demo_tqdm.gif)
 
 We [invite you](https://discord.gg/V2d9xpgD4D) to join our [Discord channel](https://discord.com/channels/1174731094726295632/1176462512212951090)! It's a great place to ask questions, share your ideas, and collaborate with other contributors.
 
@@ -24,14 +24,13 @@ We [invite you](https://discord.gg/V2d9xpgD4D) to join our [Discord channel](htt
   For example, you have `numpy` listed in your `requirements.txt`, but you never actually `import numpy`.
   Pragmatically, this means that project installation may consume more space than needed and will be more likely to break with future software releases; in short, these are costs paid for no benefit.
 
-Yor project dependencies may look like that:
-
+Your project dependencies may look like this:
 
 <img src="docs/images/fd_dependencies.png" width="800" height="350">
 
-But we would love them to get to this perfect green spot when they are the same:
-<img src="docs/images/fd_dependencies_ideal.png" width="400" height="250">
+But FawltyDeps is all about helping you get to this perfect green spot:
 
+<img src="docs/images/fd_dependencies_ideal.png" width="400" height="250">
 
 ## Installation
 
