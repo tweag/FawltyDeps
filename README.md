@@ -26,11 +26,16 @@ We [invite you](https://discord.gg/V2d9xpgD4D) to join our [Discord channel](htt
 
 Your project dependencies may look like this:
 
-<img src="docs/images/fd_dependencies.png" width="800" height="350">
+
+<p align="center">
+  <img src="docs/images/fd_dependencies.png" width="800px" style="max-width: 800px; height: auto;">
+</p>
 
 But FawltyDeps is all about helping you get to this perfect green spot:
 
-<img src="docs/images/fd_dependencies_ideal.png" width="400" height="250">
+<p align="center">
+  <img src="docs/images/fd_dependencies_ideal.png" width="400px" style="max-width: 400px; height: auto;">
+</p>
 
 ## Installation
 
