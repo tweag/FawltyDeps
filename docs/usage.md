@@ -89,17 +89,17 @@ be explicit about where to find the declared dependencies.
 If no `--deps` option is passed, FawltyDeps will look for the above files under
 the `basepath`, if given, or the current directory (i.e. same as `--deps .`).
 
-### How to match `import` statements with resolved dependencies 
+### How to match `import` statements with declared dependencies 
 
-When FawltyDeps looks for undeclared and unused dependencies, it needs to match
+When FawltyDeps analyzes undeclared and unused dependencies, it needs to match
 `import` statements in your code with corresponding package dependencies
-declared in your project configuration. We support following options:
+declared in your project configuration. We support the following options to help this process:
 
-- `--pyenv`: Where to search for Python environments that have project dependencies installed. Dependency name is taken from the metadata of installed packages.
-- `--custom-mapping-files`: Files containing mapping of dependencies to imports defined by the user.
-- `--install-deps`: Allow FawltyDeps to auto-install declared dependencies into a separate temporary virtualenv to discover the imports they expose.
+- `--pyenv`: Where to search for Python environments (e.g. virtualenvs) that have project dependencies installed. Finding installed dependencies is the best way to correctly match import names  and declared dependencies. If this is not given, the project directories will be searched for Python environments.
+- `--custom-mapping-file`: A TOML file containing mapping of dependencies to import names defined by the user. When provided, this mapping takes precedence over looking through installed packages for a match. This is a power user feature for when you want full control of how FawltyDeps matches import names and package names.
+- `--install-deps`: Allow FawltyDeps to auto-install declared dependencies into a separate temporary virtualenv to discover the imports they expose. This is potentially expensive, but it allows FawltyDeps to provide a good analysis when there is no existing Python environment with project dependencies installed.
 
-See [Explanation](./explanation.md) for more details.
+For more details about the process of matching `import` statements to declared dependencies, please see the [Resolving dependencies section in Explanation](./explanation.md#resolving-dependencies).
 
 
 ## Excluding paths
