@@ -142,7 +142,7 @@ extend-exclude = [
 select = ["ALL"]
 ignore = [
     # Ignore some unwanted checks:
-    "A005",  # Module `...` shadows a Python standard-library module
+    "A005",  # Module `types` shadows a Python standard-library module
     "ANN10",  # Deprecated: Missing type annotation for self/cls in (class)method
     "ANN204",  # Missing return type annotation for special method
     "D104",  # Missing docstring in public package
@@ -201,10 +201,7 @@ ignore = [
     # Ignore some groups of checks in our test code
     "ANN",  # Type annotations
     "D10",  # Missing docstrings
-    "A005",  # Module `...` shadows a Python standard-library module
     "TCH001",  # Move application import `...` into a type-checking block
-    "TCH002",  # Move third-party import `...` into a type-checking block
-    "TCH003",  # Move standard library import `...` into a type-checking block
 
     # Ignore some more specific checks in our test code
     "C408",  # Unnecessary `dict` call (rewrite as a literal)
