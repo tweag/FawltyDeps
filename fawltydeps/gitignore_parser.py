@@ -5,26 +5,12 @@ from __future__ import annotations
 import logging
 import os
 import re
-import sys
 from pathlib import Path
-from typing import (
-    TYPE_CHECKING,
-    Callable,
-    Dict,
-    Iterable,
-    Iterator,
-    List,
-    NamedTuple,
-    Optional,
-    Tuple,
-)
+from typing import Callable, Dict, Iterable, Iterator, List, NamedTuple, Optional, Tuple
 
 from fawltydeps.types import Location
 
-if TYPE_CHECKING or sys.version_info >= (3, 9):
-    CompiledRegex = re.Pattern[str]
-else:  # re.Pattern not subscriptable before Python 3.9
-    CompiledRegex = re.Pattern
+CompiledRegex = re.Pattern[str]
 
 logger = logging.getLogger(__name__)
 
