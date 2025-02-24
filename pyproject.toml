@@ -201,7 +201,6 @@ ignore = [
     # Ignore some groups of checks in our test code
     "ANN",  # Type annotations
     "D10",  # Missing docstrings
-    "TCH001",  # Move application import `...` into a type-checking block
 
     # Ignore some more specific checks in our test code
     "C408",  # Unnecessary `dict` call (rewrite as a literal)
