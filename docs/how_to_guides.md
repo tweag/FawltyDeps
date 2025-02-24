@@ -1,6 +1,25 @@
 # How-to guides
 
-## Ignore development tools
+## General
+### Handle undeclared dependencies
+
+I run `fawltydeps` and get some undeclared dependencies. What can I do with it?
+
+You can run a detailed report to see the exact location (file and line number), in which
+the undeclared dependencies were imported:
+
+```sh
+fawltydeps --detailed
+```
+
+and debug each occurrence. Typically an undeclared dependency can be fixed in a couple of ways:
+
+- A true undeclared dependency is fixed by _declaring_ it, e.g. adding it to your `pyproject.toml` or similar.
+- If you disagree with FawltyDeps' classification, you can always use `--ignore-undeclared` to silence the error. If you're sure this dependency should not have been reported by FawltyDeps, you may consider filing a bug report.
+
+
+## Configuration & run
+### Ignore development tools
 
 How not to display tools like `black` and `pylint` in _unused dependencies_?
 
@@ -16,7 +35,7 @@ fawltydeps --ignore-unused black pylint
 or add an equivalent directive to the FawltyDeps configuration in your
 `pyproject.toml` (see below).
 
-## Store `fawltydeps` options in a configuration file.
+### Store `fawltydeps` options in a configuration file.
 
 You can run:
 
@@ -40,7 +59,8 @@ to get this:
 ignore_unused = ["black", "pylint"]
 ```
 
-## FawltyDeps with a monorepo.
+## Specific use cases
+### FawltyDeps with a monorepo.
 
 Running `fawltydeps` without arguments at the root of a monorepo
 will most likely not give you a useful result:
@@ -67,7 +87,7 @@ run for each `libX`:
 fawltydeps libX
 ```
 
-## Passing Python code via standard input.
+### Passing Python code via standard input.
 
 The `--code` argument accepts a single hyphen (`-`) as a special value meaning
 that code should be read from standard input. When using this you may pipe or
@@ -88,7 +108,8 @@ fawltydeps --code -
 # then press Ctrl+D to signal EOF (end-of-file).
 ```
 
-## Pre-commit hook
+## Integrations
+### Pre-commit hook
 
 Assuming that you already use the [pre-commit](https://pre-commit.com)
 tool, you can add something like this to your project's
@@ -97,8 +118,13 @@ tool, you can add something like this to your project's
 ```yaml
 repos:
   - repo: https://github.com/tweag/FawltyDeps
-    rev: v0.17.0
+    rev: v0.18.0
     hooks:
       - id: check-undeclared
       - id: check-unused
 ```
+
+### GitHub action
+FawltyDeps works well when run as a lint step in continuous integration systems.
+
+Please see [tweag/FawltyDeps-action](https://github.com/tweag/FawltyDeps-action) for a GitHub Action that implements FawltyDeps linting. You can also get the FawltyDeps GitHub Action from the [Actions Marketplace](https://github.com/marketplace/actions/fawltydeps).
