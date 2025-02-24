@@ -1,46 +1,101 @@
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
-
-[project]
+[tool.poetry]
 name = "fawltydeps"
 version = "0.18.0"
 description = "Find undeclared and unused 3rd-party dependencies in your Python project."
+authors = [
+    "Maria Knorps <maria.knorps@tweag.io>",
+    "Nour El Mawass <nour.elmawass@tweag.io>",
+    "Johan Herland <johan.herland@tweag.io>",
+    "Vince Reuter <vince.reuter@tweag.io>",
+    "Zhihan Zhang <zhihan.zhang@tweag.io>",
+]
 readme = "README.md"
-requires-python = ">=3.9,<4.0.0"
-dependencies = ["importlib_metadata (>=8.6.1,<8.7.0)", "isort (>=6.0.0,<6.1.0)", "packaging (>=24.2,<24.3.0)", "pip-requirements-parser (>=32.0.1,<32.1.0)", "pydantic (>=2.10.6,<2.11.0)", "PyYAML (>=6.0.2,<6.1.0)", "tomli (>=2.2.1,<2.3.0)", "uv (>=0.6.2,<0.7.0)"]
 license = "MIT"
+repository = "https://github.com/tweag/FawltyDeps"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Quality Assurance",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Utilities",
+    "Typing :: Typed",
+]
 
-[[project.authors]]
-name = "Maria"
-email = "Knorps <maria.knorps@tweag.io>"
+[tool.poetry.scripts]
+fawltydeps = "fawltydeps.main:main"
 
-[tool.black]
-line-length = 100
+[tool.poetry.dependencies]
+# These are the main dependencies for fawltydeps at runtime.
+# Do not add anything here that is only needed by CI/tests/linters/developers
+python = ">=3.9"
+importlib_metadata = ">=6.6.0"
+isort = ">=5.10"
+packaging = ">=24.0"
+pip-requirements-parser = ">=32.0.1"
+pydantic = ">=1.10.4,<3.0.0"
+PyYAML = ">=6.0.1"
+tomli = {version = "^2.0.1", python = "<3.11"}
 
-[tool.codespell]
-skip = ".git,.mypy_cache,.nox,.vscode,__pycache__,poetry.lock"
-builtin = "clear,rare,informal,usage,code,names"
-ignore-words-list = "jupyter,iff,THIRDPARTY"
-check-filenames = true
-uri-ignore-words-list = "*"
+# Optional dependencies, covered by .extras below:
+uv = {version = ">=0.1.6", optional = true}
 
-[tool.docformatter]
-in-place = true
-recursive = true
-style = "google"
-black = true
-wrap-summaries = 100
-wrap-descriptions = 100
-blank = true
+[tool.poetry.extras]
+uv = ["uv"]
 
-[tool.fawltydeps]
-code = ["fawltydeps"]
-deps = ["pyproject.toml"]
-ignore_unused = ["codespell", "hypothesis", "mypy", "nox", "pytest", "ruff", "types-PyYAML", "uv"]
+[tool.poetry.group.nox]
+optional = true
+
+[tool.poetry.group.nox.dependencies]
+nox = {version="^2024.03.02", extras=["uv"]}
+
+[tool.poetry.group.test]
+optional = true
+
+[tool.poetry.group.test.dependencies]
+hypothesis = "^6.68.2"
+pytest = "^7.1.0"
+
+[tool.poetry.group.lint]
+optional = true
+
+[tool.poetry.group.lint.dependencies]
+hypothesis = "^6.68.2"
+mypy = "^1.0.1"
+nox = "^2024.03.02"
+pytest = "^7.1.0"
+ruff = ">=0.3"
+types-PyYAML = ">=6.0.12.12"
+
+[tool.poetry.group.format]
+optional = true
+
+[tool.poetry.group.format.dependencies]
+codespell = "^2.2.4"
+ruff = ">=0.3"
+
+[tool.poetry.group.dev]
+optional = true
+
+[tool.poetry.group.dev.dependencies]
+# The dev group is a convenience group for FawltyDeps developers. When adding
+# something to the above groups (i.e. something that targets a specific purpose
+# (e.g. a CI action), consider whether it's also useful to have this available
+# in a developers environment
+codespell = "^2.2.4"
+hypothesis = "^6.68.2"
+mypy = "^1.0.1"
+nox = {version="^2024.03.02", extras=["uv"]}
+pytest = "^7.1.0"
+ruff = ">=0.3"
 
 [tool.mypy]
-files = ["*.py", "fawltydeps/*.py", "tests/*.py"]
+files = ['*.py', 'fawltydeps/*.py', 'tests/*.py']
 plugins = ["pydantic.mypy"]
 warn_redundant_casts = true
 warn_unused_ignores = true
@@ -61,354 +116,122 @@ disallow_subclassing_any = true
 implicit_optional = false
 strict_optional = true
 
-[tool.poetry]
-repository = "https://github.com/tweag/FawltyDeps"
-classifiers = ["Development Status :: 4 - Beta", "Topic :: Software Development :: Libraries :: Python Modules", "Topic :: Software Development :: Quality Assurance", "Intended Audience :: Developers", "Programming Language :: Python", "Programming Language :: Python :: 3.9", "Programming Language :: Python :: 3.10", "Programming Language :: Python :: 3.11", "Programming Language :: Python :: 3.12", "Programming Language :: Python :: 3.13", "Topic :: Utilities", "Typing :: Typed"]
-
-[tool.poetry.extras]
-uv = ["uv"]
-
-[tool.poetry.group.dev]
-optional = true
-
-[tool.poetry.group.dev.dependencies]
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.actionlint-py]
-version = "~1.7.7.23"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.autoflake]
-version = "~2.3.1"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.black]
-version = "~25.1.0"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.codespell]
-version = "~2.4.1"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.darglint]
-version = "~1.8.1"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.editorconfig-checker]
-version = "~3.2.0"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8]
-version = "~7.1.2"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8-aaa]
-version = "~0.17.0"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8-assertive]
-version = "~2.1.0"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8-async]
-version = "~25.2.3"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8-bandit]
-version = "~4.1.1"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8-bugbear]
-version = "~24.12.12"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8-builtins]
-version = "~2.5.0"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8-classmethod-staticmethod]
-version = "~2.1"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8-commas]
-version = "~4.0.0"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8-comments]
-version = "~0.1.2"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8-comprehensions]
-version = "~3.16.0"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8-continuation]
-version = "~1.0.5"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8-datetime-utcnow-plugin]
-version = "~0.1.2"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8-deprecated]
-version = "~2.2.1"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8-docstring-checker]
-version = "~1.2"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8-docstrings]
-version = "~1.7.0"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8-ensure-ascii]
-version = "~1.0.0"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8-eradicate]
-version = "~1.5.0"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8-function-order]
-version = "~0.0.5"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8-if-statements]
-version = "~1.0.0"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8-implicit-str-concat]
-version = "~0.5.0"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8-import-order]
-version = "~0.18.2"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8-init-return]
-version = "~1.0.1"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8-logging-format]
-version = "~2024.24.12"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8-mock]
-version = "~0.4"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8-mutable]
-version = "~1.2.0"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8-newspaper-style]
-version = "~0.4.3"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8-pep3101]
-version = "~2.1.0"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8-pep585]
-version = "~0.1.7"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8-pie]
-version = "~0.16.0"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8-print]
-version = "~5.0.0"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8-printf-formatting]
-version = "~1.1.2"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8-pyi]
-version = "~24.9.0"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8-quotes]
-version = "~3.4.0"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8-raise]
-version = "~0.0.5"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8-secure-coding-standard]
-version = "~1.4.1"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8-self]
-version = "~0.2.2"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8-sfs]
-version = "~1.0.0"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.flake8-simplify]
-version = "~0.21.0"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.hypothesis]
-version = "~6.126.0"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.isort]
-version = "~6.0.0"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.mypy]
-version = "~1.15.0"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.nox]
-version = "~2025.2.9"
-extras = ["uv"]
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.pre-commit]
-version = "~4.1.0"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.pretty-toml-sort]
-version = "~0.0.3"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.pylint]
-version = "~3.3.4"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.pyright]
-version = "~1.1.394"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.pytest]
-version = "~8.3.4"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.pytest-cov]
-version = "~6.0.0"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.pytest-dotenv]
-version = "~0.5.2"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.pytest-xdist]
-version = "~3.6.1"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.ruff]
-version = "~0.9.7"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.shellcheck-py]
-version = "~0.10.0.1"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.toml]
-version = "~0.10.2"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.vermin]
-version = "~1.6.0"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.vulture]
-version = "~2.14"
-python = "3.9"
-
-[tool.poetry.group.dev.dependencies.yamllint]
-version = "~1.35.1"
-python = "3.9"
-
-[tool.poetry.group.format]
-optional = true
-
-[tool.poetry.group.format.dependencies]
-codespell = "^2.2.4"
-ruff = ">=0.3"
-
-[tool.poetry.group.lint]
-optional = true
-
-[tool.poetry.group.lint.dependencies]
-hypothesis = "^6.68.2"
-mypy = "^1.0.1"
-nox = "^2024.03.02"
-pytest = "^7.1.0"
-ruff = ">=0.3"
-types-PyYAML = ">=6.0.12.12"
-
-[tool.poetry.group.nox]
-optional = true
-
-[tool.poetry.group.nox.dependencies.nox]
-version = "^2024.03.02"
-extras = ["uv"]
-
-[tool.poetry.group.test]
-optional = true
-
-[tool.poetry.group.test.dependencies]
-hypothesis = "^6.68.2"
-pytest = "^7.1.0"
-
-[tool.poetry.scripts]
-fawltydeps = "fawltydeps.main:main"
-
-[tool.pylint.BASIC]
-bad-names = ["map", "filter"]
-good-names = ["i", "j", "k", "e", "ex", "Run", "_", "id", "rv", "c", "do_GET"]
-
-[tool.pylint.FORMAT]
-max-line-length = 100
-max-module-lines = 1000
-indent-after-paren = 4
-
-[tool.pylint.MASTER]
-jobs = 1
-extension-pkg-whitelist = ["pydantic"]
-ignore-paths = ".*\\.nox/.*"
-recursive = "y"
-
-[tool.pylint.REPORTS]
-output-format = "colorized"
-
-[tool.pylint.SIMILARITIES]
-min-similarity-lines = 4
-ignore-comments = "yes"
-ignore-docstrings = "yes"
-ignore-imports = "no"
-
-[tool.pylint.VARIABLES]
-dummy-variables-rgx = "_$|dummy"
-
-[tool.pyright]
-typeCheckingMode = "strict"
-reportImportCycles = true
-
 [tool.pytest.ini_options]
 minversion = 7.0
-markers = ["integration: marks integration tests (disabled by default, enable with '-m integration')"]
+markers = [
+    "integration: marks integration tests (disabled by default, enable with '-m integration')",
+]
 addopts = "-m 'not integration'"
 cache_dir = "~/.cache/pytest"
 
 [tool.ruff]
 target-version = "py37"
 extend-include = ["*.ipynb"]
-extend-exclude = ["tests/sample_projects/legacy_encoding/big5.py"]
+extend-exclude = [
+    "tests/sample_projects/legacy_encoding/big5.py",  # Fails with E902 (not UTF-8)
+]
 
 [tool.ruff.lint]
 select = ["ALL"]
-ignore = ["A005", "ANN10", "ANN204", "D104", "D105", "D107", "D203", "D213", "EM", "FIX002", "G004", "PERF203", "TD", "TRY003", "TRY301", "TRY400", "FA100", "TCH002", "TCH003", "UP006", "UP007", "W191", "E111", "E114", "E117", "D206", "D300", "Q000", "Q001", "Q002", "Q003", "COM812", "COM819", "ISC001", "ISC002", "E501"]
+ignore = [
+    # Ignore some unwanted checks:
+    "A005",  # Module `...` shadows a Python standard-library module
+    "ANN10",  # Deprecated: Missing type annotation for self/cls in (class)method
+    "ANN204",  # Missing return type annotation for special method
+    "D104",  # Missing docstring in public package
+    "D105",  # Missing docstring in magic method
+    "D107",  # Missing docstring in `__init__`
+    "D203",  # one-blank-line-before-class conflicts with D211: no-blank-line-before-class
+    "D213",  # multi-line-summary-second-line conflicts with D212: multi-line-summary-first-line
+    "EM",  # Exception must not use a (f-)string literal, assign to variable first
+
+    # Probably not fixed so soon:
+    "FIX002",  # Line contains TODO, consider resolving the issue
+    "G004",  # Logging statement uses f-string
+    "PERF203",  # `try`-`except` within a loop incurs performance overhead
+    "TD",  # Ignore checks on TODO comments
+    "TRY003",  # Avoid specifying long messages outside the exception class
+    "TRY301",  # Abstract `raise` to an inner function
+    "TRY400",  # Use `logging.exception` instead of `logging.error`
+
+    # To be fixed in a larger refactoring of our type annotations
+    "FA100",  # Missing `from __future__ import annotations`, but uses `typing.*`
+    "TCH002",  # Move third-party import `...` into a type-checking block
+    "TCH003",  # Move standard library import `...` into a type-checking block
+    "UP006",  # Use `list` instead of `List` for type annotation
+    "UP007",  # Use `X | Y` for type annotations
+
+    # Ruff recommends avoiding these checks when using `ruff format`.
+    # Details: https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules
+    "W191",  # tab-indentation
+    "E111",  # indentation-with-invalid-multiple
+    "E114",  # indentation-with-invalid-multiple-comment
+    "E117",  # over-indented
+    "D206",  # indent-with-spaces
+    "D300",  # triple-single-quotes
+    "Q000",  # bad-quotes-inline-string
+    "Q001",  # bad-quotes-multiline-string
+    "Q002",  # bad-quotes-docstring
+    "Q003",  # avoidable-escaped-quote
+    "COM812",  # missing-trailing-comma
+    "COM819",  # prohibited-trailing-comma
+    "ISC001",  # single-line-implicit-string-concatenation
+    "ISC002",  # multi-line-implicit-string-concatenation
+    "E501",  # line-too-long
+]
 
 [tool.ruff.lint.per-file-ignores]
-"noxfile.py" = ["ANN", "D"]
-"tests/sample_projects/*" = ["F401", "ICN001", "INP001"]
-"tests/*" = ["ANN", "D10", "A005", "TCH001", "TCH002", "TCH003", "C408", "D401", "N802", "N806", "PLR0913", "PT018", "S101", "S603", "T201"]
+"noxfile.py" = [
+    "ANN",  # Missing type annotations
+    "D",  # Missing docstrings
+]
+"tests/sample_projects/*" = [
+    "F401",  # Allow unused imports in sample projects
+    "ICN001",  # `<module>` should be imported as `<mod>`
+    "INP001",  # File `...` is part of an implicit namespace package. Add an `__init__.py`.
+]
+"tests/*" = [
+    # Ignore some groups of checks in our test code
+    "ANN",  # Type annotations
+    "D10",  # Missing docstrings
+    "A005",  # Module `...` shadows a Python standard-library module
+    "TCH001",  # Move application import `...` into a type-checking block
+    "TCH002",  # Move third-party import `...` into a type-checking block
+    "TCH003",  # Move standard library import `...` into a type-checking block
+
+    # Ignore some more specific checks in our test code
+    "C408",  # Unnecessary `dict` call (rewrite as a literal)
+    "D401",  # First line of docstring should be in imperative mood
+    "N802",  # Function name `...` should be lowercase
+    "N806",  # Variable `...` in function should be lowercase
+    "PLR0913",  # Too many arguments in function definition
+    "PT018",  # Assertion should be broken down into multiple parts
+    "S101",  # Use of `assert` detected
+    "S603",  # `subprocess` call: check for execution of untrusted input
+    "T201",  # `print` found
+]
+
+[tool.codespell]
+skip = ".git,.mypy_cache,.nox,.vscode,__pycache__,poetry.lock"
+builtin = "clear,rare,informal,usage,code,names"
+ignore-words-list = "jupyter,iff,THIRDPARTY"
+check-filenames = true
+uri-ignore-words-list = "*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.fawltydeps]
+code = ["fawltydeps"]
+deps = ["pyproject.toml"]
+ignore_unused = [
+    "codespell",
+    "hypothesis",
+    "mypy",
+    "nox",
+    "pytest",
+    "ruff",
+    "types-PyYAML",
+    "uv",
+]
