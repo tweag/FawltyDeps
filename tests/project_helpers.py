@@ -16,14 +16,26 @@ from functools import reduce
 from operator import or_ as bitwise_or
 from pathlib import Path
 from textwrap import dedent
-from typing import Any, Callable, Dict, Iterable, Iterator, List, Optional, Set, Type
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    Iterable,
+    Iterator,
+    List,
+    Optional,
+    Set,
+    Type,
+)
 from urllib.parse import urlparse
 from urllib.request import urlretrieve
 
 import pytest
 
-from fawltydeps.main import Analysis
-from fawltydeps.types import TomlData
+if TYPE_CHECKING:
+    from fawltydeps.main import Analysis
+    from fawltydeps.types import TomlData
 
 if sys.version_info >= (3, 11):
     import tomllib

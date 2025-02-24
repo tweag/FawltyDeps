@@ -15,13 +15,12 @@ import sys
 import tarfile
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterator, List, Optional
+from typing import TYPE_CHECKING, Iterator, List, Optional
 
 import pytest
 from packaging.requirements import Requirement
 
 from fawltydeps.packages import LocalPackageResolver, pyenv_sources
-from fawltydeps.types import TomlData
 
 from .project_helpers import (
     BaseExperiment,
@@ -30,6 +29,9 @@ from .project_helpers import (
     TarballPackage,
     parse_toml,
 )
+
+if TYPE_CHECKING:
+    from fawltydeps.types import TomlData
 
 logger = logging.getLogger(__name__)
 

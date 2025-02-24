@@ -24,16 +24,18 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterator, List, Optional
+from typing import TYPE_CHECKING, Iterator, List, Optional
 
 import pytest
 
 from fawltydeps.main import Analysis
 from fawltydeps.settings import Action, Settings, print_toml_config
-from fawltydeps.types import TomlData
 from tests.utils import SAMPLE_PROJECTS_DIR
 
 from .project_helpers import BaseExperiment, BaseProject, parse_toml
+
+if TYPE_CHECKING:
+    from fawltydeps.types import TomlData
 
 # These are (slow) integration tests that are disabled by default.
 pytestmark = pytest.mark.integration
