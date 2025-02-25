@@ -85,13 +85,10 @@ def generate_expected_resolved_deps(
     It just constructs a valid dict of resolved dependencies that respects
     the category of the dependencies in each argument.
     """
-    ret = {}
-    ret.update(
-        {
-            dep: Package(dep, imports, SysPathPackageResolver)
-            for dep, imports in locally_installed_deps.items()
-        }
-    )
+    ret = {
+        dep: Package(dep, imports, SysPathPackageResolver)
+        for dep, imports in locally_installed_deps.items()
+    }
     if user_defined_deps:
         user_mapping = UserDefinedMapping(
             {user_mapping_file} if user_mapping_file else None,
