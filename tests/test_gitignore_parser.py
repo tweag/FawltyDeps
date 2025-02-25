@@ -194,7 +194,7 @@ def test_gitignore_parser_w_abs_paths(vector: GitignoreParserTestVector):
         """Make relative paths absolute. on both POSIX and Windows."""
         if sys.platform.startswith("win"):
             return Path("C:/some/dir", str(path))
-        return Path("/some/dir", path)  # type: ignore[unreachable]
+        return Path("/some/dir", path)
 
     base_dir = absolutify(vector.base_dir)
     rules = list(

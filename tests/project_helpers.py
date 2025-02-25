@@ -59,7 +59,7 @@ class Compatibility(Flag):
         """Return the current platform as a compatibility flag."""
         if sys.platform.startswith("win"):
             return cls.WINDOWS
-        if sys.platform.startswith("darwin"):  # type: ignore[unreachable]
+        if sys.platform.startswith("darwin"):
             return cls.MACOS
         if sys.platform.startswith("linux"):
             return cls.LINUX
@@ -183,7 +183,7 @@ class CachedExperimentVenv:
         if sys.platform.startswith("win"):  # Windows
             return venv_path / "Scripts" / "python.exe"
         # Assume POSIX
-        return venv_path / "bin" / "python"  # type: ignore[unreachable]
+        return venv_path / "bin" / "python"
 
     def _venv_commands_pip(
         self, venv_path: Path, python_exe: str

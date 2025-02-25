@@ -48,9 +48,9 @@ def walk_dir(path: Path) -> Iterator[Path]:
 def assert_unordered_equivalence(actual: Iterable[Any], expect: Iterable[Any]):
     actual_s = sorted(actual)
     expect_s = sorted(expect)
-    assert (
-        actual_s == expect_s
-    ), f"--- EXPECTED ---\n{pformat(expect_s)}\n--- BUT GOT ---\n{pformat(actual_s)}"
+    assert actual_s == expect_s, (
+        f"--- EXPECTED ---\n{pformat(expect_s)}\n--- BUT GOT ---\n{pformat(actual_s)}"
+    )
 
 
 def collect_dep_names(deps: Iterable[DeclaredDependency]) -> Iterable[str]:

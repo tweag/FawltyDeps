@@ -55,5 +55,5 @@ def site_packages(venv_dir: Path = Path()) -> Path:
     if sys.platform.startswith("win"):
         return venv_dir / "Lib" / "site-packages"
     # Assume POSIX
-    major, minor = sys.version_info[:2]  # type: ignore[unreachable]
+    major, minor = sys.version_info[:2]
     return venv_dir / f"lib/python{major}.{minor}/site-packages"
