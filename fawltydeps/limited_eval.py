@@ -2,7 +2,6 @@
 
 import ast
 import logging
-import sys
 from typing import Dict, List, Union
 
 from fawltydeps.types import Location
@@ -37,10 +36,7 @@ class VariableTracker:
 
     def _show(self, node: ast.AST) -> str:
         """Human-readable representation of this node, mostly for debug logs."""
-        if sys.version_info >= (3, 9):
-            code = ast.unparse(node)
-        else:
-            code = "<code>"
+        code = ast.unparse(node)
         return f"{code} @ {self.source.supply(lineno=node.lineno)}"  # type: ignore[attr-defined]
 
     def _dump(self, node: ast.AST) -> str:
@@ -80,8 +76,7 @@ class VariableTracker:
               result of a function call.
         """
         logger.debug(f"Resolving {self._dump(node)}")
-        # Python v3.8 changed from ast.Str to ast.Constant
-        if isinstance(node, (ast.Constant, ast.Str)):
+        if isinstance(node, ast.Constant):
             return str(ast.literal_eval(node))
         if isinstance(node, ast.List):
             return [str(self.resolve(element)) for element in node.elts]
