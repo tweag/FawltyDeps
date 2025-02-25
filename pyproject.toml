@@ -165,7 +165,6 @@ ignore = [
     "FA100",  # Missing `from __future__ import annotations`, but uses `typing.*`
     "TC002",  # Move third-party import `...` into a type-checking block
     "TC003",  # Move standard library import `...` into a type-checking block
-    "UP006",  # Use `list` instead of `List` for type annotation
     "UP007",  # Use `X | Y` for type annotations
 
     # Ruff recommends avoiding these checks when using `ruff format`.

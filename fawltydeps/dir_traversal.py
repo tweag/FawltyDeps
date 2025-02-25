@@ -4,20 +4,11 @@ from __future__ import annotations
 
 import logging
 import os
+from collections.abc import Iterator
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
-from typing import (
-    Dict,
-    FrozenSet,
-    Generic,
-    Iterator,
-    List,
-    NamedTuple,
-    Optional,
-    Set,
-    TypeVar,
-)
+from typing import Generic, NamedTuple, Optional, TypeVar
 
 from fawltydeps.gitignore_parser import Rule as ExcludeRule
 from fawltydeps.gitignore_parser import match_rules, parse_gitignore
@@ -68,11 +59,11 @@ class TraversalStep(Generic[T]):
     """
 
     dir: Path  # the current directory being traversed.
-    subdirs: FrozenSet[Path]  # non-excluded subdirs within the current dir
-    files: FrozenSet[Path]  # non-excluded files within the current dir
-    attached: List[T]  # data attached to the current dir or any of its parents
-    excluded_subdirs: FrozenSet[Path]  # excluded subdirs within the current dir
-    excluded_files: FrozenSet[Path]  # excluded files within the current dir
+    subdirs: frozenset[Path]  # non-excluded subdirs within the current dir
+    files: frozenset[Path]  # non-excluded files within the current dir
+    attached: list[T]  # data attached to the current dir or any of its parents
+    excluded_subdirs: frozenset[Path]  # excluded subdirs within the current dir
+    excluded_files: frozenset[Path]  # excluded files within the current dir
 
 
 @dataclass
@@ -107,10 +98,10 @@ class DirectoryTraversal(Generic[T]):
     again.
     """
 
-    to_traverse: Dict[Path, DirId] = field(default_factory=dict)
-    skip_dirs: Set[DirId] = field(default_factory=set)  # includes already-traversed
-    attached: Dict[DirId, List[T]] = field(default_factory=dict)
-    exclude_rules: List[ExcludeRule] = field(default_factory=list)
+    to_traverse: dict[Path, DirId] = field(default_factory=dict)
+    skip_dirs: set[DirId] = field(default_factory=set)  # includes already-traversed
+    attached: dict[DirId, list[T]] = field(default_factory=dict)
+    exclude_rules: list[ExcludeRule] = field(default_factory=list)
 
     def add(self, dir_path: Path, *attach_data: T) -> None:
         """Add one directory to this traversal, optionally w/attached data.

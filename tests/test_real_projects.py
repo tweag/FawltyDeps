@@ -13,9 +13,10 @@ import logging
 import subprocess
 import sys
 import tarfile
+from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Iterator, List, Optional
+from typing import TYPE_CHECKING, Optional
 
 import pytest
 from packaging.requirements import Requirement
@@ -44,7 +45,7 @@ pytestmark = pytest.mark.integration
 REAL_PROJECTS_DIR = Path(__file__).with_name("real_projects")
 
 
-def verify_requirements(venv_path: Path, requirements: List[str]) -> None:
+def verify_requirements(venv_path: Path, requirements: list[str]) -> None:
     deps = {
         Requirement(req).name
         for req in requirements
@@ -75,7 +76,7 @@ class Experiment(BaseExperiment):
     See BaseExperiment for details on the inherited members.
     """
 
-    args: List[str]
+    args: list[str]
 
     @classmethod
     def from_toml(cls, name: str, data: TomlData) -> Experiment:

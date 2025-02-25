@@ -7,7 +7,6 @@ project, and verify that we get the expected exit code.
 
 from dataclasses import dataclass, field
 from textwrap import dedent
-from typing import List
 
 import pytest
 
@@ -22,8 +21,8 @@ class ConfiguredRunTestVector:
 
     id: str
     toml_contents: str = ""
-    imports: List[str] = field(default_factory=list)
-    dependencies: List[str] = field(default_factory=list)
+    imports: list[str] = field(default_factory=list)
+    dependencies: list[str] = field(default_factory=list)
     expect: int = 0  # exit code
 
 

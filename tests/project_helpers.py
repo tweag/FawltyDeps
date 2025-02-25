@@ -9,6 +9,7 @@ import shutil
 import subprocess
 import sys
 from abc import ABC, abstractmethod
+from collections.abc import Callable, Iterable, Iterator
 from dataclasses import dataclass
 from dataclasses import fields as dataclass_fields
 from enum import Flag, auto
@@ -16,18 +17,7 @@ from functools import reduce
 from operator import or_ as bitwise_or
 from pathlib import Path
 from textwrap import dedent
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    Dict,
-    Iterable,
-    Iterator,
-    List,
-    Optional,
-    Set,
-    Type,
-)
+from typing import TYPE_CHECKING, Any, Optional
 from urllib.parse import urlparse
 from urllib.request import urlretrieve
 
@@ -42,7 +32,7 @@ if sys.version_info >= (3, 11):
 else:
     import tomli as tomllib
 
-JsonData = Dict[str, Any]
+JsonData = dict[str, Any]
 
 PACKAGES_TOML_PATH = Path(__file__).with_name("python_packages.toml")
 
@@ -187,7 +177,7 @@ class CachedExperimentVenv:
     ~/.cache/pytest/d/...
     """
 
-    requirements: List[str]  # PEP 508 requirements, passed to (uv) pip install
+    requirements: list[str]  # PEP 508 requirements, passed to (uv) pip install
 
     @staticmethod
     def _venv_python(venv_path: Path) -> Path:
@@ -199,7 +189,7 @@ class CachedExperimentVenv:
 
     def _venv_commands_pip(
         self, venv_path: Path, python_exe: str
-    ) -> Iterator[List[str]]:
+    ) -> Iterator[list[str]]:
         """Yield pip commands to run in order to create/populate venv_path."""
         venv_python = str(self._venv_python(venv_path))
         yield [python_exe, "-m", "venv", str(venv_path)]
@@ -209,7 +199,7 @@ class CachedExperimentVenv:
 
     def _venv_commands_uv(
         self, venv_path: Path, python_exe: str, uv_exe: str
-    ) -> Iterator[List[str]]:
+    ) -> Iterator[list[str]]:
         """Yield uv commands to run in order to create/populate venv_path."""
         venv_python = str(self._venv_python(venv_path))
         yield [uv_exe, "venv", "--python", python_exe, str(venv_path)]
@@ -222,7 +212,7 @@ class CachedExperimentVenv:
         python_exe: Optional[str] = None,
         *,
         prefer_uv_if_available: Optional[bool] = True,
-    ) -> Iterator[List[str]]:
+    ) -> Iterator[list[str]]:
         """Yield commands to run in order to create and populate the given venv.
 
         The commands are yielded as argv-style lists of strings. The commands
@@ -290,16 +280,16 @@ class AnalysisExpectations:
     member match the expected set stored here.
     """
 
-    imports: Optional[Set[str]] = None
-    declared_deps: Optional[Set[str]] = None
-    undeclared_deps: Optional[Set[str]] = None
-    unused_deps: Optional[Set[str]] = None
+    imports: Optional[set[str]] = None
+    declared_deps: Optional[set[str]] = None
+    undeclared_deps: Optional[set[str]] = None
+    unused_deps: Optional[set[str]] = None
 
     @classmethod
     def from_toml(cls, data: TomlData) -> AnalysisExpectations:
         """Read expectations from the given TOML table."""
 
-        def set_or_none(data: Optional[Iterable[str]]) -> Optional[Set[str]]:
+        def set_or_none(data: Optional[Iterable[str]]) -> Optional[set[str]]:
             return None if data is None else set(data)
 
         return cls(
@@ -309,7 +299,7 @@ class AnalysisExpectations:
             unused_deps=set_or_none(data.get("unused_deps")),
         )
 
-    def _verify_members(self, member_extractor: Callable[[str], Set[str]]) -> None:
+    def _verify_members(self, member_extractor: Callable[[str], set[str]]) -> None:
         for member in dataclass_fields(self):
             expected_names = getattr(self, member.name)
             if expected_names is None:
@@ -351,11 +341,11 @@ class BaseExperiment(ABC):
     name: str
     description: Optional[str]
     compatibility: Optional[Compatibility]
-    requirements: List[str]
+    requirements: list[str]
     expectations: AnalysisExpectations
 
     @staticmethod
-    def _init_args_from_toml(name: str, data: TomlData) -> Dict[str, Any]:
+    def _init_args_from_toml(name: str, data: TomlData) -> dict[str, Any]:
         """Extract members from TOML into kwargs for a subclass constructor."""
         description = data.get("description")
         compat = data.get("compatibility")
@@ -406,13 +396,13 @@ class BaseProject(ABC):
     name: str
     description: Optional[str]
     compatibility: Compatibility
-    experiments: List[BaseExperiment]
+    experiments: list[BaseExperiment]
 
     @staticmethod
     def _init_args_from_toml(
         toml_data: TomlData,
-        ExperimentClass: Type[BaseExperiment],  # noqa: N803
-    ) -> Dict[str, Any]:
+        ExperimentClass: type[BaseExperiment],  # noqa: N803
+    ) -> dict[str, Any]:
         """Extract members from TOML into kwargs for a subclass constructor."""
         # We ultimately _trust_ the .toml files read here, so we can skip all
         # the usual error checking associated with validating external data.

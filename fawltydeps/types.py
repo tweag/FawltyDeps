@@ -8,14 +8,14 @@ from dataclasses import asdict, dataclass, field, replace
 from enum import Enum
 from functools import cached_property, total_ordering
 from pathlib import Path
-from typing import Any, Dict, List, Literal, Optional, Set, Tuple, Type, Union
+from typing import Any, Literal, Optional, Union
 
 from fawltydeps.utils import hide_dataclass_fields
 
 SpecialPath = Literal["<stdin>"]
 PathOrSpecial = Union[SpecialPath, Path]
-TomlData = Dict[str, Any]  # type: ignore[explicit-any]
-CustomMapping = Dict[str, List[str]]
+TomlData = dict[str, Any]  # type: ignore[explicit-any]
+CustomMapping = dict[str, list[str]]
 
 
 class UnparseablePathError(Exception):
@@ -28,7 +28,7 @@ class UnparseablePathError(Exception):
 class UnresolvedDependenciesError(Exception):
     """Exception type when not all dependencies were are resolved."""
 
-    def __init__(self, names: Set[str]):
+    def __init__(self, names: set[str]):
         self.msg = f"Unresolved dependencies: {', '.join(sorted(names))}"
 
 
@@ -53,7 +53,7 @@ class Source(ABC):
     This exists to inject the class name of the subclass into our JSON output.
     """
 
-    source_type: Type[Source] = field(init=False)
+    source_type: type[Source] = field(init=False)
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "source_type", self.__class__)
@@ -217,7 +217,7 @@ class Location:
     # tuple created on demand and cached inside the instance:
 
     @cached_property
-    def _sort_key(self) -> Tuple[str, int, int]:
+    def _sort_key(self) -> tuple[str, int, int]:
         """Return a sortable key that uniquely reflects this instance.
 
         This is used to compare Location objects, and determine how they sort
@@ -287,7 +287,7 @@ class UndeclaredDependency:
     """Undeclared dependency found by analysis in the 'check' module."""
 
     name: str
-    references: List[Location]
+    references: list[Location]
 
     def render(self, *, include_references: bool) -> str:
         """Return a human-readable string representation.
@@ -304,7 +304,7 @@ class UnusedDependency:
     """Unused dependency found by analysis in the 'check' module."""
 
     name: str
-    references: List[Location]
+    references: list[Location]
 
     def render(self, *, include_references: bool) -> str:
         """Return a human-readable string representation.

@@ -5,22 +5,11 @@ import logging
 import random
 import string
 import sys
+from collections.abc import Iterable, Iterator
 from dataclasses import dataclass, field
 from itertools import chain, combinations, permutations, product
 from pathlib import Path
-from typing import (
-    Any,
-    Dict,
-    Iterable,
-    Iterator,
-    List,
-    Optional,
-    Set,
-    Tuple,
-    Type,
-    TypeVar,
-    Union,
-)
+from typing import Any, Optional, TypeVar, Union
 
 import pytest
 from hypothesis import given, strategies
@@ -59,7 +48,7 @@ EXPECT_DEFAULTS = dict(
 )
 
 
-def run_build_settings(cmdl: List[str], config_file: Optional[Path] = None) -> Settings:
+def run_build_settings(cmdl: list[str], config_file: Optional[Path] = None) -> Settings:
     """Combine the two relevant function calls to get a Settings."""
     parser = build_parser()
     args = parser.parse_args(cmdl)
@@ -87,7 +76,7 @@ def setup_env(monkeypatch):
     return _inner
 
 
-def paths_sets_equal(a: Set[str], b: Set[str]) -> bool:
+def paths_sets_equal(a: set[str], b: set[str]) -> bool:
     """Compare two sets of strings as if they were sets of paths."""
     return {Path(element) for element in a} == {Path(element) for element in b}
 
@@ -117,10 +106,10 @@ Item = TypeVar("Item")
 
 
 def subsets(
-    items: Set[Item],
+    items: set[Item],
     min_size: int = 0,
     max_size: int = sys.maxsize,
-) -> Iterator[Set[Item]]:
+) -> Iterator[set[Item]]:
     """Generate all subsets of the given set within the given size constraints.
 
     This is equivalent to the "power set" with a size filter applied.
@@ -203,7 +192,7 @@ OPTION_VALUES = {
 }
 
 
-def multivalued_optargs_grid() -> Iterable[List[str]]:
+def multivalued_optargs_grid() -> Iterable[list[str]]:
     """Create shuffled argument list from OPTION_VALUES.
 
     Generate command-line option/argument combinations which mix order and
@@ -212,8 +201,8 @@ def multivalued_optargs_grid() -> Iterable[List[str]]:
     T = TypeVar("T")
 
     def subsequence_pairs(
-        xs: Tuple[T, ...],
-    ) -> Iterable[Tuple[Tuple[T, ...], Tuple[T, ...]]]:
+        xs: tuple[T, ...],
+    ) -> Iterable[tuple[tuple[T, ...], tuple[T, ...]]]:
         assert len(xs) >= 2  # noqa: PLR2004
         for i in range(1, len(xs)):
             yield xs[:i], xs[i:]
@@ -257,9 +246,9 @@ class SettingsTestVector:
 
     id: str
     config: Optional[Union[str, TomlData]] = None
-    env: Dict[str, str] = field(default_factory=dict)
-    cmdline: Dict[str, Any] = field(default_factory=dict)
-    expect: Union[Dict[str, Any], Type[Exception]] = field(
+    env: dict[str, str] = field(default_factory=dict)
+    cmdline: dict[str, Any] = field(default_factory=dict)
+    expect: Union[dict[str, Any], type[Exception]] = field(
         default_factory=lambda: EXPECT_DEFAULTS
     )
 
@@ -489,5 +478,5 @@ def test_settings__missing_config_file__uses_defaults_and_warns(tmp_path, caplog
     assert missing_file_str in caplog.text
 
 
-def to_path_set(ps: Iterable[str]) -> Set[Path]:
+def to_path_set(ps: Iterable[str]) -> set[Path]:
     return set(map(Path, ps))

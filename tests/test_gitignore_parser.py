@@ -2,7 +2,7 @@
 
 import sys
 from pathlib import Path
-from typing import List, NamedTuple, Union
+from typing import NamedTuple, Union
 
 import pytest
 
@@ -15,9 +15,9 @@ class GitignoreParserTestVector(NamedTuple):
     """Test patterns expected matches/non-matches."""
 
     id: str
-    patterns: List[str]
-    does_match: List[PathOrStr]
-    doesnt_match: List[PathOrStr]
+    patterns: list[str]
+    does_match: list[PathOrStr]
+    doesnt_match: list[PathOrStr]
     base_dir: str = "."
 
 

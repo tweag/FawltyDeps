@@ -1,8 +1,10 @@
 """Traverse a project to identify appropriate inputs to FawltyDeps."""
 
 import logging
+from collections.abc import Iterator
+from collections.abc import Set as AbstractSet
 from pathlib import Path
-from typing import AbstractSet, Iterator, Optional, Set, Tuple, Type, Union
+from typing import Optional, Union
 
 from fawltydeps.dir_traversal import DirectoryTraversal
 from fawltydeps.extract_deps import validate_deps_source
@@ -25,15 +27,15 @@ logger = logging.getLogger(__name__)
 # information about what we're looking for during the traversal. These are the
 # types of data we're allowed to attach:
 AttachedData = Union[
-    Tuple[Type[CodeSource], Path],  # Look for Python code, with a base_dir
-    Type[DepsSource],  # Look for files with dependency declarations
-    Type[PyEnvSource],  # Look for Python environments
+    tuple[type[CodeSource], Path],  # Look for Python code, with a base_dir
+    type[DepsSource],  # Look for files with dependency declarations
+    type[PyEnvSource],  # Look for Python environments
 ]
 
 
 def find_sources(  # noqa: C901, PLR0912, PLR0915
     settings: Settings,
-    source_types: AbstractSet[Type[Source]] = frozenset(
+    source_types: AbstractSet[type[Source]] = frozenset(
         [CodeSource, DepsSource, PyEnvSource]
     ),
 ) -> Iterator[Source]:
@@ -125,7 +127,7 @@ def find_sources(  # noqa: C901, PLR0912, PLR0915
 
     for path in settings.pyenvs if PyEnvSource in source_types else []:
         # exceptions raised by validate_pyenv_source() are propagated here
-        package_dirs: Optional[Set[PyEnvSource]] = validate_pyenv_source(path)
+        package_dirs: Optional[set[PyEnvSource]] = validate_pyenv_source(path)
         if package_dirs is not None:  # Python environment dir given directly
             logger.debug(f"find_sources() Found {package_dirs}")
             yield from package_dirs

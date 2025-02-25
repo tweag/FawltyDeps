@@ -2,10 +2,10 @@
 
 import configparser
 import logging
+from collections.abc import Iterator
 from dataclasses import replace
 from pathlib import Path
 from tempfile import NamedTemporaryFile
-from typing import Iterator
 
 from fawltydeps.types import DeclaredDependency, Location
 

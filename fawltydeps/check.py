@@ -2,7 +2,6 @@
 
 import logging
 from itertools import groupby
-from typing import Dict, List
 
 from fawltydeps.packages import Package
 from fawltydeps.settings import Settings
@@ -17,10 +16,10 @@ logger = logging.getLogger(__name__)
 
 
 def calculate_undeclared(
-    imports: List[ParsedImport],
-    resolved_deps: Dict[str, Package],
+    imports: list[ParsedImport],
+    resolved_deps: dict[str, Package],
     settings: Settings,
-) -> List[UndeclaredDependency]:
+) -> list[UndeclaredDependency]:
     """Calculate which imports are not covered by declared dependencies.
 
     Return a list of UndeclaredDependency objects that represent the import
@@ -41,11 +40,11 @@ def calculate_undeclared(
 
 
 def calculate_unused(
-    imports: List[ParsedImport],
-    declared_deps: List[DeclaredDependency],
-    resolved_deps: Dict[str, Package],
+    imports: list[ParsedImport],
+    declared_deps: list[DeclaredDependency],
+    resolved_deps: dict[str, Package],
     settings: Settings,
-) -> List[UnusedDependency]:
+) -> list[UnusedDependency]:
     """Calculate which declared dependencies have no corresponding imports.
 
     Return a list of UnusedDependency objects that represent the dependencies in
