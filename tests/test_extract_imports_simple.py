@@ -5,7 +5,7 @@ import logging
 from io import BytesIO
 from pathlib import Path
 from textwrap import dedent
-from typing import Dict, List, Tuple, Union
+from typing import Union
 
 import pytest
 
@@ -21,9 +21,9 @@ from .utils import dedent_bytes
 
 
 def imports_w_linenos(
-    names_w_linenos: List[Tuple[str, int]],
+    names_w_linenos: list[tuple[str, int]],
     path: PathOrSpecial = "<stdin>",
-) -> List[ParsedImport]:
+) -> list[ParsedImport]:
     return [
         ParsedImport(name, Location(path, lineno=lineno))
         for name, lineno in names_w_linenos
@@ -31,9 +31,9 @@ def imports_w_linenos(
 
 
 def imports_w_linenos_cellnos(
-    names_w_linenos_cellnos: List[Tuple[str, int, int]],
+    names_w_linenos_cellnos: list[tuple[str, int, int]],
     path: PathOrSpecial = "<stdin>",
-) -> List[ParsedImport]:
+) -> list[ParsedImport]:
     return [
         ParsedImport(name, Location(path, cellno=cellno, lineno=lineno))
         for name, lineno, cellno in names_w_linenos_cellnos
@@ -41,13 +41,13 @@ def imports_w_linenos_cellnos(
 
 
 def generate_notebook(
-    cells_source: List[List[str]],
-    cell_types: Union[List[str], str] = "code",
+    cells_source: list[list[str]],
+    cell_types: Union[list[str], str] = "code",
     language_name: str = "python",
 ) -> str:
     """Generate a valid ipynb json string from a list of code cells content."""
 
-    def cell_template(cell_type: str, source: List[str]):
+    def cell_template(cell_type: str, source: list[str]):
         return {
             "cell_type": cell_type,
             "execution_count": None,
@@ -80,7 +80,7 @@ def generate_notebook(
 def write_code_sources(write_tmp_files):
     """A wrapper around write_tmp_files() that return CodeSource objects."""
 
-    def _inner(file_contents: Dict[str, str]) -> Tuple[Path, List[CodeSource]]:
+    def _inner(file_contents: dict[str, str]) -> tuple[Path, list[CodeSource]]:
         tmp_path = write_tmp_files(file_contents)
         sources = []
         for filepath in file_contents:

@@ -11,7 +11,6 @@ from dataclasses import dataclass, field
 from itertools import dropwhile
 from pathlib import Path
 from textwrap import dedent
-from typing import List
 
 import pytest
 from importlib_metadata import files as package_files
@@ -644,12 +643,12 @@ class ProjectTestVector:
     """Test vectors for FawltyDeps Settings configuration."""
 
     id: str
-    options: List[str] = field(default_factory=list)
-    imports: List[str] = field(default_factory=list)
-    declares: List[str] = field(default_factory=list)
+    options: list[str] = field(default_factory=list)
+    imports: list[str] = field(default_factory=list)
+    declares: list[str] = field(default_factory=list)
 
-    expect_output: List[str] = field(default_factory=list)
-    expect_logs: List[str] = field(default_factory=list)
+    expect_output: list[str] = field(default_factory=list)
+    expect_logs: list[str] = field(default_factory=list)
     expect_returncode: int = EXIT_SUCCESS
 
 

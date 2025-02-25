@@ -2,8 +2,9 @@
 
 import logging
 import re
+from collections.abc import Callable, Iterator
 from pathlib import Path
-from typing import Any, Callable, Dict, Iterator, List, Union
+from typing import Any, Union
 
 from fawltydeps.types import DeclaredDependency, Location
 
@@ -11,7 +12,7 @@ from .requirements_parser import parse_one_req
 
 logger = logging.getLogger(__name__)
 
-YamlDependencyData = Union[List[str], Dict[str, "YamlDependencyData"], Any, None]  # type: ignore[misc]
+YamlDependencyData = Union[list[str], dict[str, "YamlDependencyData"], Any, None]  # type: ignore[misc]
 
 
 class InvalidCondaRequirement(ValueError):  # noqa: N818

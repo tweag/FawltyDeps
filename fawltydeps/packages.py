@@ -9,22 +9,13 @@ import sys
 import tempfile
 import venv
 from abc import ABC, abstractmethod
+from collections.abc import Iterable, Iterator
+from collections.abc import Set as AbstractSet
 from contextlib import contextmanager, suppress
 from dataclasses import dataclass, replace
 from functools import cached_property, partial
 from pathlib import Path
-from typing import (
-    AbstractSet,
-    Dict,
-    Iterable,
-    Iterator,
-    List,
-    Optional,
-    Set,
-    Tuple,
-    Type,
-    Union,
-)
+from typing import Optional, Union
 
 # importlib_metadata is gradually graduating into the importlib.metadata stdlib
 # module, however we rely on internal functions and recent (and upcoming)
@@ -51,7 +42,7 @@ if sys.version_info >= (3, 11):
 else:
     import tomli as tomllib
 
-PackageDebugInfo = Union[None, str, Dict[str, Set[str]]]
+PackageDebugInfo = Union[None, str, dict[str, set[str]]]
 
 logger = logging.getLogger(__name__)
 
@@ -66,8 +57,8 @@ class Package:
     """
 
     package_name: str  # auto-normalized in .__post_init__()
-    import_names: Set[str]
-    resolved_with: Type[BasePackageResolver]
+    import_names: set[str]
+    resolved_with: type[BasePackageResolver]
     debug_info: PackageDebugInfo = None
 
     @staticmethod
@@ -86,7 +77,7 @@ class Package:
         """Ensure Package object invariants."""
         object.__setattr__(self, "package_name", self.normalize_name(self.package_name))
 
-    def has_type_stubs(self) -> Set[str]:
+    def has_type_stubs(self) -> set[str]:
         """Return a set of import names without type stubs suffix."""
         provides_stubs_for = [
             import_name[: -len("-stubs")]
@@ -106,7 +97,7 @@ class BasePackageResolver(ABC):
     """Define the interface for doing package -> import names lookup."""
 
     @abstractmethod
-    def lookup_packages(self, package_names: Set[str]) -> Dict[str, Package]:
+    def lookup_packages(self, package_names: set[str]) -> dict[str, Package]:
         """Convert package names into a Package objects with available imports.
 
         Resolve as many of the given package names as possible into their
@@ -120,16 +111,16 @@ class BasePackageResolver(ABC):
 
 
 def accumulate_mappings(
-    resolved_with: Type[BasePackageResolver],
-    custom_mappings: Iterable[Tuple[CustomMapping, str]],
-) -> Dict[str, Package]:
+    resolved_with: type[BasePackageResolver],
+    custom_mappings: Iterable[tuple[CustomMapping, str]],
+) -> dict[str, Package]:
     """Merge CustomMappings (w/associated descriptions) into a dict of Packages.
 
     Each resulting package object maps a (normalized) package name to a mapping
     dict where the provided imports are keyed by their associated description.
     The keys in the returned dict are also normalized package names.
     """
-    result: Dict[str, Package] = {}
+    result: dict[str, Package] = {}
     for custom_mapping, debug_key in custom_mappings:
         for name, imports in custom_mapping.items():
             normalized_name = Package.normalize_name(name)
@@ -158,7 +149,7 @@ class UserDefinedMapping(BasePackageResolver):
 
     def __init__(
         self,
-        mapping_paths: Optional[Set[Path]] = None,
+        mapping_paths: Optional[set[Path]] = None,
         custom_mapping: Optional[CustomMapping] = None,
     ) -> None:
         self.mapping_paths = mapping_paths or set()
@@ -170,7 +161,7 @@ class UserDefinedMapping(BasePackageResolver):
         self.custom_mapping = custom_mapping
 
     @cached_property
-    def packages(self) -> Dict[str, Package]:
+    def packages(self) -> dict[str, Package]:
         """Gather a custom mapping given by a user.
 
         Mapping may come from two sources:
@@ -183,7 +174,7 @@ class UserDefinedMapping(BasePackageResolver):
         the remainder of this object's life in _packages.
         """
 
-        def _custom_mappings() -> Iterator[Tuple[CustomMapping, str]]:
+        def _custom_mappings() -> Iterator[tuple[CustomMapping, str]]:
             if self.custom_mapping is not None:
                 logger.debug("Applying user-defined mapping from settings.")
                 yield self.custom_mapping, "from settings"
@@ -196,7 +187,7 @@ class UserDefinedMapping(BasePackageResolver):
 
         return accumulate_mappings(self.__class__, _custom_mappings())
 
-    def lookup_packages(self, package_names: Set[str]) -> Dict[str, Package]:
+    def lookup_packages(self, package_names: set[str]) -> dict[str, Package]:
         """Convert package names to locally available Package objects."""
         return {
             name: self.packages[Package.normalize_name(name)]
@@ -216,8 +207,8 @@ class InstalledPackageResolver(BasePackageResolver):
         """
 
     def _from_one_env(
-        self, env_paths: List[str]
-    ) -> Iterator[Tuple[CustomMapping, str]]:
+        self, env_paths: list[str]
+    ) -> Iterator[tuple[CustomMapping, str]]:
         """Return package-name-to-import-names mapping from one Python env.
 
         This is roughly equivalent to calling importlib_metadata's
@@ -253,11 +244,11 @@ class InstalledPackageResolver(BasePackageResolver):
 
     @cached_property
     @abstractmethod
-    def packages(self) -> Dict[str, Package]:
+    def packages(self) -> dict[str, Package]:
         """Return mapping of package names to Package objects."""
         raise NotImplementedError
 
-    def lookup_packages(self, package_names: Set[str]) -> Dict[str, Package]:
+    def lookup_packages(self, package_names: set[str]) -> dict[str, Package]:
         """Convert package names to locally available Package objects.
 
         (Although this function generally works with _all_ locally available
@@ -284,7 +275,7 @@ class SysPathPackageResolver(InstalledPackageResolver):
     """Lookup imports exposed by packages installed in sys.path."""
 
     @cached_property
-    def packages(self) -> Dict[str, Package]:
+    def packages(self) -> dict[str, Package]:
         """Return mapping of package names to Package objects.
 
         This enumerates the available packages in the current Python environment
@@ -304,7 +295,7 @@ class LocalPackageResolver(InstalledPackageResolver):
         provided import names.
         """
         super().__init__()
-        self.package_dirs: Set[Path] = {src.path for src in srcs}
+        self.package_dirs: set[Path] = {src.path for src in srcs}
 
     @classmethod
     def find_package_dirs(cls, path: Path) -> Iterator[Path]:  # noqa: C901, PLR0912
@@ -363,7 +354,7 @@ class LocalPackageResolver(InstalledPackageResolver):
                     yield package_dir
 
     @cached_property
-    def packages(self) -> Dict[str, Package]:
+    def packages(self) -> dict[str, Package]:
         """Return mapping of package names to Package objects.
 
         This enumerates the available packages in the given Python environment
@@ -371,20 +362,20 @@ class LocalPackageResolver(InstalledPackageResolver):
         the remainder of this object's life.
         """
 
-        def _pyenvs() -> Iterator[Tuple[CustomMapping, str]]:
+        def _pyenvs() -> Iterator[tuple[CustomMapping, str]]:
             for package_dir in self.package_dirs:
                 yield from self._from_one_env([str(package_dir)])
 
         return accumulate_mappings(self.__class__, _pyenvs())
 
 
-def pyenv_sources(*pyenv_paths: Path) -> Set[PyEnvSource]:
+def pyenv_sources(*pyenv_paths: Path) -> set[PyEnvSource]:
     """Convert Python environment paths into PyEnvSources.
 
     Convenience helper when you want to construct a LocalPackageResolver from
     one or more Python environment paths.
     """
-    ret: Set[PyEnvSource] = set()
+    ret: set[PyEnvSource] = set()
     for path in pyenv_paths:
         package_dirs = set(LocalPackageResolver.find_package_dirs(path))
         if not package_dirs:
@@ -420,7 +411,7 @@ class TemporaryAutoInstallResolver(BasePackageResolver):
             )
 
     @staticmethod
-    def _venv_install_cmd(venv_dir: Path, uv_exe: Optional[str] = None) -> List[str]:
+    def _venv_install_cmd(venv_dir: Path, uv_exe: Optional[str] = None) -> list[str]:
         """Return argv prefix for installing packages into the given venv.
 
         Construct the initial part of the command line (argv) for installing one
@@ -455,7 +446,7 @@ class TemporaryAutoInstallResolver(BasePackageResolver):
     @classmethod
     @contextmanager
     def installed_requirements(
-        cls, venv_dir: Path, requirements: List[str]
+        cls, venv_dir: Path, requirements: list[str]
     ) -> Iterator[Path]:
         """Install the given requirements into venv_dir.
 
@@ -500,7 +491,7 @@ class TemporaryAutoInstallResolver(BasePackageResolver):
 
     @classmethod
     @contextmanager
-    def temp_installed_requirements(cls, requirements: List[str]) -> Iterator[Path]:
+    def temp_installed_requirements(cls, requirements: list[str]) -> Iterator[Path]:
         """Create a temporary venv and install the given requirements into it.
 
         Provide a path to the temporary venv into the caller's context in which
@@ -515,7 +506,7 @@ class TemporaryAutoInstallResolver(BasePackageResolver):
             with cls.installed_requirements(Path(tmpdir), requirements) as venv_dir:
                 yield venv_dir
 
-    def lookup_packages(self, package_names: Set[str]) -> Dict[str, Package]:
+    def lookup_packages(self, package_names: set[str]) -> dict[str, Package]:
         """Convert package names into Package objects via temporary auto-install.
 
         Use the temp_installed_requirements() above to install the given package
@@ -561,14 +552,14 @@ class IdentityMapping(BasePackageResolver):
         )
         return Package(package_name, {import_name}, IdentityMapping)
 
-    def lookup_packages(self, package_names: Set[str]) -> Dict[str, Package]:
+    def lookup_packages(self, package_names: set[str]) -> dict[str, Package]:
         """Convert package names into Package objects w/the same import name."""
         return {name: self.lookup_package(name) for name in package_names}
 
 
 def setup_resolvers(
     *,
-    custom_mapping_files: Optional[Set[Path]] = None,
+    custom_mapping_files: Optional[set[Path]] = None,
     custom_mapping: Optional[CustomMapping] = None,
     pyenv_srcs: AbstractSet[PyEnvSource] = frozenset(),
     use_current_env: bool = False,
@@ -597,7 +588,7 @@ def setup_resolvers(
 def resolve_dependencies(
     dep_names: Iterable[str],
     resolvers: Iterable[BasePackageResolver],
-) -> Dict[str, Package]:
+) -> dict[str, Package]:
     """Associate dependencies with corresponding Package objects.
 
     Use the given sequence of resolvers to find Package objects for each of the
@@ -606,7 +597,7 @@ def resolve_dependencies(
     Return a dict mapping dependency names to the resolved Package objects.
     """
     deps = set(dep_names)  # consume the iterable once
-    ret: Dict[str, Package] = {}
+    ret: dict[str, Package] = {}
     for resolver in resolvers:
         unresolved = deps - ret.keys()
         if not unresolved:  # no unresolved deps left
@@ -624,7 +615,7 @@ def resolve_dependencies(
     return ret
 
 
-def validate_pyenv_source(path: Path) -> Optional[Set[PyEnvSource]]:
+def validate_pyenv_source(path: Path) -> Optional[set[PyEnvSource]]:
     """Check if the given directory path is a valid Python environment.
 
     - If a Python environment is found at the given path, then return a set of

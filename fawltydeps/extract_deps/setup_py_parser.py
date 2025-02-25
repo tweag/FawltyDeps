@@ -3,8 +3,9 @@
 import ast
 import logging
 import tokenize
+from collections.abc import Iterable, Iterator
 from pathlib import Path
-from typing import Iterable, Iterator, Union
+from typing import Union
 
 from fawltydeps.limited_eval import CannotResolve, VariableTracker
 from fawltydeps.types import DeclaredDependency, Location

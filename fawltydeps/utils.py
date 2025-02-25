@@ -2,9 +2,10 @@
 
 import logging
 import sys
+from collections.abc import Iterator
 from dataclasses import is_dataclass
 from pathlib import Path
-from typing import Iterator, TypeVar
+from typing import TypeVar
 
 import importlib_metadata
 

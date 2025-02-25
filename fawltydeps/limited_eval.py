@@ -2,7 +2,7 @@
 
 import ast
 import logging
-from typing import Dict, List, Union
+from typing import Union
 
 from fawltydeps.types import Location
 
@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 # Types of variable values that we currently recognize
-TrackedValue = Union[str, List[str], Dict[str, "TrackedValue"]]
+TrackedValue = Union[str, list[str], dict[str, "TrackedValue"]]
 
 
 class CannotResolve(Exception):  # noqa: N818
@@ -31,7 +31,7 @@ class VariableTracker:
     """
 
     def __init__(self, source: Location) -> None:
-        self.vars: Dict[str, TrackedValue] = {}
+        self.vars: dict[str, TrackedValue] = {}
         self.source: Location = source
 
     def _show(self, node: ast.AST) -> str:

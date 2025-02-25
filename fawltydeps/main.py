@@ -11,20 +11,10 @@ from __future__ import annotations
 import json
 import logging
 import sys
+from collections.abc import Callable, Iterator
 from functools import cached_property, partial
 from operator import attrgetter
-from typing import (
-    BinaryIO,
-    Callable,
-    Dict,
-    Iterator,
-    List,
-    Optional,
-    Set,
-    TextIO,
-    Type,
-    Union,
-)
+from typing import BinaryIO, Optional, TextIO, Union
 
 try:  # import from Pydantic V2
     from pydantic.v1.json import custom_pydantic_encoder
@@ -98,10 +88,10 @@ class Analysis:
         return len(self.settings.actions.intersection(args)) > 0
 
     @cached_property
-    def sources(self) -> Set[Source]:
+    def sources(self) -> set[Source]:
         """The input sources (code, deps, pyenv) found in this project."""
         # What Source types are needed for which action?
-        source_types: Dict[Action, Set[Type[Source]]] = {
+        source_types: dict[Action, set[type[Source]]] = {
             Action.LIST_SOURCES: {CodeSource, DepsSource, PyEnvSource},
             Action.LIST_IMPORTS: {CodeSource},
             Action.LIST_DEPS: {DepsSource},
@@ -116,7 +106,7 @@ class Analysis:
         )
 
     @cached_property
-    def imports(self) -> List[ParsedImport]:
+    def imports(self) -> list[ParsedImport]:
         """The list of 3rd-party imports parsed from this project."""
         return list(
             extract_imports.parse_sources(
@@ -126,7 +116,7 @@ class Analysis:
         )
 
     @cached_property
-    def declared_deps(self) -> List[DeclaredDependency]:
+    def declared_deps(self) -> list[DeclaredDependency]:
         """The list of declared dependencies parsed from this project."""
         return list(
             extract_deps.parse_sources(
@@ -135,7 +125,7 @@ class Analysis:
         )
 
     @cached_property
-    def resolved_deps(self) -> Dict[str, Package]:
+    def resolved_deps(self) -> dict[str, Package]:
         """The resolved mapping of dependency names to provided import names."""
         pyenv_srcs = {src for src in self.sources if isinstance(src, PyEnvSource)}
         return resolve_dependencies(
@@ -150,12 +140,12 @@ class Analysis:
         )
 
     @cached_property
-    def undeclared_deps(self) -> List[UndeclaredDependency]:
+    def undeclared_deps(self) -> list[UndeclaredDependency]:
         """The import statements for which no declared dependency is found."""
         return calculate_undeclared(self.imports, self.resolved_deps, self.settings)
 
     @cached_property
-    def unused_deps(self) -> List[UnusedDependency]:
+    def unused_deps(self) -> list[UnusedDependency]:
         """The declared dependencies that appear to not be in use."""
         return calculate_unused(
             self.imports, self.declared_deps, self.resolved_deps, self.settings
@@ -196,7 +186,7 @@ class Analysis:
         # However, not all elements that we store in a set are automatically
         # orderable (e.g. PathOrSpecial don't know how to order SpecialPath vs
         # Path), so order by string representation instead:
-        custom_type_encoders: Dict[type, Callable[[type], Union[List[str], str]]] = {
+        custom_type_encoders: dict[type, Callable[[type], Union[list[str], str]]] = {
             frozenset: partial(sorted, key=str),
             set: partial(sorted, key=str),
             type(BasePackageResolver): lambda klass: klass.__name__,
@@ -347,7 +337,7 @@ def print_output(
 
 
 def main(
-    cmdline_args: Optional[List[str]] = None,  # defaults to sys.argv[1:]
+    cmdline_args: Optional[list[str]] = None,  # defaults to sys.argv[1:]
     stdin: BinaryIO = sys.stdin.buffer,
     stdout: TextIO = sys.stdout,
 ) -> int:

@@ -5,8 +5,9 @@ from __future__ import annotations
 import logging
 import os
 import re
+from collections.abc import Callable, Iterable, Iterator
 from pathlib import Path
-from typing import Callable, Dict, Iterable, Iterator, List, NamedTuple, Optional, Tuple
+from typing import NamedTuple, Optional
 
 from fawltydeps.types import Location
 
@@ -72,7 +73,7 @@ def parse_gitignore_lines(
             logger.debug(str(exc))
 
 
-def match_rules(rules: List[Rule], path: Path, *, is_dir: bool) -> bool:
+def match_rules(rules: list[Rule], path: Path, *, is_dir: bool) -> bool:
     """Match the given path against the given list of rules."""
     for rule in reversed(rules):
         if rule.match(path, is_dir=is_dir):
@@ -219,7 +220,7 @@ def fnmatch_pathname_to_regex(pattern: str, *, anchored: bool = False) -> Compil
     """
     result = []
 
-    def handle_character_set(pattern: str) -> Tuple[str, str]:
+    def handle_character_set(pattern: str) -> tuple[str, str]:
         assert pattern.startswith("[")  # noqa: S101, sanity check precondition
         try:
             end = pattern.index("]")
@@ -234,7 +235,7 @@ def fnmatch_pathname_to_regex(pattern: str, *, anchored: bool = False) -> Compil
             inside = "^" + inside[1:]
         return f"[{inside}]", rest
 
-    handlers: Dict[str, Callable[[str], Tuple[str, str]]] = {
+    handlers: dict[str, Callable[[str], tuple[str, str]]] = {
         # pattern prefix -> callable that given pattern returns (result, rest)
         "**/": lambda pattern: (f"(.*{SEPS_GROUP})?", pattern[3:]),
         "**": lambda pattern: (".*", pattern[2:]),

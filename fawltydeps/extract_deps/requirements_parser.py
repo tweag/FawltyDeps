@@ -1,8 +1,8 @@
 """Code for parsing pip-style requirements and requirements files."""
 
 import logging
+from collections.abc import Iterator
 from pathlib import Path
-from typing import Iterator
 
 from packaging.requirements import Requirement
 from pip_requirements_parser import RequirementsFile  # type: ignore[import-untyped]

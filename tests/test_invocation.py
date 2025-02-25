@@ -2,7 +2,6 @@
 
 import subprocess
 import sys
-from typing import Tuple
 
 import pytest
 
@@ -13,7 +12,7 @@ from .utils import run_fawltydeps_function, run_fawltydeps_subprocess
 pytestmark = pytest.mark.integration
 
 
-def run_package_main(*args: str) -> Tuple[str, int]:
+def run_package_main(*args: str) -> tuple[str, int]:
     proc = subprocess.run(
         [sys.executable, "-m", "fawltydeps", *args],
         capture_output=True,
