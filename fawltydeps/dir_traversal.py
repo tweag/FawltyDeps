@@ -40,7 +40,7 @@ class DirId(NamedTuple):
     ino: int
 
     @classmethod
-    @lru_cache()  # Cache stat() calls, but only with absolute paths
+    @lru_cache  # Cache stat() calls, but only with absolute paths
     def from_abs_path(cls, abs_path: Path) -> DirId:
         """Construct DirId from given absolute directory path."""
         assert abs_path.is_absolute()  # noqa: S101, sanity check
