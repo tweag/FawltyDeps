@@ -40,9 +40,9 @@ EXIT_UNUSED = 4
 EXIT_UNRESOLVED = 5
 
 
-def make_json_settings_dict(**kwargs):
+def make_json_settings_dict(**customizations):
     """Create an expected version of Settings.dict(), with customizations."""
-    settings = {
+    defaults = {
         "actions": ["check_undeclared", "check_unused"],
         "code": ["."],
         "deps": ["."],
@@ -58,9 +58,8 @@ def make_json_settings_dict(**kwargs):
         "verbosity": 0,
         "custom_mapping_file": [],
     }
-    assert all(k in settings for k in kwargs)
-    settings.update(kwargs)
-    return settings
+    assert all(k in defaults for k in customizations)
+    return defaults | customizations
 
 
 @pytest.mark.parametrize(
