@@ -94,6 +94,13 @@ nox = {version="^2024.03.02", extras=["uv"]}
 pytest = "^7.1.0"
 ruff = ">=0.3"
 
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
+mkdocs = "*"
+mkdocs-material = "^9.5.49"
+
 [tool.mypy]
 files = ['*.py', 'fawltydeps/*.py', 'tests/*.py']
 plugins = ["pydantic.mypy"]
@@ -234,4 +241,6 @@ ignore_unused = [
     "ruff",
     "types-PyYAML",
     "uv",
+    "mkdocs",
+    "mkdocs-material"
 ]
