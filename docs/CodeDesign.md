@@ -10,7 +10,7 @@ project and immediately gets some useful and actionable information.
 
 - Support all current Python versions: that means [all Python versions that have
   a stable release, and are not yet End Of Life](https://devguide.python.org/versions/).
-    - Currently we support running on Python v3.8 - v3.13.
+    - Currently we support running on Python v3.9 - v3.13.
     - Since we no longer rely on running inside the same Python environment as the project being
       analyzed, it is possible for us to support analyzing projects running on even older Python versions.
 - For now we support the CPython interpreter only

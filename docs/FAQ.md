@@ -1,4 +1,3 @@
-
 ## Why does FawltyDeps fail to match `sklearn` with `scikit-learn`?
 
 There are cases, where FawltyDeps may not match imports and obviously related
@@ -16,9 +15,9 @@ environment that belongs to your project. Alternatively, you can use the
 other dependencies are installed.
 
 
-## My project is using Python version before v3.8, can I still use FawltyDeps?
+## My project is using Python version before v3.9, can I still use FawltyDeps?
 
-Yes! Even though FawltyDeps itself runs on Python >=v3.8, we try to support
+Yes! Even though FawltyDeps itself runs on Python >=v3.9, we try to support
 analyzing projects that run on any version of Python 3.
 
 As explained in the previous two questions, FawltyDeps itself does not need to
@@ -42,9 +41,12 @@ variable names), please open an issue, and we'll look into extending our
 support further.
 
 A final resort can be to downgrade to an older version of FawltyDeps that is
-compatible with the Python version used in your project. Currently, the only
-Python version we have dropped support for is v3.7, and FawltyDeps v0.18 is
-the last release to support this Python version.
+compatible with the Python version used in your project. Currently, these are
+the Python versions we have dropped support for, and the latest FawltyDeps
+release to support that version:
+
+- Python v3.7 last supported in FawltyDeps v0.18.
+- Python v3.8 last supported in FawltyDeps v0.19.
 
 
 ## Does FawltyDeps need to run in the same Python environment as my project?
@@ -54,9 +56,10 @@ your project dependencies when they are installed in a Python environment that
 exists within your project. If your project dependencies are installed
 elsewhere, you can point FawltyDeps in their direction with `--pyenv`, as
 explained in the section on
-[Python environment mapping](explanation.md/#local-python-environment-mapping)).
+[Python environment mapping](explanation.md/#local-python-environment-mapping).
 
 See also the next question for more details.
+
 
 ## Why does FawltyDeps need a Python environment with my project dependencies?
 
