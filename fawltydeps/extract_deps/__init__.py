@@ -2,8 +2,9 @@
 
 import logging
 import re
+from collections.abc import Iterable, Iterator
 from pathlib import Path
-from typing import Callable, Iterable, Iterator, NamedTuple, Optional
+from typing import Callable, NamedTuple, Optional
 
 from fawltydeps.settings import ParserChoice
 from fawltydeps.types import DeclaredDependency, DepsSource, UnparseablePathError

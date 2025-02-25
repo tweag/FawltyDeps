@@ -1,10 +1,12 @@
 """Verify behavior of packages resolver."""
 
+from __future__ import annotations
+
 import shutil
 import sys
 import time
 from pathlib import Path
-from typing import Dict, List, Optional, Set
+from typing import Optional
 
 import pytest
 from hypothesis import HealthCheck, given, settings
@@ -28,7 +30,7 @@ user_defined_mapping = {"apache-airflow": ["airflow", "foo", "bar"]}
 
 
 @st.composite
-def dict_subset_strategy(draw, input_dict: Dict[str, Set[str]]) -> Dict[str, Set[str]]:
+def dict_subset_strategy(draw, input_dict: dict[str, set[str]]) -> dict[str, set[str]]:
     """Returns a hypothesis strategy to choose items from a dict."""
     if not input_dict:
         return {}
@@ -37,7 +39,7 @@ def dict_subset_strategy(draw, input_dict: Dict[str, Set[str]]) -> Dict[str, Set
 
 
 @st.composite
-def sample_dict_keys_and_values_strategy(draw, input_dict: Dict[str, List[str]]):
+def sample_dict_keys_and_values_strategy(draw, input_dict: dict[str, list[str]]):
     """Returns a hypothesis strategy to choose keys and values from a dict."""
     keys = draw(st.lists(st.sampled_from(list(input_dict.keys())), unique=True))
     return {
@@ -47,7 +49,7 @@ def sample_dict_keys_and_values_strategy(draw, input_dict: Dict[str, List[str]])
 
 
 @st.composite
-def user_mapping_strategy(draw, user_mapping: Dict[str, List[str]]):
+def user_mapping_strategy(draw, user_mapping: dict[str, list[str]]):
     user_mapping_in_file = draw(sample_dict_keys_and_values_strategy(user_mapping))
     user_mapping_in_config = draw(sample_dict_keys_and_values_strategy(user_mapping))
 
@@ -64,7 +66,7 @@ def user_mapping_strategy(draw, user_mapping: Dict[str, List[str]]):
     return user_deps, user_mapping_in_file, user_mapping_in_config
 
 
-def user_mapping_to_file_content(user_mapping: Dict[str, List[str]]) -> str:
+def user_mapping_to_file_content(user_mapping: dict[str, list[str]]) -> str:
     return "\n".join(
         [f'{dep} = ["{",".join(imports)}"]' for dep, imports in user_mapping.items()]
     )
@@ -72,13 +74,13 @@ def user_mapping_to_file_content(user_mapping: Dict[str, List[str]]) -> str:
 
 def generate_expected_resolved_deps(
     *,
-    locally_installed_deps: Dict[str, Set[str]],
-    other_deps: Dict[str, Set[str]],
-    user_defined_deps: List[str],
-    user_mapping_from_config: Dict[str, List[str]],
+    locally_installed_deps: dict[str, set[str]],
+    other_deps: dict[str, set[str]],
+    user_defined_deps: list[str],
+    user_mapping_from_config: dict[str, list[str]],
     user_mapping_file: Optional[Path] = None,
     install_deps: bool = False,
-) -> Dict[str, Package]:
+) -> dict[str, Package]:
     """Returns a dict of resolved packages.
 
     This function does not actually resolve its input dependencies.

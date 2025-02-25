@@ -5,11 +5,12 @@ import logging
 import os
 import subprocess
 import sys
+from collections.abc import Iterable, Iterator
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 from pprint import pformat
 from textwrap import dedent
-from typing import Any, Dict, Iterable, Iterator, List, Optional, Tuple, Union
+from typing import Any, Optional, Union
 
 from fawltydeps.main import main
 from fawltydeps.packages import IdentityMapping, Package, SysPathPackageResolver
@@ -57,11 +58,11 @@ def collect_dep_names(deps: Iterable[DeclaredDependency]) -> Iterable[str]:
     return (dep.name for dep in deps)
 
 
-def imports_factory(*imports: str) -> List[ParsedImport]:
+def imports_factory(*imports: str) -> list[ParsedImport]:
     return [ParsedImport(imp, Location("<stdin>")) for imp in imports]
 
 
-def deps_factory(*deps: str, path: str = "foo") -> List[DeclaredDependency]:
+def deps_factory(*deps: str, path: str = "foo") -> list[DeclaredDependency]:
     """Dependency generator with a common path for all dependencies."""
     return [DeclaredDependency(name=dep, source=Location(Path(path))) for dep in deps]
 
@@ -79,7 +80,7 @@ default_sys_path_env_for_tests = {
 }
 
 
-def resolved_factory(*deps: str) -> Dict[str, Package]:
+def resolved_factory(*deps: str) -> dict[str, Package]:
     def make_package(dep: str) -> Package:
         imports = default_sys_path_env_for_tests.get(dep)
         if imports is not None:  # exists in local env
@@ -90,18 +91,18 @@ def resolved_factory(*deps: str) -> Dict[str, Package]:
     return {dep: make_package(dep) for dep in deps}
 
 
-def ignore_package_debug_info(resolved_deps: Dict[str, Package]) -> Dict[str, Package]:
+def ignore_package_debug_info(resolved_deps: dict[str, Package]) -> dict[str, Package]:
     return {
         name: replace(package, debug_info=None)
         for name, package in resolved_deps.items()
     }
 
 
-def undeclared_factory(*deps: str) -> List[UndeclaredDependency]:
+def undeclared_factory(*deps: str) -> list[UndeclaredDependency]:
     return [UndeclaredDependency(dep, [Location("<stdin>")]) for dep in deps]
 
 
-def unused_factory(*deps: str) -> List[UnusedDependency]:
+def unused_factory(*deps: str) -> list[UnusedDependency]:
     return [UnusedDependency(dep, [Location(Path("foo"))]) for dep in deps]
 
 
@@ -110,7 +111,7 @@ def run_fawltydeps_subprocess(
     config_file: Path = Path(os.devnull),
     to_stdin: Optional[str] = None,
     cwd: Optional[Path] = None,
-) -> Tuple[str, str, int]:
+) -> tuple[str, str, int]:
     """Run FawltyDeps as a subprocess. Designed for integration tests."""
     proc = subprocess.run(
         [sys.executable, "-m", "fawltydeps", f"--config-file={config_file}", *args],
@@ -134,7 +135,7 @@ def run_fawltydeps_function(
     config_file: Path = Path(os.devnull),
     to_stdin: Optional[Union[str, bytes]] = None,
     basepath: Optional[Path] = None,
-) -> Tuple[str, int]:
+) -> tuple[str, int]:
     """Run FawltyDeps with `main` function. Designed for unit tests.
 
     Ignores logging output and returns stdout and the exit code
@@ -165,13 +166,13 @@ class FDTestVector:
     """Test vectors for various parts of the FawltyDeps core logic."""
 
     id: str
-    imports: List[ParsedImport] = field(default_factory=list)
-    declared_deps: List[DeclaredDependency] = field(default_factory=list)
-    ignore_unused: List[str] = field(default_factory=list)
-    ignore_undeclared: List[str] = field(default_factory=list)
-    expect_resolved_deps: Dict[str, Package] = field(default_factory=dict)
-    expect_undeclared_deps: List[UndeclaredDependency] = field(default_factory=list)
-    expect_unused_deps: List[UnusedDependency] = field(default_factory=list)
+    imports: list[ParsedImport] = field(default_factory=list)
+    declared_deps: list[DeclaredDependency] = field(default_factory=list)
+    ignore_unused: list[str] = field(default_factory=list)
+    ignore_undeclared: list[str] = field(default_factory=list)
+    expect_resolved_deps: dict[str, Package] = field(default_factory=dict)
+    expect_undeclared_deps: list[UndeclaredDependency] = field(default_factory=list)
+    expect_unused_deps: list[UnusedDependency] = field(default_factory=list)
 
 
 test_vectors = [

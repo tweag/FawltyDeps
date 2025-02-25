@@ -1,10 +1,11 @@
 """Fixtures for tests."""
 
 import venv
+from collections.abc import Callable
 from pathlib import Path
 from tempfile import NamedTemporaryFile, mkdtemp
 from textwrap import dedent
-from typing import Callable, Dict, List, Optional, Set, Tuple, Union
+from typing import Optional, Union
 
 import pytest
 
@@ -60,7 +61,7 @@ def local_pypi(request, monkeypatch):
 
 @pytest.fixture
 def write_tmp_files(tmp_path: Path):
-    def _inner(file_contents: Dict[str, Union[str, bytes]]) -> Path:
+    def _inner(file_contents: dict[str, Union[str, bytes]]) -> Path:
         for filename, contents in file_contents.items():
             path = tmp_path / filename
             assert path.relative_to(tmp_path)
@@ -77,8 +78,8 @@ def write_tmp_files(tmp_path: Path):
 @pytest.fixture
 def fake_venv(tmp_path):
     def create_one_fake_venv(
-        fake_packages: Dict[str, Set[str]], *, venv_dir: Optional[Path] = None
-    ) -> Tuple[Path, Path]:
+        fake_packages: dict[str, set[str]], *, venv_dir: Optional[Path] = None
+    ) -> tuple[Path, Path]:
         if venv_dir is None:
             venv_dir = Path(mkdtemp(prefix="fake_venv.", dir=tmp_path))
         else:
@@ -107,7 +108,7 @@ def fake_venv(tmp_path):
 
 @pytest.fixture
 def isolate_default_resolver(
-    fake_venv: Callable[[Dict[str, Set[str]]], Tuple[Path, Path]], monkeypatch
+    fake_venv: Callable[[dict[str, set[str]]], tuple[Path, Path]], monkeypatch
 ):
     """Put a fake_venv at the start of sys.path to yield predictable Packages.
 
@@ -131,7 +132,7 @@ def isolate_default_resolver(
       from sys.path.
     """
 
-    def inner(fake_packages: Dict[str, Set[str]]) -> Path:
+    def inner(fake_packages: dict[str, set[str]]) -> Path:
         _venv_dir, package_dir = fake_venv(fake_packages)
         monkeypatch.syspath_prepend(package_dir)
         return package_dir
@@ -171,9 +172,9 @@ def fake_project(write_tmp_files, fake_venv):  # noqa: C901
     Returns tmp_path, which is regarded as the root directory of the temporary
     Python project.
     """
-    Imports = List[str]
-    Deps = List[str]
-    ExtraDeps = Dict[str, Deps]
+    Imports = list[str]
+    Deps = list[str]
+    ExtraDeps = dict[str, Deps]
 
     def format_python_code(imports: Imports) -> str:
         return "".join(f"import {s}\n" for s in imports)
@@ -242,13 +243,13 @@ def fake_project(write_tmp_files, fake_venv):  # noqa: C901
         ) + "".join(f"  - {dep}\n" for dep in deps)
 
     def format_deps(
-        filename: str, all_deps: Union[Deps, Tuple[Deps, ExtraDeps]]
+        filename: str, all_deps: Union[Deps, tuple[Deps, ExtraDeps]]
     ) -> str:
         if isinstance(all_deps, tuple):
             deps, extras = all_deps
         else:
             deps, extras = all_deps, {}
-        formatters: Dict[str, Callable[[Deps, ExtraDeps], str]] = {
+        formatters: dict[str, Callable[[Deps, ExtraDeps], str]] = {
             "requirements.txt": format_requirements_txt,  # default choice
             "setup.py": format_setup_py,
             "setup.cfg": format_setup_cfg,
@@ -263,12 +264,12 @@ def fake_project(write_tmp_files, fake_venv):  # noqa: C901
         *,
         imports: Optional[Imports] = None,
         declared_deps: Optional[Deps] = None,
-        fake_venvs: Optional[Dict[str, Dict[str, Set[str]]]] = None,
-        files_with_imports: Optional[Dict[str, Imports]] = None,
+        fake_venvs: Optional[dict[str, dict[str, set[str]]]] = None,
+        files_with_imports: Optional[dict[str, Imports]] = None,
         files_with_declared_deps: Optional[
-            Dict[str, Union[Deps, Tuple[Deps, ExtraDeps]]]
+            dict[str, Union[Deps, tuple[Deps, ExtraDeps]]]
         ] = None,
-        extra_file_contents: Optional[Dict[str, str]] = None,
+        extra_file_contents: Optional[dict[str, str]] = None,
     ) -> Path:
         tmp_files = {}
         if imports is not None:

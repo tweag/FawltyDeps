@@ -2,7 +2,6 @@
 
 import logging
 from dataclasses import dataclass, field
-from typing import List
 
 import pytest
 
@@ -239,7 +238,7 @@ class CondaTestVector:
     id: str
     data: str
     error_msg_fragment: str
-    expect: List[str] = field(default_factory=list)
+    expect: list[str] = field(default_factory=list)
 
 
 conda_tests_malformed_samples = [
