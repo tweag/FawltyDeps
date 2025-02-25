@@ -53,11 +53,11 @@ Here is a complete list of configuration directives we support:
   patterns to use when looking for code (imports), dependency declarations
   and/or Python environments. Defaults to an empty list: `exclude_from = []`.
 - `verbosity`: An integer controlling the default log level of FawltyDeps:
-  - `-2`: Only `CRITICAL`-level log messages are shown.
-  - `-1`: `ERROR`-level log messages and above are shown.
-  - `0`: `WARNING`-level log messages and above are shown. This is the default.
-  - `1`: `INFO`-level log messages and above are shown.
-  - `2`: All log messages (including `DEBUG`) are shown.
+    - `-2`: Only `CRITICAL`-level log messages are shown.
+    - `-1`: `ERROR`-level log messages and above are shown.
+    - `0`: `WARNING`-level log messages and above are shown. This is the default.
+    - `1`: `INFO`-level log messages and above are shown.
+    - `2`: All log messages (including `DEBUG`) are shown.
 - `custom_mapping_file`: Paths to files containing user-defined mapping.
   Expected file format is defined in the User-defined mapping [section](explanation.md/#user-defined-mapping).
 - `[tool.fawltydeps.custom_mapping]`: Section in the configuration, under which a custom mapping
