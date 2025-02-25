@@ -2,7 +2,6 @@
 
 import ast
 import logging
-import sys
 import tokenize
 from pathlib import Path
 from typing import Iterable, Iterator, Union
@@ -65,10 +64,7 @@ def parse_setup_py(path: Path) -> Iterator[DeclaredDependency]:  # noqa: C901
                     for items in value.values():
                         yield from _extract_deps_from_value(items, keyword.value)
             except (DependencyParsingError, CannotResolve) as exc:
-                if sys.version_info >= (3, 9):
-                    unparsed_content = ast.unparse(exc.node)
-                else:
-                    unparsed_content = ast.dump(exc.node)
+                unparsed_content = ast.unparse(exc.node)
                 logger.warning(
                     f"Could not parse contents of `{keyword.arg}`: {unparsed_content} in {source}."
                 )
