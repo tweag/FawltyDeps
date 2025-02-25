@@ -100,7 +100,7 @@ class Rule(NamedTuple):
         return f"Rule({self.pattern!r}, {self.regex!r}, ...)"
 
     @classmethod
-    def from_pattern(  # noqa: C901
+    def from_pattern(
         cls,
         pattern: str,
         base_dir: Optional[Path] = None,
@@ -149,15 +149,12 @@ class Rule(NamedTuple):
         dir_only = pattern.endswith("/")
         # A slash is a sign that we're tied to the base_dir of our rule set.
         anchored = "/" in pattern[:-1]
-        if pattern.startswith("/"):
-            pattern = pattern[1:]
+        pattern = pattern.removeprefix("/")
         if pattern.startswith("**"):
             pattern = pattern[2:]
             anchored = False
-        if pattern.startswith("/"):
-            pattern = pattern[1:]
-        if pattern.endswith("/"):
-            pattern = pattern[:-1]
+        pattern = pattern.removeprefix("/")
+        pattern = pattern.removesuffix("/")
         # patterns with leading hashes or exclamation marks are escaped with a
         # backslash in front, unescape it
         if pattern.startswith(("\\#", "\\!")):
@@ -193,8 +190,7 @@ class Rule(NamedTuple):
         # in case of directory-only negation
         if self.negated and is_dir:
             rel_path += "/"
-        if rel_path.startswith("./"):
-            rel_path = rel_path[2:]
+        rel_path = rel_path.removeprefix("./")
         match = self.regex.search(rel_path)
         if not match:
             return False
