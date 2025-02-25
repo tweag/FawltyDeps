@@ -4,27 +4,9 @@ Thank you for your interest in contributing to FawltyDeps!
 We welcome contributions from the community to help improve our project.
 Please take a moment to review this guide before you get started.
 
-## Table of Contents
-
-[Code of Conduct](#code-of-conduct)
-
-[Getting Started](#getting-started)
-   - [Fork the Repository](#fork-the-repository)
-   - [Clone the Repository](#clone-the-repository)
-   - [Set Up Your Development Environment](#set-up-your-development-environment)
-
-[Making Changes](#making-changes)
-   - [Branch Naming](#branch-naming)
-   - [Commit Messages](#commit-messages)
-   - [Testing](#testing)
-
-[Submitting Pull Requests](#submitting-pull-requests)
-
-[Review Process](#review-process)
-
 ## Code of Conduct
 
-We expect all contributors to adhere to our [Code of Conduct](./CODE_OF_CONDUCT.md).
+We expect all contributors to adhere to our [Code of Conduct](https://github.com/tweag/FawltyDeps/blob/main/CODE_OF_CONDUCT.md).
 Please read it carefully before contributing.
 
 ## Getting Started
@@ -62,7 +44,7 @@ poetry shell
 ```
 
 to jump into a development shell with this virtualenv activated. Here you will
-have all the dependencies declared in our [`pyproject.toml`](./pyproject.toml)
+have all the dependencies declared in our [`pyproject.toml`](https://github.com/tweag/FawltyDeps/blob/main/pyproject.toml)
 installed. (Without this shell activated you will have to prefix the more
 specific commands below with `poetry run ...`).
 
@@ -83,7 +65,7 @@ nox -s reformat   # Fix formatting (ruff format)
 ```
 
 If you want to run a command individually, the corresponding session is defined inside
-[`noxfile.py`](./noxfile.py). For example, these
+[`noxfile.py`](https://github.com/tweag/FawltyDeps/blob/main/noxfile.py). For example, these
 commands will work:
 
 ```sh
@@ -96,7 +78,7 @@ ruff format .            # Run ruff formatter
 
 #### Shortcut: Nix
 
-We have a [`shell.nix`](./shell.nix) which provides Poetry in addition to all of
+We have a [`shell.nix`](https://github.com/tweag/FawltyDeps/blob/main/shell.nix) which provides Poetry in addition to all of
 our supported Python versions. If you have [Nix](https://nixos.org) available
 on your machine, then running:
 
@@ -133,11 +115,11 @@ For detailed instructions on running tests locally, please refer to the Nox sect
 In addition to comprehensive unit tests under `tests/`, we also verify
 FawltyDeps' behavior with integration tests which (among other things) include
 testing with real-world projects. To that end, we have a framework in
-[`tests/test_real_projects.py`](./tests/test_real_projects.py) for downloading
+[`tests/test_real_projects.py`](https://github.com/tweag/FawltyDeps/blob/main/tests/test_real_projects.py) for downloading
 and unpacking tarballs of 3rd-party projects, and then running fawltydeps on them,
 while verifying their output. These projects, along with the expected FawltyDeps
 outputs, are defined in TOML files under
-[`tests/real_projects`](./tests/real_projects).
+[`tests/real_projects`](https://github.com/tweag/FawltyDeps/blob/main/tests/real_projects).
 
 #### Contributing more projects to the test suite
 
@@ -156,7 +138,7 @@ expectations, first in the TOML for the sample project(s) and then finally in
 the `real_projects` TOML.
 
 If you find a project where FawltyDeps is not doing a good job, we appreciate
-if you add that project under [`tests/real_projects`](./tests/real_projects).
+if you add that project under [`tests/real_projects`](https://github.com/tweag/FawltyDeps/blob/main/tests/real_projects).
 To see how these tests work, look at the existing files in that directory.
 
 ## Submitting Pull Requests
