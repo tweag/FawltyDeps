@@ -53,6 +53,7 @@ optional = true
 
 [tool.poetry.group.nox.dependencies]
 nox = {version="^2024.03.02", extras=["uv"]}
+poetry-plugin-export = { version = ">=1.8", python = ">=3.9,<4.0"}
 
 [tool.poetry.group.test]
 optional = true
@@ -91,6 +92,7 @@ codespell = "^2.2.4"
 hypothesis = "^6.68.2"
 mypy = "^1.0.1"
 nox = {version="^2024.03.02", extras=["uv"]}
+poetry-plugin-export = { version = ">=1.8", python = ">=3.9,<4.0"}
 pytest = "^7.1.0"
 ruff = ">=0.3"
 
@@ -232,6 +234,7 @@ ignore_unused = [
     "hypothesis",
     "mypy",
     "nox",
+    "poetry-plugin-export",
     "pytest",
     "ruff",
     "types-PyYAML",
