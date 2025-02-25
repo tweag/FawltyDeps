@@ -132,7 +132,7 @@ addopts = "-m 'not integration'"
 cache_dir = "~/.cache/pytest"
 
 [tool.ruff]
-target-version = "py37"
+target-version = "py39"
 extend-include = ["*.ipynb"]
 extend-exclude = [
     "tests/sample_projects/legacy_encoding/big5.py",  # Fails with E902 (not UTF-8)
