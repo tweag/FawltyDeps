@@ -28,4 +28,4 @@ jobs:
       - name: Install project
         run: poetry install --no-interaction --sync --no-root --only=nox,format
       - name: Run formatting checks
-        run: poetry run nox --no-venv --no-install --non-interactive -s format
+        run: poetry run nox -- --no-venv --no-install --non-interactive -s format

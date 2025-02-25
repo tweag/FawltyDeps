@@ -30,4 +30,4 @@ jobs:
           restore-keys: |
             mkdocs-material-
       - run: poetry install --with docs
-      - run: poetry run mkdocs gh-deploy --force
+      - run: poetry run mkdocs -- gh-deploy --force
