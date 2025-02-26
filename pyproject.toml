@@ -18,7 +18,6 @@ classifiers = [
     "Topic :: Software Development :: Quality Assurance",
     "Intended Audience :: Developers",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -34,9 +33,9 @@ fawltydeps = "fawltydeps.main:main"
 [tool.poetry.dependencies]
 # These are the main dependencies for fawltydeps at runtime.
 # Do not add anything here that is only needed by CI/tests/linters/developers
-python = ">=3.8"
+python = ">=3.9"
 importlib_metadata = ">=6.6.0"
-isort = "^5.10"
+isort = ">=5.10"
 packaging = ">=24.0"
 pip-requirements-parser = ">=32.0.1"
 pydantic = ">=1.10.4,<3.0.0"
@@ -54,6 +53,7 @@ optional = true
 
 [tool.poetry.group.nox.dependencies]
 nox = {version="^2024.03.02", extras=["uv"]}
+poetry-plugin-export = { version = ">=1.8", python = ">=3.9,<4.0"}
 
 [tool.poetry.group.test]
 optional = true
@@ -92,6 +92,7 @@ codespell = "^2.2.4"
 hypothesis = "^6.68.2"
 mypy = "^1.0.1"
 nox = {version="^2024.03.02", extras=["uv"]}
+poetry-plugin-export = { version = ">=1.8", python = ">=3.9,<4.0"}
 pytest = "^7.1.0"
 ruff = ">=0.3"
 
@@ -133,7 +134,7 @@ addopts = "-m 'not integration'"
 cache_dir = "~/.cache/pytest"
 
 [tool.ruff]
-target-version = "py37"
+target-version = "py39"
 extend-include = ["*.ipynb"]
 extend-exclude = [
     "tests/sample_projects/legacy_encoding/big5.py",  # Fails with E902 (not UTF-8)
@@ -143,6 +144,7 @@ extend-exclude = [
 select = ["ALL"]
 ignore = [
     # Ignore some unwanted checks:
+    "A005",  # Module `types` shadows a Python standard-library module
     "ANN10",  # Deprecated: Missing type annotation for self/cls in (class)method
     "ANN204",  # Missing return type annotation for special method
     "D104",  # Missing docstring in public package
@@ -163,9 +165,8 @@ ignore = [
 
     # To be fixed in a larger refactoring of our type annotations
     "FA100",  # Missing `from __future__ import annotations`, but uses `typing.*`
-    "TCH002",  # Move third-party import `...` into a type-checking block
-    "TCH003",  # Move standard library import `...` into a type-checking block
-    "UP006",  # Use `list` instead of `List` for type annotation
+    "TC002",  # Move third-party import `...` into a type-checking block
+    "TC003",  # Move standard library import `...` into a type-checking block
     "UP007",  # Use `X | Y` for type annotations
 
     # Ruff recommends avoiding these checks when using `ruff format`.
@@ -201,7 +202,6 @@ ignore = [
     # Ignore some groups of checks in our test code
     "ANN",  # Type annotations
     "D10",  # Missing docstrings
-    "TCH00",  # Imports and type checking blocks
 
     # Ignore some more specific checks in our test code
     "C408",  # Unnecessary `dict` call (rewrite as a literal)
@@ -234,6 +234,7 @@ ignore_unused = [
     "hypothesis",
     "mypy",
     "nox",
+    "poetry-plugin-export",
     "pytest",
     "ruff",
     "types-PyYAML",

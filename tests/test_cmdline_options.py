@@ -21,7 +21,6 @@ import string
 from functools import reduce
 from pathlib import Path
 from textwrap import dedent
-from typing import List
 
 import hypothesis.strategies as st
 from hypothesis import given, settings
@@ -72,13 +71,13 @@ other = ["--generate-toml-config", "--version", "--install-deps"]
 
 
 # Options below contain paths specific for an input project
-def available_code_values(project_dir: Path) -> List[str]:
+def available_code_values(project_dir: Path) -> list[str]:
     return [str(f) for f in walk_dir(project_dir) if f.suffix in {".py", ".ipynb"}] + [
         CODE_STDIN_MARKER
     ]
 
 
-def available_deps_values(project_dir: Path) -> List[str]:
+def available_deps_values(project_dir: Path) -> list[str]:
     return [str(f) for f in walk_dir(project_dir) if f.name in deps_parser_choice]
 
 
@@ -93,7 +92,7 @@ output_formats_strategy = st.lists(
 )
 
 
-def code_option_strategy(paths: List[str]):
+def code_option_strategy(paths: list[str]):
     if not paths:
         return st.just([])
     return st.lists(
@@ -103,7 +102,7 @@ def code_option_strategy(paths: List[str]):
     ).map(lambda xs: ["--code", *xs] if xs else [])
 
 
-def deps_option_strategy(paths: List[str]):
+def deps_option_strategy(paths: list[str]):
     if not paths:
         return st.just([])
     return st.lists(

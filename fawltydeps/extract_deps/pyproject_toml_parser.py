@@ -3,8 +3,8 @@
 import contextlib
 import logging
 import sys
+from collections.abc import Callable, Iterable, Iterator
 from pathlib import Path
-from typing import Callable, Iterable, Iterator, Tuple
 
 from fawltydeps.types import DeclaredDependency, Location, TomlData
 
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 ERROR_MESSAGE_TEMPLATE = "Failed to %s %s %s dependencies in %s: %s"
 
-NamedLocations = Iterator[Tuple[str, Location]]
+NamedLocations = Iterator[tuple[str, Location]]
 
 
 def parse_poetry_pyproject_dependencies(
@@ -217,7 +217,7 @@ def parse_pyproject_elements(
     parsed_contents: TomlData,
     source: Location,
     context_name: str,
-    named_parsers: Iterable[Tuple[str, Callable[[TomlData, Location], NamedLocations]]],
+    named_parsers: Iterable[tuple[str, Callable[[TomlData, Location], NamedLocations]]],
 ) -> Iterator[DeclaredDependency]:
     """Use the given data, source, and parsers to step through sections and collect dependencies."""
     for name_field_type, parser in named_parsers:

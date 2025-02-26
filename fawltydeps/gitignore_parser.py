@@ -5,26 +5,13 @@ from __future__ import annotations
 import logging
 import os
 import re
-import sys
+from collections.abc import Callable, Iterable, Iterator
 from pathlib import Path
-from typing import (
-    TYPE_CHECKING,
-    Callable,
-    Dict,
-    Iterable,
-    Iterator,
-    List,
-    NamedTuple,
-    Optional,
-    Tuple,
-)
+from typing import NamedTuple, Optional
 
 from fawltydeps.types import Location
 
-if TYPE_CHECKING or sys.version_info >= (3, 9):
-    CompiledRegex = re.Pattern[str]
-else:  # re.Pattern not subscriptable before Python 3.9
-    CompiledRegex = re.Pattern
+CompiledRegex = re.Pattern[str]
 
 logger = logging.getLogger(__name__)
 
@@ -86,7 +73,7 @@ def parse_gitignore_lines(
             logger.debug(str(exc))
 
 
-def match_rules(rules: List[Rule], path: Path, *, is_dir: bool) -> bool:
+def match_rules(rules: list[Rule], path: Path, *, is_dir: bool) -> bool:
     """Match the given path against the given list of rules."""
     for rule in reversed(rules):
         if rule.match(path, is_dir=is_dir):
@@ -114,7 +101,7 @@ class Rule(NamedTuple):
         return f"Rule({self.pattern!r}, {self.regex!r}, ...)"
 
     @classmethod
-    def from_pattern(  # noqa: C901
+    def from_pattern(
         cls,
         pattern: str,
         base_dir: Optional[Path] = None,
@@ -163,15 +150,12 @@ class Rule(NamedTuple):
         dir_only = pattern.endswith("/")
         # A slash is a sign that we're tied to the base_dir of our rule set.
         anchored = "/" in pattern[:-1]
-        if pattern.startswith("/"):
-            pattern = pattern[1:]
+        pattern = pattern.removeprefix("/")
         if pattern.startswith("**"):
             pattern = pattern[2:]
             anchored = False
-        if pattern.startswith("/"):
-            pattern = pattern[1:]
-        if pattern.endswith("/"):
-            pattern = pattern[:-1]
+        pattern = pattern.removeprefix("/")
+        pattern = pattern.removesuffix("/")
         # patterns with leading hashes or exclamation marks are escaped with a
         # backslash in front, unescape it
         if pattern.startswith(("\\#", "\\!")):
@@ -207,8 +191,7 @@ class Rule(NamedTuple):
         # in case of directory-only negation
         if self.negated and is_dir:
             rel_path += "/"
-        if rel_path.startswith("./"):
-            rel_path = rel_path[2:]
+        rel_path = rel_path.removeprefix("./")
         match = self.regex.search(rel_path)
         if not match:
             return False
@@ -237,7 +220,7 @@ def fnmatch_pathname_to_regex(pattern: str, *, anchored: bool = False) -> Compil
     """
     result = []
 
-    def handle_character_set(pattern: str) -> Tuple[str, str]:
+    def handle_character_set(pattern: str) -> tuple[str, str]:
         assert pattern.startswith("[")  # noqa: S101, sanity check precondition
         try:
             end = pattern.index("]")
@@ -252,7 +235,7 @@ def fnmatch_pathname_to_regex(pattern: str, *, anchored: bool = False) -> Compil
             inside = "^" + inside[1:]
         return f"[{inside}]", rest
 
-    handlers: Dict[str, Callable[[str], Tuple[str, str]]] = {
+    handlers: dict[str, Callable[[str], tuple[str, str]]] = {
         # pattern prefix -> callable that given pattern returns (result, rest)
         "**/": lambda pattern: (f"(.*{SEPS_GROUP})?", pattern[3:]),
         "**": lambda pattern: (".*", pattern[2:]),

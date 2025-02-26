@@ -7,7 +7,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
         os: [macos-latest, windows-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
@@ -20,8 +20,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Set up Poetry
         uses: Gr1N/setup-poetry@v8
-        with:
-          poetry-version: "1.8.5"
       - uses: actions/cache@v4
         with:
           path: |
@@ -32,6 +30,6 @@ jobs:
       - name: Install project
         run: poetry install --no-interaction --sync --with=nox,test
       - name: Run unit tests on Python ${{ matrix.python-version }}
-        run: poetry run nox --no-venv --no-install --non-interactive -s tests -- -vv
+        run: poetry run nox -- --no-venv --no-install --non-interactive -s tests -- -vv
       - name: Run integration tests on Python ${{ matrix.python-version }}
-        run: poetry run nox --no-venv --no-install --non-interactive -s integration_tests -- -vv
+        run: poetry run nox -- --no-venv --no-install --non-interactive -s integration_tests -- -vv

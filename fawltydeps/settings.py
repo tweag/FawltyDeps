@@ -9,7 +9,7 @@ import sys
 from enum import Enum
 from functools import partial, total_ordering
 from pathlib import Path
-from typing import ClassVar, List, Optional, Set, TextIO, Tuple, Type, Union
+from typing import ClassVar, Optional, TextIO, Union
 
 try:  # import from Pydantic V2
     from pydantic.v1 import BaseSettings
@@ -64,7 +64,7 @@ class OrderedEnum(Enum):
     def __lt__(self, other: object) -> bool:
         if not isinstance(other, OrderedEnum):
             return NotImplemented
-        values: List[OrderedEnum] = list(self.__class__)
+        values: list[OrderedEnum] = list(self.__class__)
         return values.index(self) < values.index(other)
 
 
@@ -155,20 +155,20 @@ class Settings(BaseSettings):
     directives to _combine_ (although that will carry further complications).
     """
 
-    actions: Set[Action] = {Action.REPORT_UNDECLARED, Action.REPORT_UNUSED}
+    actions: set[Action] = {Action.REPORT_UNDECLARED, Action.REPORT_UNUSED}
     output_format: OutputFormat = OutputFormat.HUMAN_SUMMARY
-    code: Set[PathOrSpecial] = {Path()}
-    deps: Set[Path] = {Path()}
-    pyenvs: Set[Path] = {Path()}
+    code: set[PathOrSpecial] = {Path()}
+    deps: set[Path] = {Path()}
+    pyenvs: set[Path] = {Path()}
     custom_mapping: Optional[CustomMapping] = None
-    ignore_undeclared: Set[str] = set()
-    ignore_unused: Set[str] = DEFAULT_IGNORE_UNUSED
+    ignore_undeclared: set[str] = set()
+    ignore_unused: set[str] = DEFAULT_IGNORE_UNUSED
     deps_parser_choice: Optional[ParserChoice] = None
     install_deps: bool = False
-    exclude: Set[str] = {".*"}
-    exclude_from: Set[Path] = set()
+    exclude: set[str] = {".*"}
+    exclude_from: set[Path] = set()
     verbosity: int = 0
-    custom_mapping_file: Set[Path] = set()
+    custom_mapping_file: set[Path] = set()
 
     # Class vars: these can not be overridden in the same way as above, only by
     # passing keyword args to Settings.config(). This is because they change the
@@ -194,7 +194,7 @@ class Settings(BaseSettings):
             init_settings: SettingsSourceCallable,
             env_settings: SettingsSourceCallable,
             file_secret_settings: SettingsSourceCallable,  # noqa: ARG003
-        ) -> Tuple[SettingsSourceCallable, ...]:
+        ) -> tuple[SettingsSourceCallable, ...]:
             """Select and prioritize the various configuration sources."""
             # Use class vars in Settings to determine which configuration file
             # we read.
@@ -209,7 +209,7 @@ class Settings(BaseSettings):
             )
 
     @classmethod
-    def config(cls, **kwargs: Union[None, Path, str]) -> Type[Settings]:
+    def config(cls, **kwargs: Union[None, Path, str]) -> type[Settings]:
         """Configure the class variables in this Settings class.
 
         This must be done _before_ instantiating Settings objects, as the
