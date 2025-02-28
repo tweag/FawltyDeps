@@ -62,6 +62,12 @@ def test_package__empty_package__matches_nothing():
             ["foo-bar", "Foobar", "FooBar", "FOOBAR"],
             id="weird_name__matches_normalized_name_only",
         ),
+        pytest.param(
+            "foo-stubs",
+            ["foo", "foo-stubs"],
+            ["foo_stubs"],
+            id="type-stubs__preserve_-stubs_suffix_in_normalization",
+        ),
     ],
 )
 def test_package__identity_mapping(
@@ -130,6 +136,13 @@ def test_package__identity_mapping(
         pytest.param(
             "types-requests",
             {"requests-stubs"},
+            ["requests-stubs", "and", "other", "names"],
+            ["requests_stubs", "and", "other", "names"],
+            id="name_with_stubs_suffix__matches_name_with_stubs_suffix",
+        ),
+        pytest.param(
+            "types-requests",
+            {"requests-stubs"},
             ["requests", "and", "other", "names"],
             ["types_requests", "and", "other", "names"],
             id="name_with_stubs_suffix__matches_name_without_suffix",
@@ -158,7 +171,7 @@ def test_package__local_env_mapping(
                 """\
                 apache-airflow = ["airflow"]
                 attrs = ["attr", "attrs"]
-            """
+                """
             ],
             None,
             {
@@ -210,6 +223,20 @@ def test_package__local_env_mapping(
                 "foo": Package("foo", {"bar"}, UserDefinedMapping),
             },
             id="well_formated_input_2files_and_config__parses_correctly",
+        ),
+        pytest.param(
+            [
+                """\
+                types_requests = ["requests-stubs"]
+                """
+            ],
+            None,
+            {
+                "types_requests": Package(
+                    "types_requests", {"requests-stubs"}, UserDefinedMapping
+                ),
+            },
+            id="stubs_only_package",
         ),
     ],
 )
