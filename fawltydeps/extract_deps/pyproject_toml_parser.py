@@ -147,6 +147,33 @@ def parse_pep621_pyproject_contents(  # noqa: C901
     )
 
 
+def parse_pep735_pyproject_contents(
+    parsed_contents: TomlData, source: Location
+) -> Iterator[DeclaredDependency]:
+    """Extract dependencies from a pyproject.toml using PEP 735 dependency groups."""
+
+    def parse_dep_groups(contents: TomlData, src: Location) -> NamedLocations:
+        for group in contents["dependency-groups"].values():
+            for req in group:
+                if isinstance(req, dict) and len(req) == 1 and "include-group" in req:
+                    # This include refers to another dependency group. At this
+                    # time we don't differentiate between which group
+                    # dependencies come from, nor do we care how many times
+                    # a dependency is mentioned/included. Therefore, we can
+                    # simply assume that the group being referenced here will
+                    # be parsed/handled on its own, and we don't need to take
+                    # steps to find/yield the same deps from here.
+                    pass
+                else:
+                    yield req, src
+
+    fields_parsers = [("dependency-groups", parse_dep_groups)]
+
+    yield from parse_pyproject_elements(
+        parsed_contents, source, "PEP735", fields_parsers
+    )
+
+
 def parse_dynamic_pyproject_contents(
     parsed_contents: TomlData, source: Location
 ) -> Iterator[DeclaredDependency]:
@@ -257,6 +284,9 @@ def parse_pyproject_toml(path: Path) -> Iterator[DeclaredDependency]:
     for dep in parse_pep621_pyproject_contents(parsed_contents, source):
         if dep.name not in skip:
             yield dep
+
+    for dep in parse_pep735_pyproject_contents(parsed_contents, source):
+        yield dep
 
     if "poetry" in parsed_contents.get("tool", {}):
         yield from parse_poetry_pyproject_dependencies(
