@@ -14,7 +14,7 @@ from fawltydeps.utils import hide_dataclass_fields
 
 SpecialPath = Literal["<stdin>"]
 PathOrSpecial = Union[SpecialPath, Path]
-TomlData = Dict[str, Any]  # type: ignore[misc]
+TomlData = Dict[str, Any]  # type: ignore[explicit-any]
 CustomMapping = Dict[str, List[str]]
 
 
