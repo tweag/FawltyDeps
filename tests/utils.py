@@ -91,7 +91,7 @@ def resolved_factory(*deps: str) -> dict[str, Package]:
         if imports is not None:  # exists in local env
             return Package(dep, imports, SysPathPackageResolver)
         # fall back to identity mapping
-        return Package(dep, {dep}, IdentityMapping)
+        return Package(dep, {Package.normalize_name(dep)}, IdentityMapping)
 
     return {dep: make_package(dep) for dep in deps}
 
@@ -362,5 +362,29 @@ test_vectors = [
         expect_undeclared_deps=[
             UndeclaredDependency("foo", [Location("<stdin>")], {"foo1", "foo2"}),
         ],
+    ),
+    FDTestVector(
+        "ignore_unused_with_wildcard__can_match_multiple_deps",
+        declared_deps=deps_factory("pytest-foo", "pytest-bar", "not-pytest-baz"),
+        ignore_unused=["pytest-*"],
+        expect_resolved_deps=resolved_factory(
+            "pytest-foo", "pytest-bar", "not-pytest-baz"
+        ),
+        expect_unused_deps=unused_factory("not-pytest-baz"),
+    ),
+    FDTestVector(
+        "ignore_undeclare_with_wildcard__can_match_multiple_imports",
+        imports=imports_factory("foo", "bar", "baz"),
+        ignore_undeclared=["*a*"],
+        expect_undeclared_deps=undeclared_factory("foo"),
+    ),
+    FDTestVector(
+        "mixed_deps__report_only_non_ignored_unused_with_wildcard",
+        imports=imports_factory("foo", "bar", "baz"),
+        declared_deps=deps_factory("foo", "foo-stubs", "pytest-bar", "baz"),
+        ignore_unused=["pytest-*"],
+        expect_resolved_deps=resolved_factory("foo", "foo-stubs", "pytest-bar", "baz"),
+        expect_undeclared_deps=undeclared_factory("bar"),
+        expect_unused_deps=[],
     ),
 ]
