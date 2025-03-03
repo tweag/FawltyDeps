@@ -135,24 +135,32 @@ class Analysis:
         )
 
     @cached_property
-    def resolved_deps(self) -> Dict[str, Package]:
-        """The resolved mapping of dependency names to provided import names."""
+    def resolvers(self) -> List[BasePackageResolver]:
+        """The resolvers used to find dependency name -> import name mappings."""
         pyenv_srcs = {src for src in self.sources if isinstance(src, PyEnvSource)}
-        return resolve_dependencies(
-            (dep.name for dep in self.declared_deps),
+        return list(
             setup_resolvers(
                 custom_mapping_files=self.settings.custom_mapping_file,
                 custom_mapping=self.settings.custom_mapping,
                 pyenv_srcs=pyenv_srcs,
                 use_current_env=True,
                 install_deps=self.settings.install_deps,
-            ),
+            )
+        )
+
+    @cached_property
+    def resolved_deps(self) -> Dict[str, Package]:
+        """The resolved mapping of dependency names to provided import names."""
+        return resolve_dependencies(
+            (dep.name for dep in self.declared_deps), self.resolvers
         )
 
     @cached_property
     def undeclared_deps(self) -> List[UndeclaredDependency]:
         """The import statements for which no declared dependency is found."""
-        return calculate_undeclared(self.imports, self.resolved_deps, self.settings)
+        return calculate_undeclared(
+            self.imports, self.resolved_deps, self.resolvers, self.settings
+        )
 
     @cached_property
     def unused_deps(self) -> List[UnusedDependency]:
