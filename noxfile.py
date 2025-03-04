@@ -1,8 +1,8 @@
 import hashlib
 import os
 import shutil
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 
 import nox
 

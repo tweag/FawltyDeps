@@ -19,13 +19,11 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - uses: Gr1N/setup-poetry@v8
-        with:
-          poetry-version: "1.8.5"
       - uses: actions/cache@v4
         with:
           path: ~/.cache/pypoetry/virtualenvs
           key: ${{ runner.os }}-poetry-format-${{ hashFiles('poetry.lock') }}
       - name: Install project
-        run: poetry install --no-interaction --sync --no-root --only=nox,format
+        run: poetry sync --no-interaction --no-root --only=nox,format
       - name: Run formatting checks
-        run: poetry run nox --no-venv --no-install --non-interactive -s format
+        run: poetry run nox -- --no-venv --no-install --non-interactive -s format

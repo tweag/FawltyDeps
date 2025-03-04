@@ -11,7 +11,6 @@ from dataclasses import dataclass, field
 from itertools import dropwhile
 from pathlib import Path
 from textwrap import dedent
-from typing import List
 
 import pytest
 from importlib_metadata import files as package_files
@@ -40,9 +39,9 @@ EXIT_UNUSED = 4
 EXIT_UNRESOLVED = 5
 
 
-def make_json_settings_dict(**kwargs):
+def make_json_settings_dict(**customizations):
     """Create an expected version of Settings.dict(), with customizations."""
-    settings = {
+    defaults = {
         "actions": ["check_undeclared", "check_unused"],
         "code": ["."],
         "deps": ["."],
@@ -58,9 +57,8 @@ def make_json_settings_dict(**kwargs):
         "verbosity": 0,
         "custom_mapping_file": [],
     }
-    assert all(k in settings for k in kwargs)
-    settings.update(kwargs)
-    return settings
+    assert all(k in defaults for k in customizations)
+    return defaults | customizations
 
 
 @pytest.mark.parametrize(
@@ -645,12 +643,12 @@ class ProjectTestVector:
     """Test vectors for FawltyDeps Settings configuration."""
 
     id: str
-    options: List[str] = field(default_factory=list)
-    imports: List[str] = field(default_factory=list)
-    declares: List[str] = field(default_factory=list)
+    options: list[str] = field(default_factory=list)
+    imports: list[str] = field(default_factory=list)
+    declares: list[str] = field(default_factory=list)
 
-    expect_output: List[str] = field(default_factory=list)
-    expect_logs: List[str] = field(default_factory=list)
+    expect_output: list[str] = field(default_factory=list)
+    expect_logs: list[str] = field(default_factory=list)
     expect_returncode: int = EXIT_SUCCESS
 
 

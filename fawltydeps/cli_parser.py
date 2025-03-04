@@ -5,8 +5,9 @@ and part is for general purpose.
 """
 
 import argparse
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Any, Optional, Sequence
+from typing import Any, Optional
 
 from fawltydeps.settings import (
     Action,

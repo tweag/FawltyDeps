@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from pathlib import Path
 from textwrap import dedent
-from typing import Generic, List, Optional, Tuple, Type, TypeVar, Union
+from typing import Generic, Optional, TypeVar, Union
 
 import pytest
 
@@ -79,11 +79,11 @@ class ExpectedTraverseStep(Generic[T]):
 
     # All strings are relative to tmp_path
     dir: str
-    subdirs: List[str] = field(default_factory=list)
-    files: List[str] = field(default_factory=list)
-    attached: List[T] = field(default_factory=list)
-    excluded_subdirs: List[str] = field(default_factory=list)
-    excluded_files: List[str] = field(default_factory=list)
+    subdirs: list[str] = field(default_factory=list)
+    files: list[str] = field(default_factory=list)
+    attached: list[T] = field(default_factory=list)
+    excluded_subdirs: list[str] = field(default_factory=list)
+    excluded_files: list[str] = field(default_factory=list)
 
     def prepare(self, tmp_path: Path) -> TraversalStep:
         return TraversalStep(
@@ -101,7 +101,7 @@ class AddCall(Generic[T]):
     """Arguments for a call to DirectoryTraversal.add()."""
 
     path: Union[Path, str]
-    attach: Tuple[T, ...] = ()
+    attach: tuple[T, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -122,14 +122,14 @@ class DirectoryTraversalVector:
     """Test vectors for DirectoryTraversal."""
 
     id: str
-    given: List[BaseEntry]
-    add: List[AddCall] = field(default_factory=lambda: [AddCall(path=".")])
-    skip_dirs: List[str] = field(default_factory=list)
-    exclude_patterns: List[ExcludePattern] = field(default_factory=list)
-    exclude_from: List[str] = field(default_factory=list)
-    exclude_exceptions: List[Type[Exception]] = field(default_factory=list)
-    expect: List[ExpectedTraverseStep] = field(default_factory=list)
-    expect_alternatives: Optional[List[List[ExpectedTraverseStep]]] = None
+    given: list[BaseEntry]
+    add: list[AddCall] = field(default_factory=lambda: [AddCall(path=".")])
+    skip_dirs: list[str] = field(default_factory=list)
+    exclude_patterns: list[ExcludePattern] = field(default_factory=list)
+    exclude_from: list[str] = field(default_factory=list)
+    exclude_exceptions: list[type[Exception]] = field(default_factory=list)
+    expect: list[ExpectedTraverseStep] = field(default_factory=list)
+    expect_alternatives: Optional[list[list[ExpectedTraverseStep]]] = None
     skip_me: Optional[str] = None
 
     def setup(self, setup_dir: Path) -> DirectoryTraversal:  # noqa: C901
@@ -197,7 +197,7 @@ def on_windows(msg: str) -> Optional[str]:
     return msg if sys.platform.startswith("win") else None
 
 
-directory_traversal_vectors: List[DirectoryTraversalVector] = [
+directory_traversal_vectors: list[DirectoryTraversalVector] = [
     DirectoryTraversalVector(
         "empty_dir",
         given=[],

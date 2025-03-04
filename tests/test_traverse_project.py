@@ -4,8 +4,9 @@ import dataclasses
 import logging
 import os
 import sys
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable, List, Optional, Set, Type
+from typing import Optional
 
 import pytest
 
@@ -31,18 +32,18 @@ class TraverseProjectVector:
     id: str
     project: str  # The base path for this test, relative to SAMPLE_PROJECTS_DIR
     # These sets contain input paths that are all relative to the above project:
-    code: Set[str] = dataclasses.field(default_factory=lambda: {"."})
-    deps: Set[str] = dataclasses.field(default_factory=lambda: {"."})
-    pyenvs: Set[str] = dataclasses.field(default_factory=lambda: {"."})
-    exclude: Set[str] = dataclasses.field(default_factory=lambda: Settings().exclude)
+    code: set[str] = dataclasses.field(default_factory=lambda: {"."})
+    deps: set[str] = dataclasses.field(default_factory=lambda: {"."})
+    pyenvs: set[str] = dataclasses.field(default_factory=lambda: {"."})
+    exclude: set[str] = dataclasses.field(default_factory=lambda: Settings().exclude)
     deps_parser_choice: Optional[ParserChoice] = None
     # These are paths (also relative to the project) that we expect to find:
-    expect_imports_src: Set[str] = dataclasses.field(default_factory=set)
-    expect_deps_src: Set[str] = dataclasses.field(default_factory=set)
-    expect_pyenv_src: Set[str] = dataclasses.field(default_factory=set)
+    expect_imports_src: set[str] = dataclasses.field(default_factory=set)
+    expect_deps_src: set[str] = dataclasses.field(default_factory=set)
+    expect_pyenv_src: set[str] = dataclasses.field(default_factory=set)
     # These are the exceptions we expect to be raised, or warnings to be logged
-    expect_raised: Optional[Type[Exception]] = None
-    expect_warnings: List[str] = dataclasses.field(default_factory=list)
+    expect_raised: Optional[type[Exception]] = None
+    expect_warnings: list[str] = dataclasses.field(default_factory=list)
     skip_me: Callable[[], Optional[str]] = lambda: None
 
 
@@ -943,9 +944,9 @@ def test_find_sources_with_absolute_paths(vector: TraverseProjectVector, caplog)
     expect_deps_src = {project_dir / path for path in vector.expect_deps_src}
     expect_pyenv_src = {project_dir / path for path in vector.expect_pyenv_src}
 
-    actual_imports_src: Set[PathOrSpecial] = set()
-    actual_deps_src: Set[Path] = set()
-    actual_pyenv_src: Set[Path] = set()
+    actual_imports_src: set[PathOrSpecial] = set()
+    actual_deps_src: set[Path] = set()
+    actual_pyenv_src: set[Path] = set()
 
     if vector.expect_raised is not None:
         with pytest.raises(vector.expect_raised):
@@ -1002,9 +1003,9 @@ def test_find_sources_with_relative_paths(
     expect_deps_src = {Path(path) for path in vector.expect_deps_src}
     expect_pyenv_src = {Path(path) for path in vector.expect_pyenv_src}
 
-    actual_imports_src: Set[PathOrSpecial] = set()
-    actual_deps_src: Set[Path] = set()
-    actual_pyenv_src: Set[Path] = set()
+    actual_imports_src: set[PathOrSpecial] = set()
+    actual_deps_src: set[Path] = set()
+    actual_pyenv_src: set[Path] = set()
 
     if vector.expect_raised is not None:
         with pytest.raises(vector.expect_raised):

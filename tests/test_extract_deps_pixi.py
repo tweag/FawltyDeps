@@ -2,7 +2,6 @@
 
 import logging
 from dataclasses import dataclass, field
-from typing import List
 
 import pytest
 
@@ -177,8 +176,8 @@ class PixiTestVector:
 
     id: str
     data: str
-    field_types: List[str]
-    expect: List[str] = field(default_factory=list)
+    field_types: list[str]
+    expect: list[str] = field(default_factory=list)
 
 
 pixi_tests_malformed_samples = [
