@@ -29,5 +29,5 @@ jobs:
           path: .cache
           restore-keys: |
             mkdocs-material-
-      - run: poetry install --with docs
-      - run: poetry run mkdocs gh-deploy --force
+      - run: poetry sync --no-interaction --with=docs
+      - run: poetry run mkdocs -- gh-deploy --force
