@@ -130,6 +130,7 @@ DEFAULT_IGNORE_UNUSED = {
     "nox",
     "pre-commit",
     "pytest",
+    "pytest-*",
     "tox",
     # Building and Packaging Tools
     "twine",
