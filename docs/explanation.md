@@ -83,10 +83,10 @@ no matter where this virtualenv may be located.
 ### Identity mapping
 
 When unable to find an installed package that corresponds to a declared
-dependency either via a user-provided mapping or local Python environments,
-FawltyDeps will fall back to one of two strategies. "Identity mapping", which we
-present in this section is the default fallback strategy. We discuss the other
-strategy in the next subsection.
+dependency either via a [user-defined mapping](#user-defined-mapping) or local 
+Python environments, FawltyDeps will fall back to one of two strategies.
+"Identity mapping", which we present in this section is the default fallback
+strategy. We discuss the other strategy in the next subsection.
 
 Identity mapping relies on the simplistic assumption that the dependency provides
 a single import of the same name, i.e. it will expect that when you depend on
@@ -135,15 +135,27 @@ In this case, FawltyDeps will throw an error and abort.
 
 ### User-defined mapping
 
+Sometimes Python dependencies are imported using a different name than the package
+name used in the `import` statement. Some Python packages might have hyphens in
+their dependency names used by package managers, but underscores in their import 
+names, for example.
+
 We provide a custom mapping functionality to users wishing to take control
 over the way FawltyDeps resolves dependencies. You may define your own mapping
 of dependency names to import names, by providing a TOML file like this:
 
 ```toml
-my-package = ["mpkg"]
-scikit-learn = ["sklearn"]
+langchain-core = ["langchain_core"]
 multiple-modules = ["module1", "module2"]
+my-package = ["mpkg"]
+python-dotenv = ["dotenv"]
+scikit-learn = ["sklearn"]
 ```
+
+The package name of the dependency is on the left-hand side of the `=`, and the
+import name(s) are on the right-hand side. You can provide multiple import names
+for a single dependency.
+
 
 To use your mapping, run:
 
@@ -159,9 +171,11 @@ project, inside a `[tool.fawltydeps.custom_mapping]` section, like this:
 
 ```toml
 [tool.fawltydeps.custom_mapping]
-my-package = ["mpkg"]
-scikit-learn = ["sklearn"]
+langchain-core = ["langchain_core"]
 multiple-modules = ["module1", "module2"]
+my-package = ["mpkg"]
+python-dotenv = ["dotenv"]
+scikit-learn = ["sklearn"]
 ```
 
 The provided mapping can be complete or partial. When a dependency is not
