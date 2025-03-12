@@ -17,9 +17,13 @@ def test_calculate_undeclared(vector):
     settings = Settings(ignore_undeclared=vector.ignore_undeclared)
     logger.info(f"imports: {vector.imports!r}")
     logger.info(f"declared_deps: {vector.declared_deps!r}")
+    logger.info(f"resolver: {vector.resolver!r}")
     logger.info(f"resolved_deps: {vector.expect_resolved_deps!r}")
     actual = calculate_undeclared(
-        vector.imports, vector.expect_resolved_deps, [], settings
+        imports=vector.imports,
+        resolved_deps=vector.expect_resolved_deps,
+        resolvers=[vector.resolver] if vector.resolver is not None else [],
+        settings=settings,
     )
     assert actual == vector.expect_undeclared_deps
 
@@ -31,6 +35,9 @@ def test_calculate_unused(vector):
     logger.info(f"declared_deps: {vector.declared_deps!r}")
     logger.info(f"resolved_deps: {vector.expect_resolved_deps!r}")
     actual = calculate_unused(
-        vector.imports, vector.declared_deps, vector.expect_resolved_deps, settings
+        imports=vector.imports,
+        declared_deps=vector.declared_deps,
+        resolved_deps=vector.expect_resolved_deps,
+        settings=settings,
     )
     assert actual == vector.expect_unused_deps
