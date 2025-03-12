@@ -15,7 +15,13 @@ from textwrap import dedent
 import pytest
 from importlib_metadata import files as package_files
 
-from fawltydeps.main import UNUSED_DEPS_OUTPUT_PREFIX, VERBOSE_PROMPT, Analysis, version
+from fawltydeps.main import (
+    UNDECLARED_DEPS_OUTPUT_PREFIX,
+    UNUSED_DEPS_OUTPUT_PREFIX,
+    VERBOSE_PROMPT,
+    Analysis,
+    version,
+)
 from fawltydeps.settings import DEFAULT_IGNORE_UNUSED
 from fawltydeps.types import Location, UnusedDependency
 from fawltydeps.utils import site_packages
@@ -670,7 +676,7 @@ project_tests_samples = [
         imports=["my_requests", "my_pandas"],
         declares=["my_pandas"],
         expect_output=[
-            "These imports appear to be undeclared dependencies:",
+            f"{UNDECLARED_DEPS_OUTPUT_PREFIX}:",
             "- 'my_requests' imported at:",
             f"    {Path('{path}', 'code.py')}:1",
         ],
@@ -682,7 +688,7 @@ project_tests_samples = [
         imports=["my_requests"],
         declares=["my_requests", "my_pandas"],
         expect_output=[
-            "These dependencies appear to be unused (i.e. not imported):",
+            f"{UNUSED_DEPS_OUTPUT_PREFIX}:",
             "- 'my_pandas' declared in:",
             f"    {Path('{path}', 'requirements.txt')}",
         ],
@@ -694,11 +700,11 @@ project_tests_samples = [
         imports=["my_requests"],
         declares=["my_pandas"],
         expect_output=[
-            "These imports appear to be undeclared dependencies:",
+            f"{UNDECLARED_DEPS_OUTPUT_PREFIX}:",
             "- 'my_requests' imported at:",
             f"    {Path('{path}', 'code.py')}:1",
             "",
-            "These dependencies appear to be unused (i.e. not imported):",
+            f"{UNUSED_DEPS_OUTPUT_PREFIX}:",
             "- 'my_pandas' declared in:",
             f"    {Path('{path}', 'requirements.txt')}",
         ],
@@ -710,10 +716,10 @@ project_tests_samples = [
         imports=["my_requests"],
         declares=["my_pandas"],
         expect_output=[
-            "These imports appear to be undeclared dependencies:",
+            f"{UNDECLARED_DEPS_OUTPUT_PREFIX}:",
             "- 'my_requests'",
             "",
-            "These dependencies appear to be unused (i.e. not imported):",
+            f"{UNUSED_DEPS_OUTPUT_PREFIX}:",
             "- 'my_pandas'",
             "",
             VERBOSE_PROMPT,
@@ -733,11 +739,11 @@ project_tests_samples = [
         imports=["my_requests"],
         declares=["my_pandas"],
         expect_output=[
-            "These imports appear to be undeclared dependencies:",
+            f"{UNDECLARED_DEPS_OUTPUT_PREFIX}:",
             "- 'my_requests' imported at:",
             f"    {Path('{path}', 'code.py')}:1",
             "",
-            "These dependencies appear to be unused (i.e. not imported):",
+            f"{UNUSED_DEPS_OUTPUT_PREFIX}:",
             "- 'my_pandas' declared in:",
             f"    {Path('{path}', 'requirements.txt')}",
         ],
@@ -854,7 +860,7 @@ def test_check_undeclared__simple_project__reports_only_undeclared(fake_project)
     )
 
     expect = [
-        "These imports appear to be undeclared dependencies:",
+        f"{UNDECLARED_DEPS_OUTPUT_PREFIX}:",
         "- 'my_requests' imported at:",
         f"    {tmp_path / 'code.py'}:1",
     ]
@@ -876,7 +882,7 @@ def test_check_unused__simple_project__reports_only_unused(fake_project):
     )
 
     expect = [
-        "These dependencies appear to be unused (i.e. not imported):",
+        f"{UNUSED_DEPS_OUTPUT_PREFIX}:",
         "- 'my_pandas' declared in:",
         f"    {tmp_path / 'requirements.txt'}",
     ]
@@ -898,11 +904,11 @@ def test__no_action__defaults_to_check_action(fake_project):
     )
 
     expect = [
-        "These imports appear to be undeclared dependencies:",
+        f"{UNDECLARED_DEPS_OUTPUT_PREFIX}:",
         "- 'my_requests' imported at:",
         f"    {tmp_path / 'code.py'}:1",
         "",
-        "These dependencies appear to be unused (i.e. not imported):",
+        f"{UNUSED_DEPS_OUTPUT_PREFIX}:",
         "- 'my_pandas' declared in:",
         f"    {tmp_path / 'requirements.txt'}",
     ]
@@ -920,11 +926,11 @@ def test__no_options__defaults_to_check_action_in_current_dir(fake_project):
     )
 
     expect = [
-        "These imports appear to be undeclared dependencies:",
+        f"{UNDECLARED_DEPS_OUTPUT_PREFIX}:",
         "- 'my_requests' imported at:",
         "    code.py:1",
         "",
-        "These dependencies appear to be unused (i.e. not imported):",
+        f"{UNUSED_DEPS_OUTPUT_PREFIX}:",
         "- 'my_pandas' declared in:",
         "    requirements.txt",
     ]
@@ -942,10 +948,10 @@ def test_check__summary__writes_only_names_of_unused_and_undeclared(fake_project
     )
 
     expect = [
-        "These imports appear to be undeclared dependencies:",
+        f"{UNDECLARED_DEPS_OUTPUT_PREFIX}:",
         "- 'my_requests'",
         "",
-        "These dependencies appear to be unused (i.e. not imported):",
+        f"{UNUSED_DEPS_OUTPUT_PREFIX}:",
         "- 'my_pandas'",
         "",
         VERBOSE_PROMPT,
@@ -1172,10 +1178,10 @@ def test_cmdline_on_ignored_undeclared_option(
             {},
             [],
             [
-                "These imports appear to be undeclared dependencies:",
+                f"{UNDECLARED_DEPS_OUTPUT_PREFIX}:",
                 "- 'my_requests'",
                 "",
-                "These dependencies appear to be unused (i.e. not imported):",
+                f"{UNUSED_DEPS_OUTPUT_PREFIX}:",
                 "- 'my_pandas'",
                 "",
                 VERBOSE_PROMPT,

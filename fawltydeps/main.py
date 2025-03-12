@@ -50,6 +50,7 @@ from fawltydeps.utils import version
 logger = logging.getLogger(__name__)
 
 VERBOSE_PROMPT = "For a more verbose report re-run with the `--detailed` option."
+UNDECLARED_DEPS_OUTPUT_PREFIX = "These imports appear to be undeclared dependencies"
 UNUSED_DEPS_OUTPUT_PREFIX = "These dependencies appear to be unused (i.e. not imported)"
 
 
@@ -261,7 +262,7 @@ class Analysis:
                 yield from sorted({d.name for d in self.declared_deps})
 
         def render_undeclared() -> Iterator[str]:
-            yield "\nThese imports appear to be undeclared dependencies:"
+            yield f"\n{UNDECLARED_DEPS_OUTPUT_PREFIX}:"
             for undeclared in self.undeclared_deps:
                 yield f"- {undeclared.render(include_references=detailed)}"
 
