@@ -1408,7 +1408,7 @@ def test_deps_across_groups_appear_just_once_in_order_in_general_detailed(tmp_pa
     exp_lines = [
         line
         for dep in unused_deps
-        for line in f"- {dep.render(include_references=True)}".split("\n")
+        for line in f"- {dep.render(detailed=True)}".split("\n")
     ]
     assert list(obs_lines_relevant) == exp_lines
 

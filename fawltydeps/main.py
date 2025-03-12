@@ -264,12 +264,12 @@ class Analysis:
         def render_undeclared() -> Iterator[str]:
             yield f"\n{UNDECLARED_DEPS_OUTPUT_PREFIX}:"
             for undeclared in self.undeclared_deps:
-                yield f"- {undeclared.render(include_references=detailed)}"
+                yield f"- {undeclared.render(detailed=detailed)}"
 
         def render_unused() -> Iterator[str]:
             yield f"\n{UNUSED_DEPS_OUTPUT_PREFIX}:"
             for unused in sorted(self.unused_deps, key=lambda d: d.name):
-                yield f"- {unused.render(include_references=detailed)}"
+                yield f"- {unused.render(detailed=detailed)}"
 
         def output(lines: Iterator[str]) -> None:
             for line in lines:
