@@ -69,7 +69,8 @@ def test_package__identity_mapping(
 ):
     id_mapping = IdentityMapping()
     p = id_mapping.lookup_package(package_name)
-    assert p.package_name == Package.normalize_name(package_name)
+    assert p.package_name == package_name
+    assert p.normalized_name == Package.normalize_name(package_name)
     assert p.is_used(matching_imports)
     assert not p.is_used(non_matching_imports)
 
@@ -142,7 +143,8 @@ def test_package__local_env_mapping(
     lpl = LocalPackageResolver({PyEnvSource(site_dir)})
     normalized_name = Package.normalize_name(package_name)
     p = lpl.packages[normalized_name]
-    assert p.package_name == normalized_name
+    assert p.package_name == package_name
+    assert p.normalized_name == normalized_name
     assert p.resolved_with is LocalPackageResolver
     assert p.is_used(matching_imports)
     assert not p.is_used(non_matching_imports)
@@ -161,7 +163,7 @@ def test_package__local_env_mapping(
             None,
             {
                 "apache_airflow": Package(
-                    "apache_airflow", {"airflow"}, UserDefinedMapping
+                    "apache-airflow", {"airflow"}, UserDefinedMapping
                 ),
                 "attrs": Package("attrs", {"attr", "attrs"}, UserDefinedMapping),
             },
@@ -181,7 +183,7 @@ def test_package__local_env_mapping(
             None,
             {
                 "apache_airflow": Package(
-                    "apache_airflow", {"airflow", "baz"}, UserDefinedMapping
+                    "apache-airflow", {"airflow", "baz"}, UserDefinedMapping
                 ),
                 "attrs": Package("attrs", {"attr", "attrs"}, UserDefinedMapping),
                 "foo": Package("foo", {"bar"}, UserDefinedMapping),
@@ -202,7 +204,7 @@ def test_package__local_env_mapping(
             {"apache-airflow": ["unicorn"]},
             {
                 "apache_airflow": Package(
-                    "apache_airflow", {"airflow", "baz", "unicorn"}, UserDefinedMapping
+                    "apache-airflow", {"airflow", "baz", "unicorn"}, UserDefinedMapping
                 ),
                 "attrs": Package("attrs", {"attr", "attrs"}, UserDefinedMapping),
                 "foo": Package("foo", {"bar"}, UserDefinedMapping),
@@ -357,6 +359,11 @@ def test_resolve_dependencies__unresolved_dependencies__UnresolvedDependenciesEr
             {"bar_package", "baz_package"},
             id="import_with_two_matches_in_venv__yields_two_suggestions",
         ),
+        pytest.param(
+            "other_module",
+            {"SomeOther-Package"},
+            id="import_with_one_match_in_venv__yields_orig_package_name",
+        ),
     ],
 )
 def test_suggest_packages_in_fake_venv(import_name, expect_package_names, fake_venv):
@@ -365,6 +372,7 @@ def test_suggest_packages_in_fake_venv(import_name, expect_package_names, fake_v
             "foo_package": {"foo"},
             "bar_package": {"bar", "baz"},
             "baz_package": {"baz"},
+            "SomeOther-Package": {"other_module"},
         }
     )
     lpl = LocalPackageResolver({PyEnvSource(site_dir)})
@@ -389,6 +397,11 @@ def test_suggest_packages_in_fake_venv(import_name, expect_package_names, fake_v
             "pkg_resources",
             {"setuptools"},
             id="import_with_diff_name_match_in_venv__yields_package",
+        ),
+        pytest.param(
+            "requests-stubs",
+            {"types-requests"},
+            id="import_with_diff_name_match_in_venv__yields_orig_package_name",
         ),
     ],
 )
