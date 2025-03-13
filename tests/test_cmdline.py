@@ -677,8 +677,9 @@ project_tests_samples = [
         declares=["my_pandas"],
         expect_output=[
             f"{UNDECLARED_DEPS_OUTPUT_PREFIX}:",
-            "- 'my_requests' imported at:",
-            f"    {Path('{path}', 'code.py')}:1",
+            "- 'my_requests'",
+            "    imported at:",
+            f"      {Path('{path}', 'code.py')}:1",
         ],
         expect_returncode=EXIT_UNDECLARED,
     ),
@@ -689,8 +690,9 @@ project_tests_samples = [
         declares=["my_requests", "my_pandas"],
         expect_output=[
             f"{UNUSED_DEPS_OUTPUT_PREFIX}:",
-            "- 'my_pandas' declared in:",
-            f"    {Path('{path}', 'requirements.txt')}",
+            "- 'my_pandas'",
+            "    declared in:",
+            f"      {Path('{path}', 'requirements.txt')}",
         ],
         expect_returncode=EXIT_UNUSED,
     ),
@@ -701,12 +703,14 @@ project_tests_samples = [
         declares=["my_pandas"],
         expect_output=[
             f"{UNDECLARED_DEPS_OUTPUT_PREFIX}:",
-            "- 'my_requests' imported at:",
-            f"    {Path('{path}', 'code.py')}:1",
+            "- 'my_requests'",
+            "    imported at:",
+            f"      {Path('{path}', 'code.py')}:1",
             "",
             f"{UNUSED_DEPS_OUTPUT_PREFIX}:",
-            "- 'my_pandas' declared in:",
-            f"    {Path('{path}', 'requirements.txt')}",
+            "- 'my_pandas'",
+            "    declared in:",
+            f"      {Path('{path}', 'requirements.txt')}",
         ],
         expect_returncode=EXIT_UNDECLARED,  # undeclared is more important than unused
     ),
@@ -740,12 +744,14 @@ project_tests_samples = [
         declares=["my_pandas"],
         expect_output=[
             f"{UNDECLARED_DEPS_OUTPUT_PREFIX}:",
-            "- 'my_requests' imported at:",
-            f"    {Path('{path}', 'code.py')}:1",
+            "- 'my_requests'",
+            "    imported at:",
+            f"      {Path('{path}', 'code.py')}:1",
             "",
             f"{UNUSED_DEPS_OUTPUT_PREFIX}:",
-            "- 'my_pandas' declared in:",
-            f"    {Path('{path}', 'requirements.txt')}",
+            "- 'my_pandas'",
+            "    declared in:",
+            f"      {Path('{path}', 'requirements.txt')}",
         ],
         expect_returncode=EXIT_UNDECLARED,  # undeclared is more important than unused
     ),
@@ -861,8 +867,9 @@ def test_check_undeclared__simple_project__reports_only_undeclared(fake_project)
 
     expect = [
         f"{UNDECLARED_DEPS_OUTPUT_PREFIX}:",
-        "- 'my_requests' imported at:",
-        f"    {tmp_path / 'code.py'}:1",
+        "- 'my_requests'",
+        "    imported at:",
+        f"      {tmp_path / 'code.py'}:1",
     ]
     output, returncode = run_fawltydeps_function(
         "--check-undeclared",
@@ -883,8 +890,9 @@ def test_check_unused__simple_project__reports_only_unused(fake_project):
 
     expect = [
         f"{UNUSED_DEPS_OUTPUT_PREFIX}:",
-        "- 'my_pandas' declared in:",
-        f"    {tmp_path / 'requirements.txt'}",
+        "- 'my_pandas'",
+        "    declared in:",
+        f"      {tmp_path / 'requirements.txt'}",
     ]
     output, returncode = run_fawltydeps_function(
         "--check-unused",
@@ -905,12 +913,14 @@ def test__no_action__defaults_to_check_action(fake_project):
 
     expect = [
         f"{UNDECLARED_DEPS_OUTPUT_PREFIX}:",
-        "- 'my_requests' imported at:",
-        f"    {tmp_path / 'code.py'}:1",
+        "- 'my_requests'",
+        "    imported at:",
+        f"      {tmp_path / 'code.py'}:1",
         "",
         f"{UNUSED_DEPS_OUTPUT_PREFIX}:",
-        "- 'my_pandas' declared in:",
-        f"    {tmp_path / 'requirements.txt'}",
+        "- 'my_pandas'",
+        "    declared in:",
+        f"      {tmp_path / 'requirements.txt'}",
     ]
     output, returncode = run_fawltydeps_function(
         f"--code={tmp_path}", "--detailed", f"--deps={tmp_path}"
@@ -927,12 +937,14 @@ def test__no_options__defaults_to_check_action_in_current_dir(fake_project):
 
     expect = [
         f"{UNDECLARED_DEPS_OUTPUT_PREFIX}:",
-        "- 'my_requests' imported at:",
-        "    code.py:1",
+        "- 'my_requests'",
+        "    imported at:",
+        "      code.py:1",
         "",
         f"{UNUSED_DEPS_OUTPUT_PREFIX}:",
-        "- 'my_pandas' declared in:",
-        "    requirements.txt",
+        "- 'my_pandas'",
+        "    declared in:",
+        "      requirements.txt",
     ]
     expect_logs = []
     output, errors, returncode = run_fawltydeps_subprocess("--detailed", cwd=tmp_path)

@@ -292,13 +292,14 @@ class UndeclaredDependency:
 
     def render(self, *, detailed: bool) -> str:
         """Return a human-readable string representation."""
+        ret = f"{self.name!r}"
         if detailed:
             unique_locations = sorted(set(self.references))
             assert unique_locations  # noqa: S101, sanity check
-            return f"{self.name!r} imported at:" + "".join(
-                f"\n    {loc}" for loc in unique_locations
+            ret += "\n    imported at:" + "".join(
+                f"\n      {loc}" for loc in unique_locations
             )
-        return f"{self.name!r}"
+        return ret
 
 
 @dataclass
@@ -310,10 +311,11 @@ class UnusedDependency:
 
     def render(self, *, detailed: bool) -> str:
         """Return a human-readable string representation."""
+        ret = f"{self.name!r}"
         if detailed:
             unique_locations = sorted(set(self.references))
             assert unique_locations  # noqa: S101, sanity check
-            return f"{self.name!r} declared in:" + "".join(
-                f"\n    {loc}" for loc in unique_locations
+            ret += "\n    declared in:" + "".join(
+                f"\n      {loc}" for loc in unique_locations
             )
-        return f"{self.name!r}"
+        return ret
