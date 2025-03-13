@@ -299,6 +299,10 @@ class UndeclaredDependency:
             ret += "\n    imported at:" + "".join(
                 f"\n      {loc}" for loc in unique_locations
             )
+            if self.candidates:
+                ret += "\n    may be provided by these packages:" + "".join(
+                    f"\n      {p!r}" for p in sorted(self.candidates)
+                )
         return ret
 
 
