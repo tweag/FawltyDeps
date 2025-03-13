@@ -56,7 +56,7 @@ class Package:
     installed.
     """
 
-    package_name: str  # auto-normalized in .__post_init__()
+    package_name: str  # see .normalized_name for the normalized form
     import_names: set[str]
     resolved_with: type[BasePackageResolver]
     debug_info: PackageDebugInfo = None
@@ -73,9 +73,10 @@ class Package:
         """
         return package_name.lower().replace("-", "_")
 
-    def __post_init__(self) -> None:
-        """Ensure Package object invariants."""
-        object.__setattr__(self, "package_name", self.normalize_name(self.package_name))
+    @cached_property
+    def normalized_name(self) -> str:
+        """Package name in normalized form."""
+        return self.normalize_name(self.package_name)
 
     def has_type_stubs(self) -> set[str]:
         """Return a set of import names without type stubs suffix."""
@@ -142,7 +143,7 @@ def accumulate_mappings(
             normalized_name = Package.normalize_name(name)
             if normalized_name not in result:  # create new Package instance
                 result[normalized_name] = Package(
-                    package_name=normalized_name,
+                    package_name=name,
                     import_names=set(imports),
                     resolved_with=resolved_with,
                     debug_info={debug_key: set(imports)},
