@@ -1111,7 +1111,7 @@ def test_check_json__no_pyenvs_found__falls_back_to_current_env(fake_project):
         ],
         "resolved_deps": {
             "pip-requirements-parser": {
-                "package_name": "pip_requirements_parser",
+                "package_name": "pip-requirements-parser",
                 "import_names": ["packaging_legacy_version", "pip_requirements_parser"],
                 "resolved_with": "SysPathPackageResolver",
                 "debug_info": {
