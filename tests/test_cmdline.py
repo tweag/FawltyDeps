@@ -1017,6 +1017,41 @@ def test_check_detailed__simple_project_w_2_fake_venv__resolves_imports_vs_deps(
     assert returncode == EXIT_SUCCESS
 
 
+def test_check_detailed__shows_package_suggerstions_for_undeclared_deps(
+    fake_project,
+):
+    tmp_path = fake_project(
+        imports=["some_import", "other_import", "yet_another"],
+        fake_venvs={
+            ".venv": {
+                "some_package": {"some_import", "other_import"},
+                "other_package": {"other_import"},
+            },
+        },
+    )
+
+    output, returncode = run_fawltydeps_function("--detailed", f"{tmp_path}")
+    expect = [
+        f"{UNDECLARED_DEPS_OUTPUT_PREFIX}:",
+        "- 'other_import'",
+        "    imported at:",
+        f"      {tmp_path / 'code.py'}:2",
+        "    may be provided by these packages:",
+        "      'other_package'",
+        "      'some_package'",
+        "- 'some_import'",
+        "    imported at:",
+        f"      {tmp_path / 'code.py'}:1",
+        "    may be provided by these packages:",
+        "      'some_package'",
+        "- 'yet_another'",
+        "    imported at:",
+        f"      {tmp_path / 'code.py'}:3",
+    ]
+    assert output.splitlines() == expect
+    assert returncode == EXIT_UNDECLARED
+
+
 def test_check_json__no_pyenvs_found__falls_back_to_current_env(fake_project):
     # When using the _current_ env (aka. sys.path), we can assume that FD's
     # own dependencies (such as "pip-requirements-parser", providing the
@@ -1171,9 +1206,7 @@ def test_check_json__no_pyenvs_found__falls_back_to_current_env(fake_project):
         ),
     ],
 )
-def test_cmdline_on_ignored_undeclared_option(
-    args, imports, dependencies, expected, fake_project
-):
+def test_cmdline_on_ignore_options(args, imports, dependencies, expected, fake_project):
     tmp_path = fake_project(
         imports=imports,
         declared_deps=dependencies,
