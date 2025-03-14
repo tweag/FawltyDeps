@@ -13,6 +13,7 @@ from fawltydeps.packages import (
     UserDefinedMapping,
     resolve_dependencies,
     setup_resolvers,
+    suggest_packages,
 )
 from fawltydeps.types import (
     PyEnvSource,
@@ -68,7 +69,8 @@ def test_package__identity_mapping(
 ):
     id_mapping = IdentityMapping()
     p = id_mapping.lookup_package(package_name)
-    assert p.package_name == Package.normalize_name(package_name)
+    assert p.package_name == package_name
+    assert p.normalized_name == Package.normalize_name(package_name)
     assert p.is_used(matching_imports)
     assert not p.is_used(non_matching_imports)
 
@@ -141,7 +143,8 @@ def test_package__local_env_mapping(
     lpl = LocalPackageResolver({PyEnvSource(site_dir)})
     normalized_name = Package.normalize_name(package_name)
     p = lpl.packages[normalized_name]
-    assert p.package_name == normalized_name
+    assert p.package_name == package_name
+    assert p.normalized_name == normalized_name
     assert p.resolved_with is LocalPackageResolver
     assert p.is_used(matching_imports)
     assert not p.is_used(non_matching_imports)
@@ -160,7 +163,7 @@ def test_package__local_env_mapping(
             None,
             {
                 "apache_airflow": Package(
-                    "apache_airflow", {"airflow"}, UserDefinedMapping
+                    "apache-airflow", {"airflow"}, UserDefinedMapping
                 ),
                 "attrs": Package("attrs", {"attr", "attrs"}, UserDefinedMapping),
             },
@@ -180,7 +183,7 @@ def test_package__local_env_mapping(
             None,
             {
                 "apache_airflow": Package(
-                    "apache_airflow", {"airflow", "baz"}, UserDefinedMapping
+                    "apache-airflow", {"airflow", "baz"}, UserDefinedMapping
                 ),
                 "attrs": Package("attrs", {"attr", "attrs"}, UserDefinedMapping),
                 "foo": Package("foo", {"bar"}, UserDefinedMapping),
@@ -201,7 +204,7 @@ def test_package__local_env_mapping(
             {"apache-airflow": ["unicorn"]},
             {
                 "apache_airflow": Package(
-                    "apache_airflow", {"airflow", "baz", "unicorn"}, UserDefinedMapping
+                    "apache-airflow", {"airflow", "baz", "unicorn"}, UserDefinedMapping
                 ),
                 "attrs": Package("attrs", {"attr", "attrs"}, UserDefinedMapping),
                 "foo": Package("foo", {"bar"}, UserDefinedMapping),
@@ -331,3 +334,81 @@ def test_resolve_dependencies__unresolved_dependencies__UnresolvedDependenciesEr
 
     with pytest.raises(UnresolvedDependenciesError):
         resolve_dependencies(dep_names, setup_resolvers(install_deps=True))
+
+
+@pytest.mark.parametrize(
+    ("import_name", "expect_package_names"),
+    [
+        pytest.param(
+            "something_else",
+            set(),
+            id="import_not_in_env__yields_no_suggestions",
+        ),
+        pytest.param(
+            "foo",
+            {"foo_package"},
+            id="import_with_one_match_in_venv__yields_one_suggestion",
+        ),
+        pytest.param(
+            "bar",
+            {"bar_package"},
+            id="other_import_with_one_match_in_venv__yields_one_suggestion",
+        ),
+        pytest.param(
+            "baz",
+            {"bar_package", "baz_package"},
+            id="import_with_two_matches_in_venv__yields_two_suggestions",
+        ),
+        pytest.param(
+            "other_module",
+            {"SomeOther-Package"},
+            id="import_with_one_match_in_venv__yields_orig_package_name",
+        ),
+    ],
+)
+def test_suggest_packages_in_fake_venv(import_name, expect_package_names, fake_venv):
+    _venv_dir, site_dir = fake_venv(
+        {
+            "foo_package": {"foo"},
+            "bar_package": {"bar", "baz"},
+            "baz_package": {"baz"},
+            "SomeOther-Package": {"other_module"},
+        }
+    )
+    lpl = LocalPackageResolver({PyEnvSource(site_dir)})
+    actual = {p.package_name for p in suggest_packages(import_name, [lpl])}
+    assert actual == expect_package_names
+
+
+@pytest.mark.parametrize(
+    ("import_name", "expect_package_names"),
+    [
+        pytest.param(
+            "something_else",
+            set(),
+            id="import_not_in_env__yields_no_suggestions",
+        ),
+        pytest.param(
+            "isort",
+            {"isort"},
+            id="import_with_same_name_match_in_venv__yields_package",
+        ),
+        pytest.param(
+            "pkg_resources",
+            {"setuptools"},
+            id="import_with_diff_name_match_in_venv__yields_package",
+        ),
+        pytest.param(
+            "requests-stubs",
+            {"types-requests"},
+            id="import_with_diff_name_match_in_venv__yields_orig_package_name",
+        ),
+    ],
+)
+def test_suggest_packages_in_default_sys_path_env_for_tests(
+    import_name, expect_package_names, isolate_default_resolver
+):
+    isolate_default_resolver(default_sys_path_env_for_tests)
+    resolvers = list(setup_resolvers(use_current_env=True))
+    actual = {p.package_name for p in suggest_packages(import_name, resolvers)}
+    assert actual == expect_package_names

@@ -50,6 +50,7 @@ from fawltydeps.utils import version
 logger = logging.getLogger(__name__)
 
 VERBOSE_PROMPT = "For a more verbose report re-run with the `--detailed` option."
+UNDECLARED_DEPS_OUTPUT_PREFIX = "These imports appear to be undeclared dependencies"
 UNUSED_DEPS_OUTPUT_PREFIX = "These dependencies appear to be unused (i.e. not imported)"
 
 
@@ -125,24 +126,32 @@ class Analysis:
         )
 
     @cached_property
-    def resolved_deps(self) -> dict[str, Package]:
-        """The resolved mapping of dependency names to provided import names."""
+    def resolvers(self) -> list[BasePackageResolver]:
+        """The resolvers used to find dependency name -> import name mappings."""
         pyenv_srcs = {src for src in self.sources if isinstance(src, PyEnvSource)}
-        return resolve_dependencies(
-            (dep.name for dep in self.declared_deps),
+        return list(
             setup_resolvers(
                 custom_mapping_files=self.settings.custom_mapping_file,
                 custom_mapping=self.settings.custom_mapping,
                 pyenv_srcs=pyenv_srcs,
                 use_current_env=True,
                 install_deps=self.settings.install_deps,
-            ),
+            )
+        )
+
+    @cached_property
+    def resolved_deps(self) -> dict[str, Package]:
+        """The resolved mapping of dependency names to provided import names."""
+        return resolve_dependencies(
+            (dep.name for dep in self.declared_deps), self.resolvers
         )
 
     @cached_property
     def undeclared_deps(self) -> list[UndeclaredDependency]:
         """The import statements for which no declared dependency is found."""
-        return calculate_undeclared(self.imports, self.resolved_deps, self.settings)
+        return calculate_undeclared(
+            self.imports, self.resolved_deps, self.resolvers, self.settings
+        )
 
     @cached_property
     def unused_deps(self) -> list[UnusedDependency]:
@@ -253,14 +262,14 @@ class Analysis:
                 yield from sorted({d.name for d in self.declared_deps})
 
         def render_undeclared() -> Iterator[str]:
-            yield "\nThese imports appear to be undeclared dependencies:"
+            yield f"\n{UNDECLARED_DEPS_OUTPUT_PREFIX}:"
             for undeclared in self.undeclared_deps:
-                yield f"- {undeclared.render(include_references=detailed)}"
+                yield f"- {undeclared.render(detailed=detailed)}"
 
         def render_unused() -> Iterator[str]:
             yield f"\n{UNUSED_DEPS_OUTPUT_PREFIX}:"
             for unused in sorted(self.unused_deps, key=lambda d: d.name):
-                yield f"- {unused.render(include_references=detailed)}"
+                yield f"- {unused.render(detailed=detailed)}"
 
         def output(lines: Iterator[str]) -> None:
             for line in lines:

@@ -288,15 +288,22 @@ class UndeclaredDependency:
 
     name: str
     references: list[Location]
+    candidates: set[str] = field(default_factory=set)
 
-    def render(self, *, include_references: bool) -> str:
-        """Return a human-readable string representation.
-
-        Level of detail is determined by `include_references`.
-        """
-        return render_problematic_dependency(
-            self, "imported at" if include_references else None
-        )
+    def render(self, *, detailed: bool) -> str:
+        """Return a human-readable string representation."""
+        ret = f"{self.name!r}"
+        if detailed:
+            unique_locations = sorted(set(self.references))
+            assert unique_locations  # noqa: S101, sanity check
+            ret += "\n    imported at:" + "".join(
+                f"\n      {loc}" for loc in unique_locations
+            )
+            if self.candidates:
+                ret += "\n    may be provided by these packages:" + "".join(
+                    f"\n      {p!r}" for p in sorted(self.candidates)
+                )
+        return ret
 
 
 @dataclass
@@ -306,25 +313,13 @@ class UnusedDependency:
     name: str
     references: list[Location]
 
-    def render(self, *, include_references: bool) -> str:
-        """Return a human-readable string representation.
-
-        Level of detail is determined by `include_references`.
-        """
-        return render_problematic_dependency(
-            self,
-            "declared in" if include_references else None,
-        )
-
-
-def render_problematic_dependency(
-    dep: Union[UndeclaredDependency, UnusedDependency], context: Optional[str]
-) -> str:
-    """Create text representation of the given unused or undeclared dependency."""
-    ret = f"{dep.name!r}"
-    if context is not None:
-        unique_locations = set(dep.references)
-        ret += f" {context}:" + "".join(
-            f"\n    {loc}" for loc in sorted(unique_locations)
-        )
-    return ret
+    def render(self, *, detailed: bool) -> str:
+        """Return a human-readable string representation."""
+        ret = f"{self.name!r}"
+        if detailed:
+            unique_locations = sorted(set(self.references))
+            assert unique_locations  # noqa: S101, sanity check
+            ret += "\n    declared in:" + "".join(
+                f"\n      {loc}" for loc in unique_locations
+            )
+        return ret

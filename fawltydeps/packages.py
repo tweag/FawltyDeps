@@ -56,7 +56,7 @@ class Package:
     installed.
     """
 
-    package_name: str  # auto-normalized in .__post_init__()
+    package_name: str  # see .normalized_name for the normalized form
     import_names: set[str]
     resolved_with: type[BasePackageResolver]
     debug_info: PackageDebugInfo = None
@@ -73,9 +73,10 @@ class Package:
         """
         return package_name.lower().replace("-", "_")
 
-    def __post_init__(self) -> None:
-        """Ensure Package object invariants."""
-        object.__setattr__(self, "package_name", self.normalize_name(self.package_name))
+    @cached_property
+    def normalized_name(self) -> str:
+        """Package name in normalized form."""
+        return self.normalize_name(self.package_name)
 
     def has_type_stubs(self) -> set[str]:
         """Return a set of import names without type stubs suffix."""
@@ -98,7 +99,7 @@ class BasePackageResolver(ABC):
 
     @abstractmethod
     def lookup_packages(self, package_names: set[str]) -> dict[str, Package]:
-        """Convert package names into a Package objects with available imports.
+        """Convert package names into corresponding Package objects.
 
         Resolve as many of the given package names as possible into their
         corresponding import names, and return a dict that maps the resolved
@@ -106,6 +107,22 @@ class BasePackageResolver(ABC):
 
         Return an empty dict if this PackageResolver is unable to resolve any
         of the given packages.
+        """
+        raise NotImplementedError
+
+    def lookup_import(self, import_name: str) -> Iterable[Package]:
+        """Convert an import name into Package objects that provide this import.
+
+        This is a convenience helper for when we attempt to suggest a suitable
+        package name to depend on, in order to properly declare an undeclared
+        import.
+
+        This is the _reverse_ mapping of what .lookup_packages() provides, and
+        it is acceptable for a resolver to not provide this functionality (e.g.
+        the TemporaryAutoInstallResolver cannot provide this as long as PyPI
+        does not allow packages to be queried by provided import names, nor can
+        we allow the IdentityMapping to fabricate a nonsense package name based
+        on the given import name).
         """
         raise NotImplementedError
 
@@ -126,7 +143,7 @@ def accumulate_mappings(
             normalized_name = Package.normalize_name(name)
             if normalized_name not in result:  # create new Package instance
                 result[normalized_name] = Package(
-                    package_name=normalized_name,
+                    package_name=name,
                     import_names=set(imports),
                     resolved_with=resolved_with,
                     debug_info={debug_key: set(imports)},
@@ -188,12 +205,16 @@ class UserDefinedMapping(BasePackageResolver):
         return accumulate_mappings(self.__class__, _custom_mappings())
 
     def lookup_packages(self, package_names: set[str]) -> dict[str, Package]:
-        """Convert package names to locally available Package objects."""
+        """Convert package names to Package objects defined by this mapping."""
         return {
             name: self.packages[Package.normalize_name(name)]
             for name in package_names
             if Package.normalize_name(name) in self.packages
         }
+
+    def lookup_import(self, import_name: str) -> Iterable[Package]:
+        """Return all Package objects that provide the given import name."""
+        return (p for p in self.packages.values() if import_name in p.import_names)
 
 
 class InstalledPackageResolver(BasePackageResolver):
@@ -240,6 +261,14 @@ class InstalledPackageResolver(BasePackageResolver):
                 _top_level_declared(dist)  # type: ignore[no-untyped-call]
                 or _top_level_inferred(dist)  # type: ignore[no-untyped-call]
             )
+            if not imports:
+                # We have found an installed package that provides zero import
+                # names. This might be a legitimate tool/application that is
+                # installed into the Python environment without providing any
+                # importable modules, but it might also be a symptom of broken/
+                # incomplete package metadata causing importlib_metadata to not
+                # find any provided import names.
+                logger.debug("  This module does not provide any import names!")
             yield {dist.name: imports}, str(parent_dir)
 
     @cached_property
@@ -269,6 +298,10 @@ class InstalledPackageResolver(BasePackageResolver):
             for name in package_names
             if Package.normalize_name(name) in self.packages
         }
+
+    def lookup_import(self, import_name: str) -> Iterable[Package]:
+        """Return all Package objects that provide the given import name."""
+        return (p for p in self.packages.values() if import_name in p.import_names)
 
 
 class SysPathPackageResolver(InstalledPackageResolver):
@@ -613,6 +646,22 @@ def resolve_dependencies(
         raise UnresolvedDependenciesError(names=unresolved)
 
     return ret
+
+
+def suggest_packages(
+    import_name: str, resolvers: Iterable[BasePackageResolver]
+) -> Iterator[Package]:
+    """Return Package objects that claim to provide the given import name.
+
+    We don't have an all-knowing source of what packages may provide an import
+    name, so this is a best-effort guess based on the packages available in the
+    given resolvers.
+    """
+    for resolver in resolvers:
+        try:
+            yield from resolver.lookup_import(import_name)
+        except NotImplementedError:
+            continue  # keep going on a best-effort basis
 
 
 def validate_pyenv_source(path: Path) -> Optional[set[PyEnvSource]]:
