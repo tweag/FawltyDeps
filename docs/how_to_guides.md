@@ -36,7 +36,7 @@ in one of these ways:
 How not to display tools like `black` and `pylint` in _unused dependencies_?
 
 By default, all packages declared as dependencies by your project are included
-in the FawltyDeps analysis, even if they only contain tools that were not meant
+in the FawltyDeps analysis. This includes tools that are typically not meant
 to be `import`ed, but rather meant to be run by, say, in a pre-commit hook or a
 CI script. In such cases you may use either:
 
