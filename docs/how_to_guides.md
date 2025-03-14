@@ -5,17 +5,29 @@
 
 I run `fawltydeps` and get some undeclared dependencies. What can I do with it?
 
-You can run a detailed report to see the exact location (file and line number), in which
-the undeclared dependencies were imported:
+You can run a detailed report to see the exact location (file and line number)
+in which the undeclared dependencies were imported:
 
 ```sh
 fawltydeps --detailed
 ```
 
-and debug each occurrence. Typically an undeclared dependency can be fixed in a couple of ways:
+If your Python environment happens to have packages installed that provide any
+of these import names, then the report will also suggest these package names.
+(This is often what happens if you have `pip install`ed a dependency, but forgot
+to declare it properly.)
 
-- A true undeclared dependency is fixed by _declaring_ it, e.g. adding it to your `pyproject.toml` or similar.
-- If you disagree with FawltyDeps' classification, you can always use `--ignore-undeclared` to silence the error. If you're sure this dependency should not have been reported by FawltyDeps, you may consider filing a bug report.
+Go through each undeclared dependency, and consider how to resolve it, typically
+in one of these ways:
+
+- A true undeclared dependency is fixed by _declaring_ it, e.g. adding it to
+  your `pyproject.toml` or similar.
+- Sometimes the code might be `import`ing a module without actually using it,
+  then you might be able to simply remove the `import` statement altogether.
+- If you disagree with FawltyDeps' classification, you can always use
+  `--ignore-undeclared` to silence the error. If you're sure this dependency
+  should not have been reported by FawltyDeps, please file a bug report to make
+  us aware of the issue.
 
 
 ## Configuration & run
