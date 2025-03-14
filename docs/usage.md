@@ -183,7 +183,8 @@ However you can also ask for more information from FawltyDeps:
 
 - `--summary`: Default (human-readable) summary output
 - `--detailed`: Longer (human-readable) output that includes the location of
-  the relevant dependencies.
+  the relevant dependencies. For undeclared dependencies, it also includes
+  names of installed packages that happen to provide this dependency.
 - `--json`: Verbose JSON-formatted output for other tools to consume and
   process further.
 
