@@ -175,6 +175,12 @@ to customize the ignore list. By providing your own list of dependencies with
 this option, you can effectively overwrite the default list. For example:
 `--ignore-unused black mypy some_other_module`
 
+Both `--ignore-undeclared` and `--ignore-unused` support use of simple
+`*`-wildcards to ignore multiple dependencies, for example
+`--ignore-unused types-*` to ignore type stubs dependencies, or
+`--ignore-unused *pre-commit*` to ignore the pre-commit tool and associated
+addons.
+
 ## Output formats
 
 The default output from FawltyDeps is a summary outlining the relevant

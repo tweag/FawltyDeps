@@ -31,14 +31,16 @@ Here is a complete list of configuration directives we support:
   the current directory, i.e. like `pyenvs = ["."]`.
 - `ignore_undeclared`: A list of specific dependencies to ignore when reporting
   undeclared dependencies, for example: `["some_module", "some_other_module"]`.
-  The default is the empty list: `ignore_undeclared = []`.
+  Simple `*`-wildcards are supported. The default is the empty list:
+  `ignore_undeclared = []`.
 - `ignore_unused`: A list of specific dependencies to ignore when reporting
   unused dependencies, for example: `["black", "mypy", "some_other_module"]`.
-  The default is a list including common development tools. However, you have the
-  flexibility to overwrite this list according to your project's specific requirements.
-  For the complete default list, please see the `DEFAULT_IGNORE_UNUSED`
-  variable in the [`fawltydeps/settings.py`](https://github.com/tweag/FawltyDeps/blob/main/fawltydeps/settings.py) file
-  in the repository.
+  Simple `*`-wildcards are supported, so e.g. `"pytest-*"` can be used to ignore
+  many pytest plugins. If `ignore_unused` is left unconfigured, it defaults to a
+  list of common development tools (see the `DEFAULT_IGNORE_UNUSED` variable in
+  [`fawltydeps/settings.py`](https://github.com/tweag/FawltyDeps/blob/main/fawltydeps/settings.py)
+  for the complete list). Once you specify it, however, your list will _replace_
+  the default list.
 - `deps_parser_choice`: Manually select which format to use for parsing
   declared dependencies. Must be one of `"requirements.txt"`, `"setup.py"`,
   `"setup.cfg"`, `"pyproject.toml"`, `"pixi.toml"`, `"environment.yml"`, or
