@@ -1,17 +1,25 @@
-[tool.poetry]
+[project]
 name = "fawltydeps"
 version = "0.19.0"
 description = "Find undeclared and unused 3rd-party dependencies in your Python project."
-authors = [
-    "Maria Knorps <maria.knorps@tweag.io>",
-    "Nour El Mawass <nour.elmawass@tweag.io>",
-    "Johan Herland <johan.herland@tweag.io>",
-    "Vince Reuter <vince.reuter@tweag.io>",
-    "Zhihan Zhang <zhihan.zhang@tweag.io>",
-]
+license = { file = "LICENSE" }
 readme = "README.md"
-license = "MIT"
-repository = "https://github.com/tweag/FawltyDeps"
+requires-python = ">=3.9"
+authors = [
+    { name = "Nour El Mawass", email = "nour.elmawass@tweag.io" },
+    { name = "Maria Knorps", email = "maria.knorps@tweag.io" },
+    { name = "Johan Herland", email = "johan.herland@tweag.io" },
+    { name = "Vince Reuter", email = "vince.reuter@tweag.io" },
+    { name = "Zhihan Zhang", email = "zhihan.zhang@tweag.io" },
+    { name = "Richard Bullington-McGuire", email = "richard@moduscreate.com" },
+]
+maintainers = [
+    { name = "Johan Herland", email = "johan.herland@tweag.io" },
+    { name = "Maria Knorps", email = "maria.knorps@tweag.io" },
+    { name = "Zhihan Zhang", email = "zhihan.zhang@tweag.io" },
+    { name = "Richard Bullington-McGuire", email = "richard@moduscreate.com" },
+]
+keywords = [ "dependencies", "linters", "packaging" ]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Topic :: Software Development :: Libraries :: Python Modules",
@@ -26,27 +34,27 @@ classifiers = [
     "Topic :: Utilities",
     "Typing :: Typed",
 ]
+dependencies = [
+    # These are the main dependencies for FawltyDeps at runtime.
+    # Do not add anything here that is only needed by CI/tests/linters/developers
+    "importlib_metadata >= 6.6.0",
+    "isort >= 5.10",
+    "packaging >= 24.0",
+    "pip-requirements-parser >= 32.0.1",
+    "pydantic >= 1.10.4, < 3.0.0",
+    "PyYAML >= 6.0.1",
+    "tomli >= 2.0.1; python_version < '3.11'",
+]
 
-[tool.poetry.scripts]
+[project.optional-dependencies]
+uv = [ "uv>=0.1.6" ]
+
+[project.urls]
+repository = "https://github.com/tweag/FawltyDeps"
+documentation = "https://tweag.github.io/FawltyDeps/"
+
+[project.scripts]
 fawltydeps = "fawltydeps.main:main"
-
-[tool.poetry.dependencies]
-# These are the main dependencies for fawltydeps at runtime.
-# Do not add anything here that is only needed by CI/tests/linters/developers
-python = ">=3.9"
-importlib_metadata = ">=6.6.0"
-isort = ">=5.10"
-packaging = ">=24.0"
-pip-requirements-parser = ">=32.0.1"
-pydantic = ">=1.10.4,<3.0.0"
-PyYAML = ">=6.0.1"
-tomli = {version = "^2.0.1", python = "<3.11"}
-
-# Optional dependencies, covered by .extras below:
-uv = {version = ">=0.1.6", optional = true}
-
-[tool.poetry.extras]
-uv = ["uv"]
 
 [tool.poetry.group.nox]
 optional = true
