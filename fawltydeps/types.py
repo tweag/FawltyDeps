@@ -103,6 +103,24 @@ class CodeSource(Source):
 
 
 @dataclass(frozen=True, eq=True, order=True)
+class ScriptSource(CodeSource):
+    """A Python script source to be parsed for both imports and declared deps.
+
+    This is a CodeSource variation to represent Python code that includes
+    PEP 723-compliant inline script metadata. In other words, it contains a
+    stand-alone script that declares its own dependencies, and this should be
+    analyzed (together with the imports in this script) _separately_ from the
+    rest of this project.
+    """
+
+    def render(self, *, detailed: bool) -> str:
+        """Return a human-readable string representation of this source."""
+        if detailed:
+            return f"{self.path} (stand-alone script with inline metadata)"
+        return f"{self.path}"
+
+
+@dataclass(frozen=True, eq=True, order=True)
 class DepsSource(Source):
     """A source to be parsed for declared dependencies.
 
