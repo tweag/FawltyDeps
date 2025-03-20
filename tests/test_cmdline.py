@@ -15,7 +15,13 @@ from textwrap import dedent
 import pytest
 from importlib_metadata import files as package_files
 
-from fawltydeps.main import UNUSED_DEPS_OUTPUT_PREFIX, VERBOSE_PROMPT, Analysis, version
+from fawltydeps.main import (
+    UNDECLARED_DEPS_OUTPUT_PREFIX,
+    UNUSED_DEPS_OUTPUT_PREFIX,
+    VERBOSE_PROMPT,
+    Analysis,
+    version,
+)
 from fawltydeps.settings import DEFAULT_IGNORE_UNUSED
 from fawltydeps.types import Location, UnusedDependency
 from fawltydeps.utils import site_packages
@@ -68,14 +74,14 @@ def make_json_settings_dict(**customizations):
             ["--detailed", "--verbose"],
             [
                 f"<stdin>:{n}: {i}"
-                for i, n in [("requests", 4), ("foo", 5), ("numpy", 6)]
+                for i, n in [("my_requests", 4), ("foo", 5), ("my_numpy", 6)]
             ],
             ["INFO:fawltydeps.extract_imports:Parsing Python code from standard input"],
             id="detailed",
         ),
         pytest.param(
             ["--summary"],
-            ["foo", "numpy", "requests", "", VERBOSE_PROMPT],
+            ["foo", "my_numpy", "my_requests", "", VERBOSE_PROMPT],
             [],
             id="summary",
         ),
@@ -89,9 +95,9 @@ def test_list_imports__from_dash__prints_imports_from_stdin(
         from pathlib import Path
         import platform, sys
 
-        import requests
+        import my_requests
         from foo import bar, baz
-        import numpy as np
+        import my_numpy as np
         """
     )
 
@@ -110,16 +116,16 @@ def test_list_imports__from_py_file__prints_imports_from_file(write_tmp_files):
                 from pathlib import Path
                 import platform, sys
 
-                import requests
+                import my_requests
                 from foo import bar, baz
-                import numpy as np
+                import my_numpy as np
                 """,
         }
     )
 
     expect = [
         f"{tmp_path / 'myfile.py'}:{n}: {i}"
-        for i, n in [("requests", 4), ("foo", 5), ("numpy", 6)]
+        for i, n in [("my_requests", 4), ("foo", 5), ("my_numpy", 6)]
     ]
     output, returncode = run_fawltydeps_function(
         "--list-imports", "--detailed", f"--code={tmp_path / 'myfile.py'}"
@@ -135,9 +141,9 @@ def test_list_imports_json__from_py_file__prints_imports_from_file(write_tmp_fil
                 from pathlib import Path
                 import platform, sys
 
-                import requests
+                import my_requests
                 from foo import bar, baz
-                import numpy as np
+                import my_numpy as np
                 """,
         }
     )
@@ -157,7 +163,7 @@ def test_list_imports_json__from_py_file__prints_imports_from_file(write_tmp_fil
         ],
         "imports": [
             {
-                "name": "requests",
+                "name": "my_requests",
                 "source": {"path": f"{tmp_path / 'myfile.py'}", "lineno": 4},
             },
             {
@@ -165,7 +171,7 @@ def test_list_imports_json__from_py_file__prints_imports_from_file(write_tmp_fil
                 "source": {"path": f"{tmp_path / 'myfile.py'}", "lineno": 5},
             },
             {
-                "name": "numpy",
+                "name": "my_numpy",
                 "source": {"path": f"{tmp_path / 'myfile.py'}", "lineno": 6},
             },
         ],
@@ -205,12 +211,12 @@ def test_list_imports__from_dir__prints_imports_from_py_and_ipynb_files_only(
         {
             "file1.py": """\
                 from my_pathlib import Path
-                import pandas, scipy
+                import my_pandas, scipy
                 """,
             "file2.NOT_PYTHON": """\
-                import requests
+                import my_requests
                 from foo import bar, baz
-                import numpy as np
+                import my_numpy as np
                 """,
             "file3.ipynb": notebook_content,
         }
@@ -218,7 +224,7 @@ def test_list_imports__from_dir__prints_imports_from_py_and_ipynb_files_only(
 
     expect = [
         f"{tmp_path / 'file1.py'}:{n}: {i}"
-        for i, n in [("my_pathlib", 1), ("pandas", 2), ("scipy", 2)]
+        for i, n in [("my_pathlib", 1), ("my_pandas", 2), ("scipy", 2)]
     ] + [f"{tmp_path / 'file3.ipynb'}[1]:1: pytorch"]
     output, returncode = run_fawltydeps_function(
         "--list-imports", "--detailed", f"--code={tmp_path}"
@@ -235,12 +241,12 @@ def test_list_imports__from_dir_with_some_excluded__prints_imports_from_unexclud
         {
             "file1.py": """\
                 from my_pathlib import Path
-                import pandas, scipy
+                import my_pandas, scipy
                 """,
             "file2.NOT_PYTHON": """\
-                import requests
+                import my_requests
                 from foo import bar, baz
-                import numpy as np
+                import my_numpy as np
                 """,
             "file3.ipynb": notebook_content,
         }
@@ -256,7 +262,7 @@ def test_list_imports__from_dir_with_some_excluded__prints_imports_from_unexclud
 
 def test_list_imports__from_unsupported_file__fails_with_exit_code_2(tmp_path):
     filepath = tmp_path / "test.NOT_SUPPORTED"
-    filepath.write_text("import pandas")
+    filepath.write_text("import my_pandas")
     _output, errors, returncode = run_fawltydeps_subprocess(
         "--list-imports", f"--code={filepath}"
     )
@@ -325,16 +331,16 @@ def test_list_imports__pick_multiple_files_dir_and_code__prints_all_imports(
         from pathlib import Path
         import platform, sys
 
-        import requests
+        import my_requests
         from foo import bar, baz
-        import numpy as np
+        import my_numpy as np
         """
     )
     path_code2 = project_with_multiple_python_files / "python_file.py"
     output, returncode = run_fawltydeps_function(
         "--list-imports", "--code", "-", f"{path_code2}", to_stdin=code
     )
-    expect = ["django", "requests", "foo", "numpy"]
+    expect = ["django", "my_requests", "foo", "my_numpy"]
     assert_unordered_equivalence(output.splitlines()[:-2], expect)
     assert returncode == EXIT_SUCCESS
 
@@ -347,26 +353,26 @@ def test_list_imports__stdin_with_legacy_encoding__prints_all_imports():
         # Some Traditional Chinese characters:
         chars = "\xa4@\xa8\xc7\xa4\xa4\xa4\xe5\xa6r\xb2\xc5"
 
-        import numpy
+        import my_numpy
         """
     )
     output, returncode = run_fawltydeps_function(
         "--list-imports", "--code", "-", to_stdin=code
     )
-    expect = ["numpy"]
+    expect = ["my_numpy"]
     assert_unordered_equivalence(output.splitlines()[:-2], expect)
     assert returncode == EXIT_SUCCESS
 
 
 def test_list_deps_detailed__dir__prints_deps_from_requirements_txt(fake_project):
     tmp_path = fake_project(
-        imports=["requests", "pandas"],
-        declared_deps=["requests", "pandas"],
+        imports=["my_requests", "my_pandas"],
+        declared_deps=["my_requests", "my_pandas"],
     )
 
     expect = [
-        f"{tmp_path / 'requirements.txt'}: pandas",
-        f"{tmp_path / 'requirements.txt'}: requests",
+        f"{tmp_path / 'requirements.txt'}: my_pandas",
+        f"{tmp_path / 'requirements.txt'}: my_requests",
     ]
     output, returncode = run_fawltydeps_function(
         "--list-deps", "--detailed", f"--deps={tmp_path}"
@@ -377,8 +383,8 @@ def test_list_deps_detailed__dir__prints_deps_from_requirements_txt(fake_project
 
 def test_list_deps_json__dir__prints_deps_from_requirements_txt(fake_project):
     tmp_path = fake_project(
-        imports=["requests", "pandas"],
-        declared_deps=["requests", "pandas"],
+        imports=["my_requests", "my_pandas"],
+        declared_deps=["my_requests", "my_pandas"],
     )
 
     expect = {
@@ -395,11 +401,11 @@ def test_list_deps_json__dir__prints_deps_from_requirements_txt(fake_project):
         "imports": None,
         "declared_deps": [
             {
-                "name": "requests",
+                "name": "my_requests",
                 "source": {"path": f"{tmp_path / 'requirements.txt'}"},
             },
             {
-                "name": "pandas",
+                "name": "my_pandas",
                 "source": {"path": f"{tmp_path / 'requirements.txt'}"},
             },
         ],
@@ -417,11 +423,11 @@ def test_list_deps_json__dir__prints_deps_from_requirements_txt(fake_project):
 
 def test_list_deps_summary__dir__prints_deps_from_requirements_txt(fake_project):
     tmp_path = fake_project(
-        imports=["requests", "pandas"],
-        declared_deps=["requests", "pandas"],
+        imports=["my_requests", "my_pandas"],
+        declared_deps=["my_requests", "my_pandas"],
     )
 
-    expect = ["pandas", "requests"]
+    expect = ["my_pandas", "my_requests"]
     output, returncode = run_fawltydeps_function("--list-deps", f"--deps={tmp_path}")
     assert output.splitlines()[:-2] == expect
     assert returncode == EXIT_SUCCESS
@@ -429,7 +435,7 @@ def test_list_deps_summary__dir__prints_deps_from_requirements_txt(fake_project)
 
 def test_list_deps__unsupported_file__fails_with_exit_code_2(tmp_path):
     filepath = tmp_path / "test.NOT_SUPPORTED"
-    filepath.write_text("pandas\n")
+    filepath.write_text("my_pandas\n")
 
     _output, errors, returncode = run_fawltydeps_subprocess(
         "--list-deps", f"--deps={filepath}"
@@ -660,61 +666,65 @@ project_tests_samples = [
     ProjectTestVector(
         id="simple_project_imports_match_dependencies__prints_verbose_option",
         options=["--check", "--code={path}", "--deps={path}"],
-        imports=["requests", "pandas"],
-        declares=["requests", "pandas"],
+        imports=["my_requests", "my_pandas"],
+        declares=["my_requests", "my_pandas"],
         expect_output=[full_success_message],
     ),
     ProjectTestVector(
         id="simple_project_with_missing_deps__reports_undeclared",
         options=["--check", "--detailed", "--code={path}", "--deps={path}"],
-        imports=["requests", "pandas"],
-        declares=["pandas"],
+        imports=["my_requests", "my_pandas"],
+        declares=["my_pandas"],
         expect_output=[
-            "These imports appear to be undeclared dependencies:",
-            "- 'requests' imported at:",
-            f"    {Path('{path}', 'code.py')}:1",
+            f"{UNDECLARED_DEPS_OUTPUT_PREFIX}:",
+            "- 'my_requests'",
+            "    imported at:",
+            f"      {Path('{path}', 'code.py')}:1",
         ],
         expect_returncode=EXIT_UNDECLARED,
     ),
     ProjectTestVector(
         id="simple_project_with_extra_deps__reports_unused",
         options=["--check", "--detailed", "--code={path}", "--deps={path}"],
-        imports=["requests"],
-        declares=["requests", "pandas"],
+        imports=["my_requests"],
+        declares=["my_requests", "my_pandas"],
         expect_output=[
-            "These dependencies appear to be unused (i.e. not imported):",
-            "- 'pandas' declared in:",
-            f"    {Path('{path}', 'requirements.txt')}",
+            f"{UNUSED_DEPS_OUTPUT_PREFIX}:",
+            "- 'my_pandas'",
+            "    declared in:",
+            f"      {Path('{path}', 'requirements.txt')}",
         ],
         expect_returncode=EXIT_UNUSED,
     ),
     ProjectTestVector(
         id="simple_project_with_extra_deps__reports_unused_and_undeclared",
         options=["--check", "--detailed", "--code={path}", "--deps={path}"],
-        imports=["requests"],
-        declares=["pandas"],
+        imports=["my_requests"],
+        declares=["my_pandas"],
         expect_output=[
-            "These imports appear to be undeclared dependencies:",
-            "- 'requests' imported at:",
-            f"    {Path('{path}', 'code.py')}:1",
+            f"{UNDECLARED_DEPS_OUTPUT_PREFIX}:",
+            "- 'my_requests'",
+            "    imported at:",
+            f"      {Path('{path}', 'code.py')}:1",
             "",
-            "These dependencies appear to be unused (i.e. not imported):",
-            "- 'pandas' declared in:",
-            f"    {Path('{path}', 'requirements.txt')}",
+            f"{UNUSED_DEPS_OUTPUT_PREFIX}:",
+            "- 'my_pandas'",
+            "    declared in:",
+            f"      {Path('{path}', 'requirements.txt')}",
         ],
         expect_returncode=EXIT_UNDECLARED,  # undeclared is more important than unused
     ),
     ProjectTestVector(
         id="simple_project__summary_report_with_verbose_logging",
         options=["--check", "--summary", "--verbose", "--code={path}", "--deps={path}"],
-        imports=["requests"],
-        declares=["pandas"],
+        imports=["my_requests"],
+        declares=["my_pandas"],
         expect_output=[
-            "These imports appear to be undeclared dependencies:",
-            "- 'requests'",
+            f"{UNDECLARED_DEPS_OUTPUT_PREFIX}:",
+            "- 'my_requests'",
             "",
-            "These dependencies appear to be unused (i.e. not imported):",
-            "- 'pandas'",
+            f"{UNUSED_DEPS_OUTPUT_PREFIX}:",
+            "- 'my_pandas'",
             "",
             VERBOSE_PROMPT,
         ],
@@ -722,24 +732,26 @@ project_tests_samples = [
             "INFO:fawltydeps.extract_imports:Finding Python files under {path}",
             "INFO:fawltydeps.extract_imports:Parsing Python file "
             f"{Path('{path}', 'code.py')}",
-            "INFO:fawltydeps.packages:'pandas' was not resolved."
-            " Assuming it can be imported as 'pandas'.",
+            "INFO:fawltydeps.packages:'my_pandas' was not resolved."
+            " Assuming it can be imported as 'my_pandas'.",
         ],
         expect_returncode=EXIT_UNDECLARED,  # undeclared is more important than unused
     ),
     ProjectTestVector(
         id="simple_project__summary_report_with_quiet_logging",
         options=["--check", "--detailed", "--code={path}", "--deps={path}"],
-        imports=["requests"],
-        declares=["pandas"],
+        imports=["my_requests"],
+        declares=["my_pandas"],
         expect_output=[
-            "These imports appear to be undeclared dependencies:",
-            "- 'requests' imported at:",
-            f"    {Path('{path}', 'code.py')}:1",
+            f"{UNDECLARED_DEPS_OUTPUT_PREFIX}:",
+            "- 'my_requests'",
+            "    imported at:",
+            f"      {Path('{path}', 'code.py')}:1",
             "",
-            "These dependencies appear to be unused (i.e. not imported):",
-            "- 'pandas' declared in:",
-            f"    {Path('{path}', 'requirements.txt')}",
+            f"{UNUSED_DEPS_OUTPUT_PREFIX}:",
+            "- 'my_pandas'",
+            "    declared in:",
+            f"      {Path('{path}', 'requirements.txt')}",
         ],
         expect_returncode=EXIT_UNDECLARED,  # undeclared is more important than unused
     ),
@@ -773,8 +785,8 @@ def test_check_json__simple_project__can_report_both_undeclared_and_unused(
     fake_project,
 ):
     tmp_path = fake_project(
-        imports=["requests"],
-        declared_deps=["pandas"],
+        imports=["my_requests"],
+        declared_deps=["my_pandas"],
         fake_venvs={"my_venv": {}},
     )
 
@@ -803,33 +815,34 @@ def test_check_json__simple_project__can_report_both_undeclared_and_unused(
         ],
         "imports": [
             {
-                "name": "requests",
+                "name": "my_requests",
                 "source": {"path": f"{tmp_path / 'code.py'}", "lineno": 1},
             },
         ],
         "declared_deps": [
             {
-                "name": "pandas",
+                "name": "my_pandas",
                 "source": {"path": f"{tmp_path / 'requirements.txt'}"},
             },
         ],
         "resolved_deps": {
-            "pandas": {
-                "package_name": "pandas",
-                "import_names": ["pandas"],
+            "my_pandas": {
+                "package_name": "my_pandas",
+                "import_names": ["my_pandas"],
                 "resolved_with": "IdentityMapping",
                 "debug_info": None,
             }
         },
         "undeclared_deps": [
             {
-                "name": "requests",
+                "name": "my_requests",
                 "references": [{"path": f"{tmp_path / 'code.py'}", "lineno": 1}],
+                "candidates": [],
             },
         ],
         "unused_deps": [
             {
-                "name": "pandas",
+                "name": "my_pandas",
                 "references": [{"path": f"{tmp_path / 'requirements.txt'}"}],
             },
         ],
@@ -848,14 +861,15 @@ def test_check_json__simple_project__can_report_both_undeclared_and_unused(
 
 def test_check_undeclared__simple_project__reports_only_undeclared(fake_project):
     tmp_path = fake_project(
-        imports=["requests"],
-        declared_deps=["pandas"],
+        imports=["my_requests"],
+        declared_deps=["my_pandas"],
     )
 
     expect = [
-        "These imports appear to be undeclared dependencies:",
-        "- 'requests' imported at:",
-        f"    {tmp_path / 'code.py'}:1",
+        f"{UNDECLARED_DEPS_OUTPUT_PREFIX}:",
+        "- 'my_requests'",
+        "    imported at:",
+        f"      {tmp_path / 'code.py'}:1",
     ]
     output, returncode = run_fawltydeps_function(
         "--check-undeclared",
@@ -870,14 +884,15 @@ def test_check_undeclared__simple_project__reports_only_undeclared(fake_project)
 
 def test_check_unused__simple_project__reports_only_unused(fake_project):
     tmp_path = fake_project(
-        imports=["requests"],
-        declared_deps=["pandas"],
+        imports=["my_requests"],
+        declared_deps=["my_pandas"],
     )
 
     expect = [
-        "These dependencies appear to be unused (i.e. not imported):",
-        "- 'pandas' declared in:",
-        f"    {tmp_path / 'requirements.txt'}",
+        f"{UNUSED_DEPS_OUTPUT_PREFIX}:",
+        "- 'my_pandas'",
+        "    declared in:",
+        f"      {tmp_path / 'requirements.txt'}",
     ]
     output, returncode = run_fawltydeps_function(
         "--check-unused",
@@ -892,18 +907,20 @@ def test_check_unused__simple_project__reports_only_unused(fake_project):
 
 def test__no_action__defaults_to_check_action(fake_project):
     tmp_path = fake_project(
-        imports=["requests"],
-        declared_deps=["pandas"],
+        imports=["my_requests"],
+        declared_deps=["my_pandas"],
     )
 
     expect = [
-        "These imports appear to be undeclared dependencies:",
-        "- 'requests' imported at:",
-        f"    {tmp_path / 'code.py'}:1",
+        f"{UNDECLARED_DEPS_OUTPUT_PREFIX}:",
+        "- 'my_requests'",
+        "    imported at:",
+        f"      {tmp_path / 'code.py'}:1",
         "",
-        "These dependencies appear to be unused (i.e. not imported):",
-        "- 'pandas' declared in:",
-        f"    {tmp_path / 'requirements.txt'}",
+        f"{UNUSED_DEPS_OUTPUT_PREFIX}:",
+        "- 'my_pandas'",
+        "    declared in:",
+        f"      {tmp_path / 'requirements.txt'}",
     ]
     output, returncode = run_fawltydeps_function(
         f"--code={tmp_path}", "--detailed", f"--deps={tmp_path}"
@@ -914,18 +931,20 @@ def test__no_action__defaults_to_check_action(fake_project):
 
 def test__no_options__defaults_to_check_action_in_current_dir(fake_project):
     tmp_path = fake_project(
-        imports=["requests"],
-        declared_deps=["pandas"],
+        imports=["my_requests"],
+        declared_deps=["my_pandas"],
     )
 
     expect = [
-        "These imports appear to be undeclared dependencies:",
-        "- 'requests' imported at:",
-        "    code.py:1",
+        f"{UNDECLARED_DEPS_OUTPUT_PREFIX}:",
+        "- 'my_requests'",
+        "    imported at:",
+        "      code.py:1",
         "",
-        "These dependencies appear to be unused (i.e. not imported):",
-        "- 'pandas' declared in:",
-        "    requirements.txt",
+        f"{UNUSED_DEPS_OUTPUT_PREFIX}:",
+        "- 'my_pandas'",
+        "    declared in:",
+        "      requirements.txt",
     ]
     expect_logs = []
     output, errors, returncode = run_fawltydeps_subprocess("--detailed", cwd=tmp_path)
@@ -936,16 +955,16 @@ def test__no_options__defaults_to_check_action_in_current_dir(fake_project):
 
 def test_check__summary__writes_only_names_of_unused_and_undeclared(fake_project):
     tmp_path = fake_project(
-        imports=["requests"],
-        declared_deps=["pandas"],
+        imports=["my_requests"],
+        declared_deps=["my_pandas"],
     )
 
     expect = [
-        "These imports appear to be undeclared dependencies:",
-        "- 'requests'",
+        f"{UNDECLARED_DEPS_OUTPUT_PREFIX}:",
+        "- 'my_requests'",
         "",
-        "These dependencies appear to be unused (i.e. not imported):",
-        "- 'pandas'",
+        f"{UNUSED_DEPS_OUTPUT_PREFIX}:",
+        "- 'my_pandas'",
         "",
         VERBOSE_PROMPT,
     ]
@@ -958,11 +977,11 @@ def test_check_detailed__simple_project_in_fake_venv__resolves_imports_vs_deps(
     fake_project,
 ):
     tmp_path = fake_project(
-        imports=["requests"],
-        declared_deps=["pandas"],
-        # A venv where the "pandas" package provides a "requests" import name
+        imports=["my_requests"],
+        declared_deps=["my_pandas"],
+        # A venv where the "my_pandas" package provides a "my_requests" import name
         # should satisfy our comparison
-        fake_venvs={".venv": {"pandas": {"requests"}}},
+        fake_venvs={".venv": {"my_pandas": {"my_requests"}}},
     )
 
     output, returncode = run_fawltydeps_function(
@@ -996,6 +1015,41 @@ def test_check_detailed__simple_project_w_2_fake_venv__resolves_imports_vs_deps(
         Analysis.success_message(check_undeclared=True, check_unused=True),
     ]
     assert returncode == EXIT_SUCCESS
+
+
+def test_check_detailed__shows_package_suggerstions_for_undeclared_deps(
+    fake_project,
+):
+    tmp_path = fake_project(
+        imports=["some_import", "other_import", "yet_another"],
+        fake_venvs={
+            ".venv": {
+                "some_package": {"some_import", "other_import"},
+                "other_package": {"other_import"},
+            },
+        },
+    )
+
+    output, returncode = run_fawltydeps_function("--detailed", f"{tmp_path}")
+    expect = [
+        f"{UNDECLARED_DEPS_OUTPUT_PREFIX}:",
+        "- 'other_import'",
+        "    imported at:",
+        f"      {tmp_path / 'code.py'}:2",
+        "    may be provided by these packages:",
+        "      'other_package'",
+        "      'some_package'",
+        "- 'some_import'",
+        "    imported at:",
+        f"      {tmp_path / 'code.py'}:1",
+        "    may be provided by these packages:",
+        "      'some_package'",
+        "- 'yet_another'",
+        "    imported at:",
+        f"      {tmp_path / 'code.py'}:3",
+    ]
+    assert output.splitlines() == expect
+    assert returncode == EXIT_UNDECLARED
 
 
 def test_check_json__no_pyenvs_found__falls_back_to_current_env(fake_project):
@@ -1057,7 +1111,7 @@ def test_check_json__no_pyenvs_found__falls_back_to_current_env(fake_project):
         ],
         "resolved_deps": {
             "pip-requirements-parser": {
-                "package_name": "pip_requirements_parser",
+                "package_name": "pip-requirements-parser",
                 "import_names": ["packaging_legacy_version", "pip_requirements_parser"],
                 "resolved_with": "SysPathPackageResolver",
                 "debug_info": {
@@ -1088,36 +1142,36 @@ def test_check_json__no_pyenvs_found__falls_back_to_current_env(fake_project):
     [
         pytest.param(
             ["--check-unused"],
-            ["requests"],
+            ["my_requests"],
             ["black", "mypy"],
             [Analysis.success_message(check_undeclared=False, check_unused=True)],
             id="check_unused_action_on_default_ignored_unused_dep__outputs_nothing",
         ),
         pytest.param(
-            ["--check-unused", "--ignore-unused", "black", "pandas"],
-            ["requests"],
-            ["black", "pandas"],
+            ["--check-unused", "--ignore-unused", "black", "my_pandas"],
+            ["my_requests"],
+            ["black", "my_pandas"],
             [Analysis.success_message(check_undeclared=False, check_unused=True)],
             id="check_unused_action_on_overriden_ignored_unused_dep__outputs_nothing",
         ),
         pytest.param(
-            ["--list-deps", "--ignore-unused", "numpy"],
+            ["--list-deps", "--ignore-unused", "my_numpy"],
             [],
-            ["numpy"],
-            ["numpy", "", VERBOSE_PROMPT],
+            ["my_numpy"],
+            ["my_numpy", "", VERBOSE_PROMPT],
             id="list_deps_action_on_ignored_dep__reports_dep",
         ),
         pytest.param(
-            ["--check-undeclared", "--ignore-unused", "pandas"],
-            ["pandas"],
-            ["pandas"],
+            ["--check-undeclared", "--ignore-unused", "my_pandas"],
+            ["my_pandas"],
+            ["my_pandas"],
             [Analysis.success_message(check_undeclared=True, check_unused=False)],
             id="check_undeclared_action_on_ignored_declared_dep__does_not_report_dep_as_undeclared",
         ),
         pytest.param(
             ["--check-undeclared", "--ignore-undeclared", "black", "mypy"],
             ["black", "mypy"],
-            ["numpy"],
+            ["my_numpy"],
             [Analysis.success_message(check_undeclared=True, check_unused=False)],
             id="check_undeclared_action_on_ignored_undeclared_import__outputs_nothing",
         ),
@@ -1140,21 +1194,19 @@ def test_check_json__no_pyenvs_found__falls_back_to_current_env(fake_project):
                 "--check",
                 "--ignore-undeclared",
                 "isort",
-                "numpy",
+                "my_numpy",
                 "--ignore-unused",
-                "pandas",
+                "my_pandas",
                 "tomli",
             ],
-            ["isort", "numpy"],
-            ["pandas", "tomli"],
+            ["isort", "my_numpy"],
+            ["my_pandas", "tomli"],
             [Analysis.success_message(check_undeclared=True, check_unused=True)],
             id="check_action_on_ignored__does_not_report_ignored",
         ),
     ],
 )
-def test_cmdline_on_ignored_undeclared_option(
-    args, imports, dependencies, expected, fake_project
-):
+def test_cmdline_on_ignore_options(args, imports, dependencies, expected, fake_project):
     tmp_path = fake_project(
         imports=imports,
         declared_deps=dependencies,
@@ -1171,11 +1223,11 @@ def test_cmdline_on_ignored_undeclared_option(
             {},
             [],
             [
-                "These imports appear to be undeclared dependencies:",
-                "- 'requests'",
+                f"{UNDECLARED_DEPS_OUTPUT_PREFIX}:",
+                "- 'my_requests'",
                 "",
-                "These dependencies appear to be unused (i.e. not imported):",
-                "- 'pandas'",
+                f"{UNUSED_DEPS_OUTPUT_PREFIX}:",
+                "- 'my_pandas'",
                 "",
                 VERBOSE_PROMPT,
             ],
@@ -1185,7 +1237,7 @@ def test_cmdline_on_ignored_undeclared_option(
             {"actions": ["list_imports"]},
             [],
             [
-                "requests",
+                "my_requests",
                 "",
                 VERBOSE_PROMPT,
             ],
@@ -1194,20 +1246,20 @@ def test_cmdline_on_ignored_undeclared_option(
         pytest.param(
             {"actions": ["list_imports"]},
             ["--detailed"],
-            ["code.py:1: requests"],
+            ["code.py:1: my_requests"],
             id="combine_actions_in_config_with_detailed_on_command_line",
         ),
         pytest.param(
             {"actions": ["list_imports"], "output_format": "human_detailed"},
             ["--list-deps"],
-            ["requirements.txt: pandas"],
+            ["requirements.txt: my_pandas"],
             id="override_some_config_directives_on_command_line",
         ),
         pytest.param(
             {"actions": ["list_imports"], "output_format": "human_detailed"},
             ["--summary"],
             [
-                "requests",
+                "my_requests",
                 "",
                 VERBOSE_PROMPT,
             ],
@@ -1222,7 +1274,7 @@ def test_cmdline_on_ignored_undeclared_option(
         pytest.param(
             {"actions": ["list_imports"], "exclude": ["code.py"]},
             ["--exclude", ".*", "--detailed"],
-            ["code.py:1: requests"],
+            ["code.py:1: my_requests"],
             id="override_exclude_in_config_with_exclude_on_command_line",
         ),
         pytest.param(
@@ -1363,8 +1415,8 @@ def test_cmdline_args_in_combination_with_config_file(
     # We keep the project itself constant (one undeclared + one unused dep),
     # but we vary the FD configuration directives and command line args
     tmp_path = fake_project(
-        imports=["requests"],
-        declared_deps=["pandas"],
+        imports=["my_requests"],
+        declared_deps=["my_pandas"],
     )
     setup_fawltydeps_config(config)
     output, errors, returncode = run_fawltydeps_subprocess(
@@ -1401,7 +1453,7 @@ def test_deps_across_groups_appear_just_once_in_order_in_general_detailed(tmp_pa
     exp_lines = [
         line
         for dep in unused_deps
-        for line in f"- {dep.render(include_references=True)}".split("\n")
+        for line in f"- {dep.render(detailed=True)}".split("\n")
     ]
     assert list(obs_lines_relevant) == exp_lines
 
@@ -1410,31 +1462,31 @@ def pyproject_toml_contents():
     data = dedent(
         """
         [tool.poetry.group.data_science.dependencies]
-        numpy = "^1.21"
-        pandas = "^1.3"
+        my_numpy = "^1.21"
+        my_pandas = "^1.3"
         matplotlib = "^3.4"
 
         [tool.poetry.group.web_development.dependencies]
         django = "^4.0"
         fastapi = "^1.5"
         uvicorn = "^0.15"
-        httpx = "^0.21"
-        pandas = "^1.3"
+        my_requests = "^0.21"
+        my_pandas = "^1.3"
 
         [tool.poetry.group.web_scraping.dependencies]
         scrapy = "^2.5"
         requests-html = "^0.10"
         """
     )
-    uniq_deps = (
+    uniq_deps = [
         "django",
         "fastapi",
-        "httpx",
         "matplotlib",
-        "numpy",
-        "pandas",
+        "my_numpy",
+        "my_pandas",
+        "my_requests",
         "requests-html",
         "scrapy",
         "uvicorn",
-    )
+    ]
     return data, uniq_deps

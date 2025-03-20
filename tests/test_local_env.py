@@ -219,7 +219,7 @@ def test_local_env__multiple_pyenvs__can_find_packages_in_all(fake_venv):
             {str(site_dir1): {"some_module"}},
         ),
         "other-module": Package(
-            "other_module",
+            "other-module",
             {"other_module"},
             LocalPackageResolver,
             {str(site_dir2): {"other_module"}},
@@ -297,7 +297,7 @@ def test_resolve_dependencies__in_2_fake_venvs__returns_local_and_id_deps(fake_v
         ),
         "pandas": Package("pandas", {"pandas"}, IdentityMapping),
         "other_module": Package(
-            "other_module",
+            "other-module",
             {"other_module"},
             LocalPackageResolver,
             {str(site_dir2): {"other_module"}},

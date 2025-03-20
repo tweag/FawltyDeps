@@ -13,7 +13,12 @@ from textwrap import dedent
 from typing import Any, Optional, Union
 
 from fawltydeps.main import main
-from fawltydeps.packages import IdentityMapping, Package, SysPathPackageResolver
+from fawltydeps.packages import (
+    BasePackageResolver,
+    IdentityMapping,
+    Package,
+    SysPathPackageResolver,
+)
 from fawltydeps.types import (
     DeclaredDependency,
     Location,
@@ -161,6 +166,31 @@ def run_fawltydeps_function(
     return output_value.strip(), exit_code
 
 
+class FakePackageResolver(BasePackageResolver):
+    """Fake package resolver to help with below test vectors.
+
+    Simple package resolver implementation that - given a dictionary of Package
+    objects (typically from FDTestVector.expect_resolved_deps below) - returns
+    these Package objects back via the official BasePackageResolver API methods.
+    """
+
+    def __init__(self, packages: dict[str, Package]) -> None:
+        self.packages = packages
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self.packages!r})"
+
+    def lookup_packages(self, package_names: set[str]) -> dict[str, Package]:
+        return {
+            name: self.packages[Package.normalize_name(name)]
+            for name in package_names
+            if Package.normalize_name(name) in self.packages
+        }
+
+    def lookup_import(self, import_name: str) -> Iterable[Package]:
+        return (p for p in self.packages.values() if import_name in p.import_names)
+
+
 @dataclass
 class FDTestVector:
     """Test vectors for various parts of the FawltyDeps core logic."""
@@ -170,6 +200,7 @@ class FDTestVector:
     declared_deps: list[DeclaredDependency] = field(default_factory=list)
     ignore_unused: list[str] = field(default_factory=list)
     ignore_undeclared: list[str] = field(default_factory=list)
+    resolver: Optional[FakePackageResolver] = None
     expect_resolved_deps: dict[str, Package] = field(default_factory=dict)
     expect_undeclared_deps: list[UndeclaredDependency] = field(default_factory=list)
     expect_unused_deps: list[UnusedDependency] = field(default_factory=list)
@@ -297,6 +328,39 @@ test_vectors = [
         expect_unused_deps=[
             UnusedDependency("Pip", [Location(Path("requirements1.txt"))]),
             UnusedDependency("pip", [Location(Path("requirements2.txt"))]),
+        ],
+    ),
+    FDTestVector(
+        "undeclared_dep_not_found_in_environment_cannot_suggest_candidate_package",
+        imports=imports_factory("foo"),
+        expect_undeclared_deps=[
+            UndeclaredDependency("foo", [Location("<stdin>")], set()),
+        ],
+    ),
+    FDTestVector(
+        "undeclared_dep_found_in_environment_suggests_candidate_package",
+        imports=imports_factory("foo"),
+        resolver=FakePackageResolver(
+            {
+                "foo_package": Package("foo_package", {"foo"}, SysPathPackageResolver),
+            }
+        ),
+        expect_undeclared_deps=[
+            UndeclaredDependency("foo", [Location("<stdin>")], {"foo_package"}),
+        ],
+    ),
+    FDTestVector(
+        "undeclared_dep_found_in_environment_multiple_times_suggests_all_candidates",
+        imports=imports_factory("foo"),
+        resolver=FakePackageResolver(
+            {
+                "foo1": Package("foo1", {"foo"}, SysPathPackageResolver),
+                "foo2": Package("foo2", {"foo", "bar"}, SysPathPackageResolver),
+                "baz": Package("baz", {"baz"}, SysPathPackageResolver),
+            }
+        ),
+        expect_undeclared_deps=[
+            UndeclaredDependency("foo", [Location("<stdin>")], {"foo1", "foo2"}),
         ],
     ),
 ]
