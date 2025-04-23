@@ -105,7 +105,9 @@ def find_sources(  # noqa: C901, PLR0912, PLR0915
 
     for path_or_special in settings.code if CodeSource in source_types else []:
         # exceptions raised by validate_code_source() are propagated here
-        validated: Optional[Source] = validate_code_source(path_or_special)
+        validated: Optional[Source] = validate_code_source(
+            path_or_special, settings.base_path
+        )
         if validated is not None:  # parse-able file given directly
             logger.debug(f"find_sources() Found {validated}")
             yield validated
