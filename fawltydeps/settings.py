@@ -156,6 +156,7 @@ class Settings(BaseSettings):
     """
 
     actions: set[Action] = {Action.REPORT_UNDECLARED, Action.REPORT_UNUSED}
+    base_path: Optional[Path] = None
     output_format: OutputFormat = OutputFormat.HUMAN_SUMMARY
     code: set[PathOrSpecial] = {Path()}
     deps: set[Path] = {Path()}

@@ -43,6 +43,7 @@ def make_json_settings_dict(**customizations):
     """Create an expected version of Settings.dict(), with customizations."""
     defaults = {
         "actions": ["check_undeclared", "check_unused"],
+        "base_path": None,
         "code": ["."],
         "deps": ["."],
         "pyenvs": ["."],
@@ -1234,6 +1235,7 @@ def test_cmdline_on_ignored_undeclared_option(
                 # (default values are commented)
                 [tool.fawltydeps]
                 actions = ['list_imports']
+                # base_path = ...
                 output_format = 'human_detailed'
                 # code = ['.']
                 deps = ['foobar']
@@ -1260,6 +1262,7 @@ def test_cmdline_on_ignored_undeclared_option(
                 # (default values are commented)
                 [tool.fawltydeps]
                 actions = ['check_undeclared']
+                # base_path = ...
                 # output_format = 'human_summary'
                 # code = ['.']
                 # deps = ['.']
@@ -1286,6 +1289,7 @@ def test_cmdline_on_ignored_undeclared_option(
                 # (default values are commented)
                 [tool.fawltydeps]
                 # actions = ['check_undeclared', 'check_unused']
+                # base_path = ...
                 # output_format = 'human_summary'
                 # code = ['.']
                 # deps = ['.']
@@ -1312,6 +1316,7 @@ def test_cmdline_on_ignored_undeclared_option(
                 # (default values are commented)
                 [tool.fawltydeps]
                 # actions = ['check_undeclared', 'check_unused']
+                # base_path = ...
                 # output_format = 'human_summary'
                 # code = ['.']
                 # deps = ['.']
@@ -1338,6 +1343,7 @@ def test_cmdline_on_ignored_undeclared_option(
                 # (default values are commented)
                 [tool.fawltydeps]
                 actions = ['list_sources']
+                # base_path = ...
                 # output_format = 'human_summary'
                 # code = ['.']
                 # deps = ['.']

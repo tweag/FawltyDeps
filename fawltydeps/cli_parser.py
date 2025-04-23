@@ -224,6 +224,11 @@ def populate_parser_paths_options(parser: argparse._ActionsContainer) -> None:
             " defined by the user."
         ),
     )
+    parser.add_argument(
+        "--base_path",
+        type=Path,
+        metavar="BASE_PATH",
+    )
 
 
 def populate_parser_configuration(parser: argparse._ActionsContainer) -> None:
