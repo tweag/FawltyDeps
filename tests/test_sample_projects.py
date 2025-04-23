@@ -61,6 +61,7 @@ class Experiment(BaseExperiment):
     """
 
     code: list[str]
+    base_path: Optional[str]
     deps: list[str]
     pyenvs: Optional[list[str]]
     install_deps: bool
@@ -71,6 +72,7 @@ class Experiment(BaseExperiment):
     def from_toml(cls, name: str, data: TomlData) -> Experiment:
         return cls(
             code=data.get("code", [""]),
+            base_path=data.get("base_path", None),
             deps=data.get("deps", [""]),
             pyenvs=data.get("pyenvs", None),
             install_deps=data.get("install_deps", False),
@@ -87,6 +89,7 @@ class Experiment(BaseExperiment):
             pyenvs = {Path(path) for path in self.pyenvs}
         return Settings(
             actions={Action.REPORT_UNDECLARED, Action.REPORT_UNUSED},
+            base_path=None if self.base_path is None else Path(self.base_path),
             code={Path(path) for path in self.code},
             deps={Path(path) for path in self.deps},
             pyenvs=pyenvs,
