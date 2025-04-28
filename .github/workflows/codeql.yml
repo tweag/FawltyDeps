@@ -2,6 +2,9 @@ name: "CodeQL Analysis"
 
 on:
   workflow_call:
+  push:
+    branches: ["smelc/run-code-ql-security-rules"]
+  pull_request:
 
 jobs:
   codeql:
