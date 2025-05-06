@@ -225,7 +225,7 @@ def populate_parser_paths_options(parser: argparse._ActionsContainer) -> None:
         ),
     )
     parser.add_argument(
-        "--base_path",
+        "--base-path",
         type=Path,
         metavar="BASE_PATH",
     )
