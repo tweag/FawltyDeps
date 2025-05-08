@@ -16,6 +16,5 @@ jobs:
         shell: bash
       - name: Check workflow files
         run: |
-          ${{ steps.get_actionlint.outputs.executable }} -color \
-            -ignore '"actions/setup-python@v4" action is too old'
+          ${{ steps.get_actionlint.outputs.executable }} -color
         shell: bash
