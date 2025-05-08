@@ -85,8 +85,12 @@ class Package:
         """Package name in normalized form."""
         return self.normalize_name(self.package_name)
 
-    def has_type_stubs(self) -> set[str]:
+    def stubbed_imports(self) -> set[str]:
         """Return a set of import names without the type stubs suffix.
+
+        For example, a package that has .import_names == {"foo", "bar-stubs"},
+        will return {"bar"} from this method, indicating that it provides type
+        stubs for the "bar" import.
 
         This allows stub-only packages to be matched against the import names
         for which they provide type stubs. Stub-only packages are described in
@@ -104,7 +108,7 @@ class Package:
     def is_used(self, imported_names: Iterable[str]) -> bool:
         """Return True iff this package is among the given import names."""
         return bool(self.import_names.intersection(imported_names)) or bool(
-            self.has_type_stubs().intersection(imported_names)
+            self.stubbed_imports().intersection(imported_names)
         )
 
 
