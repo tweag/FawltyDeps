@@ -14,16 +14,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - name: Install poetry
+        run: pipx install poetry
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Set up Poetry
-        uses: Gr1N/setup-poetry@v8
-      - uses: actions/cache@v4
-        with:
-          path: ~/.cache/pypoetry/virtualenvs
-          key: ${{ runner.os }}-poetry-lint-${{ hashFiles('poetry.lock') }}
+          cache: 'poetry'
       - name: Install project
         run: poetry sync --no-interaction --with=nox,lint
       - name: Run linters on Python ${{ matrix.python-version }}

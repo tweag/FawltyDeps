@@ -17,12 +17,12 @@ jobs:
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+      - name: Install poetry
+        run: pipx install poetry
       - uses: actions/setup-python@v5
         with:
-          python-version: 3.x
-      - run: echo "cache_id=$(date --utc '+%V')" >> "$GITHUB_ENV"
-      - name: Set up Poetry
-        uses: Gr1N/setup-poetry@v8
+          python-version: '3.x'
+          cache: 'poetry'
       - uses: actions/cache@v4
         with:
           key: mkdocs-material-${{ env.cache_id }}
