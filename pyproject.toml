@@ -74,6 +74,7 @@ pytest = "^7.1.0"
 optional = true
 
 [tool.poetry.group.lint.dependencies]
+actionlint-py = ">=1.7.7.23"
 hypothesis = "^6.68.2"
 mypy = "^1.0.1"
 nox = "^2024.03.02"
@@ -96,6 +97,7 @@ optional = true
 # something to the above groups (i.e. something that targets a specific purpose
 # (e.g. a CI action), consider whether it's also useful to have this available
 # in a developers environment
+actionlint-py = ">=1.7.7.23"
 codespell = "^2.2.4"
 hypothesis = "^6.68.2"
 mypy = "^1.0.1"
@@ -238,8 +240,11 @@ build-backend = "poetry.core.masonry.api"
 code = ["fawltydeps"]
 deps = ["pyproject.toml"]
 ignore_unused = [
+    "actionlint-py",
     "codespell",
     "hypothesis",
+    "mkdocs",
+    "mkdocs-material",
     "mypy",
     "nox",
     "poetry-plugin-export",
@@ -247,6 +252,4 @@ ignore_unused = [
     "ruff",
     "types-PyYAML",
     "uv",
-    "mkdocs",
-    "mkdocs-material"
 ]
