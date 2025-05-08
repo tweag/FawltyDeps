@@ -4,7 +4,7 @@ version = "0.19.0"
 description = "Find undeclared and unused 3rd-party dependencies in your Python project."
 license = { file = "LICENSE" }
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.9.2"
 authors = [
     { name = "Nour El Mawass", email = "nour.elmawass@tweag.io" },
     { name = "Maria Knorps", email = "maria.knorps@tweag.io" },
