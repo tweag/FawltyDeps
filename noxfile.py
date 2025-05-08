@@ -120,6 +120,7 @@ def lint(session):
     install_groups(session, include=["lint"])
     session.run("mypy")
     session.run("ruff", "check", ".")
+    session.run("actionlint")
 
 
 @nox.session
