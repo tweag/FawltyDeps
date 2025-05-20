@@ -69,7 +69,4 @@ unused_deps =  [
     "Sphinx",
     "httpbin",
     "markupsafe",
-    "pytest-cov",
-    "pytest-httpbin",
-    "pytest-mock",
 ]

@@ -64,8 +64,6 @@ unused_deps = [
     "mock",
     "peppy",  # Declared in ./requirements/requirements-doc.txt
     "pydoc-markdown",
-    "pytest-cov",
-    "pytest-remotedata",
     # "pyyaml",  # found via SysPathResolver due to fawltydeps' own yaml dependency
 ]
 
@@ -100,6 +98,4 @@ unused_deps = [
     "mock",
     "peppy",
     "pydoc-markdown",
-    "pytest-cov",
-    "pytest-remotedata",
 ]

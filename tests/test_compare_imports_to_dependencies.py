@@ -4,7 +4,7 @@ import logging
 
 import pytest
 
-from fawltydeps.check import calculate_undeclared, calculate_unused
+from fawltydeps.check import calculate_undeclared, calculate_unused, is_ignored
 from fawltydeps.settings import Settings
 
 from .utils import test_vectors
@@ -41,3 +41,66 @@ def test_calculate_unused(vector):
         settings=settings,
     )
     assert actual == vector.expect_unused_deps
+
+
+@pytest.mark.parametrize(
+    ("name", "ignore_set", "expect"),
+    [
+        pytest.param(
+            "baz",
+            {"bar", "baz"},
+            True,
+            id="verbatim match",
+        ),
+        pytest.param(
+            "foo",
+            {"bar", "baz"},
+            False,
+            id="simple non-match",
+        ),
+        pytest.param(
+            "pytest-foo",
+            {"bar", "baz", "pytest"},
+            False,
+            id="no automatic prefix match",
+        ),
+        pytest.param(
+            "pytest-foo",
+            {"bar", "baz", "pytest-*"},
+            True,
+            id="matching wildcard suffix",
+        ),
+        pytest.param(
+            "pytest-foo",
+            {"bar", "baz", "*-foo"},
+            True,
+            id="matching wildcard prefix",
+        ),
+        pytest.param(
+            "pytest-foo",
+            {"*"},
+            True,
+            id="match everything",
+        ),
+        pytest.param(
+            "pytest-foo",
+            {"*test-*"},
+            True,
+            id="matching multi-wildcard",
+        ),
+        pytest.param(
+            "pytestfoo",
+            {"*test-*"},
+            False,
+            id="non-matching multi-wildcard",
+        ),
+        pytest.param(
+            "pytest-foo",
+            {"py?test-*", "p?test-*", "p[xyz]test-*", "{py,foo}test-*"},
+            False,
+            id="do not accept other potential wildcard syntaxes",
+        ),
+    ],
+)
+def test_is_ignored(name, ignore_set, expect):
+    assert is_ignored(name, ignore_set) == expect

@@ -70,27 +70,45 @@ class Package:
         (e.g. typing-extensions), but once installed, it is presented in the
         context of the local environment with a slightly different spelling
         (e.g. typing_extension).
+
+        Exception: Stubs-only packages have a "-stubs" suffix on their import
+        name that is _not_ normalized to "_stubs".
         """
-        return package_name.lower().replace("-", "_")
+        suffix = ""
+        if package_name.endswith("-stubs"):
+            package_name = package_name[:-6]
+            suffix = "-stubs"
+        return package_name.lower().replace("-", "_") + suffix
 
     @cached_property
     def normalized_name(self) -> str:
         """Package name in normalized form."""
         return self.normalize_name(self.package_name)
 
-    def has_type_stubs(self) -> set[str]:
-        """Return a set of import names without type stubs suffix."""
-        provides_stubs_for = [
+    def stubbed_imports(self) -> set[str]:
+        """Return a set of import names without the type stubs suffix.
+
+        For example, a package that has .import_names == {"foo", "bar-stubs"},
+        will return {"bar"} from this method, indicating that it provides type
+        stubs for the "bar" import.
+
+        This allows stub-only packages to be matched against the import names
+        for which they provide type stubs. Stub-only packages are described in
+        https://typing.readthedocs.io/en/latest/spec/distributing.html, and the
+        "-stubs" suffix is mandated here. This makes it relatively safe for us
+        to assume that "FOO-stubs" is indeed directly associated with the "FOO"
+        module.
+        """
+        return {
             import_name[: -len("-stubs")]
             for import_name in self.import_names
             if import_name.endswith("-stubs")
-        ]
-        return set(provides_stubs_for)
+        }
 
     def is_used(self, imported_names: Iterable[str]) -> bool:
         """Return True iff this package is among the given import names."""
         return bool(self.import_names.intersection(imported_names)) or bool(
-            self.has_type_stubs().intersection(imported_names)
+            self.stubbed_imports().intersection(imported_names)
         )
 
 
