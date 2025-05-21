@@ -97,7 +97,7 @@ def test_code_deps_pyenvs_and_base_unequal__raises_error(code_deps_pyenvs_base):
         run_build_settings(args)
 
 
-path_options = {  # options (-> settings members) that interact with basepath
+path_options = {  # options (-> settings members) that interact with search_paths
     "--code": "code",
     "--deps": "deps",
     "--pyenv": "pyenvs",
@@ -121,7 +121,7 @@ def subsets(
             yield set(tpl)
 
 
-@given(basepaths=nonempty_string_set, fillers=nonempty_string_set)
+@given(search_paths=nonempty_string_set, fillers=nonempty_string_set)
 @pytest.mark.parametrize(
     ("filled", "unfilled"),
     [
@@ -129,28 +129,28 @@ def subsets(
         for opts in subsets(set(path_options.keys()), 1, len(path_options) - 1)
     ],
 )
-def test_path_option_overrides_base_path(basepaths, filled, unfilled, fillers):
+def test_path_option_overrides_search_paths(search_paths, filled, unfilled, fillers):
     assert filled and unfilled and (unfilled | filled) == path_options.keys()
-    args = list(basepaths)
+    args = list(search_paths)
     for option in filled:
         args += [option, *list(fillers)]
     settings = run_build_settings(args)
     for option in filled:
         assert getattr(settings, path_options[option]) == to_path_set(fillers)
     for option in unfilled:
-        assert getattr(settings, path_options[option]) == to_path_set(basepaths)
+        assert getattr(settings, path_options[option]) == to_path_set(search_paths)
 
 
-@given(basepaths=nonempty_string_set)
-def test_base_path_fills_path_options_when_other_path_settings_are_absent(basepaths):
+@given(search_paths=nonempty_string_set)
+def test_search_paths_supply_path_options_when_otherwise_absent(search_paths):
     # Nothing else through CLI nor through config file
-    settings = run_build_settings(cmdl=list(basepaths))
-    expected = to_path_set(basepaths)
+    settings = run_build_settings(cmdl=list(search_paths))
+    expected = to_path_set(search_paths)
     assert all(getattr(settings, memb) == expected for memb in path_options.values())
 
 
 @pytest.mark.parametrize(
-    ("config_settings", "basepaths"),
+    ("config_settings", "search_paths"),
     [
         pytest.param(conf_sett, base, id=test_name)
         for conf_sett, base, test_name in [
@@ -171,17 +171,17 @@ def test_base_path_fills_path_options_when_other_path_settings_are_absent(basepa
         ]
     ],
 )
-def test_base_path_overrides_config_file_for_all_path_options(
+def test_search_paths_overrides_config_file_for_all_path_options(
     config_settings,
-    basepaths,
+    search_paths,
     setup_fawltydeps_config,
 ):
     config_file = (
         None if config_settings is None else setup_fawltydeps_config(config_settings)
     )
 
-    settings = run_build_settings(cmdl=list(basepaths), config_file=config_file)
-    expected = to_path_set(basepaths)
+    settings = run_build_settings(cmdl=list(search_paths), config_file=config_file)
+    expected = to_path_set(search_paths)
     assert all(getattr(settings, memb) == expected for memb in path_options.values())
 
 
