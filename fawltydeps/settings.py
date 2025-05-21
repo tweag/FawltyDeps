@@ -237,17 +237,17 @@ class Settings(BaseSettings):
         """
         args_dict = cmdline_args.__dict__
 
-        base_paths = set(getattr(cmdline_args, "basepaths", []))
-        if base_paths:
-            code_paths = args_dict.setdefault("code", base_paths)
-            deps_paths = args_dict.setdefault("deps", base_paths)
-            pyenv_paths = args_dict.setdefault("pyenvs", base_paths)
-            if base_paths not in (code_paths, deps_paths, pyenv_paths):
+        search_paths = set(getattr(cmdline_args, "search_paths", []))
+        if search_paths:
+            code_paths = args_dict.setdefault("code", search_paths)
+            deps_paths = args_dict.setdefault("deps", search_paths)
+            pyenv_paths = args_dict.setdefault("pyenvs", search_paths)
+            if search_paths not in (code_paths, deps_paths, pyenv_paths):
                 msg = (
-                    "All four path specifications (code, deps, pyenvs, and base)"
-                    f"have been used. Use at most 3. basepaths={base_paths}, "
-                    f"code_paths={code_paths}, deps_paths={deps_paths}, "
-                    f"pyenv_paths={pyenv_paths}"
+                    "All four path specifications (code, deps, pyenvs, and"
+                    "search_paths) have been used. Use at most 3."
+                    f"search_paths={search_paths}, code_paths={code_paths}, "
+                    f"deps_paths={deps_paths}, pyenv_paths={pyenv_paths}"
                 )
                 raise argparse.ArgumentError(argument=None, message=msg)
 

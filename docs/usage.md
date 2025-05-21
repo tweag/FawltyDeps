@@ -29,8 +29,8 @@ When none of these are specified, the default action is `--check`.
 
 By default, FawltyDeps will look for Python code (`*.py` and `*.ipynb`) and
 dependency declarations (see list of supported files below) under the current
-directory. If you want FawltyDeps to look elsewhere, you can pass a different
-directory (aka `basepath`) as a positional argument:
+directory. If you want FawltyDeps to look elsewhere, you can pass one or more
+directories (aka `search_paths`) as positional arguments:
 
 ```sh
 fawltydeps my_project/
@@ -38,8 +38,8 @@ fawltydeps my_project/
 
 If you want to separately declare the source of the code and the source of the
 dependencies, you may use the `--code` and `--deps` options documented in the
-next section. In short, giving the `basepath` positional argument is equivalent
-to passing both the `--code` and the `--deps` options, like this:
+next section. In short, giving the `search_paths` positional argument is
+equivalent to passing both the `--code` and the `--deps` options, like this:
 
 ```sh
 fawltydeps --code my_project/ --deps my_project/
@@ -56,7 +56,7 @@ The `--code` option tells FawltyDeps where to find the Python code to parse for
   from stdin.
 
 If no `--code` option is passed, FawltyDeps will find all Python code under the
-`basepath`, if given, or the current directory (i.e. same as `--code=.`).
+`search_paths`, if given, or the current directory (i.e. same as `--code=.`).
 To include both code from stdin (`import foo`) and a file path (`file.py`), use:
 
 ```sh
@@ -87,7 +87,7 @@ within. You would typically want to pass individual files, if you want to
 be explicit about where to find the declared dependencies.
 
 If no `--deps` option is passed, FawltyDeps will look for the above files under
-the `basepath`, if given, or the current directory (i.e. same as `--deps .`).
+the `search_paths`, if given, or the current directory (i.e. same as `--deps .`).
 
 ### How to match `import` statements with declared dependencies 
 

@@ -129,7 +129,7 @@ def populate_parser_paths_options(parser: argparse._ActionsContainer) -> None:
     .create() below.
     """
     parser.add_argument(
-        "basepaths",
+        "search_paths",
         type=lambda p: None if p == argparse.SUPPRESS else Path(p),
         nargs="*",
         help=(
@@ -146,7 +146,7 @@ def populate_parser_paths_options(parser: argparse._ActionsContainer) -> None:
         metavar="PATH_OR_STDIN",
         help=(
             "Code to parse for import statements (files or directories, or use"
-            " '-' to read code from stdin). Defaults to basepaths (see above)."
+            " '-' to read code from stdin). Defaults to search_paths (see above)."
         ),
     )
     parser.add_argument(
@@ -157,7 +157,7 @@ def populate_parser_paths_options(parser: argparse._ActionsContainer) -> None:
         metavar="PATH",
         help=(
             "Where to find dependency declarations (files or directories)."
-            " Defaults to finding supported files under basepaths (see above)."
+            " Defaults to finding supported files under search_paths (see above)."
         ),
     )
     parser.add_argument(
@@ -178,7 +178,7 @@ def populate_parser_paths_options(parser: argparse._ActionsContainer) -> None:
         metavar="PYENV_DIR",
         help=(
             "Where to search for Python environments that have project"
-            " dependencies installed. Defaults to searching under basepaths"
+            " dependencies installed. Defaults to searching under search_paths"
             " (see above)."
         ),
     )
