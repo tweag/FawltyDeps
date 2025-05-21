@@ -1,0 +1,21 @@
+[project]
+# General information about a simplified project: Its name, why we test it,
+# its relation to real world projects
+name = "base_dir_testbed"
+description = """
+  A project whose toplevel directory is not the base directory for 1st-party
+  imports: ./subproject/main/main.py imports ./subproject/lib/foo as `lib.foo`
+  because the base directory is ./subproject.
+"""
+
+[experiments.default]
+description = "Failing run"
+code = ["subproject/main/main.py", "subproject/lib/foo.py"]
+# base_dir = ... # No base dir,
+undeclared_deps = ["lib"]  # so `lib` cannot be resolved.
+
+[experiments.base_dir]
+description = "Successful run with correct base_dir"
+code = ["subproject/lib/foo.py", "subproject/main/main.py"]
+base_dir = "subproject" # Correct base_dir,
+undeclared_deps = [] # so `lib` is resolved correctly

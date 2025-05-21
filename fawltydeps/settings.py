@@ -157,7 +157,6 @@ class Settings(BaseSettings):
     """
 
     actions: set[Action] = {Action.REPORT_UNDECLARED, Action.REPORT_UNUSED}
-    base_path: Optional[Path] = None
     output_format: OutputFormat = OutputFormat.HUMAN_SUMMARY
     code: set[PathOrSpecial] = {Path()}
     deps: set[Path] = {Path()}
@@ -171,6 +170,7 @@ class Settings(BaseSettings):
     exclude_from: set[Path] = set()
     verbosity: int = 0
     custom_mapping_file: set[Path] = set()
+    base_dir: Optional[Path] = None
 
     # Class vars: these can not be overridden in the same way as above, only by
     # passing keyword args to Settings.config(). This is because they change the
