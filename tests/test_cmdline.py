@@ -49,7 +49,6 @@ def make_json_settings_dict(**customizations):
     """Create an expected version of Settings.dict(), with customizations."""
     defaults = {
         "actions": ["check_undeclared", "check_unused"],
-        "base_path": None,
         "code": ["."],
         "deps": ["."],
         "pyenvs": ["."],
@@ -63,6 +62,7 @@ def make_json_settings_dict(**customizations):
         "exclude_from": [],
         "verbosity": 0,
         "custom_mapping_file": [],
+        "base_dir": None,
     }
     assert all(k in defaults for k in customizations)
     return defaults | customizations
@@ -1287,7 +1287,6 @@ def test_cmdline_on_ignore_options(args, imports, dependencies, expected, fake_p
                 # (default values are commented)
                 [tool.fawltydeps]
                 actions = ['list_imports']
-                # base_path = ...
                 output_format = 'human_detailed'
                 # code = ['.']
                 deps = ['foobar']
@@ -1300,6 +1299,7 @@ def test_cmdline_on_ignore_options(args, imports, dependencies, expected, fake_p
                 # exclude_from = []
                 # verbosity = 0
                 # custom_mapping_file = []
+                # base_dir = ...
                 # [tool.fawltydeps.custom_mapping]
                 """
             ).splitlines(),
@@ -1314,7 +1314,6 @@ def test_cmdline_on_ignore_options(args, imports, dependencies, expected, fake_p
                 # (default values are commented)
                 [tool.fawltydeps]
                 actions = ['check_undeclared']
-                # base_path = ...
                 # output_format = 'human_summary'
                 # code = ['.']
                 # deps = ['.']
@@ -1327,6 +1326,7 @@ def test_cmdline_on_ignore_options(args, imports, dependencies, expected, fake_p
                 # exclude_from = []
                 # verbosity = 0
                 # custom_mapping_file = []
+                # base_dir = ...
                 # [tool.fawltydeps.custom_mapping]
                 """
             ).splitlines(),
@@ -1341,7 +1341,6 @@ def test_cmdline_on_ignore_options(args, imports, dependencies, expected, fake_p
                 # (default values are commented)
                 [tool.fawltydeps]
                 # actions = ['check_undeclared', 'check_unused']
-                # base_path = ...
                 # output_format = 'human_summary'
                 # code = ['.']
                 # deps = ['.']
@@ -1354,6 +1353,7 @@ def test_cmdline_on_ignore_options(args, imports, dependencies, expected, fake_p
                 # exclude_from = []
                 # verbosity = 0
                 # custom_mapping_file = []
+                # base_dir = ...
                 # [tool.fawltydeps.custom_mapping]
                 """
             ).splitlines(),
@@ -1368,7 +1368,6 @@ def test_cmdline_on_ignore_options(args, imports, dependencies, expected, fake_p
                 # (default values are commented)
                 [tool.fawltydeps]
                 # actions = ['check_undeclared', 'check_unused']
-                # base_path = ...
                 # output_format = 'human_summary'
                 # code = ['.']
                 # deps = ['.']
@@ -1381,6 +1380,7 @@ def test_cmdline_on_ignore_options(args, imports, dependencies, expected, fake_p
                 # exclude_from = []
                 # verbosity = 0
                 # custom_mapping_file = []
+                # base_dir = ...
                 # [tool.fawltydeps.custom_mapping]
                 """
             ).splitlines(),
@@ -1395,7 +1395,6 @@ def test_cmdline_on_ignore_options(args, imports, dependencies, expected, fake_p
                 # (default values are commented)
                 [tool.fawltydeps]
                 actions = ['list_sources']
-                # base_path = ...
                 # output_format = 'human_summary'
                 # code = ['.']
                 # deps = ['.']
@@ -1408,6 +1407,7 @@ def test_cmdline_on_ignore_options(args, imports, dependencies, expected, fake_p
                 exclude_from = ['my_ignore']
                 # verbosity = 0
                 # custom_mapping_file = []
+                # base_dir = ...
                 # [tool.fawltydeps.custom_mapping]
                 """
             ).splitlines(),

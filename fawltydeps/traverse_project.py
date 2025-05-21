@@ -24,9 +24,9 @@ from fawltydeps.types import (
 logger = logging.getLogger(__name__)
 
 
-# When setting up the traversal, we .add() directories to be traverse and attach
-# information about what we're looking for during the traversal. These are the
-# types of data we're allowed to attach:
+# When setting up the traversal, we .add() directories to be traversed and we
+# attach information about what we're looking for during the traversal.
+# These are the types of data we're allowed to attach:
 AttachedData = Union[
     tuple[type[CodeSource], Path],  # Look for Python code, with a base_dir
     type[DepsSource],  # Look for files with dependency declarations
@@ -106,7 +106,7 @@ def find_sources(  # noqa: C901, PLR0912, PLR0915
     for path_or_special in settings.code if CodeSource in source_types else []:
         # exceptions raised by validate_code_source() are propagated here
         validated: Optional[Source] = validate_code_source(
-            path_or_special, settings.base_path
+            path_or_special, settings.base_dir
         )
         if validated is not None:  # parse-able file given directly
             logger.debug(f"find_sources() Found {validated}")

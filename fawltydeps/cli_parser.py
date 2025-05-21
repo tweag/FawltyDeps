@@ -205,6 +205,16 @@ def populate_parser_paths_options(parser: argparse._ActionsContainer) -> None:
         ),
     )
     parser.add_argument(
+        "--base-dir",
+        type=Path,
+        metavar="BASE_DIR",
+        help=(
+            "Directory used as base for determining 1st-party imports, i.e."
+            " where your project expects to find its own packages/modules."
+            " Defaults to any directory given to --code (or search_paths)."
+        ),
+    )
+    parser.add_argument(
         "--install-deps",
         dest="install_deps",
         action="store_true",
@@ -223,11 +233,6 @@ def populate_parser_paths_options(parser: argparse._ActionsContainer) -> None:
             "Path to toml file containing mapping of dependencies to imports"
             " defined by the user."
         ),
-    )
-    parser.add_argument(
-        "--base-path",
-        type=Path,
-        metavar="BASE_PATH",
     )
 
 

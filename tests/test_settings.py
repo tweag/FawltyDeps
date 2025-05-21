@@ -32,7 +32,7 @@ except ModuleNotFoundError:
 
 EXPECT_DEFAULTS = dict(
     actions={Action.REPORT_UNDECLARED, Action.REPORT_UNUSED},
-    base_path=None,
+    base_dir=None,
     code={Path()},
     deps={Path()},
     pyenvs={Path()},
