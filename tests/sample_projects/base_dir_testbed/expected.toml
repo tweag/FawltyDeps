@@ -8,14 +8,26 @@ description = """
   because the base directory is ./subproject.
 """
 
-[experiments.default]
-description = "Failing run"
+[experiments.fail_with_files]
+description = "Failing run when files are passed, but no --base-dir"
 code = ["subproject/main/main.py", "subproject/lib/foo.py"]
 # base_dir = ... # No base dir,
-undeclared_deps = ["lib"]  # so `lib` cannot be resolved.
+undeclared_deps = ["lib"]  # so `lib` is incorrectly seen as a 3rd-party dep.
 
-[experiments.base_dir]
-description = "Successful run with correct base_dir"
+[experiments.succeed_with_files_and_base_dir]
+description = "Successful run with files and --base-dir"
 code = ["subproject/lib/foo.py", "subproject/main/main.py"]
 base_dir = "subproject" # Correct base_dir,
-undeclared_deps = [] # so `lib` is resolved correctly
+undeclared_deps = [] # so `lib` is correctly seen as base for 1st-party imports.
+
+[experiments.fail_with_dirs]
+description = "Failing run when dirs are passed, but no --base-dir"
+code = ["subproject/main", "subproject/lib"]
+# base_dir = ... # No base dir,
+undeclared_deps = ["lib"]  # so `lib` is incorrectly seen as a 3rd-party dep.
+
+[experiments.succeed_with_dirs_and_base_dir]
+description = "Successful run with dirs and --base-dir"
+code = ["subproject/lib", "subproject/main"]
+base_dir = "subproject" # Correct base_dir,
+undeclared_deps = [] # so `lib` is correctly seen as base for 1st-party imports.

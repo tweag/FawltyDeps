@@ -114,8 +114,9 @@ def find_sources(  # noqa: C901, PLR0912, PLR0915
         else:  # must traverse directory
             # sanity check: convince mypy that SpecialPath is already handled
             assert isinstance(path_or_special, Path)  # noqa: S101, sanity check
-            # record also base dir for later
-            traversal.add(path_or_special, (CodeSource, path_or_special))
+            # Use given directory as base dir, unless overridden by --base-dir.
+            base_dir = settings.base_dir or path_or_special
+            traversal.add(path_or_special, (CodeSource, base_dir))
 
     for path in settings.deps if DepsSource in source_types else []:
         # exceptions raised by validate_deps_source() are propagated here
@@ -169,11 +170,8 @@ def find_sources(  # noqa: C901, PLR0912, PLR0915
         if CodeSource in types:
             # Retrieve base_dir from closest ancestor, i.e. last CodeSource in .attached:
             base_dir = next(
-                (t[1] for t in reversed(step.attached) if isinstance(t, tuple)),
-                None,
+                t[1] for t in reversed(step.attached) if isinstance(t, tuple)
             )
-            # Sanity check: No CodeSource w/o base_dir
-            assert base_dir is not None  # noqa: S101
             for path in step.files:
                 try:  # catch all exceptions while traversing dirs
                     validated = validate_code_source(path, base_dir)
