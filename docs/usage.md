@@ -66,6 +66,18 @@ echo "import foo" | fawltydeps --list-imports --code - file.py
 At any time, if you want to see where FawltyDeps is looking for Python code,
 you can use the `--list-sources --detailed` options.
 
+#### Correctly identifying 1st- vs. 3rd-party imports
+
+In order for FawltyDeps to tell whether an `import` statement in your code
+refers or a 1st-party module (i.e. part of this project), or a 3rd-party
+dependency, it needs a _base directory_, i.e. a directory where 1st-party
+imports can be found.
+
+By default, FawltyDeps deduces this from the passed `--code` (or `search_paths`)
+arguments, but for complex project structures, you might have to use the
+`--base-dir=<dir>` option to tell FawltyDeps which directory to use. This option
+may be used once to determine the base directory for _all_ code being analyzed.
+
 ### Where to find declared dependencies
 
 The `--deps` option tells FawltyDeps where to look for your project's declared

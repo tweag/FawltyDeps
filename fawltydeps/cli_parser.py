@@ -211,7 +211,8 @@ def populate_parser_paths_options(parser: argparse._ActionsContainer) -> None:
         help=(
             "Directory used as base for determining 1st-party imports, i.e."
             " where your project expects to find its own packages/modules."
-            " Defaults to any directory given to --code (or search_paths)."
+            " If not given, base directories will be deduced from the --code"
+            " (or search_paths) arguments. See docs for more details."
         ),
     )
     parser.add_argument(

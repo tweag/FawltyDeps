@@ -1,3 +1,48 @@
+## When do I need to use `--base-dir`?
+
+When FawltyDeps analyzes `import` statements in your code, it needs to correctly
+differentiate between 1st-party imports (i.e. modules that are found inside your
+project) and 3rd-party imports (and that indicate real 3rd-party dependencies).
+FawltyDeps needs a base directory where it can find these 1st-party imports, and
+by default it uses directory information passed on the command line.
+For example:
+
+- `fawltydeps my_project/` will look for Python code under `my_project/`, and
+  will also use `my_project/` as the base directory for 1st-party imports.
+- Likewise, `fawltydeps --code=my_project/` will do the same.
+- `fawltydeps --code=projectA/ --code=projectB/` will use `projectA/` as the
+  base directory for code under `projectA/`, and `projectB/` as the
+  base directory for code under `projectB/`.
+- If you pass only filenames, no directories, e.g.
+  `fawltydeps foo/main.py lib/bar.py`, then FawltyDeps will default to using the
+  current directory (`./`) as the base directory. This is fine as long as the
+  current directory is an appropriate base directory for your project, for
+  example when `foo/main.py` imports `lib/bar.py` with a statement like
+  `from lib import bar`.
+
+There are some scenarios, however, where the base directory is not correctly
+deduced by FawltyDeps, and where you would use `--base-dir` to adjust this
+(and without otherwise changing what code FawltyDeps is looking at).
+
+- If you only pass filenames, no directories, and the current directory is _not_
+  an appropriate base directory. In the above filename-only example, if
+  `foo/main.py` instead uses `import bar` (say your project is run in a manner
+  where `lib/` is on the `$PYTHONPATH`), then this `bar` import will not be
+  found in the current directory, and you would need to pass `--base-dir=lib/`
+  in order to bring FawltyDeps up to speed.
+- If your project structure is more complex -- e.g. if you are running
+  FawltyDeps on a subproject + libs within a larger monorepo, and you need to
+  identify which directory is the appropriate base for imports, e.g.
+  `fawltydeps subproject/main/ subproject/lib/ --base-dir=subproject/`
+
+Note that `--base-dir` changes the base directory for _all_ code that is
+analyzed by FawltyDeps. For example, when you run
+`fawltydeps --code=my_project/ --code=other_file.py --base-dir=lib/`, both the
+code found under `my_project/` and the code in `other_file.py` will be analyzed
+with the assumption that 1st-party imports will be found under `lib/`.
+(Without `--base-dir`, the implicit base directories would be `my_project/` for
+code found under there, and `./` for code in `other_file.py`.)
+
 ## Why does FawltyDeps fail to match `sklearn` with `scikit-learn`?
 
 There are cases, where FawltyDeps may not match imports and obviously related
