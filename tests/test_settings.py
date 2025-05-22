@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Any, Optional, TypeVar, Union
 
 import pytest
-from hypothesis import given, strategies
+from hypothesis import HealthCheck, given, settings, strategies
 
 from fawltydeps.main import build_parser
 from fawltydeps.settings import DEFAULT_IGNORE_UNUSED, Action, OutputFormat, Settings
@@ -90,11 +90,16 @@ four_different_string_groups = strategies.tuples(
 
 
 @given(code_deps_pyenvs_base=four_different_string_groups)
-def test_code_deps_pyenvs_and_base_unequal__raises_error(code_deps_pyenvs_base):
+@settings(suppress_health_check=[HealthCheck.function_scoped_fixture])
+def test_code_deps_pyenvs_and_search_paths_unequal__prints_warning(
+    code_deps_pyenvs_base, caplog
+):
     code, deps, pyenvs, base = code_deps_pyenvs_base
     args = [*base, "--code", *code, "--deps", *deps, "--pyenv", *pyenvs]
-    with pytest.raises(argparse.ArgumentError):
-        run_build_settings(args)
+    caplog.clear()
+    caplog.set_level(logging.WARNING)
+    run_build_settings(args)
+    assert "search_paths will be ignored!" in caplog.text
 
 
 path_options = {  # options (-> settings members) that interact with search_paths

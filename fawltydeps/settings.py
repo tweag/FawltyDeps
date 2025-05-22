@@ -243,13 +243,10 @@ class Settings(BaseSettings):
             deps_paths = args_dict.setdefault("deps", search_paths)
             pyenv_paths = args_dict.setdefault("pyenvs", search_paths)
             if search_paths not in (code_paths, deps_paths, pyenv_paths):
-                msg = (
-                    "All four path specifications (code, deps, pyenvs, and"
-                    "search_paths) have been used. Use at most 3."
-                    f"search_paths={search_paths}, code_paths={code_paths}, "
-                    f"deps_paths={deps_paths}, pyenv_paths={pyenv_paths}"
+                logger.warning(
+                    f"search_paths={search_paths} was given, but then overridden "
+                    " by --code, --deps, and --pyenv. search_paths will be ignored!"
                 )
-                raise argparse.ArgumentError(argument=None, message=msg)
 
         # Use subset of args_dict that directly correspond to fields in Settings
         ret = {opt: arg for opt, arg in args_dict.items() if opt in cls.__fields__}
