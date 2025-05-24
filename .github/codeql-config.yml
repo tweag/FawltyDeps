@@ -1,0 +1,4 @@
+query-filters:
+# We don't like this rule
+- exclude:
+    id: py/empty-except
