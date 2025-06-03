@@ -22,9 +22,12 @@ def version() -> str:
 
 def dirs_between(parent: Path, child: Path) -> Iterator[Path]:
     """Yield directories between 'parent' and 'child', inclusive."""
-    yield child
-    if child != parent:
-        yield from dirs_between(parent, child.parent)
+    if not child.is_relative_to(parent):
+        raise ValueError(f"{child} is not a child of {parent}")
+    for path in [child, *child.parents]:
+        yield path
+        if path == parent:
+            return
 
 
 def hide_dataclass_fields(instance: object, *field_names: str) -> None:
