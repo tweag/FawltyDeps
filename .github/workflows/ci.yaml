@@ -9,5 +9,7 @@ jobs:
     uses: ./.github/workflows/self_test.yaml
   lint:
     uses: ./.github/workflows/lint.yaml
+  codeql:
+    uses: ./.github/workflows/codeql.yaml
   format:
     uses: ./.github/workflows/format.yaml
