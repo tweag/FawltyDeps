@@ -81,12 +81,14 @@ def generate_notebook(
 def write_code_sources(write_tmp_files):
     """A wrapper around write_tmp_files() that return CodeSource objects."""
 
-    def _inner(file_contents: dict[str, str]) -> tuple[Path, list[CodeSource]]:
+    def _inner(
+        file_contents: dict[str, str], base_dir: Path = Path()
+    ) -> tuple[Path, list[CodeSource]]:
         tmp_path = write_tmp_files(file_contents)
         sources = []
         for filepath in file_contents:
             assert filepath.endswith((".py", ".ipynb"))
-            sources.append(CodeSource(tmp_path / filepath, tmp_path))
+            sources.append(CodeSource(tmp_path / filepath, tmp_path / base_dir))
         return tmp_path, sources
 
     return _inner
@@ -500,6 +502,7 @@ class FirstPartyImportTestVector:
     id: str
     sources: dict[str, str]
     expect_imports: list[tuple[str, str, int]] = field(default_factory=list)
+    base_dir: Path = Path()
 
 
 first_party_import_vectors = [
@@ -550,6 +553,15 @@ first_party_import_vectors = [
             "efficientdet/effdet/anchors.py": "class AnchorLabel",
         },
     ),
+    FirstPartyImportTestVector(
+        id="base_dir_not_a_parent_of_source_file",
+        sources={
+            "some_project/main.py": "from lib import support",
+            "lib/support.py": "import numpy",
+        },
+        expect_imports=[("numpy", "lib/support.py", 1)],
+        base_dir=Path("lib/"),
+    ),
 ]
 
 
@@ -557,7 +569,9 @@ first_party_import_vectors = [
     "vector", [pytest.param(v, id=v.id) for v in first_party_import_vectors]
 )
 def test_parse_sources__ignore_first_party_imports(vector, write_code_sources):
-    tmp_path, code_sources = write_code_sources(vector.sources)
+    tmp_path, code_sources = write_code_sources(
+        vector.sources, base_dir=vector.base_dir
+    )
     expect = [
         ParsedImport(
             name=e[0],
