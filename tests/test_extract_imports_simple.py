@@ -2,6 +2,7 @@
 
 import json
 import logging
+from dataclasses import dataclass, field
 from io import BytesIO
 from pathlib import Path
 from textwrap import dedent
@@ -492,73 +493,77 @@ def test_parse_sources__imports__are_extracted_in_order_of_encounter(
     assert list(parse_sources(code_sources)) == expect
 
 
+@dataclass
+class FirstPartyImportTestVector:
+    """Test vectors for verifying that 1st-party imports are ignored by parse_sources()."""
+
+    id: str
+    sources: dict[str, str]
+    expect_imports: list[tuple[str, str, int]] = field(default_factory=list)
+
+
+first_party_import_vectors = [
+    FirstPartyImportTestVector(
+        id="ignore_imports_from_the_same_dir",
+        sources={
+            "my_application.py": "import my_utils",
+            "my_utils.py": "import sys",
+        },
+    ),
+    FirstPartyImportTestVector(
+        id="ignore_self_imports",
+        sources={
+            "my_app/__init__.py": "",
+            "my_app/main.py": "from my_app import utils",
+            "my_app/utils.py": "import numpy",
+        },
+        expect_imports=[("numpy", "my_app/utils.py", 1)],
+    ),
+    FirstPartyImportTestVector(
+        id="ignore_imports_from_the_same_child_dir",
+        sources={
+            "classifier/effnet.py": "from resnet import make_weights_for_balanced_classes",
+            "classifier/resnet.py": "make_weights_for_balanced_classes = lambda x:x",
+        },
+    ),
+    FirstPartyImportTestVector(
+        id="ignore_imports_from_the_same_nested_dir",
+        sources={
+            "dir/classifier/effnet.py": "from resnet import make_weights_for_balanced_classes",
+            "dir/classifier/resnet.py": "make_weights_for_balanced_classes = lambda x:x",
+        },
+    ),
+    FirstPartyImportTestVector(
+        id="ignore_imports_from_submodule",
+        sources={
+            "detr/main.py": "import util.misc as utils",
+            "detr/util/__init__.py": "",
+            "detr/util/misc.py": "a = 1",
+        },
+    ),
+    FirstPartyImportTestVector(
+        id="ignore_imports_from_uncle",
+        sources={
+            "efficientdet/effdet/data/loader.py": "from effdet.anchors import AnchorLabeler",
+            "efficientdet/effdet/data/__init__.py": "",
+            "efficientdet/effdet/__init__.py": "",
+            "efficientdet/effdet/anchors.py": "class AnchorLabel",
+        },
+    ),
+]
+
+
 @pytest.mark.parametrize(
-    ("code", "expect_data"),
-    [
-        pytest.param(
-            {
-                "my_application.py": "import my_utils",
-                "my_utils.py": "import sys",
-            },
-            [],
-            id="__ignore_imports_from_the_same_dir",
-        ),
-        pytest.param(
-            {
-                "my_app/__init__.py": "",
-                "my_app/main.py": "from my_app import utils",
-                "my_app/utils.py": "import numpy",
-            },
-            [("numpy", "my_app/utils.py", 1)],
-            id="__ignore_self_imports",
-        ),
-        pytest.param(
-            {
-                "classifier/effnet.py": "from resnet import make_weights_for_balanced_classes",
-                "classifier/resnet.py": "make_weights_for_balanced_classes = lambda x:x",
-            },
-            [],
-            id="__ignore_imports_from_the_same_child_dir",
-        ),
-        pytest.param(
-            {
-                "dir/classifier/effnet.py": "from resnet import make_weights_for_balanced_classes",
-                "dir/classifier/resnet.py": "make_weights_for_balanced_classes = lambda x:x",
-            },
-            [],
-            id="__ignore_imports_from_the_same_nested_dir",
-        ),
-        pytest.param(
-            {
-                "detr/main.py": "import util.misc as utils",
-                "detr/util/__init__.py": "",
-                "detr/util/misc.py": "a = 1",
-            },
-            [],
-            id="__ignore_imports_from_submodule",
-        ),
-        pytest.param(
-            {
-                "efficientdet/effdet/data/loader.py": "from effdet.anchors import AnchorLabeler",
-                "efficientdet/effdet/data/__init__.py": "",
-                "efficientdet/effdet/__init__.py": "",
-                "efficientdet/effdet/anchors.py": "class AnchorLabel",
-            },
-            [],
-            id="__ignore_imports_from_uncle",
-        ),
-    ],
+    "vector", [pytest.param(v, id=v.id) for v in first_party_import_vectors]
 )
-def test_parse_sources__ignore_first_party_imports(
-    code, expect_data, write_code_sources
-):
-    tmp_path, code_sources = write_code_sources(code)
+def test_parse_sources__ignore_first_party_imports(vector, write_code_sources):
+    tmp_path, code_sources = write_code_sources(vector.sources)
     expect = [
         ParsedImport(
             name=e[0],
             source=Location(path=tmp_path / e[1], lineno=e[2]),
         )
-        for e in expect_data
+        for e in vector.expect_imports
     ]
 
     assert list(parse_sources(code_sources)) == expect
