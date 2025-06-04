@@ -4,6 +4,7 @@ import logging
 import sys
 from collections.abc import Iterator
 from dataclasses import is_dataclass
+from itertools import takewhile
 from pathlib import Path
 from typing import TypeVar
 
@@ -21,13 +22,11 @@ def version() -> str:
 
 
 def dirs_between(parent: Path, child: Path) -> Iterator[Path]:
-    """Yield directories between 'parent' and 'child', inclusive."""
-    if not child.is_relative_to(parent):
-        raise ValueError(f"{child} is not a child of {parent}")
-    for path in [child, *child.parents]:
-        yield path
-        if path == parent:
-            return
+    """Return directories between 'parent' and 'child', inclusive.
+
+    Return nothing if 'parent' is not a parent of `child'.
+    """
+    return takewhile(lambda p: p.is_relative_to(parent), [child, *child.parents])
 
 
 def hide_dataclass_fields(instance: object, *field_names: str) -> None:

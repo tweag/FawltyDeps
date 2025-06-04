@@ -190,10 +190,7 @@ def parse_source(
 
     local_context = None
     if src.base_dir is not None:
-        try:
-            src_paths = tuple(dirs_between(src.base_dir, src.path.parent))
-        except ValueError:  # src_base_dir is not a parent of src.path
-            src_paths = ()
+        src_paths = tuple(dirs_between(src.base_dir, src.path.parent))
         local_context = make_isort_config(path=src.base_dir, src_paths=src_paths)
 
     if src.path.suffix == ".py":
