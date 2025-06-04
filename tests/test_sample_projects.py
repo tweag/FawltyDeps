@@ -68,7 +68,7 @@ class Experiment(BaseExperiment):
     deps: list[str]
     pyenvs: Optional[list[str]]
     install_deps: bool
-    exclude: list[str]
+    exclude: Optional[list[str]]
     exclude_from: Optional[list[str]]
     base_dir: Optional[str]
 
