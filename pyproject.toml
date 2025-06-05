@@ -12,12 +12,14 @@ authors = [
     { name = "Vince Reuter", email = "vince.reuter@tweag.io" },
     { name = "Zhihan Zhang", email = "zhihan.zhang@tweag.io" },
     { name = "Richard Bullington-McGuire", email = "richard@moduscreate.com" },
+    { name = "Guillaume Maudoux", email = "guillaume.maudoux@moduscreate.com" },
 ]
 maintainers = [
     { name = "Johan Herland", email = "johan.herland@tweag.io" },
     { name = "Maria Knorps", email = "maria.knorps@tweag.io" },
     { name = "Zhihan Zhang", email = "zhihan.zhang@tweag.io" },
     { name = "Richard Bullington-McGuire", email = "richard@moduscreate.com" },
+    { name = "Guillaume Maudoux", email = "guillaume.maudoux@moduscreate.com" },
 ]
 keywords = [ "dependencies", "linters", "packaging" ]
 classifiers = [
