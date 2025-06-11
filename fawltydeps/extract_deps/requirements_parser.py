@@ -27,7 +27,7 @@ def parse_requirements_txt(path: Path) -> Iterator[DeclaredDependency]:
     source = Location(path)
     parsed = RequirementsFile.from_file(path)
     for dep in parsed.requirements:
-        if dep.name:
+        if dep.name:  # This transparently skips pip options like '-e .'
             yield DeclaredDependency(dep.name, source)
 
     if parsed.invalid_lines and logger.isEnabledFor(logging.DEBUG):

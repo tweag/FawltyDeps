@@ -218,17 +218,40 @@ from fawltydeps.types import DeclaredDependency, Location
             ],
             id="cartopy_example",
         ),
+        pytest.param(
+            """\
+            name: myenv
+            channels:
+              - conda-forge
+            dependencies:
+              # Core Python and conda packages
+              - python=3.12
+              - pip
+              - setuptools
+
+              # Pip packages
+              - pip:
+                - -e ./
+                - -e .
+                - --editable .
+                - --editable=.
+            """,
+            ["pip", "setuptools"],
+            id="ignore_editable_self_dependency",
+        ),
     ],
 )
 def test_parse_environment_yml__wellformed_dependencies__yields_dependencies(
-    write_tmp_files, environment_yml, expected_deps
+    write_tmp_files, environment_yml, expected_deps, caplog
 ):
     tmp_path = write_tmp_files({"environment.yml": environment_yml})
     path = tmp_path / "environment.yml"
 
+    caplog.set_level(logging.ERROR)
     result = list(parse_environment_yml(path))
     expected = [DeclaredDependency(dep, Location(path)) for dep in expected_deps]
     assert result == expected
+    assert caplog.text == ""  # No error messages
 
 
 @dataclass

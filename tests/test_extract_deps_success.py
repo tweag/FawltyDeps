@@ -58,10 +58,12 @@ from .utils import (
         pytest.param(
             """\
             -e .
+            --editable .
+            --editable=.
             click >=1.2
             """,
             ["click"],
-            id="requirements_with_option__ignores_option",
+            id="requirements_with_options__ignores_options",
         ),
         pytest.param(
             """\
