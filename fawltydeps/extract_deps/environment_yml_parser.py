@@ -64,7 +64,15 @@ def parse_environment_yml_deps(
                 yield parse_item(dep_item, source)
             except ValueError as e:
                 # InvalidCondaRequirement or packaging.requirements.InvalidRequirement
-                logger.error(f"{error_msg} {e}")
+                # Skip editable self-dependencies silently:
+                if dep_item.removesuffix("/") in {
+                    "-e .",
+                    "--editable .",
+                    "--editable=.",
+                }:
+                    pass
+                else:
+                    logger.error(f"{error_msg} {e}")
         elif isinstance(dep_item, dict) and len(dep_item) == 1 and "pip" in dep_item:
             pip_deps = dep_item.get("pip")
             yield from parse_environment_yml_deps(
