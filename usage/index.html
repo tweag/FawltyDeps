@@ -1,0 +1,1038 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="FawltyDeps: A Python Dependency Checker">
+      
+      
+      
+      
+        <link rel="prev" href="../installation/">
+      
+      
+        <link rel="next" href="../configuration/">
+      
+      
+      <link rel="icon" href="../material/check-circle">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.14">
+    
+    
+      
+        <title>Usage - FawltyDeps</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.342714a4.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#usage" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="FawltyDeps" class="md-header__button md-logo" aria-label="FawltyDeps" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2m-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            FawltyDeps
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Usage
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m14.3 16-.7-2h-3.2l-.7 2H7.8L11 7h2l3.2 9zM20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12zm-9.15 3.96h2.3L12 9z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/tweag/fawltydeps" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    tweag/FawltyDeps
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="FawltyDeps" class="md-nav__button md-logo" aria-label="FawltyDeps" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2m-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8z"/></svg>
+
+    </a>
+    FawltyDeps
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/tweag/fawltydeps" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    tweag/FawltyDeps
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Installation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Usage
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Usage
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#available-actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Available Actions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#where-to-find-code-and-dependency-declarations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Where to find code and dependency declarations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Where to find code and dependency declarations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#where-to-find-python-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      Where to find Python code
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Where to find Python code">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#correctly-identifying-1st-vs-3rd-party-imports" class="md-nav__link">
+    <span class="md-ellipsis">
+      Correctly identifying 1st- vs. 3rd-party imports
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#where-to-find-declared-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Where to find declared dependencies
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-to-match-import-statements-with-declared-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      How to match import statements with declared dependencies
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#excluding-paths" class="md-nav__link">
+    <span class="md-ellipsis">
+      Excluding paths
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ignoring-irrelevant-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ignoring irrelevant results
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#output-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      Output formats
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#more-help" class="md-nav__link">
+    <span class="md-ellipsis">
+      More help
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Configuration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    How it works
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            How it works
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../explanation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Explanation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CodeDesign/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Code Design
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DesignDoc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Initial Design Document
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../how_to_guides/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    How To Guides
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FAQ/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    FAQ
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Contributing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#available-actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Available Actions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#where-to-find-code-and-dependency-declarations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Where to find code and dependency declarations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Where to find code and dependency declarations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#where-to-find-python-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      Where to find Python code
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Where to find Python code">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#correctly-identifying-1st-vs-3rd-party-imports" class="md-nav__link">
+    <span class="md-ellipsis">
+      Correctly identifying 1st- vs. 3rd-party imports
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#where-to-find-declared-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Where to find declared dependencies
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-to-match-import-statements-with-declared-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      How to match import statements with declared dependencies
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#excluding-paths" class="md-nav__link">
+    <span class="md-ellipsis">
+      Excluding paths
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ignoring-irrelevant-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ignoring irrelevant results
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#output-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      Output formats
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#more-help" class="md-nav__link">
+    <span class="md-ellipsis">
+      More help
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h1>
+<p>To check the project in the current directory run:</p>
+<pre><code class="language-sh">fawltydeps
+</code></pre>
+<p>This will find imports in all the Python code under the current directory,
+extract dependencies declared by your project, and then report
+<a href="../explanation/#key-concepts"><em>undeclared</em> and <em>unused</em> dependencies</a>.</p>
+<h2 id="available-actions">Available Actions<a class="headerlink" href="#available-actions" title="Permanent link">&para;</a></h2>
+<p>FawltyDeps provides the following options for controlling what actions to perform. Only
+one of these can be used at a time:</p>
+<ul>
+<li><code>--check</code>: Report both undeclared and unused dependencies</li>
+<li><code>--check-undeclared</code>: Report only undeclared dependencies</li>
+<li><code>--check-unused</code>: Report only unused dependencies</li>
+<li><code>--list-imports</code>: List third-party imports extracted from the project</li>
+<li><code>--list-deps</code>: List declared dependencies extracted from the project</li>
+<li><code>--list-sources</code>: List files/directories from which imports, declared
+  dependencies and installed packages would be extracted</li>
+</ul>
+<p>When none of these are specified, the default action is <code>--check</code>.</p>
+<h2 id="where-to-find-code-and-dependency-declarations">Where to find code and dependency declarations<a class="headerlink" href="#where-to-find-code-and-dependency-declarations" title="Permanent link">&para;</a></h2>
+<p>By default, FawltyDeps will look for Python code (<code>*.py</code> and <code>*.ipynb</code>) and
+dependency declarations (see list of supported files below) under the current
+directory. If you want FawltyDeps to look elsewhere, you can pass one or more
+directories (aka <code>search_paths</code>) as positional arguments:</p>
+<pre><code class="language-sh">fawltydeps my_project/
+</code></pre>
+<p>If you want to separately declare the source of the code and the source of the
+dependencies, you may use the <code>--code</code> and <code>--deps</code> options documented in the
+next section. In short, giving the <code>search_paths</code> positional argument is
+equivalent to passing both the <code>--code</code> and the <code>--deps</code> options, like this:</p>
+<pre><code class="language-sh">fawltydeps --code my_project/ --deps my_project/
+</code></pre>
+<h3 id="where-to-find-python-code">Where to find Python code<a class="headerlink" href="#where-to-find-python-code" title="Permanent link">&para;</a></h3>
+<p>The <code>--code</code> option tells FawltyDeps where to find the Python code to parse for
+<code>import</code> statements. You can pass any number of these:</p>
+<ul>
+<li>a single file: Either a Python file (<code>*.py</code>) or a Jupyter Notebook (<code>*.ipynb</code>)</li>
+<li>a directory: FawltyDeps will find all Python files and Jupyter notebooks under this directory.</li>
+<li><code>-</code>: Passing a single dash (<code>--code=-</code>) tells FawltyDeps to read Python code
+  from stdin.</li>
+</ul>
+<p>If no <code>--code</code> option is passed, FawltyDeps will find all Python code under the
+<code>search_paths</code>, if given, or the current directory (i.e. same as <code>--code=.</code>).
+To include both code from stdin (<code>import foo</code>) and a file path (<code>file.py</code>), use:</p>
+<pre><code class="language-sh">echo &quot;import foo&quot; | fawltydeps --list-imports --code - file.py
+</code></pre>
+<p>At any time, if you want to see where FawltyDeps is looking for Python code,
+you can use the <code>--list-sources --detailed</code> options.</p>
+<h4 id="correctly-identifying-1st-vs-3rd-party-imports">Correctly identifying 1st- vs. 3rd-party imports<a class="headerlink" href="#correctly-identifying-1st-vs-3rd-party-imports" title="Permanent link">&para;</a></h4>
+<p>In order for FawltyDeps to tell whether an <code>import</code> statement in your code
+refers or a 1st-party module (i.e. part of this project), or a 3rd-party
+dependency, it needs a <em>base directory</em>, i.e. a directory where 1st-party
+imports can be found.</p>
+<p>By default, FawltyDeps deduces this from the passed <code>--code</code> (or <code>search_paths</code>)
+arguments, but for complex project structures, you might have to use the
+<code>--base-dir=&lt;dir&gt;</code> option to tell FawltyDeps which directory to use. This option
+may be used once to determine the base directory for <em>all</em> code being analyzed.</p>
+<h3 id="where-to-find-declared-dependencies">Where to find declared dependencies<a class="headerlink" href="#where-to-find-declared-dependencies" title="Permanent link">&para;</a></h3>
+<p>The <code>--deps</code> option tells FawltyDeps where to look for your project's declared
+dependencies. A number of file formats are supported:</p>
+<ul>
+<li><code>*requirements*.txt</code> and <code>*requirements*.in</code></li>
+<li><code>pyproject.toml</code> (following PEP 621 or Poetry conventions)</li>
+<li><code>setup.py</code> (only limited support for simple files with a single <code>setup()</code>
+  call and no computation involved for setting the <code>install_requires</code> and
+  <code>extras_require</code> arguments)</li>
+<li><code>setup.cfg</code></li>
+<li><code>pixi.toml</code></li>
+<li><code>environment.yml</code></li>
+</ul>
+<p>The <code>--deps</code> option accepts a space-separated list of files or directories.
+Each file will be parsed for declared dependencies; each directory will
+be searched, parsing all of the supported files (see the above list) found
+within. You would typically want to pass individual files, if you want to
+be explicit about where to find the declared dependencies.</p>
+<p>If no <code>--deps</code> option is passed, FawltyDeps will look for the above files under
+the <code>search_paths</code>, if given, or the current directory (i.e. same as <code>--deps .</code>).</p>
+<h3 id="how-to-match-import-statements-with-declared-dependencies">How to match <code>import</code> statements with declared dependencies<a class="headerlink" href="#how-to-match-import-statements-with-declared-dependencies" title="Permanent link">&para;</a></h3>
+<p>When FawltyDeps analyzes undeclared and unused dependencies, it needs to match
+<code>import</code> statements in your code with corresponding package dependencies
+declared in your project configuration. We support the following options to help this process:</p>
+<ul>
+<li><code>--pyenv</code>: Where to search for Python environments (e.g. virtualenvs) that have project dependencies installed. Finding installed dependencies is the best way to correctly match import names  and declared dependencies. If this is not given, the project directories will be searched for Python environments.</li>
+<li><code>--custom-mapping-file</code>: A TOML file containing mapping of dependencies to import names defined by the user. When provided, this mapping takes precedence over looking through installed packages for a match. This is a power user feature for when you want full control of how FawltyDeps matches import names and package names.</li>
+<li><code>--install-deps</code>: Allow FawltyDeps to auto-install declared dependencies into a separate temporary virtualenv to discover the imports they expose. This is potentially expensive, but it allows FawltyDeps to provide a good analysis when there is no existing Python environment with project dependencies installed.</li>
+</ul>
+<p>For more details about the process of matching <code>import</code> statements to declared dependencies, please see the <a href="../explanation/#resolving-dependencies">Resolving dependencies section in Explanation</a>.</p>
+<h2 id="excluding-paths">Excluding paths<a class="headerlink" href="#excluding-paths" title="Permanent link">&para;</a></h2>
+<p>If you want FawltyDeps to exclude parts of your source tree when loooking for
+code, dependency declarations, or Python environments, then you can use the
+<code>--exclude</code> option to specify path patterns to exclude, e.g. the following
+command will skip everything under <code>tests/</code>:</p>
+<pre><code class="language-sh">fawltydeps --exclude tests/
+</code></pre>
+<p>The format of the exclude patterns is the same as used by <code>.gitignore</code> files,
+<a href="https://git-scm.com/docs/gitignore#_pattern_format">see here for a full description</a>.</p>
+<p>When the <code>--exclude</code> option is not specified, its default value is <code>".*"</code>, which
+matches all paths that start with a dot (<code>.</code>), aka. "hidden" paths. In the above
+example, if you want to exclude both hidden paths, and everything under
+<code>tests/</code>, then instead use:</p>
+<pre><code class="language-sh">fawltydeps --exclude tests/ &quot;.*&quot;
+</code></pre>
+<p>(The extra quotes here are needed to prevent the shell from interpreting and
+replacing the <code>*</code> wildcard.)</p>
+<p>You can also point to exclude patterns stored in a file, with the
+<code>--exclude-from</code> option. E.g. to read exclude patterns from <code>./my_excludes.txt</code>:</p>
+<pre><code class="language-sh">fawltydeps --exclude-from my_excludes.txt
+</code></pre>
+<p>Exclude patterns have lower priority than any paths you pass directly on the
+command line, e.g. in this command:</p>
+<pre><code class="language-sh">fawltydeps --code my_file.py --exclude my_file.py
+</code></pre>
+<p>the <code>--code</code> options "wins" (i.e. imports in <code>my_file.py</code> will be found); the
+<code>--exclude</code> option only takes affect when traversing directories to look for
+more files. E.g. use this to find code inside <code>my_dir</code>, but skip Jupyter
+notebooks:</p>
+<pre><code class="language-sh">fawltydeps --code my_dir --exclude &quot;*.ipynb&quot;
+</code></pre>
+<h2 id="ignoring-irrelevant-results">Ignoring irrelevant results<a class="headerlink" href="#ignoring-irrelevant-results" title="Permanent link">&para;</a></h2>
+<p>There may be <code>import</code> statements in your code that should not be considered an
+undeclared dependency. This might happen if you for example do a conditional
+<code>import</code> with a <code>try: ... except ImportError: ...</code> block (or similar).
+FawltyDeps is not able to recognize whether these dependencies should have been
+declared or not, but you can ask for them to be ignored with the
+<code>--ignore-undeclared</code> option, for example:
+<code>--ignore-undeclared some_module some_other_module</code></p>
+<p>Conversely, there may be dependencies that you have declared without intending
+to <code>import</code> them. This is often the case for developer tools like Black or Mypy
+that are part of your project's development environment.
+We've introduced a <code>DEFAULT_IGNORE_UNUSED</code> list, which includes various
+categories of commonly used development tools and dependencies.
+FawltyDeps can automatically ignore these dependencies when checking for unused
+imports. For the complete list, please see the <code>DEFAULT_IGNORE_UNUSED</code>
+variable in the <code>fawltydeps/settings.py</code> file
+in the repository. If you have additional dependencies that you want to exclude
+from the check for unused imports, you can use the <code>--ignore-unused</code> option
+to customize the ignore list. By providing your own list of dependencies with
+this option, you can effectively overwrite the default list. For example:
+<code>--ignore-unused black mypy some_other_module</code></p>
+<p>Both <code>--ignore-undeclared</code> and <code>--ignore-unused</code> support use of simple
+<code>*</code>-wildcards to ignore multiple dependencies, for example
+<code>--ignore-unused types-*</code> to ignore type stubs dependencies, or
+<code>--ignore-unused *pre-commit*</code> to ignore the pre-commit tool and associated
+addons.</p>
+<h2 id="output-formats">Output formats<a class="headerlink" href="#output-formats" title="Permanent link">&para;</a></h2>
+<p>The default output from FawltyDeps is a summary outlining the relevant
+dependencies found (according to the selected actions).
+However you can also ask for more information from FawltyDeps:</p>
+<ul>
+<li><code>--summary</code>: Default (human-readable) summary output</li>
+<li><code>--detailed</code>: Longer (human-readable) output that includes the location of
+  the relevant dependencies. For undeclared dependencies, it also includes
+  names of installed packages that happen to provide this dependency.</li>
+<li><code>--json</code>: Verbose JSON-formatted output for other tools to consume and
+  process further.</li>
+</ul>
+<p>Only one of these options can be used at a time.</p>
+<h2 id="more-help">More help<a class="headerlink" href="#more-help" title="Permanent link">&para;</a></h2>
+<p>Run <code>fawltydeps --help</code> to get the full list of available options.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["search.suggest"], "search": "../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.13a4f30d.min.js"></script>
+      
+    
+  </body>
+</html>

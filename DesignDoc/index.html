@@ -1,0 +1,1443 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="FawltyDeps: A Python Dependency Checker">
+      
+      
+      
+      
+        <link rel="prev" href="../CodeDesign/">
+      
+      
+        <link rel="next" href="../how_to_guides/">
+      
+      
+      <link rel="icon" href="../material/check-circle">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.14">
+    
+    
+      
+        <title>Initial Design Document - FawltyDeps</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.342714a4.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#fawltydeps" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="FawltyDeps" class="md-header__button md-logo" aria-label="FawltyDeps" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2m-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            FawltyDeps
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Initial Design Document
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m14.3 16-.7-2h-3.2l-.7 2H7.8L11 7h2l3.2 9zM20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12zm-9.15 3.96h2.3L12 9z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/tweag/fawltydeps" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    tweag/FawltyDeps
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="FawltyDeps" class="md-nav__button md-logo" aria-label="FawltyDeps" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2m-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8z"/></svg>
+
+    </a>
+    FawltyDeps
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/tweag/fawltydeps" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    tweag/FawltyDeps
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Installation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Usage
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Configuration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    How it works
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            How it works
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../explanation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Explanation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CodeDesign/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Code Design
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Initial Design Document
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Initial Design Document
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#design-document" class="md-nav__link">
+    <span class="md-ellipsis">
+      Design document
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-introduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Introduction
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Introduction">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scope-and-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scope and requirements
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-motivation-and-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Motivation and usage
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Motivation and usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-user-personas" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.1 User personas
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#22-user-stories" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.2 User stories
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-background" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Background
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Background">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-parsing-imports" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.1 Parsing imports
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.1 Parsing imports">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#types-of-imports" class="md-nav__link">
+    <span class="md-ellipsis">
+      Types of imports
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#detecting-imports-in-a-python-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      Detecting imports in a Python module
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-translating-imports-to-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.2 Translating imports to dependencies
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-extracting-a-packages-declared-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.3 Extracting a package’s declared dependencies
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.3 Extracting a package’s declared dependencies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#declaring-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Declaring dependencies
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#extracting-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Extracting dependencies
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-extracting-transitive-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.4 Extracting transitive dependencies
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-translating-dependencies-to-imports" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.5 Translating dependencies to imports
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-proposed-solution" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Proposed solution
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Proposed solution">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-solution-outline" class="md-nav__link">
+    <span class="md-ellipsis">
+      4.1. Solution outline
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-possible-domain-mappings" class="md-nav__link">
+    <span class="md-ellipsis">
+      4.2. Possible domain mappings
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#421-identity-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      4.2.1 Identity mapping
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.2.1 Identity mapping">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#422-import-to-dependency-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      4.2.2 Import to dependency mapping
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#423-dependency-to-import-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      4.2.3 Dependency to import mapping
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../how_to_guides/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    How To Guides
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FAQ/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    FAQ
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Contributing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#design-document" class="md-nav__link">
+    <span class="md-ellipsis">
+      Design document
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-introduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Introduction
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Introduction">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scope-and-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scope and requirements
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-motivation-and-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Motivation and usage
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Motivation and usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-user-personas" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.1 User personas
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#22-user-stories" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.2 User stories
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-background" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Background
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Background">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-parsing-imports" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.1 Parsing imports
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.1 Parsing imports">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#types-of-imports" class="md-nav__link">
+    <span class="md-ellipsis">
+      Types of imports
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#detecting-imports-in-a-python-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      Detecting imports in a Python module
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-translating-imports-to-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.2 Translating imports to dependencies
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-extracting-a-packages-declared-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.3 Extracting a package’s declared dependencies
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.3 Extracting a package’s declared dependencies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#declaring-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Declaring dependencies
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#extracting-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Extracting dependencies
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-extracting-transitive-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.4 Extracting transitive dependencies
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-translating-dependencies-to-imports" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.5 Translating dependencies to imports
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-proposed-solution" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Proposed solution
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Proposed solution">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-solution-outline" class="md-nav__link">
+    <span class="md-ellipsis">
+      4.1. Solution outline
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-possible-domain-mappings" class="md-nav__link">
+    <span class="md-ellipsis">
+      4.2. Possible domain mappings
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#421-identity-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      4.2.1 Identity mapping
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.2.1 Identity mapping">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#422-import-to-dependency-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      4.2.2 Import to dependency mapping
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#423-dependency-to-import-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      4.2.3 Dependency to import mapping
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="fawltydeps">FawltyDeps<a class="headerlink" href="#fawltydeps" title="Permanent link">&para;</a></h1>
+<p>A dependency checker for Python</p>
+<h2 id="design-document">Design document<a class="headerlink" href="#design-document" title="Permanent link">&para;</a></h2>
+<p>Authors: <a href="mailto:nour.elmawass@tweag.io">Nour El Mawass</a>, <a href="mailto:maria.knorps@tweag.io">Maria Knorps</a></p>
+<p>Created: 12 Nov. 2022</p>
+<h2 id="1-introduction">1. Introduction<a class="headerlink" href="#1-introduction" title="Permanent link">&para;</a></h2>
+<p>In Python, required packages (dependencies) are declared separately from their usage (imports within the code). There is no straightforward way to check if all imports in the code are declared as dependencies.</p>
+<p>It is a common problem that import statements refer to packages that were installed manually on the programmer’s computer without being explicitly added to the requirements list.</p>
+<p>Whether it’s a personal library, an application to be deployed, or a library that will be distributed for others to use, making sure that a project’s imported packages are all declared as dependencies is vital for the correct packaging of that project. This will ensure both, reproducibility in other build environments and usability by other prospective users.</p>
+<p>This document will walk the reader through the different intricacies of Python packaging, and propose a simple modular solution to the non-declared dependencies problems. Many of the terms thrown around (such as “library”, “package”, and “dependency”) are overloaded, so we make sure to define and contrast each of those.</p>
+<p>To the best of our knowledge, there does not currently exist a solution that would effectively check if a project’s declared dependencies match its imported libraries. Different aspects of the problem (e.g. extracting imported packages from Python files, generating a list of requirements, parsing transitive dependencies, validating dependencies’ versions compatibility) have been explored by other contributors. We describe existing libraries and approaches, and where relevant, we indicate those that we adopted or used.</p>
+<p>For our prototype, we propose a command line tool. Given a Python project, this tool returns a list of unmatched imports and dependencies. A command line tool is versatile and adapted to the different usage scenarios described below. It can be both part of a manual development process or automated verification.</p>
+<p>A later iteration of the project could explore how to boost the usability and visibility of the implemented tool by:</p>
+<ul>
+<li>Wrapping it as a GitHub CI action</li>
+<li>Including it in an existing Python Linter</li>
+<li>Developing a VS code / Emacs extension</li>
+</ul>
+<p>It has been indicated to us by a couple of Tweag engineers (e.g. Daniel Baker) that this could be a useful tool for Python Nix packaging. We have yet to explore how that could be the case.</p>
+<h3 id="scope-and-requirements">Scope and requirements<a class="headerlink" href="#scope-and-requirements" title="Permanent link">&para;</a></h3>
+<p>This project’s goal is to check whether a Python project has declared all the dependencies its code is importing.</p>
+<p>The check has different levels of assurance: a name match, package existence and package match. Proof-of-concept of FawltyDeps will address the first two.</p>
+<p>It is outside the scope of this work to:</p>
+<ul>
+<li>Automatically generate requirements file (as in <code>pipreqs</code> and <code>pigar</code>).</li>
+<li>Check that a solution to the declared requirements version exists (as poetry does).</li>
+<li>Complete a list of declared dependencies with transitive dependencies (as in <code>pip-compile</code>).</li>
+<li>Check that a declared dependency is the one that should be used (exposes not only modules, but particular functions and objects used).</li>
+</ul>
+<p>Despite initially wanting this to be a stateless checker, the intricacies of Python packaging make it impossible to verify if the dependencies are declared without gathering information from beyond the project’s code base (be it the project’s local environment or PyPI or GitHub repositories). The state of information in these repositories may evolve over time.</p>
+<p>The checker will output an error if an import does not correspond to a declared dependency (and a warning if a dependency is declared but unused).</p>
+<p>The remainder of this document is organized as follows. Section 2 motivates the need for the FawltyDeps library and possible usage of the library through use cases and user personas. Section 3 provides a background on the Python’s imports ecosystem and may be skipped and consulted on a per-need basis. Solutions are presented, compared and contrasted in section 4. The landscape of existing work is charted in section 5 and existing contributions are compared to what FawltyDeps is attempting to achieve. Future work and enhancements are discussed in section 6.</p>
+<h2 id="2-motivation-and-usage">2. Motivation and usage<a class="headerlink" href="#2-motivation-and-usage" title="Permanent link">&para;</a></h2>
+<p>There are 2 main use cases where it is useful to check that declared dependencies are complete. Both cases involve a need to run a library in an environment different from the one it was developed in. The first case is an application that needs to be deployed in a reproducible manner. The second is a library shared with other users that also needs to be usable in different environments and in different settings.</p>
+<p>Expanding from this initial motivation, we present below different user personas and use cases that would benefit from using a dependency checker.</p>
+<h3 id="21-user-personas">2.1 User personas<a class="headerlink" href="#21-user-personas" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Annie Black</strong></li>
+</ul>
+<p><em>Occupation</em>: Data Scientist \
+   <em>Goal</em>: Share her Jupyter notebook on GitHub (with a <code>requirements.txt</code> file) for other people to use.\
+   <em>Frustrations</em>: Non-repeatable project setup with missing dependencies.</p>
+<ul>
+<li><strong>Jason Blue</strong></li>
+</ul>
+<p><em>Occupation</em>: Computer science student \
+   <em>Goal</em>: Publish the Python library he implemented on PyPI.\
+   <em>Frustrations</em>: Users complain about missing imports when installing the library.</p>
+<ul>
+<li><strong>Patrick Magenta</strong></li>
+</ul>
+<p><em>Occupation</em>: Computational biologist \
+   <em>Goal</em>: Contribute to an open-source project.\
+   <em>Frustrations</em>: Non-repeatable project setup with missing dependencies.</p>
+<ul>
+<li><strong>Deborah Yellow</strong></li>
+</ul>
+<p><em>Occupation</em>: Data engineer \
+   <em>Goal</em>: Productionize ML pipelines developed by data scientists.\
+   <em>Frustrations</em>: CI failing on missing dependencies.</p>
+<ul>
+<li><strong>Andrew Cyan</strong></li>
+</ul>
+<p><em>Occupation</em>: Nix developer \
+   <em>Goal</em>: Package python dependencies.\
+   <em>Frustrations</em>: Inability to build package due to dependencies missing in expected files (pyproject.toml, requirements.txt, setup.py).</p>
+<ul>
+<li><strong>Francis White</strong></li>
+</ul>
+<p><em>Occupation</em>: Software developer’s experience engineer \
+   <em>Goal</em>: Improve developers' productivity.\
+   <em>Frustrations</em>: Developers waste time on finding errors in CI.</p>
+<h2 id="22-user-stories">2.2 User stories<a class="headerlink" href="#22-user-stories" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Deborah wants to rerun another developer’s package. She would like to know if all dependencies are in place before she sends it to a time-consuming CI.</li>
+<li>Patrick installed Hail[^6], which installs <code>requests</code> as a dependency. When he wrote a REST API, he forgot to add <code>requests</code> to his <code>requirements.txt</code>. The code ran correctly, but an explicit declaration of the dependency was lacking until Andrew pointed it out. Patrick would like to find those problems automatically.</li>
+<li>Andrew recently added testbook[^7] to <code>nixpkgs</code> and the <code>requirements.txt</code> file only listed two dependencies. When he tried to build it, there were four additional dependencies needed to run the tests. He would like all his dependencies explicitly declared.</li>
+<li>Francis observed that developers were using <code>pandas</code> installation from the Python packages located systemwide in Ubuntu. When the other team started working on the code, they had tests failing due to the lack of <code>pandas</code> library. Francis would like to automate checks of missing dependencies to ensure a smooth transfer of projects between teams.</li>
+<li>Francis observed that multiple times in the last week developers were using <code>numpy</code> in the code, but did not explicitly state this in requirements, as <code>pandas</code> installs <code>numpy</code> anyway. This led to multiple problems with the <code>numpy</code> version, which did not support some newly used features. Francis would like to have a reproducible and explicit environment declaration.</li>
+<li>Annie reran her package in a different environment and had to fill in missing packages signaled by import errors. Annie would like to catch problems with missing dependencies earlier and get a list of all missing packages in one run.</li>
+<li>Jason Publishes his package on PyPI. He wants people who use his package not to get discouraged from using it by missing dependencies. Jason wants to make sure that there is no dependencies missing.</li>
+</ul>
+<h2 id="3-background">3. Background<a class="headerlink" href="#3-background" title="Permanent link">&para;</a></h2>
+<p>This section provides the technical background needed to understand the Python imports and dependencies system. Reading it is recommended but is not required to understand the proposed solution. You can therefore skip to Section 4 and come back to this section if needed.</p>
+<p>To avoid confusion and term overloading, let us start by defining some key terms. We will use the example of the <code>google_api_python_client</code>library on PyPI. This library exposes multiple packages (<code>apiclient</code>, <code>googleapiclient</code>,<code>googleapiclient/discovery_cache</code>), which can be imported in the Python code.</p>
+<ul>
+<li>
+<p><strong>A package</strong> is a collection of Python modules, having an <code>__init.py__</code> file.</p>
+</li>
+<li>
+<p><strong>A library</strong> exposes one or more packages (as defined in the packages field in setup.py or pyproject.toml, e.g. <code>google_api_python_client</code> exposes <code>apiclient</code>, <code>googleapiclient</code>, <code>googleapiclient/discovery_cache</code>. A library is commonly installed from PyPI.</p>
+</li>
+<li>
+<p><strong>Import name</strong> is the name used to import the package in the Python source code (e.g. <code>import googleapiclient</code>).</p>
+</li>
+<li>
+<p><strong>Dependency name</strong> is the name of the distributed library (e.g. <code>google_api_python_client</code>).</p>
+</li>
+<li>
+<p><strong>Declared dependency</strong> is any library that is declared to be used by your code as per the methods outlined in section 3.3.</p>
+</li>
+<li>
+<p><strong>Direct dependency</strong> is any external library that exposes a package that is needed as a direct result of an <code>import</code> in your code. A direct dependency that is not declared (as outlined in section 3.3) is considered an error by FawltyDeps (i.e. this is the primary thing FawltyDeps is looking for.)</p>
+</li>
+<li>
+<p><strong>Transitive (indirect) dependency</strong> is a dependency of your dependency. A dependency can be both direct and transitive (e.g. your code can <code>import numpy</code> and also <code>import pandas</code>, which itself depends on <code>numpy</code>). In these cases the concerns of a direct dependency are more important (e.g. you should always declare a direct dependency even if it also happens to be an indirect dependency).</p>
+</li>
+</ul>
+<h3 id="31-parsing-imports">3.1 Parsing imports<a class="headerlink" href="#31-parsing-imports" title="Permanent link">&para;</a></h3>
+<p>In the Python source code, modules may be imported in different places of the code. While it’s good practice to follow <a href="https://peps.python.org/pep-0008/#imports">PEP-8</a> suggestions, the Python code we are to check may not be following those rules. Imports may be placed inside functions and classes.
+Python source code files usually have the <code>.py</code> extension. Other commonly used file types are jupyter notebooks, using <code>.ipynb</code>[^1].</p>
+<h4 id="types-of-imports">Types of imports<a class="headerlink" href="#types-of-imports" title="Permanent link">&para;</a></h4>
+<p>There are four ways to import a Python module as per the import system <a href="https://docs.python.org/3/reference/import.html#the-import-system">documentation</a>:</p>
+<ul>
+<li>Absolute imports: <code><strong>from</strong> packageX <strong>import</strong> Y</code></li>
+<li>Standard imports: <code><strong>import </strong>packageX</code></li>
+<li>Aliases for imports: <code><strong>import</strong> packageX <strong>as</strong> PX, <strong>from</strong> packageX <strong>import</strong> Y <strong>as</strong> X</code></li>
+<li>Function calls: <a href="https://docs.python.org/3/library/importlib.html#importlib.import_module"><code>importlib.import_module()</code></a> and built-in <a href="https://docs.python.org/3/library/functions.html#import__"><code>__import__()</code></a>.</li>
+</ul>
+<p>Imported packages may be either absolute or <a href="https://docs.python.org/3/reference/import.html#package-relative-imports">relative</a>. The latter refers to the current package and starts with a leading dot, like <code><strong>from</strong> .packageX <strong>import</strong> Y.</code></p>
+<h4 id="detecting-imports-in-a-python-module">Detecting imports in a Python module<a class="headerlink" href="#detecting-imports-in-a-python-module" title="Permanent link">&para;</a></h4>
+<p>The structure of a Python source code file can be easily obtained via the standard library <a href="https://docs.python.org/3.10/library/ast.html">Abstract Syntax Trees</a> module. The AST library also provides an efficient way to traverse trees. Combined with standard filtering, only “leaves” representing imports are returned.</p>
+<p>Imports fall into one of four nodes in the AST (respective to a type of import):</p>
+<ul>
+<li>Absolute imports: <code>ast.Import</code></li>
+<li>Standard imports: <code>ast.ImportFrom</code></li>
+<li>Aliases for imports: <code>ast.alias</code></li>
+<li>Function call: <code>ast.Expr</code> with a call to either <code>__import__</code> or <code>import_module</code> function from <code>importlib</code></li>
+</ul>
+<p>Interpreting function calls as imports is not straightforward. They may use module names from other variables, functions, and external data.</p>
+<h3 id="32-translating-imports-to-dependencies">3.2 Translating imports to dependencies<a class="headerlink" href="#32-translating-imports-to-dependencies" title="Permanent link">&para;</a></h3>
+<p>Imports do not always have the same names as the dependencies they originated from. Given an argument of an import statement, Python searches for dependencies in steps[^2].</p>
+<p>First, it checks in <code>sys.modules</code> - a dictionary that maps Python module names to modules that have already been loaded into the environment. If the named module is not found in <code>sys.modules</code>, then Python’s import protocol is invoked to find and load the module: <code>sys.meta_path</code>. This involves the usage of Python’s <code>sys</code> Finders and Loaders, which may be implemented with separate strategies. For FawltyDeps, we are only concerned with “finders”[^3].</p>
+<p>For a project that correctly runs on a local environment, it’s possible to translate imports to dependencies the same way Python does, i.e. by using the “finder” strategy. It is, for example, possible to follow the <code>*.dist-info/</code> directory of the library and to look at the <code>top_level.txt</code> file for exposed packages and at <code>METADATA</code> for the library name.</p>
+<p>In an arbitrary project, however, translating imports gathered from the source code to dependencies is a hard problem for several reasons:</p>
+<ol>
+<li>Not all libraries have the same name as the packages they expose (<code>pandas</code> exposes <code>pandas</code>, but <code>google_api_python_client</code> exposes <code>["apiclient", "googleapiclient", "googleapiclient/discovery_cache"]</code>).</li>
+<li>Different libraries may provide import names (modules or packages) that overlap. For example, the 'google' import name may be obtained from different libraries, including <code>['google-api-core', 'googleapis-common-protos', 'protobuf', 'google-auth']</code>. This can complicate finding the appropriate library for a given import name.<code>.</code></li>
+<li>PyPI does not provide an API with a list of top-level packages given by the library.</li>
+<li>Top-level packages of a library may not be declared explicitly, but could instead be using <a href="https://setuptools.pypa.io/en/latest/userguide/package_discovery.html#custom-discovery">package discovery</a> (for projects using <code>setuptools</code>).</li>
+</ol>
+<p>Since PyPI does not readily provide this information, some libraries have attempted to solve the problem of translating imports to dependencies through a static mapping between PyPI libraries and the packages they expose (a csv file in <a href="https://github.com/bndr/pipreqs">pipreq</a> and a database in <a href="https://github.com/damnever/pigar">pigar</a>). These are shipped with the code and are not updated. This approach is discussed in more detail in the proposed solution section.</p>
+<h3 id="33-extracting-a-packages-declared-dependencies">3.3 Extracting a package’s declared dependencies<a class="headerlink" href="#33-extracting-a-packages-declared-dependencies" title="Permanent link">&para;</a></h3>
+<h4 id="declaring-dependencies">Declaring dependencies<a class="headerlink" href="#declaring-dependencies" title="Permanent link">&para;</a></h4>
+<p>Historically, <a href="https://docs.python.org/3/library/distutils.html#module-distutils">distutils</a> was used to ship a Python package[^4]. Now <a href="https://setuptools.pypa.io/en/latest/">setuptools</a> is the most common way to build a distribution package. There are other tools, like <a href="https://pyinstaller.org/en/stable/operating-mode.html#">PyInstaller</a> that builds a project into a single folder or file with all locally installed dependencies shipped with it. This is not a use case for FawltyDeps. Packaging a project with explicitly given dependencies, like with setuptools, gives the flexibility to manage and update dependencies separately. This approach makes it easier to manage and update dependencies, especially in more complex projects.</p>
+<p>Dependencies of a Python project may be declared in <a href="https://pip.pypa.io/en/stable/reference/requirements-file-format/#requirements-file-format">requirements</a> (usually <code>requirements.txt</code>, but a name choice is not restricted), <code>setup.py</code>, <code>setup.cfg</code>, and then <code>pyproject.toml</code> (since <a href="https://peps.python.org/pep-0518/">PEP 518</a>). Setup files - setup.py and setup.cfg declare dependencies under the <code>install_requires</code> and <code>extras_require</code> keywords and <code>pyproject.toml</code> generally lists dependencies under <code>dependencies</code>.</p>
+<h4 id="extracting-dependencies">Extracting dependencies<a class="headerlink" href="#extracting-dependencies" title="Permanent link">&para;</a></h4>
+<p>While a requirements file only lists the dependencies of a project (with eventual constraints), setup files and pyproject.toml declare other packaging configuration as well. While this is not the approach we use to parse dependnecnies, it is possible to e.g. translate pyproject.toml dependencies to requirements using <a href="https://github.com/python-poetry/poetry-plugin-export">poetry</a>.</p>
+<p>Requirements files may have non-standard names so to extract dependencies FawltyDeps must have the option to give a list of requirements files.</p>
+<h3 id="34-extracting-transitive-dependencies">3.4 Extracting transitive dependencies<a class="headerlink" href="#34-extracting-transitive-dependencies" title="Permanent link">&para;</a></h3>
+<p>Some Python packages require other packages to be installed first (like <code>numpy</code> for <code>pandas</code>). We call them transitive dependencies. When a transitive dependency <code>A</code> is imported explicitly in the code, it becomes a direct dependency. Even though the code would work without explicitly declaring <code>A</code>, it is a better practice to do so.</p>
+<p>To determine the list of transitive dependencies of a library <code>myLibrary</code>, one of these commands may be used:</p>
+<pre><code>pip show myLibrary
+uv pip show myLibrary
+poetry show
+</code></pre>
+<p>Since a transitive dependency does not need to be explicitly declared, declaring transitive dependencies that are not also direct dependencies in requirements is not a common practice. Checking for these dependencies is therefore not supported by FawltyDeps.</p>
+<h3 id="35-translating-dependencies-to-imports">3.5 Translating dependencies to imports<a class="headerlink" href="#35-translating-dependencies-to-imports" title="Permanent link">&para;</a></h3>
+<p>Given a dependency, by downloading (e.g. from PyPI) and unpacking the corresponding library, it’s possible to obtain the import names from the <code>top_level.txt</code> file.</p>
+<h2 id="4-proposed-solution">4. Proposed solution<a class="headerlink" href="#4-proposed-solution" title="Permanent link">&para;</a></h2>
+<h3 id="41-solution-outline">4.1. Solution outline<a class="headerlink" href="#41-solution-outline" title="Permanent link">&para;</a></h3>
+<p>At a first glance, the solution might look trivial once a set of imports (from the Python code) and a set of dependencies (from the packaging information) are obtained. The solution then reduces to comparing these two sets, making sure that dependencies form a superset of imports.</p>
+<p>While this might initially seem like a sufficient approach, directly comparing these two sets is not enough for the following reason:</p>
+<ol>
+<li>An import name is not guaranteed to be exactly equivalent to the corresponding dependency name (e.g. <code>library google-api-python-client</code> exposes package <code>apiclient</code>).</li>
+<li>The same library may expose different packages, which then correspond to different import names (e.g. <code>library google-api-python-client</code> apart from <code>apiclient</code>exposes <code>googleapiclient</code> and <code>googleapiclient/discovery_cache</code>).</li>
+</ol>
+<p>In other words, given two one-element sets of imports and dependencies, {<code>apiclient</code>} and {<code>google-api-python-client</code>} respectively, originating from the same Python project, there’s no static way to compare these sets.</p>
+<p>This is further complicated by the following observations:</p>
+<ol>
+<li>The same import name can map to various library names representing different packages (e.g. on PyPI, both <code>retina-face</code> and <code>retinaface</code> have the same import name <code>retinaface</code>). The import-to-dependency relation is one-to-many.</li>
+<li>Some imports might not have their corresponding dependencies explicitly declared because they are transitive dependencies (e.g. <code>numpy</code> is a prerequisite of <code>pandas</code>).</li>
+</ol>
+<p>The analysis above shows that these sets should be mapped to the same domain before a comparison is possible. One possible mapping would be to map one set to the domain of the other, i.e. map import names to dependency names or vice versa.</p>
+<p>The solution would then consist of 4 main modules (see the diagram below):</p>
+<ol>
+<li>Extract imports used in the code.</li>
+<li>Extract declared dependencies.</li>
+<li>Map imports and dependencies to the same domain.</li>
+<li>Compare mapped imports and dependencies.</li>
+</ol>
+<p><img alt="alt_text" src="../PDC_solution_overview.png" title="Solution diagram" /></p>
+<p>[1] Solution diagram; <a href="https://lucid.app/lucidchart/77d4a86d-e78c-460c-9d25-4e1875ca18f6/edit?viewport_loc=119%2C391%2C952%2C562%2C0_0&amp;invitationId=inv_901446c1-61e2-4362-be64-3a6e94975859">link to Lucid Charts; you have to log in to read and edit</a>.</p>
+<h3 id="42-possible-domain-mappings">4.2. Possible domain mappings<a class="headerlink" href="#42-possible-domain-mappings" title="Permanent link">&para;</a></h3>
+<p>We discuss in this section, three possible imports and dependencies mappings, differing in complexity and having each its advantages and limitations:</p>
+<ol>
+<li>Identity mapping.</li>
+<li>Mapping import names to library names.</li>
+<li>Mapping library names to import names.</li>
+</ol>
+<h3 id="421-identity-mapping">4.2.1 Identity mapping<a class="headerlink" href="#421-identity-mapping" title="Permanent link">&para;</a></h3>
+<p>As the name implies, this assumes import names are equivalent to library names. It allows for static checking, and compared to the more complex mappings detailed below, is exceedingly straightforward.</p>
+<p>Despite lacking empirical evidence on how many libraries (e.g. on PyPI) use the library name as an import name, we expect this mapping to be useful as a lightweight check that covers the majority of libraries.</p>
+<p>The major limitation of the identity mapping strategy is that it cannot compare an import <code>x</code> to a dependency <code>y</code> if those are not identically named. Therefore, the moment the imports set and the dependencies set differ, we would need to map one set to the domain of the other.</p>
+<p>Furthermore, even when the sets are identical, there is no guarantee that dependencies are correctly declared. As we have discussed earlier, an import <code>x</code> does not necessarily map to a dependency <code>x</code>.</p>
+<p>It is possible to go one step further and check that the declared dependencies exist (on e.g. PyPI). But while this would probably guard against declaring non-existent libraries, it would still not solve the following situation (as no mapping between the import and dependency domains is performed). Suppose you use <code>import madeup</code> in your code, and you assume the dependency name to be <code>madeup</code> as well so that’s what you provide in <code>requirements.txt</code>. As it turns out, <code>madeup</code>, the dependency, exists, but does not expose a package <code>madeup</code>. What you needed to declare was <code>pymadeup</code>, which effectively exposes import name <code>madeup</code>. The checker would not flag the dependency as missing, since no mapping has been done and it was assumed the dependency is indeed the one declared.</p>
+<p>An extension to this is relaxed equality[^5], where punctuation and conversions between snake_case and kebab-case are allowed. This is a cheap extension (no package downloading and unpacking is required) that can extend the usability of identity mapping.</p>
+<h4 id="422-import-to-dependency-mapping">4.2.2 Import to dependency mapping<a class="headerlink" href="#422-import-to-dependency-mapping" title="Permanent link">&para;</a></h4>
+<p>Mapping an import name to a dependency name is based on the premise that it would be easy to map an import (module or package) to a dependency (library).</p>
+<p>Suppose you have the import <code>madeup</code> and that you’d like to find the corresponding library name. This is often done via search engines and manual inspection of matching results.</p>
+<p>To simplify the problem, let’s further suppose that this is a PyPI library. One would expect that PyPI has a mapping from import names (which are essentially names of packages exposed by a library) to a library name. This is unfortunately not a valid assumption as such a mapping does not exist.</p>
+<p>PyPI offers some features that can be exploited to construct the mapping in an offline or online manner. There’s the search feature, which is a free text search on the information publicly available on the library’s PyPI web page. The library information available via the metadata API does not contain the exposed package's information (import names). Thus the only way to obtain that information seems to be by downloading and unpacking the library from PyPI.</p>
+<p>Note that in both cases, the mapping is limited to libraries available on PyPI and would not be able to map an import to a non-PyPI library.</p>
+<p>Furthermore, the check would now become a verification that for every import, the intersection between the mapping of that import to the dependency space and the declared dependencies is non empty..</p>
+<p><em>Offline mapping</em></p>
+<p>One could imagine iterating through all libraries in PyPI, and for each library, downloading, unpacking, and extracting the list of package names. Once a database is constructed, this would allow instant mapping from the package name to the library name (and vice versa). But this solution has two main limitations. First, the constructed database would need to be shipped with the code or available via an API, which adds either a heavy file or the need to communicate with an external service. Second, periodic maintenance and updates for the database are needed so it does not become stale.</p>
+<p><em>Online mapping</em></p>
+<p>The closest one could get to finding a package (i.e. import) name in PyPI is via its free text search. As stated above, this search is not done over the structured library information but over the information available on the PyPI web page of the library. As this search would understandably return many unrelated results, post-processing on these results is needed. This would consist of downloading and unpacking each library to extract the packages' names. While this might seem like an improvement over the whole PyPI mapping described above, keep in mind that some search terms (e.g. google) may return tens of thousands of records.</p>
+<p>A limitation is that the import name is not guaranteed to be on the library’s web page so the search might not return the wanted library.</p>
+<p>Another potential downside is that it's not uncommon to run CI in a heavily restricted network environment (e.g. using a URL allowlist). Getting such allow lists updated can, in some organizations, be pretty arduous. As such, the ability to run FawltyDeps entirely offline will likely lower the barrier to entry significantly.</p>
+<p><em>Conclusion</em></p>
+<p>Static offline mapping has been done in libraries such as pipreqs and pigar, and is usually distributed with the library. As previously stated, this has the disadvantage of leading to stale mappings. A possible solution is to provide an API offering a frequently updated version of that PyPI mapping. This in itself would be a useful contribution and could be used by libraries attempting to automatically generate a project’s requirements. It is, however, an instance of solving problem B (mapping import names to dependency names) in order to solve problem A (ensuring all imports are declared). And, as we show in the next section, might be rendered unnecessary by mapping in the opposite direction.</p>
+<p>Another possible way to limit the scope of the mapping is when all dependencies are installed in the local environment in which FawltyDeps would run. The checker can, in this case, search locally installed libraries in order to create the needed mapping. A similar solution is provided as an option in <code>pipreqs</code>.</p>
+<h3 id="423-dependency-to-import-mapping">4.2.3 Dependency to import mapping<a class="headerlink" href="#423-dependency-to-import-mapping" title="Permanent link">&para;</a></h3>
+<p>The previous section focused on mapping imports to dependencies. That can be a useful exercise if the goal is to automatically generate a Python project’s dependencies (e.g. the requirements.txt file). The goal of this project however is to check if the declared dependencies match the used imports.</p>
+<p>Mapping dependencies to imports is conceptually more aligned with that goal. And while that can still be easily reconstructed from any full PyPI import to dependency mapping, having a full mapping is unnecessary. Given a set of declared dependencies, by downloading and unpacking each library, as described in the previous section, it’s possible to obtain the import names (from e.g the top-level or the dist-info directories) in an on-demand fashion. Only dependencies declared in the project are downloaded and unpacked. The test would then become to verify that the mapped dependencies form a superset of extracted imports.</p>
+<p>This solution has the advantage of not being limited to PyPI libraries. Like the online mapping discussed above, however, it also requires access to the repositories of the project’s dependencies (e.g. PyPI, Github, ..)</p>
+<p>As in the previous solution, it is equally possible to limit this solution to searching in the local environment. This can also be made the default option, after which the tool would expand the search to public repositories.</p>
+<h1 id="5-related-work">5. Related work<a class="headerlink" href="#5-related-work" title="Permanent link">&para;</a></h1>
+<h2 id="51-linters">5.1 Linters<a class="headerlink" href="#51-linters" title="Permanent link">&para;</a></h2>
+<p>A perfect place to have a dependency checker add-on would be a linter. The most popular: <code>flake8</code> and <code>pylint</code> do not provide this functionality.</p>
+<h2 id="52-translating-imports-to-requirementtxt">5.2 Translating imports to requirement.txt<a class="headerlink" href="#52-translating-imports-to-requirementtxt" title="Permanent link">&para;</a></h2>
+<p>Several libraries generate requirements based on imports in Python source code. The two most visible in the community are <a href="https://github.com/bndr/pipreqs">pipreqs</a> and <a href="https://github.com/damnever/pigar">pigar</a>. In the context of Python Dependency Checker, they cover parsing imports and mapping them to PyPI libraries.</p>
+<p><code>pipreqs</code> is more popular than <code>pigar</code>, as can be seen in the Github star history graph [2], but it has not been regularly maintained for the last year and a half. It currently has many open and unsolved issues. <code>pipreqs</code> is also much simpler than pigar in terms of source code and functionality.</p>
+<p><img alt="alt_text" src="../star-history-pipreqs-pigar.png" title="star history" />
+[2] History of GitHub stars of pigar and pipreqs libraries</p>
+<p>\
+Both libraries use AST to inspect Python source code, but <code>pigar</code>’s implementation covers more use cases. <code>pipreqs</code> parses the simplest imports only (the ones that can be found in AST under <code>Import</code> or <code>ImportFrom</code> class) while <code>pigar</code> parses <code>exec</code>, <code>importlib</code> expressions, and more.</p>
+<p>Both libraries rely on a mapping of PyPI libraries to exposed packages. In <code>pipreqs</code>, this is done with a CSV file, which is seldom updated lately. In <code>pigar</code>, the mapping is more elaborate - it consists of an SQLite database and an additional PyPI package check, performed when the <code>pigar</code> script is run to generate the requirements.txt file (in case there was a breaking change between versions or a package was deleted). To check a package, <code>pigar</code> downloads it from PyPI in a packed form and peeks at the top_level.txt file to see the list of exposed packages. To assign a package version, <code>pipreqs</code> checks if a library is installed locally, and if so, it uses the version from the metadata of installation. If not, then it infers the library name from a static file mapping and posts a request to PyPI with that library name to get a package version.</p>
+<p>Libraries like <code>pigar</code> and <code>pipreqs</code> that automatically populate requirements files by translating imports to dependencies suffer from a major problem. Given a set of imports, the generated set of dependencies may be large and include many irrelevant libraries. These libraries are included just because they expose a package with the same name as an imported package.</p>
+<p>The import to dependencies translation (generating requirements.txt) depends on the chosen solution. Pigar downloads all possible candidates for a dependency package and it is a time-consuming process. Neither of the discussed libraries has a caching mechanism.</p>
+<h3 id="53-dependency-management-libraries">5.3 Dependency management libraries<a class="headerlink" href="#53-dependency-management-libraries" title="Permanent link">&para;</a></h3>
+<p>Both <a href="https://python-poetry.org/">Poetry</a> and <a href="https://github.com/jazzband/pip-tools">pip-tools</a> are package management libraries that offer complimentary features to what FawltyDeps proposes to achieve. We discuss below Poetry’s functionality in more details.</p>
+<p><a href="https://python-poetry.org/">Poetry</a> is a popular dependency management and packaging library for Python. Its features are centered around:</p>
+<ul>
+<li>the pyproject.toml file, in which custom Poetry fields are defined.</li>
+<li>a corresponding poetry.lock file which “locks” versions of the project’s dependencies to ensure reproducibility.</li>
+</ul>
+<p>Poetry manages installation of packages and offers its own virtual environments. It has a dependency specification syntax coupled with a powerful dependency resolving mechanism. It can “sync” an environment with declared dependencies to ensure that no extra libraries are installed, which can prevent using a library in the development environment without proper declaration.</p>
+<p>While Poetry has a <code>check</code> command, this command only validates the structure of the pyproject.toml file, and does not ensure that all the imported dependencies are declared. Poetry seems to limit itself to the scope of defining and managing dependencies and doesn’t in fact seem to do any code introspection.</p>
+<p>Poetry commands and our proposed tool’s functionality complement each other, and it’s possible to consider having FawltyDeps as a Poetry plugin in the future.</p>
+<h2 id="6-future-work">6. Future work<a class="headerlink" href="#6-future-work" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Ensuring from the usage of the library in the code that the declared library is the needed one.</li>
+<li>Transitive dependencies:</li>
+<li>Completing requirements.txt with used but undeclared transitive dependencies.</li>
+<li>Downgrading the error on a missing transitive dependency to a warning (e.g. x is a dependency of declared library y but is not explicitly declared).</li>
+<li>Execution time</li>
+<li>Implement caching mechanism.</li>
+<li>Smart mapping (identity, then translation)</li>
+</ul>
+<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
+<h3 id="python-documentation">Python documentation<a class="headerlink" href="#python-documentation" title="Permanent link">&para;</a></h3>
+<ol>
+<li>PEP 8 – Style Guide for Python Code: <a href="https://peps.python.org/pep-0008/#imports">https://peps.python.org/pep-0008/#imports</a>.</li>
+<li>The import system: <a href="https://docs.python.org/3/reference/import.html#the-import-system">https://docs.python.org/3/reference/import.html#the-import-system</a>.</li>
+<li>Abstract syntax tree: <a href="https://docs.python.org/3.10/library/ast.html">https://docs.python.org/3.10/library/ast.html</a>.</li>
+<li>Distutils: <a href="https://docs.python.org/3/library/distutils.html#module-distutils">https://docs.python.org/3/library/distutils.html#module-distutils</a>.</li>
+<li>PIP: <a href="https://pip.pypa.io/en/stable/reference/requirements-file-format/#requirements-file-format">https://pip.pypa.io/en/stable/reference/requirements-file-format/#requirements-file-format</a>.</li>
+<li>PEP 518 - Specifying Minimum Build System Requirements for Python Projects: <a href="https://peps.python.org/pep-0518">https://peps.python.org/pep-0518</a>.</li>
+<li>PEP 621 – Storing project metadata in pyproject.toml: <a href="https://peps.python.org/pep-0621">https://peps.python.org/pep-0621</a>.</li>
+</ol>
+<h3 id="libraries">Libraries<a class="headerlink" href="#libraries" title="Permanent link">&para;</a></h3>
+<ol>
+<li>SetupTools, packaging Python projects: <a href="https://setuptools.pypa.io/en/latest/">https://setuptools.pypa.io/en/latest/</a>.</li>
+<li>Pireqs, generate requirements.txt based on imports: <a href="https://github.com/bndr/pipreqs">https://github.com/bndr/pipreqs</a>.</li>
+<li>Pigar, generate requirements.txt based on imports: <a href="https://github.com/damnever/pigar">https://github.com/damnever/pigar</a>.</li>
+<li>PyInstaller, angle folder static Python packaging: <a href="https://pyinstaller.org/en/stable/operating-mode.html#">https://pyinstaller.org/en/stable/operating-mode.html#</a>.</li>
+<li>Poetry, Python packaging, and dependency management:<a href="https://python-poetry.org/"> https://python-poetry.org/</a>.</li>
+<li>Poetry, a plugin to export locked packages: <a href="https://github.com/python-poetry/poetry-plugin-export">https://github.com/python-poetry/poetry-plugin-export</a>.</li>
+<li>Pip-tools, a set of command-line tools to maintain pip-based packages: <a href="https://github.com/jazzband/pip-tools">https://github.com/jazzband/pip-tools</a>.</li>
+</ol>
+<h3 id="other-sources">Other sources<a class="headerlink" href="#other-sources" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Caremad.io, a blog post about setup.py and requirements.txt: <a href="https://caremad.io/posts/2013/07/setup-vs-requirement/">setup.py vs requirements.txt · caremad</a>.</li>
+<li>Towardsdatascience.com, a blog post about setup.py and requirements.txt: <a href="https://towardsdatascience.com/requirements-vs-setuptools-python-ae3ee66e28af">requirements.txt vs setup.py in Python</a>.</li>
+</ol>
+<!-- Footnotes themselves at the bottom. -->
+
+<h3 id="notes">Notes<a class="headerlink" href="#notes" title="Permanent link">&para;</a></h3>
+<p>[^1]: Notebooks may be converted to Python script with <a href="https://nbconvert.readthedocs.io/en/latest/">nbconvert</a> - command line tool and library.
+[^2]: See the import paths search <a href="https://docs.python.org/3/reference/import.html#searching">Python documentation</a>.
+[^3]: See an <a href="https://docs.python.org/3/library/modulefinder.html#modulefinder-example">example</a> of usage of Python’s ModuleFinder.
+[^4]: distutils is deprecated and will be removed in Python 3.12.
+[^5]: Suggested by <a href="mailto:thomas.bagrel@tweag.io">Thomas Bagrel</a>.
+[^6]: Hail, cloud-native genomic data frames, and batch computing: <a href="https://hail.is/">https://hail.is/</a>.
+[^7]: Testbook is a unit testing framework extension for testing code in Jupyter Notebooks: <a href="https://github.com/nteract/testbook/">https://github.com/nteract/testbook/</a>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["search.suggest"], "search": "../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.13a4f30d.min.js"></script>
+      
+    
+  </body>
+</html>
