@@ -27,7 +27,9 @@ def inside_tmp_path(monkeypatch, tmp_path):
     return tmp_path
 
 
-@pytest.fixture
+# The following weird params syntax applies the "needs_network" mark to all
+# tests using this fixture. See https://github.com/pytest-dev/pytest/issues/1368
+@pytest.fixture(params=[pytest.param(0, marks=pytest.mark.needs_network)])
 def local_pypi(request, monkeypatch):
     cache_dir = TarballPackage.cache_dir(request.config.cache)
     TarballPackage.get_tarballs(request.config.cache)
