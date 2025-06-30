@@ -180,6 +180,7 @@ ignore = [
     "TC002",  # Move third-party import `...` into a type-checking block
     "TC003",  # Move standard library import `...` into a type-checking block
     "UP007",  # Use `X | Y` for type annotations
+    "UP045",  # Use `X | None` for type annotations
 
     # Ruff recommends avoiding these checks when using `ruff format`.
     # Details: https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules

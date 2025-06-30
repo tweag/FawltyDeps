@@ -85,7 +85,7 @@ def parse_environment_yml_deps(
 
 def parse_environment_yml(path: Path) -> Iterator[DeclaredDependency]:
     """Extract dependencies (package names) from environment.yml."""
-    import yaml
+    import yaml  # noqa: PLC0415
 
     source = Location(path)
     skip = {"python"}
