@@ -1,0 +1,9 @@
+[project]
+name = "dashed-distribution-name"
+description = "Test project for dashed distribution names"
+version = "0.1.0"
+requires-python = ">=3.13.2"
+dependencies = ["typing-extensions", "nats-py"]
+
+[tool.fawltydeps.custom_mapping]
+nats-py = ["nats"]

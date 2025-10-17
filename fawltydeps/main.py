@@ -13,6 +13,7 @@ import logging
 import sys
 from collections.abc import Callable, Iterator
 from functools import cached_property, partial
+from itertools import chain
 from operator import attrgetter
 from typing import BinaryIO, Optional, TextIO, Union
 
@@ -113,7 +114,15 @@ class Analysis:
             extract_imports.parse_sources(
                 (src for src in self.sources if isinstance(src, CodeSource)),
                 self.stdin,
+                mapped_imports=self.custom_mapped_imports,
             )
+        )
+
+    @cached_property
+    def custom_mapped_imports(self) -> frozenset[str]:
+        """The set of import names mapped via custom mapping in settings."""
+        return frozenset(
+            chain.from_iterable((self.settings.custom_mapping or {}).values())
         )
 
     @cached_property

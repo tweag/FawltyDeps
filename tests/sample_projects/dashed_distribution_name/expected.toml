@@ -1,0 +1,35 @@
+[project]
+# General information about a simplified project: Its name, why we test it,
+# its relation to real world projects
+name = "dashed_distribution_name"
+description = """
+  (taken from issue #505: https://github.com/tweag/FawltyDeps/issues/505)
+
+  A project that uses 3rd-party packages with dashed distribution-names
+  ("xxx-yyy") whose import names ("xxx") is also a submodule (subfolder) in the
+  current project.
+"""
+
+[experiments.default]
+description = "Run fawltydeps and expect that all dependencies are correctly identified."
+requirements = []  # rely on identity mapping
+
+# 3rd-party imports found in the code:
+imports = [
+    "nats",
+    "typing_extensions",
+]
+
+# Declared dependencies found in the project configuration:
+declared_deps = [
+    "nats-py",            # pyproject.toml
+    "typing-extensions",  # pyproject.toml
+]
+
+# Import names in the code that do not have a matching dependency declared:
+undeclared_deps = [
+]
+
+# Declared dependencies which were never `import`ed from the code:
+unused_deps = [
+]

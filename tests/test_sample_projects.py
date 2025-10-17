@@ -145,6 +145,10 @@ def test_sample_projects(request, project, experiment, monkeypatch):
     print()
     print("Experiment settings:")
     monkeypatch.chdir(project.path)
+    pyproject_path = Path(project.path) / "pyproject.toml"
+    if pyproject_path.is_file():
+        # Load the sample project's pyproject.toml if present
+        Settings.config(config_file=pyproject_path)
     settings = experiment.build_settings(request.config.cache)
     print_toml_config(settings)
     print()

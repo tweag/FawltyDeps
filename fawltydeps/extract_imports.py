@@ -5,6 +5,7 @@ import json
 import logging
 import tokenize
 from collections.abc import Iterable, Iterator
+from collections.abc import Set as AbstractSet
 from pathlib import Path
 from typing import BinaryIO, Optional, Union
 
@@ -43,6 +44,7 @@ def parse_code(
     *,
     source: Location,
     local_context: isort.Config = ISORT_FALLBACK_CONFIG,
+    mapped_imports: AbstractSet[str] = frozenset(),
 ) -> Iterator[ParsedImport]:
     """Extract import statements from a (byte)string containing Python code.
 
@@ -58,7 +60,12 @@ def parse_code(
     """
 
     def is_external_import(name: str) -> bool:
-        return isort.place_module(name, config=local_context) == "THIRDPARTY"
+        # First check if the import is in the mapped imports, which overrides
+        # isort's placement logic
+        return (
+            name in mapped_imports
+            or isort.place_module(name, config=local_context) == "THIRDPARTY"
+        )
 
     try:
         parsed_code = ast.parse(code, filename=str(source.path))
@@ -88,7 +95,9 @@ def parse_code(
 
 
 def parse_notebook_file(  # noqa: C901
-    path: Path, local_context: Optional[isort.Config] = None
+    path: Path,
+    local_context: Optional[isort.Config] = None,
+    mapped_imports: AbstractSet[str] = frozenset(),
 ) -> Iterator[ParsedImport]:
     """Extract import statements from an ipynb notebook.
 
@@ -134,7 +143,10 @@ def parse_notebook_file(  # noqa: C901
                 if cell["cell_type"] == "code":
                     lines = filter_out_magic_commands(cell["source"], source=source)
                     yield from parse_code(
-                        "".join(lines), source=source, local_context=local_context
+                        "".join(lines),
+                        source=source,
+                        local_context=local_context,
+                        mapped_imports=mapped_imports,
                     )
             except KeyError as exc:
                 logger.error(f"Could not parse code from {source}: {exc}.")
@@ -152,7 +164,9 @@ def parse_notebook_file(  # noqa: C901
 
 
 def parse_python_file(
-    path: Path, local_context: Optional[isort.Config] = None
+    path: Path,
+    local_context: Optional[isort.Config] = None,
+    mapped_imports: AbstractSet[str] = frozenset(),
 ) -> Iterator[ParsedImport]:
     """Extract import statements from a file containing Python code.
 
@@ -163,12 +177,17 @@ def parse_python_file(
         local_context = make_isort_config(Path(), (path.parent,))
     with tokenize.open(path) as pyfile:
         yield from parse_code(
-            pyfile.read(), source=Location(path), local_context=local_context
+            pyfile.read(),
+            source=Location(path),
+            local_context=local_context,
+            mapped_imports=mapped_imports,
         )
 
 
 def parse_source(
-    src: CodeSource, stdin: Optional[BinaryIO] = None
+    src: CodeSource,
+    stdin: Optional[BinaryIO] = None,
+    mapped_imports: AbstractSet[str] = frozenset(),
 ) -> Iterator[ParsedImport]:
     """Invoke a suitable parser for the given source.
 
@@ -184,7 +203,11 @@ def parse_source(
         # 'isatty' checks if the stream is interactive.
         if stdin.isatty():
             logger.warning("Reading code from terminal input. Ctrl+D to stop.")
-        return parse_code(stdin.read(), source=Location(src.path))
+        return parse_code(
+            stdin.read(),
+            source=Location(src.path),
+            mapped_imports=mapped_imports,
+        )
 
     assert isinstance(src.path, Path)  # noqa: S101, sanity check / silence mypy
 
@@ -195,19 +218,21 @@ def parse_source(
 
     if src.path.suffix == ".py":
         logger.info("Parsing Python file %s", src.path)
-        return parse_python_file(src.path, local_context)
+        return parse_python_file(src.path, local_context, mapped_imports)
     if src.path.suffix == ".ipynb":
         logger.info("Parsing Notebook file %s", src.path)
-        return parse_notebook_file(src.path, local_context)
+        return parse_notebook_file(src.path, local_context, mapped_imports)
     raise RuntimeError("MISMATCH BETWEEN CODE PATH AND CODE PARSERS!")
 
 
 def parse_sources(
-    sources: Iterable[CodeSource], stdin: Optional[BinaryIO] = None
+    sources: Iterable[CodeSource],
+    stdin: Optional[BinaryIO] = None,
+    mapped_imports: AbstractSet[str] = frozenset(),
 ) -> Iterator[ParsedImport]:
     """Parse import statements from the given sources."""
     for source in sources:
-        yield from parse_source(source, stdin)
+        yield from parse_source(source, stdin, mapped_imports)
 
 
 def validate_code_source(
