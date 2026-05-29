@@ -76,6 +76,24 @@ ruff check .             # Run ruff linter
 ruff format .            # Run ruff formatter
 ```
 
+#### Docs Site
+
+If you are only modifying the documentation site, you can run:
+
+```sh
+poetry install --only=docs
+```
+
+to create a virtualenv with only docs dependencies installed.
+
+From there you can run a docs server with:
+
+```sh
+poetry run mkdocs serve
+```
+
+Then navigate to <http://127.0.0.1:8000/> to see a preview of the docs.
+
 #### Shortcut: Nix
 
 We have a [`shell.nix`](https://github.com/tweag/FawltyDeps/blob/main/shell.nix) which provides Poetry in addition to all of
