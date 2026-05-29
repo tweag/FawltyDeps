@@ -3,15 +3,15 @@ site_description: "FawltyDeps: A Python Dependency Checker"
 repo_url: https://github.com/tweag/fawltydeps
 repo_name: tweag/FawltyDeps
 
-theme: 
-  name: material 
+theme:
+  name: material
   favicon: material/check-circle
   icon:
     repo: fontawesome/brands/github
     logo: material/check-circle
   features:
     - search.suggest
-  palette: 
+  palette:
     # Palette toggle for automatic mode
     - media: "(prefers-color-scheme)"
       toggle:
@@ -30,9 +30,7 @@ theme:
         icon: material/brightness-4
         name: Switch to light mode
 
-  
 nav:
-
   - Home: index.md
   - Installation: installation.md
   - Usage: usage.md
@@ -44,7 +42,7 @@ nav:
   - How To Guides: how_to_guides.md
   - FAQ: FAQ.md
   - Contributing: CONTRIBUTING.md
-  
+
 markdown_extensions:
   - pymdownx.highlight
   - pymdownx.superfences
