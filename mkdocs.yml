@@ -9,10 +9,6 @@ theme:
   icon:
     repo: fontawesome/brands/github
     logo: material/check-circle
-  hjls_language:
-    - python
-    - yaml
-    - json
   features:
     - search.suggest
   palette: 
@@ -50,5 +46,7 @@ nav:
   - Contributing: CONTRIBUTING.md
   
 markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences
   - toc:
       permalink: true
