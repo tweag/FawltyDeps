@@ -64,6 +64,9 @@ Here is a complete list of configuration directives we support:
   Expected file format is defined in the User-defined mapping [section](explanation.md/#user-defined-mapping).
 - `[tool.fawltydeps.custom_mapping]`: Section in the configuration, under which a custom mapping
   can be added. Expected format is described in the User-defined mapping [section](explanation.md/#user-defined-mapping).
+- `base_dir`: Base directory from which imports are resolved from. See the
+  [Usage section](usage.md#correctly-identifying-1st-vs-3rd-party-imports). The
+  default is `base_dir = "./"`.
 
 ## Environment variables
 
