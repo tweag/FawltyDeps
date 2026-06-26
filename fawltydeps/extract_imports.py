@@ -69,10 +69,16 @@ def parse_code(
         if isinstance(node, ast.Import):
             logger.debug(ast.dump(node))
             for alias in node.names:
+                # `name` is the top-level component (e.g. "foo" for "foo.bar.baz")
+                # presented to the user, while `qualified` keeps the full dotted
+                # path so that packages sharing a top-level prefix can be told
+                # apart when matching against declared dependencies.
                 name = alias.name.split(".", 1)[0]
                 if is_external_import(name):
                     yield ParsedImport(
-                        name=name, source=source.supply(lineno=node.lineno)
+                        name=name,
+                        source=source.supply(lineno=node.lineno),
+                        qualified=(alias.name,),
                     )
         elif isinstance(node, ast.ImportFrom):
             logger.debug(ast.dump(node))
@@ -81,10 +87,25 @@ def parse_code(
             # They are therefore uninteresting to us.
             if node.level == 0 and node.module is not None:
                 name = node.module.split(".", 1)[0]
-                if is_external_import(name):
-                    yield ParsedImport(
-                        name=name, source=source.supply(lineno=node.lineno)
-                    )
+                if not is_external_import(name):
+                    continue
+                # `from foo.bar import baz` reads the module `foo.bar`, but the
+                # name `baz` may itself be a submodule `foo.bar.baz`. We record
+                # the fully-qualified candidates so that namespace packages (e.g.
+                # `from google.cloud import storage`) can be told apart. When the
+                # imported name turns out to be an attribute rather than a
+                # submodule, prefix-matching against the parent package keeps this
+                # correct (see packages.module_matches).
+                qualified = tuple(
+                    f"{node.module}.{alias.name}"
+                    for alias in node.names
+                    if alias.name != "*"  # `import *`: nothing to qualify
+                ) or (node.module,)
+                yield ParsedImport(
+                    name=name,
+                    source=source.supply(lineno=node.lineno),
+                    qualified=qualified,
+                )
 
 
 def parse_notebook_file(  # noqa: C901

@@ -218,6 +218,12 @@ class Analysis:
                 "version",
             ]
         }
+        # ParsedImport.qualified is an internal matching detail (see types.py);
+        # serialize only the user-facing 'name' and 'source' for each import.
+        if json_dict["imports"] is not None:
+            json_dict["imports"] = [
+                {"name": imp.name, "source": imp.source} for imp in json_dict["imports"]
+            ]
         json.dump(json_dict, out, indent=2, default=encoder)
 
     def print_human_readable(  # noqa: C901

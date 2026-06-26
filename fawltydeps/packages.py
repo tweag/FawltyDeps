@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import inspect
 import logging
 import shutil
 import subprocess
@@ -47,6 +48,92 @@ PackageDebugInfo = Union[None, str, dict[str, set[str]]]
 logger = logging.getLogger(__name__)
 
 
+def module_matches(imported: str, provided: str) -> bool:
+    """Return True iff the 'imported' name is covered by the 'provided' module.
+
+    Both arguments are (possibly dotted) import paths. An import is covered by a
+    provided module when it _is_ that module, or a submodule thereof. For
+    example, the provided module "google.cloud.storage" covers the imports
+    "google.cloud.storage" and "google.cloud.storage.blob", but neither
+    "google.cloud.bigquery" nor the bare namespace "google.cloud".
+    """
+    return imported == provided or imported.startswith(provided + ".")
+
+
+def _module_basename(filename: str) -> Optional[str]:
+    """Return the importable module name for a file, or None if not a module."""
+    if filename.endswith(".pyi"):  # type stubs are not known to importlib
+        return filename[: -len(".pyi")]
+    return inspect.getmodulename(filename)
+
+
+def _iter_module_files(dist: object) -> Iterator[tuple[tuple[str, ...], str]]:
+    """Yield (parent_dir_parts, module_name) for each importable file in dist."""
+    for file in getattr(dist, "files", None) or []:
+        parts = tuple(file.parts)
+        if not parts or ".." in parts:
+            continue  # e.g. scripts/data installed outside site-packages
+        if any(p.endswith((".dist-info", ".egg-info")) for p in parts):
+            continue
+        modname = _module_basename(parts[-1])
+        if modname is not None:  # an importable module file
+            yield parts[:-1], modname
+
+
+def _modules_from_files(dist: object) -> set[str]:
+    """Infer the full dotted module paths provided by an installed dist.
+
+    Unlike importlib_metadata's _top_level_* helpers (which only report the
+    top-level component, e.g. "google"), this walks the distribution's file list
+    and descends through PEP 420 namespace packages (directories without an
+    __init__) so that distributions sharing a namespace are distinguished by
+    their full import path, e.g. "google.cloud.storage" vs "google.cloud.bigquery".
+
+    A regular package (a directory with an __init__) owns its entire subtree, so
+    only the top-most such package is reported (e.g. "numpy", not "numpy.linalg").
+    """
+    init_dirs: set[tuple[str, ...]] = set()  # dirs containing an __init__ module
+    loose_modules: list[tuple[str, ...]] = []  # parts of standalone module files
+    for dir_parts, modname in _iter_module_files(dist):
+        if modname == "__init__":
+            init_dirs.add(dir_parts)
+        else:
+            loose_modules.append((*dir_parts, modname))
+
+    def within_regular_package(dir_parts: tuple[str, ...]) -> bool:
+        """Return True iff dir_parts (or an ancestor) is a regular package."""
+        return any(dir_parts[:i] in init_dirs for i in range(1, len(dir_parts) + 1))
+
+    modules: set[str] = set()
+    for dir_parts in init_dirs:  # keep only the top-most regular package
+        if not within_regular_package(dir_parts[:-1]):
+            modules.add(".".join(dir_parts))
+    for parts in loose_modules:  # standalone modules not owned by a package
+        if not within_regular_package(parts[:-1]):
+            modules.add(".".join(parts))
+    return modules
+
+
+def _provided_imports(dist: object) -> list[str]:
+    """Return the import names (full dotted module paths) provided by a dist.
+
+    We trust the package's declared top-level names (top_level.txt) about _which_
+    top-level names are exposed, but use the distribution's file listing to refine
+    each into its full dotted path(s). This keeps the precise sub-module
+    information needed to tell namespace-sharing packages apart, while not
+    inventing top-level names that the package did not declare.
+    """
+    declared = set(_top_level_declared(dist))  # type: ignore[no-untyped-call]
+    modules = _modules_from_files(dist)
+    if declared:
+        refined = {m for m in modules if m.split(".", 1)[0] in declared}
+        # Preserve declared top-levels that we could not refine from files.
+        refined_tops = {m.split(".", 1)[0] for m in refined}
+        refined.update(name for name in declared if name not in refined_tops)
+        return sorted(refined)
+    return sorted(modules) or list(_top_level_inferred(dist))  # type: ignore[no-untyped-call]
+
+
 @dataclass(frozen=True)
 class Package:
     """Encapsulate an installable Python package.
@@ -86,11 +173,13 @@ class Package:
         return self.normalize_name(self.package_name)
 
     def stubbed_imports(self) -> set[str]:
-        """Return a set of import names without the type stubs suffix.
+        """Return the provided modules with the type stubs suffix stripped.
 
         For example, a package that has .import_names == {"foo", "bar-stubs"},
         will return {"bar"} from this method, indicating that it provides type
-        stubs for the "bar" import.
+        stubs for the "bar" import. The "-stubs" suffix is stripped from the
+        first (top-level) component only, so e.g. "google-stubs.cloud.storage"
+        yields "google.cloud.storage".
 
         This allows stub-only packages to be matched against the import names
         for which they provide type stubs. Stub-only packages are described in
@@ -99,17 +188,36 @@ class Package:
         to assume that "FOO-stubs" is indeed directly associated with the "FOO"
         module.
         """
-        return {
-            import_name[: -len("-stubs")]
-            for import_name in self.import_names
-            if import_name.endswith("-stubs")
-        }
+        result = set()
+        for import_name in self.import_names:
+            top, sep, rest = import_name.partition(".")
+            if top.endswith("-stubs"):
+                result.add(top[: -len("-stubs")] + sep + rest)
+        return result
+
+    def provided_imports(self) -> set[str]:
+        """Return all import paths provided by this package.
+
+        This includes the package's declared import names plus the stub-stripped
+        variants (see .stubbed_imports()).
+        """
+        return self.import_names | self.stubbed_imports()
+
+    def provides(self, imported_name: str, *, include_stubs: bool = True) -> bool:
+        """Return True iff this package provides the given (dotted) import name.
+
+        When 'include_stubs' is True, type-stub (-stubs) associations are also
+        considered (so e.g. a types-requests dependency is deemed to provide the
+        'requests' import). Set it to False when suggesting packages for an
+        undeclared import, where a stubs-only package would be a misleading
+        suggestion.
+        """
+        candidates = self.provided_imports() if include_stubs else self.import_names
+        return any(module_matches(imported_name, provided) for provided in candidates)
 
     def is_used(self, imported_names: Iterable[str]) -> bool:
-        """Return True iff this package is among the given import names."""
-        return bool(self.import_names.intersection(imported_names)) or bool(
-            self.stubbed_imports().intersection(imported_names)
-        )
+        """Return True iff any of the given imports is provided by this package."""
+        return any(self.provides(name) for name in imported_names)
 
 
 class BasePackageResolver(ABC):
@@ -232,7 +340,11 @@ class UserDefinedMapping(BasePackageResolver):
 
     def lookup_import(self, import_name: str) -> Iterable[Package]:
         """Return all Package objects that provide the given import name."""
-        return (p for p in self.packages.values() if import_name in p.import_names)
+        return (
+            p
+            for p in self.packages.values()
+            if p.provides(import_name, include_stubs=False)
+        )
 
 
 class InstalledPackageResolver(BasePackageResolver):
@@ -275,10 +387,7 @@ class InstalledPackageResolver(BasePackageResolver):
 
             logger.debug(f"Found {dist.name} {dist.version} under {parent_dir}")
             seen.add(normalized_name)
-            imports = list(
-                _top_level_declared(dist)  # type: ignore[no-untyped-call]
-                or _top_level_inferred(dist)  # type: ignore[no-untyped-call]
-            )
+            imports = _provided_imports(dist)
             if not imports:
                 # We have found an installed package that provides zero import
                 # names. This might be a legitimate tool/application that is
@@ -319,7 +428,11 @@ class InstalledPackageResolver(BasePackageResolver):
 
     def lookup_import(self, import_name: str) -> Iterable[Package]:
         """Return all Package objects that provide the given import name."""
-        return (p for p in self.packages.values() if import_name in p.import_names)
+        return (
+            p
+            for p in self.packages.values()
+            if p.provides(import_name, include_stubs=False)
+        )
 
 
 class SysPathPackageResolver(InstalledPackageResolver):

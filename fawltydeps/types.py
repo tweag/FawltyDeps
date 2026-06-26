@@ -268,10 +268,29 @@ class Location:
 
 @dataclass(eq=True, frozen=True, order=True)
 class ParsedImport:
-    """Import parsed from the source code."""
+    """Import parsed from the source code.
+
+    'name' is the module that is imported, as it should be presented to the user
+    (e.g. via --list-imports): the dotted module path for `import a.b.c`, or the
+    module imported _from_ for `from a.b import c` (i.e. "a.b").
+
+    'qualified' carries the fully-qualified import path(s) used when matching this
+    import against the modules provided by declared dependencies. For
+    `from a.b import c, d` this is ("a.b.c", "a.b.d"), which tells apart
+    packages that share an import prefix (e.g. the "google" namespace). It is
+    excluded from equality/ordering (and from the serialized output) so that it
+    is a pure implementation detail: two imports with the same 'name' and
+    'source' remain equal regardless of their 'qualified' paths.
+    """
 
     name: str
     source: Location
+    qualified: tuple[str, ...] = field(default=(), compare=False)
+
+    @property
+    def match_keys(self) -> tuple[str, ...]:
+        """Return the fully-qualified import paths to match against packages."""
+        return self.qualified or (self.name,)
 
 
 @dataclass(eq=True, frozen=True, order=True)
