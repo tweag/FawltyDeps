@@ -40,7 +40,6 @@ dependencies = [
     # These are the main dependencies for FawltyDeps at runtime.
     # Do not add anything here that is only needed by CI/tests/linters/developers
     "importlib_metadata >= 6.6.0",
-    "isort >= 5.10",
     "packaging >= 24.0",
     "pip-requirements-parser >= 32.0.1",
     "pydantic >= 1.10.4, < 3.0.0",
@@ -205,6 +204,14 @@ ignore = [
 "noxfile.py" = [
     "ANN",  # Missing type annotations
     "D",  # Missing docstrings
+]
+"tools/*" = [
+    # Standalone developer scripts: printing and invoking subprocesses (git, a
+    # Python interpreter) is exactly what they are meant to do.
+    "T201",  # `print` found
+    "S603",  # `subprocess` call: check for execution of untrusted input
+    "S607",  # Starting a process with a partial executable path
+    "INP001",  # File is part of an implicit namespace package
 ]
 "tests/sample_projects/*" = [
     "F401",  # Allow unused imports in sample projects

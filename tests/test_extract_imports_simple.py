@@ -554,12 +554,21 @@ first_party_import_vectors = [
         },
     ),
     FirstPartyImportTestVector(
+        # With --base-dir pointing at `lib` itself, `lib` is a *sys.path entry*,
+        # not a module reachable from it. CPython would only resolve `import lib`
+        # if `lib`'s parent were on sys.path, so `from lib import support` in
+        # some_project/main.py is (correctly) NOT first-party here and is
+        # reported. (FawltyDeps used to mis-resolve this via an isort-ism that
+        # matched a source dir against its own name.)
         id="base_dir_not_a_parent_of_source_file",
         sources={
             "some_project/main.py": "from lib import support",
             "lib/support.py": "import numpy",
         },
-        expect_imports=[("numpy", "lib/support.py", 1)],
+        expect_imports=[
+            ("lib", "some_project/main.py", 1),
+            ("numpy", "lib/support.py", 1),
+        ],
         base_dir=Path("lib/"),
     ),
 ]

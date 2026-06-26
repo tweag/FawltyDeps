@@ -73,8 +73,8 @@ class CodeSource(Source):
         read from standard input.
     .base_dir is an optional directory that contains modules/packages that
         should be considered _first_-party (i.e. _not_ third-path dependencies)
-        when imported from the code in .path. More details at
-        https://pycqa.github.io/isort/docs/configuration/options.html#src-paths
+        when imported from the code in .path. First-party imports are resolved
+        against this directory by fawltydeps.import_classifier.
     """
 
     path: PathOrSpecial

@@ -8,8 +8,11 @@ from collections.abc import Iterable, Iterator
 from pathlib import Path
 from typing import BinaryIO, Optional, Union
 
-import isort
-
+from fawltydeps.import_classifier import (
+    FALLBACK_CONTEXT,
+    LocalContext,
+    make_local_context,
+)
 from fawltydeps.types import (
     CodeSource,
     Location,
@@ -22,27 +25,11 @@ from fawltydeps.utils import dirs_between
 logger = logging.getLogger(__name__)
 
 
-def make_isort_config(path: Path, src_paths: tuple[Path, ...] = ()) -> isort.Config:
-    """Configure isort to correctly classify import statements.
-
-    In order for isort to correctly differentiate between first- and third-party
-    imports, we need to pass in a configuration object that tells isort where
-    to look for first-party imports.
-    """
-    return isort.Config(
-        src_paths=(path, *src_paths),  # Resolve first-party imports
-        py_version="all",  # Ignore stdlib imports from all stdlib versions
-    )
-
-
-ISORT_FALLBACK_CONFIG = make_isort_config(Path())
-
-
 def parse_code(
     code: Union[str, bytes],
     *,
     source: Location,
-    local_context: isort.Config = ISORT_FALLBACK_CONFIG,
+    local_context: LocalContext = FALLBACK_CONTEXT,
 ) -> Iterator[ParsedImport]:
     """Extract import statements from a (byte)string containing Python code.
 
@@ -58,7 +45,7 @@ def parse_code(
     """
 
     def is_external_import(name: str) -> bool:
-        return isort.place_module(name, config=local_context) == "THIRDPARTY"
+        return local_context.is_third_party(name)
 
     try:
         parsed_code = ast.parse(code, filename=str(source.path))
@@ -88,7 +75,7 @@ def parse_code(
 
 
 def parse_notebook_file(  # noqa: C901
-    path: Path, local_context: Optional[isort.Config] = None
+    path: Path, local_context: Optional[LocalContext] = None
 ) -> Iterator[ParsedImport]:
     """Extract import statements from an ipynb notebook.
 
@@ -96,7 +83,7 @@ def parse_notebook_file(  # noqa: C901
     they appear in the file.
     """
     if not local_context:
-        local_context = make_isort_config(Path(), (path.parent,))
+        local_context = make_local_context(Path(), (path.parent,))
 
     def filter_out_magic_commands(
         lines: Iterable[str], source: Location
@@ -152,7 +139,7 @@ def parse_notebook_file(  # noqa: C901
 
 
 def parse_python_file(
-    path: Path, local_context: Optional[isort.Config] = None
+    path: Path, local_context: Optional[LocalContext] = None
 ) -> Iterator[ParsedImport]:
     """Extract import statements from a file containing Python code.
 
@@ -160,7 +147,7 @@ def parse_python_file(
     they appear in the file.
     """
     if not local_context:
-        local_context = make_isort_config(Path(), (path.parent,))
+        local_context = make_local_context(Path(), (path.parent,))
     with tokenize.open(path) as pyfile:
         yield from parse_code(
             pyfile.read(), source=Location(path), local_context=local_context
@@ -191,7 +178,7 @@ def parse_source(
     local_context = None
     if src.base_dir is not None:
         src_paths = tuple(dirs_between(src.base_dir, src.path.parent))
-        local_context = make_isort_config(path=src.base_dir, src_paths=src_paths)
+        local_context = make_local_context(path=src.base_dir, src_paths=src_paths)
 
     if src.path.suffix == ".py":
         logger.info("Parsing Python file %s", src.path)
